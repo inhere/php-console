@@ -1,7 +1,7 @@
 {
   "name": "inhere/console",
   "type": "library",
-  "description": "a very lightweight single file of the router.",
+  "description": "a php console application library.",
   "keywords": ["library","console","console-color","command", "console-application"],
   "homepage": "http://github.com/inhere/php-console",
   "license": "MIT",
