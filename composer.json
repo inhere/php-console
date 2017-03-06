@@ -1,0 +1,26 @@
+{
+  "name": "inhere/console",
+  "type": "library",
+  "description": "a very lightweight single file of the router.",
+  "keywords": ["library","console","console-color","command", "console-application"],
+  "homepage": "http://github.com/inhere/php-console",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "inhere",
+      "email": "in.798@qq.com",
+      "homepage": "http://www.yzone.net/"
+    }
+  ],
+  "require": {
+    "php": ">=5.5.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "inhere\\console\\" : "src/"
+    }
+  },
+  "suggest": {
+    "inhere/simple-print-tool": "Very lightweight data printing tools"
+  }
+}
