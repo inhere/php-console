@@ -55,7 +55,7 @@ class Interact
         }
 
         if ($allowExit) {
-            $options['q'] = "quit";
+            $options['q'] = 'quit';
         }
 
         beginChoice:
@@ -148,7 +148,7 @@ class Interact
         }
 
         $defaultText = null !== $default ? "(default: <info>$default</info>)" : '';
-        $answer = self::read( "<comment>" . ucfirst($question) . "</comment>$defaultText " );
+        $answer = self::read( '<comment>' . ucfirst($question) . "</comment>$defaultText " );
 
         if ( '' === $answer ) {
             if ( null === $default) {
@@ -255,7 +255,22 @@ class Interact
         return $answer;
     }
 
-    public static function progressBar()
+
+    public static function progressBarSetting()
+    {
+
+    }
+    public static function progressBarStart()
+    {
+
+    }
+
+    public static function progressBarUp()
+    {
+
+    }
+
+    public static function progressBarEnd()
     {
 
     }
@@ -300,11 +315,11 @@ class Interact
      *     'start'    => 'Start the app server',
      *     ... ...
      * ]
-     * @param  array  $options The option list
+     * @param  array|string  $options The option list
      * e.g
      * [
      *     // option    => description
-     *     '-d'         => 'Run the server on daemonize.(default: <comment>false</comment>)',
+     *     '-d'         => 'Run the server on daemon.(default: <comment>false</comment>)',
      *     '-h, --help' => 'Display this help message'
      *     ... ...
      * ]
@@ -451,7 +466,7 @@ class Interact
             self::write("  $border\n");
         }
 
-        unset($data, $panelData);
+        unset($panelData);
     }
 
     /**
@@ -562,14 +577,13 @@ class Interact
         }
 
         echo "\n";
-        unset($data);
     }
 
     /**
      * @param mixed         $messages
      * @param string|null   $type
      * @param string        $style
-     * @param int|boolean   $quit  If is int, settin it is exit code.
+     * @param int|boolean   $quit  If is int, setting it is exit code.
      */
     public static function block($messages, $type = null, $style='default', $quit = false)
     {
@@ -661,7 +675,7 @@ class Interact
      * Write a message to standard output stream.
      * @param  string|array $messages    Output message
      * @param  boolean      $nl          true 会添加换行符 false 原样输出，不添加换行符
-     * @param  int|boolean  $quit        If is int, settin it is exit code.
+     * @param  int|boolean  $quit        If is int, setting it is exit code.
      */
     public static function write($messages, $nl = true, $quit = false)
     {

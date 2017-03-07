@@ -16,6 +16,19 @@ namespace inhere\console;
  */
 class ConsoleHelper
 {
+    /**
+     * from Symfony
+     * @param $string
+     * @return int
+     */
+    public static function strlen($string)
+    {
+        if (false === $encoding = mb_detect_encoding($string, null, true)) {
+            return strlen($string);
+        }
+
+        return mb_strwidth($string, $encoding);
+    }
 
     /**
      * Returns true if STDOUT supports colorization.
@@ -50,6 +63,30 @@ class ConsoleHelper
     public static function isInteractive($fileDescriptor)
     {
         return function_exists('posix_isatty') && @posix_isatty($fileDescriptor);
+    }
+
+    /**
+     * @param $memory
+     * @return string
+     * ```
+     * ConsoleHelper::formatMemory(memory_get_usage(true));
+     * ```
+     */
+    public static function formatMemory($memory)
+    {
+        if ($memory >= 1024 * 1024 * 1024) {
+            return sprintf('%.1f GiB', $memory / 1024 / 1024 / 1024);
+        }
+
+        if ($memory >= 1024 * 1024) {
+            return sprintf('%.1f MiB', $memory / 1024 / 1024);
+        }
+
+        if ($memory >= 1024) {
+            return sprintf('%d KiB', $memory / 1024);
+        }
+
+        return sprintf('%d B', $memory);
     }
 
     /**
