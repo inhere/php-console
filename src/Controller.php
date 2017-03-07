@@ -49,6 +49,11 @@ abstract class Controller
     protected $notFoundCallback = 'notFound';
 
     /**
+     * @var string
+     */
+    private $name = '';
+
+    /**
      * Command constructor.
      * @param Input $input
      * @param Output $output
@@ -165,10 +170,17 @@ abstract class Controller
 
         $keys = array_keys($data);
         $action = trim(array_shift($keys), '- ');
+
+        // convert 'first-second' to 'firstSecond'
+        if ( strpos($action, '-') ) {
+            $action = ucwords(str_replace('-', ' ', $action));
+            $action = str_replace(' ','',lcfirst($action));
+        }
+
         $method = $this->actionSuffix ? $action . ucfirst($this->actionSuffix) : $action;
 
         $ref = new \ReflectionClass($this);
-        $sName = lcfirst($ref->getShortName());
+        $sName = lcfirst($this->name?: $ref->getShortName());
 
         if ( !$ref->hasMethod($method) || !$ref->getMethod($method)->isPublic() ) {
             $this->write("Command [<info>$sName/$action</info>] don't exist or don't allow access in the class.");
@@ -180,7 +192,8 @@ abstract class Controller
 
         foreach ($tags as $tag => $msg) {
             if (!self::$allowTags || in_array($tag, self::$allowTags, true)) {
-                $this->write("<comment>$tag:</comment>\n   <info>$msg</info>");
+                $tag = ucfirst($tag);
+                $this->write("<comment>$tag:</comment>\n   <info>$msg</info>\n");
             }
         }
 
@@ -194,15 +207,15 @@ abstract class Controller
     {
         $ref = new \ReflectionClass($this);
 
-        $name = $ref->getName();
-        $this->write("This is in the console controller [<bold>$name</bold>]\n");
+        $class = $ref->getName();
+        $this->write("This is in the console controller [<bold>$class</bold>]\n");
 
         if ( $desc = $this->parseDocCommentDetail($ref->getDocComment()) ) {
             $this->write("<comment>Description:</comment>\n  $desc\n");
         }
 
         $excludes = ['__construct', 'commands', 'run'];
-        $sName = lcfirst($ref->getShortName());
+        $sName = lcfirst($this->name?: $ref->getShortName());
         $this->write('<comment>Commands:</comment>');
         $this->write('  <bold>command   |   command description</bold>');
 
@@ -230,6 +243,22 @@ abstract class Controller
         }
 
         $this->write("\n<comment>For more information please use </comment><info>$sName/help [command]</info>");
+    }
+
+    /**
+     * @param string $name
+     */
+    public function setName($name)
+    {
+        $this->name = $name;
+    }
+
+    /**
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->name;
     }
 
     /*

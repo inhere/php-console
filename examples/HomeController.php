@@ -1,7 +1,5 @@
 <?php
 
-namespace inhere\console\examples;
-
 use inhere\console\Controller;
 use inhere\console\utils\Interact;
 
@@ -14,7 +12,8 @@ class HomeController extends Controller
      * this is a command's description message
      * the second line text
      * @usage usage message
-     * @example example text
+     * @example example text one
+     *  the second line example
      */
     public function indexCommand()
     {
@@ -28,7 +27,7 @@ class HomeController extends Controller
     public function outColorCommand()
     {
         if ( !$this->output->supportColor() ) {
-            $this->write('Current terminal is not support output color text.');
+            $this->write('Sorry, Current terminal is not support output color text.');
 
             return 0;
         }
@@ -40,7 +39,9 @@ class HomeController extends Controller
             $this->output->write("<$style>$style style text</$style>");
         }
 
-        $this->output->block('message text');
+        $this->output->block('block message text');
+        $this->output->warning('block message text');
+        $this->output->primary('block message text');
 
         return 0;
     }

@@ -8,14 +8,14 @@ defined('STDERR') or define('STDERR', fopen('php://stderr', 'wb'));
 
 define('PROJECT_PATH', dirname(__DIR__));
 
-require dirname(__DIR__) . '../../autoload.php';
+require dirname(__DIR__) . '/../../autoload.php';
 
 // create app instance
 $app = new \inhere\console\App();
 
 // require dirname(__DIR__) . '/boot/cli-services.php';
 
-require dirname(__DIR__) . '/cli-routes.php';
+require __DIR__ . '/cli-routes.php';
 
 // run
 $app->run();

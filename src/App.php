@@ -211,7 +211,7 @@ class App
         if ( isset($this->commands[$name]) ) {
             $handler = $this->commands[$name];
 
-            return $this->executeCommand($handler);
+            return $this->executeCommand($handler, $name);
         }
 
         // is a controller name
@@ -226,7 +226,7 @@ class App
         if ( isset($this->controllers[$name]) ) {
             $controller = $this->controllers[$name];
 
-            return $this->runAction($controller, $action);
+            return $this->runAction($controller, $name, $action);
         }
 
         if ( $cb = self::$eventHandlers[self::EVT_NOT_FOUND] ) {
@@ -240,10 +240,11 @@ class App
     }
 
     /**
-     * @param $handler
+     * @param string $handler Command class
+     * @param string $name   Command name
      * @return mixed
      */
-    protected function executeCommand($handler)
+    protected function executeCommand($handler, $name)
     {
         if ( is_object($handler) && ($handler instanceof \Closure) ) {
             $status = $handler($this->input, $this->output);
@@ -252,7 +253,9 @@ class App
                 throw new \InvalidArgumentException("The console command class [$handler] not exists!");
             }
 
-            $object = new $handler;
+            /** @var Command $object */
+            $object = new $handler($this->input, $this->output);
+            $object->setName($name);
 
             if ( !($object instanceof Command ) ) {
                 throw new \InvalidArgumentException("The console command class [$handler] must instanceof the " . Command::class);
@@ -265,17 +268,20 @@ class App
     }
 
     /**
-     * @param $controller
-     * @param $action
+     * @param string $controller Controller class
+     * @param string $name       Controller name
+     * @param string $action
      * @return mixed
      */
-    protected function runAction($controller, $action)
+    protected function runAction($controller, $name, $action)
     {
-        if ( class_exists($controller, false) ) {
+        if ( !class_exists($controller, false) ) {
             throw new \InvalidArgumentException("The console controller class [$controller] not exists!");
         }
 
-        $object = new $controller;
+        /** @var Controller $object */
+        $object = new $controller($this->input, $this->output);
+        $object->setName($name);
 
         if ( !($object instanceof Controller ) ) {
             throw new \InvalidArgumentException("The console controller class [$object] must instanceof the " . Controller::class);
@@ -324,12 +330,13 @@ class App
             $this->output->write(<<<EOF
  <comment>Usage:</comment>
     $script [route|command] [arg1=value1 arg2=value ...]
+    
  <comment>Example:</comment>
     $script test
     $script home/index
     $script home/help  Run this command can get more help info.
 
- <warning>Notice: 'home/index' don't write '/home/index'</warning>\n
+ <warning>Notice: 'home/index' don't write '/home/index'</warning>
 EOF
     , 1, 0);
         }

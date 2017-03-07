@@ -8,9 +8,12 @@
  * @var inhere\console\App $app
  */
 
+require 'TestCommand.php';
+require 'HomeController.php';
+
 $app->command('test',function($in, \inhere\console\io\Output $out){
     $out->info('hello, this is a test.');
 });
 
-$app->command('test1', \inhere\console\examples\TestCommand::class);
-$app->controller('home', \inhere\console\examples\HomeController::class);
+$app->command('test1', TestCommand::class);
+$app->controller('home', HomeController::class);

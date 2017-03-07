@@ -68,9 +68,9 @@ $output->write($message);
 
 #### use color style 
 
-![alt text](images/new-color-style-list.png "Title")
+![alt text](images/output-color-text.jpg "Title")
 
-#### specil format  
+#### special format  
 
 - `$output->title()`
 - `$output->section()`

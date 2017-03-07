@@ -8,6 +8,7 @@
 
 namespace inhere\console\io;
 
+use inhere\console\ConsoleHelper;
 use inhere\console\utils\Color;
 use inhere\console\utils\Interact;
 

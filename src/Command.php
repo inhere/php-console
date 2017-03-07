@@ -17,18 +17,6 @@ use inhere\console\io\Output;
  */
 abstract class Command
 {
-    // command name e.g 'test' 'test:one'
-    const NAME = '';
-
-    // command description message
-    const DESCRIPTION = '';
-
-    // command usage message
-    const USAGE       = '';
-
-    // command example message
-    const EXAMPLE     = '';
-
     /**
      * @var Input
      */
@@ -44,6 +32,21 @@ abstract class Command
      * @var array
      */
     protected $allowTags = ['description', 'usage', 'example'];
+
+    /**
+     * command name e.g 'test' 'test:one'
+     * @var string
+     */
+    private $name = '';
+
+    // command description message
+    const DESCRIPTION = '';
+
+    // command usage message
+    const USAGE       = '';
+
+    // command example message
+    const EXAMPLE     = '';
 
     /**
      * Command constructor.
@@ -82,4 +85,19 @@ abstract class Command
         $this->output->write($message, $nl, $quit);
     }
 
+    /**
+     * @param string $name
+     */
+    public function setName($name)
+    {
+        $this->name = $name;
+    }
+
+    /**
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
 }
