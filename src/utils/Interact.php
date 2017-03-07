@@ -47,47 +47,34 @@ class Interact
             self::error('Please provide a description text!', 1);
         }
 
-        self::write("  <comment>$description</comment>");
-
-        $keys = [];
-        $optStr = '';
         $options = is_array($options) ? $options : explode(',', $options);
 
         // If default option is error
-        if ( null === $default && !isset($options[$default]) ) {
+        if ( null !== $default && !isset($options[$default]) ) {
             self::error("The default option [{$default}] don't exists.", true);
         }
 
-        foreach ($options as $key => $value) {
-            $keys[] = $key;
-            $optStr .= "\n    <info>$key</info>) $value";
+        if ($allowExit) {
+            $options['q'] = "quit";
         }
 
-        if ($allowExit) {
-            $keys[] = 'q';
-            $optStr .= "\n    q) quit";
+        beginChoice:
+        $text = " <comment>$description</comment>";
+        foreach ($options as $key => $value) {
+            $text .= "\n  <info>$key</info>) $value";
         }
 
         $defaultText = $default ? "[default:<comment>{$default}</comment>]" : '';
-        $r = self::read($optStr . "\n  You choice{$defaultText} : ");
+        $r = self::read($text . "\n You choice{$defaultText} : ");
 
         // error, allow try again once.
-        if ( !in_array($r, $keys) ) {
-            $r = self::read("Warning! Option <info>$r</info>) don't exists! Please entry again! : ");
+        if ( !array_key_exists($r, $options) ) {
+            goto beginChoice;
         }
 
         // exit
         if ( $r === 'q' ) {
             self::write("\n  Quit,ByeBye.", true, true);
-        }
-
-        // error
-        if ( !in_array($r, $keys) ) {
-            if ( null === $default ) {
-                self::write("\n  Select error. Quit,ByeBye.", true, true);
-            }
-
-            $r = $default;
         }
 
         return $r;
@@ -105,13 +92,28 @@ class Interact
             self::error('Please provide a question text!', 1);
         }
 
-        $question = ucfirst($question);
-        $defaultText = (bool)$default ? 'yes' : 'no';
-
+        $question = ucfirst(trim($question, '?'));
+        $default = (bool)$default;
+        $defaultText = $default ? 'yes' : 'no';
         $message = " <comment>$question ?</comment>\n Please confirm (yes|no) [default:<info>$defaultText</info>]: ";
-        $answer = self::read($message);
 
-        return $answer ? !strncasecmp($answer, 'y', 1) : (bool)$default;
+        while (true) {
+            $answer = self::read($message);
+
+            if ( empty($answer) ) {
+                return $default;
+            }
+
+            if ( !strncasecmp($answer, 'y', 1) ) {
+                return true;
+            }
+
+            if ( !strncasecmp($answer, 'n', 1) ) {
+                return false;
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -251,6 +253,11 @@ class Interact
         }
 
         return $answer;
+    }
+
+    public static function progressBar()
+    {
+
     }
 
 /////////////////////////////////////////////////////////////////

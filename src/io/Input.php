@@ -82,7 +82,7 @@ class Input
 
     /**
      * @param $key
-     * @param bool $default
+     * @param int $default
      * @return bool
      */
     public function getInt($key, $default = 0)

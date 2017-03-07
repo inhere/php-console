@@ -4,7 +4,7 @@ use inhere\console\Controller;
 use inhere\console\utils\Interact;
 
 /**
- * default command controller
+ * default command controller. there are some command usage examples
  */
 class HomeController extends Controller
 {
@@ -56,11 +56,27 @@ class HomeController extends Controller
         var_dump($this->input->get());
     }
 
-    public function testCommand()
+    /**
+     * use Interact::confirm method
+     *
+     */
+    public function confirmCommand()
     {
-        $this->output->write('test <info>info</info> <success>info</success>');
+        $a = Interact::confirm('continue');
 
-        print_r($_SERVER);
+        $this->write('you answer is: ' . ($a ? 'yes' : 'no') );
+    }
+
+    /**
+     * use <default>Interact::select</default> method
+     *
+     */
+    public function selectCommand()
+    {
+        $opts = ['john','simon','rose'];
+        $a = Interact::select('you name is', $opts);
+
+        $this->write('you answer is: ' . $opts[$a] );
     }
 
     /**
