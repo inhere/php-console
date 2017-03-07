@@ -53,7 +53,7 @@ class Interact
         $optStr = '';
         $options = is_array($options) ? $options : explode(',', $options);
 
-        // If defaut option is error
+        // If default option is error
         if ( null === $default && !isset($options[$default]) ) {
             self::error("The default option [{$default}] don't exists.", true);
         }

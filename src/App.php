@@ -249,7 +249,7 @@ class App
         if ( is_object($handler) && ($handler instanceof \Closure) ) {
             $status = $handler($this->input, $this->output);
         } else {
-            if ( class_exists($handler, false) ) {
+            if ( !class_exists($handler, false) ) {
                 throw new \InvalidArgumentException("The console command class [$handler] not exists!");
             }
 

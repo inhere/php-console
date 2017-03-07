@@ -82,7 +82,7 @@ $output->write($message);
 
 ## more interactive
 
-in the class `inhere\librarys\console\Interact`
+in the class `inhere\console\utils\Interact`
 
 interactive method:
 
@@ -97,7 +97,7 @@ choice($description, $options, $default = null, $allowExit=true)
 
 - example 1:
 
- only value, no setting option
+ only values, no setting option
 
 ```
 $select = Interact::select('Your city is ?', [
@@ -108,12 +108,12 @@ $select = Interact::select('Your city is ?', [
 
 output in terminal:
 ```
-Your city is? 
+Your city is ? 
   0) chengdu
   1) beijing
   2) shanghai
   q) Quit // quit option. is auto add. can setting it by 4th argument.
-You choice: chengdu
+You choice: 0
 ```
 
 ```
@@ -140,7 +140,7 @@ Your city is?
   b) beijing
   c) shanghai
   q) Quit // quit option. is auto add. can setting it by 4th argument.
-You choice[default:a] : beijing
+You choice[default:a] : b
 ```
 
 ```
@@ -148,6 +148,32 @@ echo $select; // 'b'
 ```
 
 ### `Interact::confirm()`
+
+```
+confirm(string $question, bool $default = true) bool
+```
+
+usage:
+
+
+```
+$result = Interact::confirm('Whether you want to continue ?');
+
+```
+
+output in terminal:
+
+```
+Whether you want to continue ?
+Please confirm (yes|no) [default:yes]: n
+```
+
+result: 
+
+```
+var_dump($result); // bool(false)
+```
+
 
 ### `Interact::question()`
 

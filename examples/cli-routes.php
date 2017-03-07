@@ -11,9 +11,9 @@
 require 'TestCommand.php';
 require 'HomeController.php';
 
-$app->command('test',function($in, \inhere\console\io\Output $out){
+$app->command('demo',function($in, \inhere\console\io\Output $out){
     $out->info('hello, this is a test.');
 });
 
-$app->command('test1', TestCommand::class);
+$app->command('test', TestCommand::class);
 $app->controller('home', HomeController::class);

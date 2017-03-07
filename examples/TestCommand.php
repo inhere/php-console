@@ -17,5 +17,7 @@ class TestCommand extends Command
     public function execute()
     {
         $this->output->write('hello, this in ' . __METHOD__);
+
+        $this->output->panel($_SERVER, 'Server information', '');
     }
 }
