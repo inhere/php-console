@@ -36,7 +36,7 @@ class ProgressBar
     private $max;
     private $stepWidth;
 
-    private $format;
+    private $format ='{bar} {percent}({complete}/{total})';
 
     /**
      * @param Output $output
@@ -89,7 +89,9 @@ class ProgressBar
 
     protected function display()
     {
+        return preg_replace_callback('/({[\w_]+})/', function($matched) {
 
+        }, $this->format);
     }
 
     /**
@@ -103,6 +105,30 @@ class ProgressBar
     }
 
     /**
+     * @return int
+     */
+    public function getBarWidth()
+    {
+        return $this->barWidth;
+    }
+
+    /**
+     * @param int $barWidth
+     */
+    public function setBarWidth($barWidth)
+    {
+        $this->barWidth = $barWidth;
+    }
+
+    /**
+     * @param mixed $completeChar
+     */
+    public function setCompleteChar($completeChar)
+    {
+        $this->completeChar = $completeChar;
+    }
+
+    /**
      * Gets the complete bar character.
      * @return string A character
      */
@@ -113,6 +139,54 @@ class ProgressBar
         }
 
         return $this->completeChar;
+    }
+
+    /**
+     * @return string
+     */
+    public function getProgressChar()
+    {
+        return $this->progressChar;
+    }
+
+    /**
+     * @param string $progressChar
+     */
+    public function setProgressChar($progressChar)
+    {
+        $this->progressChar = $progressChar;
+    }
+
+    /**
+     * @return string
+     */
+    public function getRemainingChar()
+    {
+        return $this->remainingChar;
+    }
+
+    /**
+     * @param string $remainingChar
+     */
+    public function setRemainingChar($remainingChar)
+    {
+        $this->remainingChar = $remainingChar;
+    }
+
+    /**
+     * @return string
+     */
+    public function getFormat()
+    {
+        return $this->format;
+    }
+
+    /**
+     * @param string $format
+     */
+    public function setFormat($format)
+    {
+        $this->format = $format;
     }
 
 }

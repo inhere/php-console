@@ -16,6 +16,11 @@ namespace inhere\console;
  */
 class ConsoleHelper
 {
+    public static function stripAnsiCode($string)
+    {
+        return preg_replace('/\033\[[\d;?]*\w/', '', $string);
+    }
+
     /**
      * from Symfony
      * @param $string
@@ -44,7 +49,7 @@ class ConsoleHelper
                 || false !== getenv('ANSICON')
                 || 'ON' === getenv('ConEmuANSI')
                 || 'xterm' === getenv('TERM')
-//                || 'cygwin' === getenv('TERM')
+               // || 'cygwin' === getenv('TERM')
                 ;
         }
 
@@ -174,5 +179,98 @@ class ConsoleHelper
         }
 
         return $text;
+    }
+
+    // next: form yii2
+
+    /**
+     * Returns true if the console is running on windows
+     * @return boolean
+     */
+    public static function isOnWindows()
+    {
+        return DIRECTORY_SEPARATOR === '\\';
+    }
+
+    /**
+     * Usage: list($width, $height) = ConsoleHelper::getScreenSize();
+     *
+     * @param boolean $refresh whether to force checking and not re-use cached size value.
+     * This is useful to detect changing window size while the application is running but may
+     * not get up to date values on every terminal.
+     * @return array|boolean An array of ($width, $height) or false when it was not able to determine size.
+     */
+    public static function getScreenSize($refresh = false)
+    {
+        static $size;
+        if ($size !== null && !$refresh) {
+            return $size;
+        }
+
+        if (static::isOnWindows()) {
+            $output = [];
+            exec('mode con', $output);
+            if (isset($output, $output[1]) && strpos($output[1], 'CON') !== false) {
+                return $size = [(int) preg_replace('~\D~', '', $output[3]), (int) preg_replace('~\D~', '', $output[4])];
+            }
+        } else {
+            // try stty if available
+            $stty = [];
+            if (exec('stty -a 2>&1', $stty) && preg_match('/rows\s+(\d+);\s*columns\s+(\d+);/mi', implode(' ', $stty), $matches)) {
+                return $size = [$matches[2], $matches[1]];
+            }
+
+            // fallback to tput, which may not be updated on terminal resize
+            if (($width = (int) exec('tput cols 2>&1')) > 0 && ($height = (int) exec('tput lines 2>&1')) > 0) {
+                return $size = [$width, $height];
+            }
+
+            // fallback to ENV variables, which may not be updated on terminal resize
+            if (($width = (int) getenv('COLUMNS')) > 0 && ($height = (int) getenv('LINES')) > 0) {
+                return $size = [$width, $height];
+            }
+        }
+
+        return $size = false;
+    }
+
+    /**
+     * Word wrap text with indentation to fit the screen size
+     *
+     * If screen size could not be detected, or the indentation is greater than the screen size, the text will not be wrapped.
+     *
+     * The first line will **not** be indented, so `Console::wrapText("Lorem ipsum dolor sit amet.", 4)` will result in the
+     * following output, given the screen width is 16 characters:
+     *
+     * ```
+     * Lorem ipsum
+     *     dolor sit
+     *     amet.
+     * ```
+     *
+     * @param string $text the text to be wrapped
+     * @param integer $indent number of spaces to use for indentation.
+     * @param boolean $refresh whether to force refresh of screen size.
+     * This will be passed to [[getScreenSize()]].
+     * @return string the wrapped text.
+     * @since 2.0.4
+     */
+    public static function wrapText($text, $indent = 0, $refresh = false)
+    {
+        $size = static::getScreenSize($refresh);
+        if ($size === false || $size[0] <= $indent) {
+            return $text;
+        }
+        $pad = str_repeat(' ', $indent);
+        $lines = explode("\n", wordwrap($text, $size[0] - $indent, "\n", true));
+        $first = true;
+        foreach ($lines as $i => $line) {
+            if ($first) {
+                $first = false;
+                continue;
+            }
+            $lines[$i] = $pad . $line;
+        }
+        return implode("\n", $lines);
     }
 }

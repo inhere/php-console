@@ -679,9 +679,9 @@ class Interact
      */
     public static function write($messages, $nl = true, $quit = false)
     {
-        // if ( is_array($messages) ) {
-        //     $messages = implode( $nl ? PHP_EOL : '', $messages );
-        // }
+        if ( is_array($messages) ) {
+            $messages = implode( $nl ? PHP_EOL : '', $messages );
+        }
 
         $messages = static::getColor()->format($messages);
 
