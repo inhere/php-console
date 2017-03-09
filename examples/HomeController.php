@@ -19,7 +19,7 @@ class HomeController extends Controller
      */
     public function indexCommand()
     {
-        $this->write("hello, welcome!! this is " . __METHOD__);
+        $this->write('hello, welcome!! this is ' . __METHOD__);
     }
 
     /**
@@ -50,12 +50,19 @@ class HomeController extends Controller
 
     /**
      * a example for use arguments on command
-     * @usage home/useArgs [arg1=val1 arg2=arg2]
-     * @example ./bin/app home/useArgs name=test status=2
+     * @usage home/useArgs [arg1=val1 arg2=arg2] [options]
+     * @example ./bin/app home/useArgs status=2 name=john city -s=test --page=23 -d -rf --debug --test=false
      */
-    public function useArgsCommand()
+    public function useArgCommand()
     {
+        $this->write('input arguments:');
         var_dump($this->input->get());
+
+        $this->write('input options:');
+        var_dump($this->input->getOpts());
+
+        $this->write('input object:');
+        var_dump($this->input);
     }
 
     /**

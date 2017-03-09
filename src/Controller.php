@@ -17,7 +17,8 @@ use inhere\console\io\Output;
  */
 abstract class Controller
 {
-    const DESCRIPTION = 'A console controller';
+    // please use the const setting current controller description
+    const DESCRIPTION = '';
 
     /**
      * @var Input
@@ -74,6 +75,9 @@ abstract class Controller
      */
     public function run($action = '')
     {
+        // $this->input->getBool('h') || $this->input->getBool('help');
+
+
         $result = '';
         $action = $action?: $this->defaultAction;
 
@@ -165,12 +169,12 @@ abstract class Controller
      */
     final public function helpCommand()
     {
-        if (!$data = $this->input->get()) {
+        if (!$args = $this->input->get()) {
             $this->commands();
             return 0;
         }
 
-        $keys = array_keys($data);
+        $keys = array_keys($args);
         $action = trim(array_shift($keys), '- ');
 
         // convert 'first-second' to 'firstSecond'
@@ -212,7 +216,7 @@ abstract class Controller
         $class = $ref->getName();
         $this->write("This is in the console controller [<bold>$class</bold>]\n");
 
-        if ( $desc = $this->parseDocCommentDetail($ref->getDocComment()) ) {
+        if ( ($desc = static::DESCRIPTION) || ($desc = $this->parseDocCommentDetail($ref->getDocComment())) ) {
             $this->write("<comment>Description:</comment>\n  $desc\n");
         }
 

@@ -11,9 +11,6 @@ namespace inhere\console\io;
 /**
  * Class Input
  * @package inhere\console\io
- * e.g:
- *     ./bin/app image/packTask name=john -d -s=test --debug=true
- *     php bin/cli.php start name=john -d -s=test --debug=true
  */
 class Input
 {
@@ -26,7 +23,13 @@ class Input
      * Input data
      * @var array
      */
-    protected $data = [];
+    protected $args = [];
+
+    /**
+     * Input data
+     * @var array
+     */
+    protected $opts = [];
 
     /**
      * the script name
@@ -42,10 +45,10 @@ class Input
      */
     public static $command = '';
 
-    public function __construct($parseArgv = true, $fixServer = false, $fillToGlobal = false)
+    public function __construct($parseArgv = true, $fillToGlobal = false)
     {
         if ($parseArgv) {
-            $this->data = self::parseGlobalArgv($fixServer, $fillToGlobal);
+            list($this->args, $this->opts) = self::parseGlobalArgv($fillToGlobal);
         }
     }
 
@@ -60,48 +63,6 @@ class Input
         fwrite(STDOUT, $message . ($nl ? "\n" : ''));
 
         return trim(fgets($this->inputStream));
-    }
-
-    /**
-     * @param null|string $name
-     * @param mixed $default
-     * @return mixed
-     */
-    public function get($name=null, $default = null)
-    {
-        if (null === $name) {
-            return $this->data;
-        }
-
-        return isset($this->data[$name]) ? $this->data[$name] : $default;
-    }
-    public function getOption($name=null, $default = null)
-    {
-        return $this->get($name, $default);
-    }
-
-    /**
-     * @param $key
-     * @param int $default
-     * @return bool
-     */
-    public function getInt($key, $default = 0)
-    {
-        $value = $this->get($key);
-
-        return $value === null ? (int)$default : (int)$value;
-    }
-
-    /**
-     * @param $key
-     * @param bool $default
-     * @return bool
-     */
-    public function getBool($key, $default = false)
-    {
-        $value = $this->get($key);
-
-        return $value === null ? (bool)$default : !in_array($value, ['0', 0, 'false', false], true);
     }
 
     /**
@@ -129,11 +90,104 @@ class Input
     }
 
     /**
-     * @return string
+     * @return array
      */
-    public function getData()
+    public function getArgs()
     {
-        return $this->data;
+        return $this->args;
+    }
+
+    /**
+     * @param null|string $name
+     * @param mixed $default
+     * @return mixed
+     */
+    public function getArg($name=null, $default = null)
+    {
+        return $this->get($name, $default);
+    }
+    public function get($name=null, $default = null)
+    {
+        if (null === $name) {
+            return $this->args;
+        }
+
+        return isset($this->args[$name]) ? $this->args[$name] : $default;
+    }
+
+    /**
+     * @param $key
+     * @param int $default
+     * @return bool
+     */
+    public function getInt($key, $default = 0)
+    {
+        $value = $this->get($key);
+
+        return $value === null ? (int)$default : (int)$value;
+    }
+
+    /**
+     * @return array
+     */
+    public function getOpts()
+    {
+        return $this->opts;
+    }
+
+    /**
+     * @param $name
+     * @param null $default
+     * @return bool|mixed|null
+     */
+    public function getOpt($name, $default = null)
+    {
+        if ( !$this->hasOpt($name) ) {
+            return $default;
+        }
+
+        $value = $this->opts[$name];
+
+        // check it is a bool value.
+        $tmp = strtolower($value);
+
+        if ( 'false' === $tmp ) {
+            return false;
+        }
+
+        if ( 'true' === $tmp ) {
+            return false;
+        }
+
+        return $value;
+    }
+
+    /**
+     * @param $name
+     * @return bool
+     */
+    public function hasOpt($name)
+    {
+        return isset($this->opts[$name]);
+    }
+
+    /**
+     * @param $key
+     * @return bool
+     */
+    public function getBool($key)
+    {
+        return $this->getBoolOpt($key);
+    }
+    public function getBoolOpt($key)
+    {
+        if ( !$this->hasOpt($key) ) {
+            return false;
+        }
+
+        $value = $this->opts[$key];
+
+        return !in_array(strtolower($value), ['0', 'false'], true);
     }
 
     /**
@@ -145,64 +199,103 @@ class Input
     }
 
     /**
-     * @param bool $fixServer
      * @param bool $fillToGlobal
      * @return array
      */
-    public static function parseGlobalArgv($fixServer = false, $fillToGlobal = false)
+    public static function parseGlobalArgv($fillToGlobal = false)
     {
-        // ./bin/app image/packTask start name=john -d -s=test --debug=true
-        // php bin/cli.php image/packTask start name=john -d -s=test --debug=true
+        // eg: `./bin/app image/packTask name=john city -s=test --page=23 -d -rf --debug`
+        // eg: `php cli.php image/packTask name=john city -s=test --page=23 -d -rf --debug`
         global $argv;
-        $args = $argv;
+        $tmp = $argv;
 
-        self::$scriptName = array_shift($args);
-
-        if ($fixServer) {
-            // fixed: '/home' is not equals to '/home/'
-            if (isset($_SERVER['REQUEST_URI'])) {
-                $_SERVER['REQUEST_URI'] = rtrim($_SERVER['REQUEST_URI'],'/ ');
-            }
-
-            // fixed: PHP_SELF = 'index.php', it is should be '/index.php'
-            if (isset($_SERVER['PHP_SELF'])) {
-                $_SERVER['PHP_SELF'] = '/' . ltrim($_SERVER['PHP_SELF'],'/ ');
-            }
-
-
-            // $_SERVER['PHP_SELF'] = self::$scriptName;
-            $_SERVER['SERVER_PROTOCOL'] = 'HTTP/1.1';
-            $_SERVER['REQUEST_METHOD'] = 'GET';
-            $_SERVER['REQUEST_URI'] = '/';
-        }
+        self::$scriptName = array_shift($tmp);
 
         // collect command
-        if ( isset($args[0]) && $args[0]{0} !== '-' && strpos($args[0], '=') === false ) {
-            self::$command = trim(array_shift($args), '/');
-
-            if ($fixServer) {
-                $_SERVER['REQUEST_URI'] .= self::$command;
-            }
+        if ( isset($tmp[0]) && $tmp[0]{0} !== '-' && (false === strpos($tmp[0], '=')) ) {
+            self::$command = trim(array_shift($tmp), '/');
         }
 
-        $data = [];
+        $args = $opts = [];
 
         // parse query params
-        // ./bin/app image/packTask start name=john -d -s=test --debug=true
+        // `./bin/app image/packTask start name=john city -s=test --page=23 -d -rf --debug`
         // parse to
-        // ./bin/app image/packTask?start&name=john&d&s=test&debug=true
-        if ($args) {
-            $args = array_map(function($val){
-                return trim($val,'- ');
-            }, $args);
+        // $args = [ 'name' => 'john', 0 => 'city' ];
+        // $opts = [ 'd' => true, 'f' => true, 'r' => true, 's' => 'test', 'debug' => true ]
+        if ($tmp) {
+            foreach ($tmp as $item) {
+                // is a option
+                if ( $item{0} === '-' ) {
+                    static::parseOption($item, $opts);
 
-            parse_str(implode('&',$args), $data);
+                // is a argument
+                } else {
+                    $item = trim($item,'= ');
+
+                    // eg: `name=john`
+                    if ( strpos($item, '=') ) {
+                        list($name, $val) =  explode('=', $item);
+                        $args[$name] = $val;
+
+                    // only value. eg: `city`
+                    } else {
+                        $args[] = $item;
+                    }
+                }
+            }
 
             if ($fillToGlobal) {
-                $_REQUEST = $_GET = $data;
+                $_REQUEST = $_GET = $args;
             }
         }
 
-        return $data;
+        return [$args, $opts];
+    }
+
+    /**
+     * will parse option, like:
+     *
+     * ```
+     * -s=test --page=23 -d -rf --debug
+     * ```
+     *
+     * to:
+     *
+     * ```
+     * $opts = [
+     *  'd' => true,
+     *  'f' => true,
+     *  'r' => true,
+     *  's' => 'test',
+     *  'debug' => true
+     * ]
+     * ```
+     * @param $item
+     * @param $opts
+     */
+    protected static function parseOption($item, &$opts)
+    {
+        // is a have value option. eg: `-s=test --page=23`
+        if ( strpos($item, '=') ) {
+            $item = trim($item,'-= ');
+            list($name, $val) = explode('=', $item);
+            $opts[$name] = $val;
+
+        // is a no value option
+        } else {
+            // is a short option. eg: `-d -rf`
+            if ($item{1} !== '-') {
+                $item = trim($item,'-');
+                foreach (str_split($item) as $char) {
+                    $opts[$char] = true;
+                }
+
+            // is a long option. eg: `--debug`
+            } else {
+                $item = trim($item,'-');
+                $opts[$item] = true;
+            }
+        }
     }
 }

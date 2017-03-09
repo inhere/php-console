@@ -8,76 +8,12 @@
 
 namespace inhere\console;
 
-
-use inhere\console\io\Input;
-use inhere\console\io\Output;
-
 /**
  * Class App
  * @package inhere\console
- *
  */
 class App extends AbstractApp
 {
-    /**
-     * app config
-     * @var array
-     */
-    protected static $config = [
-        'env' => 'pdt', // dev test pdt
-        'debug' => false,
-        'charset' => 'UTF-8',
-        'timeZone' => 'Asia/Shanghai',
-        'version' => '0.5.1',
-    ];
-
-    /**
-     * @var array
-     */
-    protected $builtInCommands = [
-        'help', 'list'
-    ];
-
-    /**
-     * @var Input
-     */
-    public $input;
-
-    /**
-     * @var Output
-     */
-    public $output;
-
-    /**
-     * @var array
-     */
-    protected $controllers = [];
-
-    /**
-     * @var array
-     */
-    protected $commands = [];
-
-    /**
-     * App constructor.
-     * @param array $config
-     * @param Input $input
-     * @param Output $output
-     */
-    public function __construct(array $config = [], Input $input = null, Output $output = null)
-    {
-        self::$config = array_merge(self::$config, $config);
-        $this->input = $input ?: new Input();
-        $this->output = $output ?: new Output();
-
-        $this->init();
-
-        // call 'onAppInit' service, if it is registered.
-        if ( $cb = self::$eventHandlers[self::EVT_APP_INIT] ) {
-            $cb($this);
-        }
-    }
-
     /**********************************************************
      * app run
      **********************************************************/
@@ -90,58 +26,11 @@ class App extends AbstractApp
         try {
             $status = $this->dispatch();
         } catch (\Exception $e) {
-            $status = $e->getCode();
+            $status = - $e->getCode();
             $this->dispatchExHandler($e);
         }
 
         return $status;
-    }
-
-
-    /**********************************************************
-     * register console controller/command
-     **********************************************************/
-
-    /**
-     * register a app console controller
-     * @param string $name the service name
-     * @param string $controller controller class
-     * @return static
-     */
-    public function controller($name, $controller)
-    {
-        if (!$controller) {
-            throw new \InvalidArgumentException('Parameters are not allowed to is empty!');
-        }
-
-        if ( isset($this->builtInCommands[$name]) ) {
-            throw new \InvalidArgumentException("The controller name [$name] is not allowed. It is a built in command.");
-        }
-
-        $this->controllers[$name] = $controller;
-
-        return $this;
-    }
-
-    /**
-     * @param string $name
-     * @param string|array $class
-     * @return $this
-     */
-    public function command($name, $class)
-    {
-        if (!$class) {
-            throw new \InvalidArgumentException('Parameters are not allowed to is empty!');
-        }
-
-        if ( isset($this->builtInCommands[$name]) ) {
-            throw new \InvalidArgumentException("The command name [$name] is not allowed. It is a built in command.");
-        }
-
-        // is an class name string
-        $this->commands[$name] = $class;
-
-        return $this;
     }
 
     /**********************************************************
@@ -178,11 +67,12 @@ class App extends AbstractApp
             return $this->runAction($name, $action, true);
         }
 
-        if ( $cb = self::$eventHandlers[self::EVT_NOT_FOUND] ) {
+        if ( $cb = self::$hooks[self::ON_NOT_FOUND] ) {
             $cb($command, $this);
         } else {
             // not match, output error message
             $this->output->error("Console Controller or Command [$command] not exists!");
+            $this->showCommandList(false);
         }
 
         return 404;
@@ -241,15 +131,11 @@ class App extends AbstractApp
         // Controller class
         $controller = $this->controllers[$name];
 
-        if ( !class_exists($controller, false) ) {
-            throw new \InvalidArgumentException("The console controller class [$controller] not exists!");
-        }
-
         /** @var Controller $object */
         $object = new $controller($this->input, $this->output);
         $object->setName($name);
 
-        if ( !($object instanceof Controller ) ) {
+        if ( !($object instanceof Controller) ) {
             throw new \InvalidArgumentException("The console controller class [$object] must instanceof the " . Controller::class);
         }
 
@@ -266,7 +152,7 @@ class App extends AbstractApp
         // $this->logger->ex($e);
 
         // open debug, throw exception
-        if ( self::$config['debug'] ) {
+        if ( $this->isDebug() ) {
             throw $e;
         }
 
@@ -279,28 +165,32 @@ class App extends AbstractApp
      */
     protected function filterSpecialCommand($command)
     {
-
-        // show help `./bin/app` OR `./bin/app -h` OR `./bin/app --help`
-        $showHelp = !$command || $this->input->getBool('h') || $this->input->getBool('help');
+        // show help `./bin/app` OR `./bin/app help`
+        $showHelp = !$command || $command === 'help';
 
         if ($showHelp) {
-            $this->output->write($this->appHelp());
-            $this->stop();
+            $this->showHelpInfo(false);
+            $this->showCommandList();
         }
 
         switch ($command) {
             case 'list':
-                $this->appCommandList();
-                $this->stop();
+                $this->showCommandList();
+                break;
+            case 'version':
+                $this->showVersionInfo();
                 break;
         }
     }
 
-    protected function appHelp()
+    /**
+     * show the application help information
+     * @param bool $quit
+     */
+    public function showHelpInfo($quit = true)
     {
         $script = $this->input->getScriptName();
-
-        return <<<EOF
+        $message = <<<EOF
  <comment>Usage:</comment>
     $script [route|command] [arg1=value1 arg2=value ...] [-v|-h ...]
     
@@ -308,33 +198,62 @@ class App extends AbstractApp
     $script test
     $script home/index
     $script home/help  Run this command can get more help info.
+
 EOF;
+        $this->output->write($message);
+        $quit && $this->stop();
     }
 
-    protected function appVersionInfo()
-    {}
-
-    protected function appCommandList()
+    /**
+     * show the application version information
+     * @param bool $quit
+     */
+    public function showVersionInfo($quit = true)
     {
-        // all console controllers
-        $controllers = '';
+        $version = $this->config('version', 'Unknown');
+        $phpVersion = PHP_VERSION;
+        $os = PHP_OS;
 
+        $message = <<<EOF
+ Console App Version <comment>$version</comment>
+ 
+ <comment>System:</comment>
+    PHP  <info>$phpVersion</info>
+    OS   <info>$os</info>
+EOF;
+        $this->output->write($message);
+        $quit && $this->stop();
+    }
+
+    /**
+     * show the application command list information
+     * @param bool $quit
+     */
+    public function showCommandList($quit = true)
+    {
+        $script = $this->input->getScriptName();
+        $internal = $controllers = $commands = '';
+
+        // built in commands
+        foreach ($this->internalCommands as $command => $desc) {
+            $internal .= "    <info>$command</info>  $desc\n";
+        }
+
+        // all console controllers
         foreach ($this->controllers as $name => $controller) {
-            $desc = $controller::DESCRIPTION ? : $controller;
+            $desc = $controller::DESCRIPTION ? : 'No description';
 
             $controllers .= "    <info>$name</info>  $desc\n";
         }
 
         // all independent commands
-        $commands = '';
-
         foreach ($this->commands as $name => $command) {
             $desc = 'Unknown';
 
             if ( is_subclass_of($command, Command::class) ) {
-                $desc = $command::DESCRIPTION;
+                $desc = $command::DESCRIPTION ? : 'No description';
             } else if ( is_string($command) ) {
-                $desc = $command;
+                $desc = 'A handler: ' . $command;
             } else if ( is_object($command) ) {
                 $desc = $command instanceof \Closure ? 'A Closure' : 'A Object';
             }
@@ -343,114 +262,20 @@ EOF;
         }
 
         $string = <<<EOF
- There are all console controllers and commands.
-    
- <comment>Console Controllers:</comment>
+ There are all console controllers and independent commands.
+ 
+ <comment>Group Commands:</comment>(by controller)
 $controllers
+    more please use: $script [controller]
+ 
  <comment>Independent Commands:</comment>
 $commands
+    more please use: $script [command]
+    
+ <comment>Internal Commands:</comment>
+$internal
 EOF;
         $this->output->write($string);
-    }
-
-    /**
-     * @return array
-     */
-    public function getBuiltInCommands()
-    {
-        return $this->builtInCommands;
-    }
-
-    /**
-     * @param $name
-     * @return bool
-     */
-    public function isBuiltInCommand($name)
-    {
-        return isset($this->builtInCommands[$name]);
-    }
-
-    /**
-     * get/set config
-     * @param  array|string $name
-     * @param  mixed $default
-     * @return mixed
-     */
-    public function config($name, $default=null)
-    {
-        // `$name` is array, set config.
-        if (is_array($name)) {
-            foreach ((array)$name as $key => $value) {
-                self::$config[$key] = $value;
-            }
-
-            return true;
-        }
-
-        // is string, get config
-        if (!is_string($name)) {
-            return $default;
-        }
-
-        // allow get $config['top']['sub'] by 'top.sub'
-        if ( strpos($name, '.') > 1 ) {
-            list($topKey, $subKey) = explode('.', $name, 2);
-
-            if ( isset(self::$config[$topKey]) && isset(self::$config[$topKey][$subKey])) {
-                return self::$config[$topKey][$subKey];
-            }
-        }
-
-        return isset(self::$config[$name]) ? self::$config[$name]: $default;
-    }
-
-    /**
-     * @return Input
-     */
-    public function getInput()
-    {
-        return $this->input;
-    }
-
-    /**
-     * @param Input $input
-     */
-    public function setInput(Input $input)
-    {
-        $this->input = $input;
-    }
-
-    /**
-     * @return Output
-     */
-    public function getOutput()
-    {
-        return $this->output;
-    }
-
-    /**
-     * @param Output $output
-     */
-    public function setOutput(Output $output)
-    {
-        $this->output = $output;
-    }
-
-    /**
-     * get config
-     * @return array
-     */
-    public function getConfig()
-    {
-        return self::$config;
-    }
-
-    /**
-     * is Debug
-     * @return boolean
-     */
-    public function isDebug()
-    {
-        return (bool)self::$config['debug'];
+        $quit && $this->stop();
     }
 }

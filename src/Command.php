@@ -40,7 +40,7 @@ abstract class Command
     private $name = '';
 
     // command description message
-    const DESCRIPTION = 'A independent command';
+    const DESCRIPTION = '';
 
     // command usage message
     const USAGE       = '';
