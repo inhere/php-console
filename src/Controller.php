@@ -17,6 +17,8 @@ use inhere\console\io\Output;
  */
 abstract class Controller
 {
+    const DESCRIPTION = 'A console controller';
+
     /**
      * @var Input
      */

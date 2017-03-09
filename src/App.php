@@ -17,26 +17,8 @@ use inhere\console\io\Output;
  * @package inhere\console
  *
  */
-class App
+class App extends AbstractApp
 {
-    // event name list
-    const EVT_APP_INIT = 'appInit';
-    const EVT_BEFORE_RUN = 'beforeRun';
-    const EVT_AFTER_RUN  = 'afterRun';
-    const EVT_APP_STOP   = 'appStop';
-    const EVT_NOT_FOUND  = 'notFound';
-
-    /**
-     * @var array
-     */
-    protected static $eventHandlers = [
-        'appInit' => '',
-        'beforeRun' => '',
-        'afterRun' => '',
-        'appStop' => '',
-        'notFound' => '',
-    ];
-
     /**
      * app config
      * @var array
@@ -46,7 +28,14 @@ class App
         'debug' => false,
         'charset' => 'UTF-8',
         'timeZone' => 'Asia/Shanghai',
-        // 'defaultRoute' => '',
+        'version' => '0.5.1',
+    ];
+
+    /**
+     * @var array
+     */
+    protected $builtInCommands = [
+        'help', 'list'
     ];
 
     /**
@@ -89,47 +78,9 @@ class App
         }
     }
 
-    protected function init()
-    {
-        // ...
-    }
-
     /**********************************************************
      * app run
      **********************************************************/
-
-    protected function prepareRun()
-    {
-        date_default_timezone_set($this->config('timeZone', 'UTC'));
-
-        // ...
-    }
-
-    /**
-     * run app
-     * @param bool $exit
-     */
-    public function run($exit=true)
-    {
-        $this->prepareRun();
-
-        // call 'onBeforeRun' service, if it is registered.
-        if ( $cb = self::$eventHandlers[self::EVT_BEFORE_RUN] ) {
-            $cb($this);
-        }
-
-        // do run ...
-        $returnCode = $this->doRun();
-
-        // call 'onAfterRun' service, if it is registered.
-        if ( $cb = self::$eventHandlers[self::EVT_AFTER_RUN] ) {
-            $cb($this);
-        }
-
-        if ($exit) {
-            $this->stop((int)$returnCode);
-        }
-    }
 
     /**
      * @inheritdoc
@@ -146,18 +97,6 @@ class App
         return $status;
     }
 
-    /**
-     * @param int $code
-     */
-    public function stop($code = 0)
-    {
-        // call 'onAppStop' service, if it is registered.
-        if ( $cb = self::$eventHandlers[self::EVT_APP_STOP] ) {
-            $cb($this);
-        }
-
-        exit((int)$code);
-    }
 
     /**********************************************************
      * register console controller/command
@@ -171,6 +110,14 @@ class App
      */
     public function controller($name, $controller)
     {
+        if (!$controller) {
+            throw new \InvalidArgumentException('Parameters are not allowed to is empty!');
+        }
+
+        if ( isset($this->builtInCommands[$name]) ) {
+            throw new \InvalidArgumentException("The controller name [$name] is not allowed. It is a built in command.");
+        }
+
         $this->controllers[$name] = $controller;
 
         return $this;
@@ -184,7 +131,11 @@ class App
     public function command($name, $class)
     {
         if (!$class) {
-            throw new \RuntimeException('Parameters are not allowed to is empty!');
+            throw new \InvalidArgumentException('Parameters are not allowed to is empty!');
+        }
+
+        if ( isset($this->builtInCommands[$name]) ) {
+            throw new \InvalidArgumentException("The command name [$name] is not allowed. It is a built in command.");
         }
 
         // is an class name string
@@ -205,16 +156,16 @@ class App
         $sep = '/';
         $command = $name = trim($this->input->getCommand(), $sep);
 
-        $this->handleSpecialCommand($command);
+        $this->filterSpecialCommand($command);
 
-        // is a command name
+        //// is a command name
+
         if ( isset($this->commands[$name]) ) {
-            $handler = $this->commands[$name];
-
-            return $this->executeCommand($handler, $name);
+            return $this->runCommand($name, true);
         }
 
-        // is a controller name
+        //// is a controller name
+
         $action = '';
 
         // like 'home/index'
@@ -224,28 +175,35 @@ class App
         }
 
         if ( isset($this->controllers[$name]) ) {
-            $controller = $this->controllers[$name];
-
-            return $this->runAction($controller, $name, $action);
+            return $this->runAction($name, $action, true);
         }
 
         if ( $cb = self::$eventHandlers[self::EVT_NOT_FOUND] ) {
             $cb($command, $this);
         } else {
             // not match, output error message
-            $this->output->error("Controller or Command [$command] not exists!");
+            $this->output->error("Console Controller or Command [$command] not exists!");
         }
 
-        return -1;
+        return 404;
     }
 
     /**
-     * @param string $handler Command class
-     * @param string $name   Command name
+     * run a command
+     * @param string $name       Command name
+     * @param bool   $believable The `$name` is believable
      * @return mixed
      */
-    protected function executeCommand($handler, $name)
+    public function runCommand($name, $believable = false)
     {
+        // if $believable = true, will skip check.
+        if ( !$believable && !isset($this->commands[$name]) ) {
+            throw new \InvalidArgumentException("The console independent-command [$name] not exists!");
+        }
+
+        // Command class
+        $handler = $this->commands[$name];
+
         if ( is_object($handler) && ($handler instanceof \Closure) ) {
             $status = $handler($this->input, $this->output);
         } else {
@@ -268,13 +226,21 @@ class App
     }
 
     /**
-     * @param string $controller Controller class
      * @param string $name       Controller name
      * @param string $action
+     * @param bool   $believable The `$name` is believable
      * @return mixed
      */
-    protected function runAction($controller, $name, $action)
+    public function runAction($name, $action, $believable = false)
     {
+        // if $believable = true, will skip check.
+        if ( !$believable && !isset($this->controllers[$name]) ) {
+            throw new \InvalidArgumentException("The console controller-command [$name] not exists!");
+        }
+
+        // Controller class
+        $controller = $this->controllers[$name];
+
         if ( !class_exists($controller, false) ) {
             throw new \InvalidArgumentException("The console controller class [$controller] not exists!");
         }
@@ -308,57 +274,100 @@ class App
         $this->output->error('An error occurred! MESSAGE: ' . $e->getMessage());
     }
 
-
-    protected function handleSpecialCommand($command)
+    /**
+     * @param $command
+     */
+    protected function filterSpecialCommand($command)
     {
-        $this->showHelp($command);
+
+        // show help `./bin/app` OR `./bin/app -h` OR `./bin/app --help`
+        $showHelp = !$command || $this->input->getBool('h') || $this->input->getBool('help');
+
+        if ($showHelp) {
+            $this->output->write($this->appHelp());
+            $this->stop();
+        }
 
         switch ($command) {
             case 'list':
-                $this->output->info('command list. TODO', 0);
+                $this->appCommandList();
+                $this->stop();
                 break;
         }
     }
 
-    protected function showHelp($command)
+    protected function appHelp()
     {
-        // show help `./bin/app` OR `./bin/app -h` OR `./bin/app --help`
-        $showHelp = !$command || $this->input->getBool('h') || $this->input->getBool('help');
+        $script = $this->input->getScriptName();
 
-        if ( $showHelp ) {
-            $script = $this->input->getScriptName();
-            $this->output->write(<<<EOF
+        return <<<EOF
  <comment>Usage:</comment>
-    $script [route|command] [arg1=value1 arg2=value ...]
+    $script [route|command] [arg1=value1 arg2=value ...] [-v|-h ...]
     
  <comment>Example:</comment>
     $script test
     $script home/index
     $script home/help  Run this command can get more help info.
+EOF;
+    }
 
- <warning>Notice: 'home/index' don't write '/home/index'</warning>
-EOF
-    , 1, 0);
+    protected function appVersionInfo()
+    {}
+
+    protected function appCommandList()
+    {
+        // all console controllers
+        $controllers = '';
+
+        foreach ($this->controllers as $name => $controller) {
+            $desc = $controller::DESCRIPTION ? : $controller;
+
+            $controllers .= "    <info>$name</info>  $desc\n";
         }
+
+        // all independent commands
+        $commands = '';
+
+        foreach ($this->commands as $name => $command) {
+            $desc = 'Unknown';
+
+            if ( is_subclass_of($command, Command::class) ) {
+                $desc = $command::DESCRIPTION;
+            } else if ( is_string($command) ) {
+                $desc = $command;
+            } else if ( is_object($command) ) {
+                $desc = $command instanceof \Closure ? 'A Closure' : 'A Object';
+            }
+
+            $commands .= "    <info>$name</info>  $desc\n";
+        }
+
+        $string = <<<EOF
+ There are all console controllers and commands.
+    
+ <comment>Console Controllers:</comment>
+$controllers
+ <comment>Independent Commands:</comment>
+$commands
+EOF;
+        $this->output->write($string);
     }
 
     /**
      * @return array
      */
-    public static function events()
+    public function getBuiltInCommands()
     {
-        return [self::EVT_APP_INIT, self::EVT_BEFORE_RUN, self::EVT_AFTER_RUN, self::EVT_APP_STOP, self::EVT_NOT_FOUND];
+        return $this->builtInCommands;
     }
 
     /**
-     * @param $event
-     * @param callable $handler
+     * @param $name
+     * @return bool
      */
-    public function on($event, callable $handler)
+    public function isBuiltInCommand($name)
     {
-        if (isset(self::events()[$event])) {
-            self::$eventHandlers[$event] = $handler;
-        }
+        return isset($this->builtInCommands[$name]);
     }
 
     /**
@@ -442,6 +451,6 @@ EOF
      */
     public function isDebug()
     {
-        return (bool)self::$config('debug', false);
+        return (bool)self::$config['debug'];
     }
 }

@@ -8,6 +8,8 @@ use inhere\console\utils\Interact;
  */
 class HomeController extends Controller
 {
+    const DESCRIPTION = 'default command controller. there are some command usage examples';
+
     /**
      * this is a command's description message
      * the second line text
