@@ -8,8 +8,8 @@
 
 namespace inhere\console\io;
 
-use inhere\console\ConsoleHelper;
-use inhere\console\utils\Color;
+use inhere\console\Helper;
+use inhere\console\color\Color;
 use inhere\console\utils\Interact;
 
 /**
@@ -45,18 +45,18 @@ class Output
      * @inheritdoc
      * @see Interact::title()
      */
-    public function title($msg, $width = null)
+    public function title($title, $width = 50, $char = '=')
     {
-        Interact::title($msg, $width);
+        Interact::title($title, $width, $char);
     }
 
     /**
      * @inheritdoc
      * @see Interact::section()
      */
-    public function section($msg, $width = null)
+    public function section($title, $body, array $opts = [])
     {
-        Interact::section($msg, $width);
+        Interact::section($title, $body, $opts);
     }
 
     /**
@@ -95,22 +95,9 @@ class Output
      * @param string        $style
      * @param int|boolean   $quit  If is int, setting it is exit code.
      */
-    public function block($messages, $type = 'INFO', $style='info', $quit = false)
+    public function block($messages, $type = 'MESSAGE', $style='default', $quit = false)
     {
-        $messages = is_array($messages) ? array_values($messages) : array($messages);
-
-        // add type
-        if (null !== $type) {
-            $messages[0] = sprintf('[%s] %s', strtoupper($type), $messages[0]);
-        }
-
-        $text = implode(PHP_EOL, $messages);
-
-        if (is_string($style) && $this->getColor()->hasStyle($style)) {
-            $text = "<{$style}>{$text}</{$style}>";
-        }
-
-        $this->write($text, true, $quit);
+        Interact::block($messages, $type, $style, $quit);
     }
     public function primary($messages, $quit = false)
     {
@@ -222,7 +209,7 @@ class Output
      */
     public function supportColor()
     {
-        return ConsoleHelper::isSupportColor();
+        return Helper::isSupportColor();
     }
 
     /**

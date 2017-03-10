@@ -8,7 +8,7 @@
 
 namespace inhere\console\utils;
 
-use inhere\console\ConsoleHelper;
+use inhere\console\Helper;
 use inhere\console\io\Output;
 
 /**
@@ -101,7 +101,7 @@ class ProgressBar
     private function setMaxSteps($max)
     {
         $this->max = max(0, (int) $max);
-        $this->stepWidth = $this->max ? ConsoleHelper::strlen($this->max) : 4;
+        $this->stepWidth = $this->max ? Helper::strlen($this->max) : 4;
     }
 
     /**

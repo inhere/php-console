@@ -18,7 +18,6 @@ use inhere\console\io\Output;
 abstract class AbstractApp
 {
     // event name list
-    const ON_APP_INIT = 'appInit';
     const ON_BEFORE_RUN = 'beforeRun';
     const ON_AFTER_RUN  = 'afterRun';
     const ON_APP_STOP   = 'appStop';
@@ -28,7 +27,7 @@ abstract class AbstractApp
      * @var array
      */
     protected static $hooks = [
-        'appInit' => '',
+        // 'appInit' => '',
         'beforeRun' => '',
         'afterRun' => '',
         'appStop' => '',
@@ -89,11 +88,6 @@ abstract class AbstractApp
 
         $this->setConfig($config);
         $this->init();
-
-        // call 'onAppInit' service, if it is registered.
-        if ( $cb = self::$hooks[self::ON_APP_INIT] ) {
-            $cb($this);
-        }
     }
 
     protected function init()
@@ -174,7 +168,7 @@ abstract class AbstractApp
 
         $this->checkName($name, true);
 
-        if ( !class_exists($controller, false) ) {
+        if ( !class_exists($controller) ) {
             throw new \InvalidArgumentException("The console controller class [$controller] not exists!");
         }
 
@@ -206,9 +200,9 @@ abstract class AbstractApp
     /**
      * @return array
      */
-    public static function events()
+    public static function hooks()
     {
-        return [self::ON_APP_INIT, self::ON_BEFORE_RUN, self::ON_AFTER_RUN, self::ON_APP_STOP, self::ON_NOT_FOUND];
+        return array_keys(self::$hooks);
     }
 
     /**
@@ -217,7 +211,7 @@ abstract class AbstractApp
      */
     public function on($event, callable $handler)
     {
-        if (isset(self::events()[$event])) {
+        if (isset(self::$hooks[$event])) {
             self::$hooks[$event] = $handler;
         }
     }

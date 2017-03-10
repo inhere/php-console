@@ -8,6 +8,9 @@
 
 namespace inhere\console;
 
+use inhere\console\utils\Interact;
+use inhere\console\utils\Show;
+
 /**
  * Class App
  * @package inhere\console
@@ -191,13 +194,12 @@ class App extends AbstractApp
     {
         $script = $this->input->getScriptName();
         $message = <<<EOF
- <comment>Usage:</comment>
-    $script [route|command] [arg1=value1 arg2=value ...] [-v|-h ...]
+<comment>Usage:</comment>
+  $script [route|command] [arg1=value1 arg2=value ...] [-v|-h ...]
     
- <comment>Example:</comment>
-    $script test
-    $script home/index
-    $script home/help  Run this command can get more help info.
+<comment>Example:</comment>
+  $script test
+  $script home/index
 
 EOF;
         $this->output->write($message);
@@ -215,11 +217,10 @@ EOF;
         $os = PHP_OS;
 
         $message = <<<EOF
- Console App Version <comment>$version</comment>
+Console App Version <comment>$version</comment>
  
- <comment>System:</comment>
-    PHP  <info>$phpVersion</info>
-    OS   <info>$os</info>
+<comment>System:</comment>
+  PHP <info>$phpVersion</info>, on OS <info>$os</info>
 EOF;
         $this->output->write($message);
         $quit && $this->stop();
@@ -232,23 +233,24 @@ EOF;
     public function showCommandList($quit = true)
     {
         $script = $this->input->getScriptName();
-        $internal = $controllers = $commands = '';
+        $controllerArr = $commandArr = [];
 
         // built in commands
-        foreach ($this->internalCommands as $command => $desc) {
-            $internal .= "    <info>$command</info>  $desc\n";
-        }
+        $internalCommands = $this->internalCommands;
+        ksort($internalCommands);
 
         // all console controllers
-        foreach ($this->controllers as $name => $controller) {
-            $desc = $controller::DESCRIPTION ? : 'No description';
-
-            $controllers .= "    <info>$name</info>  $desc\n";
+        $controllers = $this->controllers;
+        ksort($controllers);
+        foreach ($controllers as $name => $controller) {
+            $controllerArr[$name] = $controller::DESCRIPTION ? : 'No description';
         }
 
         // all independent commands
-        foreach ($this->commands as $name => $command) {
-            $desc = 'Unknown';
+        $commands = $this->commands;
+        ksort($commands);
+        foreach ($commands as $name => $command) {
+            $desc = 'No description';
 
             if ( is_subclass_of($command, Command::class) ) {
                 $desc = $command::DESCRIPTION ? : 'No description';
@@ -258,24 +260,18 @@ EOF;
                 $desc = $command instanceof \Closure ? 'A Closure' : 'A Object';
             }
 
-            $commands .= "    <info>$name</info>  $desc\n";
+            $commandArr[$name] = $desc;
         }
 
-        $string = <<<EOF
- There are all console controllers and independent commands.
- 
- <comment>Group Commands:</comment>(by controller)
-$controllers
-    more please use: $script [controller]
- 
- <comment>Independent Commands:</comment>
-$commands
-    more please use: $script [command]
-    
- <comment>Internal Commands:</comment>
-$internal
-EOF;
-        $this->output->write($string);
+        $this->output->write("There are all console controllers and independent commands.");
+
+        Show::multiList([
+            '<comment>Group Commands:</comment>(by controller)' => $controllerArr,
+            '<comment>Independent Commands:</comment>' => $commandArr,
+            '<comment>Internal Commands:</comment>' => $internalCommands
+        ]);
+
+        $this->output->write("more please see: <info>$script [controller|command]</info>");
         $quit && $this->stop();
     }
 }

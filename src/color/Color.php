@@ -8,17 +8,22 @@
  * file: Color.php
  */
 
-namespace inhere\console\utils;
+namespace inhere\console\color;
 
-use inhere\console\ConsoleHelper;
+use inhere\console\Helper;
 
 /**
  * Class Color
- * @package inhere\console\utils
+ * @package inhere\console\color
  * @link https://github.com/ventoviro/windwalker-IO
  */
 class Color
 {
+    /**
+     * @var self
+     */
+    private static $instance;
+
     /**
      * Flag to remove color codes from the output
      * @var bool
@@ -53,6 +58,18 @@ class Color
      * @var int
      */
     const BG_BASE = 40;
+
+    /**
+     * @return Color
+     */
+    public static function create()
+    {
+        if (!self::$instance) {
+            self::$instance = new Color();
+        }
+
+        return self::$instance;
+    }
 
     /**
      * Constructor
@@ -102,7 +119,7 @@ class Color
                 'fgColor' => 'green', //'options' => ['bold']
             ])
             ->addStyle('warning', [
-                'bgColor' => 'yellow', //'options' => ['bold']
+                'fgColor' => 'black', 'bgColor' => 'yellow', //'options' => ['bold']
             ])
             ->addStyle('comment', [
                 'fgColor' => 'yellow', //'options' => ['bold']
@@ -144,7 +161,7 @@ class Color
     public function format($text)
     {
         // if don't support output color text, clear color tag.
-        if ( !ConsoleHelper::isSupportColor() ) {
+        if ( !Helper::isSupportColor() ) {
             return static::stripColor($text);
         }
 

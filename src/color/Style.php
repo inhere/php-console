@@ -6,7 +6,7 @@
  * @todo  unused
  */
 
-namespace inhere\console\utils;
+namespace inhere\console\color;
 
 /**
  *@link https://github.com/ventoviro/windwalker-IO

@@ -222,8 +222,13 @@ abstract class Controller
 
         $excludes = ['__construct', 'commands', 'run'];
         $sName = lcfirst($this->name?: $ref->getShortName());
-        $this->write('<comment>Commands:</comment>');
-        $this->write('  <bold>command   |   command description</bold>');
+
+        $text = "<comment>Group Name:</comment>
+  <info>$sName</info>
+<comment>Sub-Commands:</comment>
+  <bold>command   |   command description</bold>";
+
+        $this->write($text);
 
         foreach ($ref->getMethods() as $m) {
             $mName = $m->getName();
@@ -248,7 +253,7 @@ abstract class Controller
             }
         }
 
-        $this->write("\n<comment>For more information please use </comment><info>$sName/help [command]</info>");
+        $this->write("\nFor more information please use: <info>$sName/help [command]</info>");
     }
 
     /**

@@ -11,11 +11,16 @@
 namespace inhere\console;
 
 /**
- * Class ConsoleHelper
+ * Class Helper
  * @package inhere\console
  */
-class ConsoleHelper
+class Helper
 {
+    /**
+     * clear Ansi Code
+     * @param $string
+     * @return mixed
+     */
     public static function stripAnsiCode($string)
     {
         return preg_replace('/\033\[[\d;?]*\w/', '', $string);
@@ -26,7 +31,7 @@ class ConsoleHelper
      * @param $string
      * @return int
      */
-    public static function strlen($string)
+    public static function strLen($string)
     {
         if (false === $encoding = mb_detect_encoding($string, null, true)) {
             return strlen($string);
@@ -74,7 +79,7 @@ class ConsoleHelper
      * @param $memory
      * @return string
      * ```
-     * ConsoleHelper::formatMemory(memory_get_usage(true));
+     * Helper::formatMemory(memory_get_usage(true));
      * ```
      */
     public static function formatMemory($memory)
@@ -175,6 +180,7 @@ class ConsoleHelper
                 $value = (string)$value;
             }
 
+            $value = ucfirst($value);
             $text .= "$value\n";
         }
 
@@ -250,20 +256,30 @@ class ConsoleHelper
      *
      * @param string $text the text to be wrapped
      * @param integer $indent number of spaces to use for indentation.
-     * @param boolean $refresh whether to force refresh of screen size.
-     * This will be passed to [[getScreenSize()]].
+     * @param integer $width
      * @return string the wrapped text.
      * @since 2.0.4
      */
-    public static function wrapText($text, $indent = 0, $refresh = false)
+    public static function wrapText($text, $indent = 0, $width = 0)
     {
-        $size = static::getScreenSize($refresh);
-        if ($size === false || $size[0] <= $indent) {
+        if (!$text) {
             return $text;
         }
+
+        if ( (int)$width <= 0 ) {
+            $size = static::getScreenSize();
+
+            if ( $size === false || $size[0] <= $indent) {
+                return $text;
+            }
+
+            $width = $size[0];
+        }
+
         $pad = str_repeat(' ', $indent);
-        $lines = explode("\n", wordwrap($text, $size[0] - $indent, "\n", true));
+        $lines = explode("\n", wordwrap($text, $width - $indent, "\n", true));
         $first = true;
+
         foreach ($lines as $i => $line) {
             if ($first) {
                 $first = false;
@@ -271,6 +287,7 @@ class ConsoleHelper
             }
             $lines[$i] = $pad . $line;
         }
-        return implode("\n", $lines);
+
+        return $pad . '  ' . implode("\n", $lines);
     }
 }
