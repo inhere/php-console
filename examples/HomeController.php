@@ -24,12 +24,12 @@ class HomeController extends Controller
 
     /**
      * a example for use color text output on command
-     * @usage ./bin/app home/outColor
+     * @usage ./bin/app home/color
      */
-    public function outColorCommand()
+    public function colorCommand()
     {
         if ( !$this->output->supportColor() ) {
-            $this->write('Sorry, Current terminal is not support output color text.');
+            $this->write('Current terminal is not support output color text.');
 
             return 0;
         }
@@ -37,15 +37,53 @@ class HomeController extends Controller
         $styles = $this->output->getColor()->getStyleNames();
         $this->write('normal text output');
 
+        $this->write('color text output');
         foreach ($styles as $style) {
             $this->output->write("<$style>$style style text</$style>");
         }
 
-        $this->output->block('block message text');
-        $this->output->warning('block message text');
-        $this->output->primary('block message text');
+        return 0;
+    }
+
+    /**
+     * output block message text
+     * @return int
+     */
+    public function blockMsgCommand()
+    {
+        $this->write('block message:');
+
+        foreach (Interact::$defaultBlocks as $type) {
+            $this->output->$type('message text');
+        }
 
         return 0;
+    }
+
+    /**
+     * output more format message text
+     */
+    public function fmtMsgCommand()
+    {
+        $this->output->title('title');
+        $body = 'If screen size could not be detected, or the indentation is greater than the screen size, the text will not be wrapped.' .
+            'Word wrap text with indentation to fit the screen size,' .
+            'Word wrap text with indentation to fit the screen size,' .
+            'Word wrap text with indentation to fit the screen size,' .
+            'Word wrap text with indentation to fit the screen size,'
+        ;
+
+        $this->output->section('section title', $body, [
+            'pos' => 'l'
+        ]);
+
+        $commands = [
+            'version' => 'Show application version information',
+            'help'    => 'Show application help information',
+            'list'    => 'List all group and independent commands',
+        ];
+        Interact::panel($commands, 'Internal Commands', '');
+        Interact::aList('Internal Commands', $commands);
     }
 
     /**

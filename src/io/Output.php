@@ -60,6 +60,24 @@ class Output
     }
 
     /**
+     * @inheritdoc
+     * @see Interact::aList()
+     */
+    public function aList($title, array $data, array $opts = [])
+    {
+        Interact::aList($title, $data, $opts);
+    }
+
+    /**
+     * @inheritdoc
+     * @see Interact::multiList()
+     */
+    public function multiList(array $data, array $opts = [])
+    {
+        Interact::multiList($data, $opts);
+    }
+
+    /**
      * helpPanel
      * @inheritdoc
      * @see Interact::helpPanel()

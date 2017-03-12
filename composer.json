@@ -3,7 +3,7 @@
   "type": "library",
   "description": "a php console application library.",
   "keywords": ["library","console","console-color","command", "console-application"],
-  "homepage": "http://github.com/inhere/php-console",
+  "homepage": "https://github.com/inhere/php-console",
   "license": "MIT",
   "authors": [
     {

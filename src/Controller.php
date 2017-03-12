@@ -77,7 +77,6 @@ abstract class Controller
     {
         // $this->input->getBool('h') || $this->input->getBool('help');
 
-
         $result = '';
         $action = $action?: $this->defaultAction;
 
@@ -115,12 +114,10 @@ abstract class Controller
             // if you defined the method '$this->notFoundCallback' , will call it
         } elseif ( ( $notFoundCallback = $this->notFoundCallback) && method_exists($this, $notFoundCallback)) {
             $result = $this->{$notFoundCallback}($action);
-
-            // call 'onNotFound' service, if it is registered.
-//        } elseif ( $notFoundHandler = \Micro::get(App::EVT_NOT_FOUND, false) ) {
-//            $notFoundHandler(\Micro::$app);
         } else {
-            throw new \HttpException('Sorry, the page you want to visit already does not exist!');
+            // throw new \RuntimeException('Sorry, the page you want to visit already does not exist!');
+            $this->output->error('Sorry, the page you want to visit already does not exist!');
+            $this->showCommandList();
         }
 
         return $result;
@@ -170,7 +167,7 @@ abstract class Controller
     final public function helpCommand()
     {
         if (!$args = $this->input->get()) {
-            $this->commands();
+            $this->showCommandList();
             return 0;
         }
 
@@ -207,33 +204,36 @@ abstract class Controller
     }
 
     /**
-     * get command list of the class
+     * show command list of the controller class
      */
-    final public function commands()
+    final protected function showCommandList()
     {
         $ref = new \ReflectionClass($this);
 
         $class = $ref->getName();
+        $sName = lcfirst($this->name?: $ref->getShortName());
         $this->write("This is in the console controller [<bold>$class</bold>]\n");
 
-        if ( ($desc = static::DESCRIPTION) || ($desc = $this->parseDocCommentDetail($ref->getDocComment())) ) {
-            $this->write("<comment>Description:</comment>\n  $desc\n");
+        if ( !($desc = static::DESCRIPTION) ) {
+            $desc = $this->parseDocCommentDetail($ref->getDocComment()) ?: 'No Description';
         }
 
-        $excludes = ['__construct', 'commands', 'run'];
-        $sName = lcfirst($this->name?: $ref->getShortName());
-
-        $text = "<comment>Group Name:</comment>
-  <info>$sName</info>
-<comment>Sub-Commands:</comment>
-  <bold>command   |   command description</bold>";
+        $suffix = $this->actionSuffix;
+        $suffixLen = Helper::strLen($suffix);
+        $text = "<comment>Description:</comment>
+  $desc
+<comment>Usage</comment>:
+  <info>$sName/[command] [options] [arguments]</info>
+<comment>Group Name:</comment>
+  <info>$sName</info>";
 
         $this->write($text);
 
+        $commands = [];
         foreach ($ref->getMethods() as $m) {
             $mName = $m->getName();
 
-            if ($m->isPublic() && !in_array($mName, $excludes)) {
+            if ($m->isPublic() && substr($mName, -$suffixLen) === $suffix) {
                 $desc = $this->parseDocCommentSummary($m->getDocComment());
                 $length = strlen($this->actionSuffix);
                 $cmd = '';
@@ -248,12 +248,14 @@ abstract class Controller
                 }
 
                 if ( $cmd ) {
-                    $this->write("  <info>$sName/$cmd</info>  $desc");
+                    //$this->write("  <info>$cmd</info>  $desc");
+                    $commands[$cmd] = $desc;
                 }
             }
         }
 
-        $this->write("\nFor more information please use: <info>$sName/help [command]</info>");
+        $commands[] = "\nFor more information please use: <info>$sName/help [command]</info>";
+        $this->output->aList('<comment>Sub-Commands:</comment>', $commands);
     }
 
     /**

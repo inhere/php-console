@@ -154,7 +154,7 @@ class Helper
         foreach ($data as $key => $value) {
             $text .= $opts['leftChar'];
 
-            if ($opts['keyMaxWidth']) {
+            if ($opts['keyMaxWidth'] && !is_int($key)) {
                 $key = str_pad($key, $opts['keyMaxWidth'], ' ');
                 $text .= ( $keyStyle ? "<{$keyStyle}>$key</{$keyStyle}> " : $key ) . $opts['sepChar'];
             }

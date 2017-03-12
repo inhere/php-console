@@ -8,9 +8,6 @@
 
 namespace inhere\console;
 
-use inhere\console\utils\Interact;
-use inhere\console\utils\Show;
-
 /**
  * Class App
  * @package inhere\console
@@ -263,9 +260,8 @@ EOF;
             $commandArr[$name] = $desc;
         }
 
-        $this->output->write("There are all console controllers and independent commands.");
-
-        Show::multiList([
+        $this->output->write('There are all console controllers and independent commands.');
+        $this->output->multiList([
             '<comment>Group Commands:</comment>(by controller)' => $controllerArr,
             '<comment>Independent Commands:</comment>' => $commandArr,
             '<comment>Internal Commands:</comment>' => $internalCommands
