@@ -88,8 +88,8 @@ class HomeController extends Controller
 
     /**
      * a example for use arguments on command
-     * @usage home/useArgs [arg1=val1 arg2=arg2] [options]
-     * @example ./bin/app home/useArgs status=2 name=john city -s=test --page=23 -d -rf --debug --test=false
+     * @usage home/useArg [arg1=val1 arg2=arg2] [options]
+     * @example home/useArg status=2 name=john arg0 -s=test --page=23 -d -rf --debug --test=false
      */
     public function useArgCommand()
     {
@@ -99,7 +99,7 @@ class HomeController extends Controller
         $this->write('input options:');
         var_dump($this->input->getOpts());
 
-        $this->write('input object:');
+        $this->write('the Input object:');
         var_dump($this->input);
     }
 

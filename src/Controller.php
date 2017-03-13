@@ -75,7 +75,11 @@ abstract class Controller
      */
     public function run($action = '')
     {
-        // $this->input->getBool('h') || $this->input->getBool('help');
+        $showCmdHelp = $action && ($this->input->getBool('h') || $this->input->getBool('help'));
+
+        if ($showCmdHelp) {
+            return $this->helpCommand($action);
+        }
 
         $result = '';
         $action = $action?: $this->defaultAction;
@@ -116,7 +120,7 @@ abstract class Controller
             $result = $this->{$notFoundCallback}($action);
         } else {
             // throw new \RuntimeException('Sorry, the page you want to visit already does not exist!');
-            $this->output->error('Sorry, the page you want to visit already does not exist!');
+            $this->output->error("Sorry, the controller command [$action] not exist!");
             $this->showCommandList();
         }
 
@@ -160,19 +164,22 @@ abstract class Controller
     }
 
     /**
-     * show help of the class or specified action
-     * @usage ./bin/app {class}/help [action]
-     * @example ./bin/app home/help OR ./bin/app home/help index
+     * Show help of the controller command group or specified command action
+     * @usage <info>{name}/[action] -h</info> OR <info>{name}/help [action]</info> OR <info>{name} [action]</info>
+     * @example home/help
+     *    home/help index
+     *    home/index -h
+     *    home index
+     *
+     * @param string $action
+     * @return int
      */
-    final public function helpCommand()
+    final public function helpCommand($action = '')
     {
-        if (!$args = $this->input->get()) {
+        if (!$action && !($action = $this->input->get(0)) ) {
             $this->showCommandList();
             return 0;
         }
-
-        $keys = array_keys($args);
-        $action = trim(array_shift($keys), '- ');
 
         // convert 'first-second' to 'firstSecond'
         if ( strpos($action, '-') ) {
@@ -196,7 +203,7 @@ abstract class Controller
         foreach ($tags as $tag => $msg) {
             if (!self::$allowTags || in_array($tag, self::$allowTags, true)) {
                 $tag = ucfirst($tag);
-                $this->write("<comment>$tag:</comment>\n   <info>$msg</info>\n");
+                $this->write("<comment>$tag:</comment>\n   $msg\n");
             }
         }
 
@@ -223,7 +230,7 @@ abstract class Controller
         $text = "<comment>Description:</comment>
   $desc
 <comment>Usage</comment>:
-  <info>$sName/[command] [options] [arguments]</info>
+  $sName/[command] [options] [arguments]
 <comment>Group Name:</comment>
   <info>$sName</info>";
 

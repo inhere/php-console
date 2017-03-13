@@ -11,8 +11,10 @@
 require 'TestCommand.php';
 require 'HomeController.php';
 
-$app->command('demo',function($in, \inhere\console\io\Output $out){
-    $out->info('hello, this is a test.');
+$app->command('demo',function(\inhere\console\io\Input $in, \inhere\console\io\Output $out){
+    $cmd = $in->getCommand();
+
+    $out->info('hello, this is a test command: ' . $cmd);
 });
 
 $app->command('test', TestCommand::class);

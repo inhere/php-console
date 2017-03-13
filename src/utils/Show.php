@@ -164,6 +164,7 @@ class Show
             }
         }
 
+        $body = is_array($body) ? implode(PHP_EOL, $body) : $body;
         $body = Helper::wrapText($body, 4, $opts['width']);
         self::write(sprintf($tpl, $titleLine, $topBorder, $body, $bottomBorder));
     }
