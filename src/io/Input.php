@@ -172,17 +172,19 @@ class Input
     }
 
     /**
+     * get option value(bool)
      * @param $key
+     * @param bool $default
      * @return bool
      */
-    public function getBool($key)
+    public function getBool($key, $default = false)
     {
-        return $this->getBoolOpt($key);
+        return $this->getBoolOpt($key, $default);
     }
-    public function getBoolOpt($key)
+    public function getBoolOpt($key, $default = false)
     {
         if ( !$this->hasOpt($key) ) {
-            return false;
+            return (bool)$default;
         }
 
         $value = $this->opts[$key];
