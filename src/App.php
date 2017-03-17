@@ -97,7 +97,7 @@ class App extends AbstractApp
         if ( is_object($handler) && ($handler instanceof \Closure) ) {
             $status = $handler($this->input, $this->output);
         } else {
-            if ( !class_exists($handler, false) ) {
+            if ( !class_exists($handler) ) {
                 throw new \InvalidArgumentException("The console command class [$handler] not exists!");
             }
 
@@ -130,6 +130,10 @@ class App extends AbstractApp
 
         // Controller class
         $controller = $this->controllers[$name];
+
+        if ( !class_exists($controller) ) {
+            throw new \InvalidArgumentException("The console controller class [$controller] not exists!");
+        }
 
         /** @var Controller $object */
         $object = new $controller($this->input, $this->output);
