@@ -15,21 +15,8 @@ use inhere\console\io\Output;
  * Class Command
  * @package inhere\console
  */
-abstract class Controller
+abstract class Controller extends AbstractCommand
 {
-    // please use the const setting current controller description
-    const DESCRIPTION = '';
-
-    /**
-     * @var Input
-     */
-    protected $input;
-
-    /**
-     * @var Output
-     */
-    protected $output;
-
     /**
      * @var string
      */
@@ -41,20 +28,9 @@ abstract class Controller
     protected $actionSuffix = 'Command';
 
     /**
-     * allow display message tags in the command
-     * @var array
-     */
-    protected static $allowTags = ['description', 'usage', 'example'];
-
-    /**
      * @var string
      */
     protected $notFoundCallback = 'notFound';
-
-    /**
-     * @var string
-     */
-    private $name = '';
 
     /**
      * Command constructor.
@@ -190,7 +166,7 @@ abstract class Controller
         $method = $this->actionSuffix ? $action . ucfirst($this->actionSuffix) : $action;
 
         $ref = new \ReflectionClass($this);
-        $sName = lcfirst($this->name?: $ref->getShortName());
+        $sName = lcfirst($this->getName() ?: $ref->getShortName());
 
         if ( !$ref->hasMethod($method) || !$ref->getMethod($method)->isPublic() ) {
             $this->write("Command [<info>$sName/$action</info>] don't exist or don't allow access in the class.");
@@ -218,7 +194,7 @@ abstract class Controller
         $ref = new \ReflectionClass($this);
 
         $class = $ref->getName();
-        $sName = lcfirst($this->name?: $ref->getShortName());
+        $sName = lcfirst($this->getName() ?: $ref->getShortName());
         $this->write("This is in the console controller [<bold>$class</bold>]\n");
 
         if ( !($desc = static::DESCRIPTION) ) {
@@ -266,19 +242,51 @@ abstract class Controller
     }
 
     /**
-     * @param string $name
+     * @return string
      */
-    public function setName($name)
+    public function getDefaultAction()
     {
-        $this->name = $name;
+        return $this->defaultAction;
+    }
+
+    /**
+     * @param string $defaultAction
+     */
+    public function setDefaultAction($defaultAction)
+    {
+        $this->defaultAction = $defaultAction;
     }
 
     /**
      * @return string
      */
-    public function getName()
+    public function getActionSuffix()
     {
-        return $this->name;
+        return $this->actionSuffix;
+    }
+
+    /**
+     * @param string $actionSuffix
+     */
+    public function setActionSuffix($actionSuffix)
+    {
+        $this->actionSuffix = $actionSuffix;
+    }
+
+    /**
+     * @return string
+     */
+    public function getNotFoundCallback()
+    {
+        return $this->notFoundCallback;
+    }
+
+    /**
+     * @param string $notFoundCallback
+     */
+    public function setNotFoundCallback($notFoundCallback)
+    {
+        $this->notFoundCallback = $notFoundCallback;
     }
 
     /*

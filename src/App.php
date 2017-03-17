@@ -262,8 +262,8 @@ EOF;
 
         $this->output->write('There are all console controllers and independent commands.');
         $this->output->multiList([
-            '<comment>Group Commands:</comment>(by controller)' => $controllerArr,
-            '<comment>Independent Commands:</comment>' => $commandArr,
+            '<comment>Group Commands:</comment>(by controller)' => $controllerArr ?: '... No register any group command',
+            '<comment>Independent Commands:</comment>' => $commandArr ?: '... No register any independent command',
             '<comment>Internal Commands:</comment>' => $internalCommands
         ]);
 

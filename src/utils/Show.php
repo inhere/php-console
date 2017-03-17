@@ -183,7 +183,7 @@ class Show
      * @param array $data
      * @param array $opts More @see Helper::spliceKeyValue()
      */
-    public static function aList($title, array $data, array $opts = [])
+    public static function aList($title, $data, array $opts = [])
     {
         // title
         if ( $title ) {
@@ -198,7 +198,7 @@ class Show
         ], $opts);
 
         // item list
-        $items = Helper::spliceKeyValue($data, $opts);
+        $items = Helper::spliceKeyValue((array)$data, $opts);
 
         self::write($items);
     }

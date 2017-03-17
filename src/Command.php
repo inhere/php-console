@@ -15,33 +15,8 @@ use inhere\console\io\Output;
  * Class Command
  * @package inhere\console
  */
-abstract class Command
+abstract class Command extends AbstractCommand
 {
-    /**
-     * @var Input
-     */
-    protected $input;
-
-    /**
-     * @var Output
-     */
-    protected $output;
-
-    /**
-     * allow display message tags in the command
-     * @var array
-     */
-    protected $allowTags = ['description', 'usage', 'example'];
-
-    /**
-     * command name e.g 'test' 'test:one'
-     * @var string
-     */
-    private $name = '';
-
-    // command description message
-    const DESCRIPTION = '';
-
     // command usage message
     const USAGE       = '';
 
@@ -83,21 +58,5 @@ abstract class Command
     protected function write($message, $nl = true, $quit = false)
     {
         $this->output->write($message, $nl, $quit);
-    }
-
-    /**
-     * @param string $name
-     */
-    public function setName($name)
-    {
-        $this->name = $name;
-    }
-
-    /**
-     * @return string
-     */
-    public function getName()
-    {
-        return $this->name;
     }
 }

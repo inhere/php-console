@@ -178,6 +178,16 @@ abstract class AbstractApp
     }
 
     /**
+     * @param array $controllers
+     */
+    public function controllers(array $controllers)
+    {
+        foreach ($controllers as $name => $controller) {
+            $this->controller($name, $controller);
+        }
+    }
+
+    /**
      * Register a app independent console command
      * @param string $name
      * @param string|\Closure $handler
@@ -195,6 +205,16 @@ abstract class AbstractApp
         $this->commands[$name] = $handler;
 
         return $this;
+    }
+
+    /**
+     * @param array $commands
+     */
+    public function commands(array $commands)
+    {
+        foreach ($commands as $name => $handler) {
+            $this->command($name, $handler);
+        }
     }
 
     /**
