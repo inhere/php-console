@@ -9,6 +9,7 @@
 namespace inhere\console;
 
 use inhere\console\utils\TraitInputOutput;
+use inhere\console\utils\TraitInteract;
 
 /**
  * Class AbstractCommand
@@ -17,6 +18,7 @@ use inhere\console\utils\TraitInputOutput;
 abstract class AbstractCommand
 {
     use TraitInputOutput;
+    use TraitInteract;
 
     // command description message
     // please use the const setting current controller/command description
