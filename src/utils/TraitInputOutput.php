@@ -27,6 +27,43 @@ trait TraitInputOutput
      */
     protected $output;
 
+    /**
+     * Command constructor.
+     * @param Input $input
+     * @param Output $output
+     */
+    public function __construct(Input $input, Output $output)
+    {
+        $this->input  = $input;
+        $this->output = $output;
+    }
+
+    /**
+     * @return string
+     */
+    public function getScript()
+    {
+        return $this->input->getScript();
+    }
+
+    /**
+     * @param string $msg
+     * @return string
+     */
+    protected function read($msg = '')
+    {
+        return $this->input->read($msg);
+    }
+
+    /**
+     * @param $message
+     * @param bool $nl
+     * @param bool $quit
+     */
+    protected function write($message, $nl = true, $quit = false)
+    {
+        $this->output->write($message, $nl, $quit);
+    }
 
     /**
      * @return Input

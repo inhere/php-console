@@ -33,17 +33,6 @@ abstract class Controller extends AbstractCommand
     protected $notFoundCallback = 'notFound';
 
     /**
-     * Command constructor.
-     * @param Input $input
-     * @param Output $output
-     */
-    public function __construct(Input $input, Output $output)
-    {
-        $this->input  = $input;
-        $this->output = $output;
-    }
-
-    /**
      * 运行控制器的 action
      * @param $action
      * @return mixed
@@ -88,7 +77,7 @@ abstract class Controller extends AbstractCommand
                 $this->afterRun($action);
 
             } catch (\Exception $e) {
-                $this->handleActionException($e);
+                $this->handleRuntimeException($e);
             }
 
             // if you defined the method '$this->notFoundCallback' , will call it
@@ -109,7 +98,7 @@ abstract class Controller extends AbstractCommand
      * @param  \Exception $e
      * @throws \Exception
      */
-    protected function handleActionException(\Exception $e)
+    protected function handleRuntimeException(\Exception $e)
     {
         throw $e;
     }
@@ -119,25 +108,6 @@ abstract class Controller extends AbstractCommand
 
     protected function afterRun($action)
     {}
-
-    /**
-     * @param string $msg
-     * @return string
-     */
-    protected function read($msg = '')
-    {
-        return $this->input->read($msg);
-    }
-
-    /**
-     * @param $message
-     * @param bool $nl
-     * @param bool $quit
-     */
-    protected function write($message, $nl = true, $quit = false)
-    {
-        $this->output->write($message, $nl, $quit);
-    }
 
     /**
      * Show help of the controller command group or specified command action

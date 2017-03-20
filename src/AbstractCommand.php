@@ -34,6 +34,8 @@ abstract class AbstractCommand
      */
     protected static $allowTags = ['description', 'usage', 'example'];
 
+    abstract public function run($arg = '');
+
     /**
      * @param string $name
      */

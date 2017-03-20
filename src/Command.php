@@ -18,45 +18,96 @@ use inhere\console\io\Output;
 abstract class Command extends AbstractCommand
 {
     // command usage message
-    const USAGE       = '';
+    protected $usage       = '';
+
+    // command arguments message
+    protected $arguments     = [];
+
+    // command arguments message
+    protected $options     = [];
 
     // command example message
-    const EXAMPLE     = '';
+    protected $example     = '';
 
-    /**
-     * Command constructor.
-     * @param Input $input
-     * @param Output $output
-     */
-    public function __construct(Input $input, Output $output)
+    // run command
+    public function run($name = '')
     {
-        $this->input  = $input;
-        $this->output = $output;
+        $this->setName($name);
+
+        if ($this->input->getBool('h') || $this->input->getBool('help')) {
+            return $this->showHelp();
+        }
+
+        try {
+            $this->beforeRun();
+
+            $status = $this->execute();
+
+            $this->afterRun();
+
+        } catch (\Exception $e) {
+            $this->handleRuntimeException($e);
+        }
+
+        return $status;
     }
 
-    abstract public function execute();
-
-    public function help()
-    {
-        $this->write('No help information.');
-    }
+    // do execute
+    abstract protected function execute();
 
     /**
-     * @param string $msg
-     * @return string
+     * handle command runtime exception
+     *
+     * @param  \Exception $e
+     * @throws \Exception
      */
-    protected function read($msg = '')
+    protected function handleRuntimeException(\Exception $e)
     {
-        return $this->input->read($msg);
+        throw $e;
     }
 
-    /**
-     * @param $message
-     * @param bool $nl
-     * @param bool $quit
-     */
-    protected function write($message, $nl = true, $quit = false)
+    protected function beforeRun()
+    {}
+
+    protected function afterRun()
+    {}
+
+    protected function configure()
     {
-        $this->output->write($message, $nl, $quit);
+        return [
+            // 'usage' => '',
+
+            // 'arguments' => [],
+            // 'options' => [],
+            // 'examples' => [],
+        ];
+    }
+
+    public function showHelp()
+    {
+        $configure = $this->configure();
+
+        if ( !$configure ) {
+            return 91;
+        }
+
+        $configure = array_merge([
+            'usage' => '',
+
+            'arguments' => [],
+            'options' => [],
+            'examples' => [],
+        ], $configure);
+
+        $this->output->helpPanel(
+            $configure['usage'],
+            $configure['arguments'],
+            $configure['options'],
+            (array)$configure['examples'],
+            static::DESCRIPTION,
+            false
+        );
+
+        return 0;
     }
 }

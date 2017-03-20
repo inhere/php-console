@@ -102,6 +102,10 @@ class Input
      * @param mixed $default
      * @return mixed
      */
+    public function getArgument($name=null, $default = null)
+    {
+        return $this->get($name, $default);
+    }
     public function getArg($name=null, $default = null)
     {
         return $this->get($name, $default);
@@ -140,6 +144,10 @@ class Input
      * @param null $default
      * @return bool|mixed|null
      */
+    public function getOption($name, $default = null)
+    {
+        return $this->getOpt($name, $default);
+    }
     public function getOpt($name, $default = null)
     {
         if ( !$this->hasOpt($name) ) {

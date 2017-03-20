@@ -103,13 +103,12 @@ class App extends AbstractApp
 
             /** @var Command $object */
             $object = new $handler($this->input, $this->output);
-            $object->setName($name);
 
             if ( !($object instanceof Command ) ) {
                 throw new \InvalidArgumentException("The console command class [$handler] must instanceof the " . Command::class);
             }
 
-            $status = $object->execute();
+            $status = $object->run($name);
         }
 
         return $status;
@@ -197,7 +196,7 @@ class App extends AbstractApp
         $message = <<<EOF
 <comment>Usage:</comment>
   $script [route|command] [arg1=value1 arg2=value ...] [-v|-h ...]
-    
+
 <comment>Example:</comment>
   $script test
   $script home/index
@@ -219,7 +218,7 @@ EOF;
 
         $message = <<<EOF
 Console App Version <comment>$version</comment>
- 
+
 <comment>System:</comment>
   PHP <info>$phpVersion</info>, on OS <info>$os</info>
 EOF;

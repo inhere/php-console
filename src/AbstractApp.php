@@ -41,9 +41,10 @@ abstract class AbstractApp
     protected $config = [
         'env'   => 'pdt', // dev test pdt
         'debug' => false,
+        'name' => 'My Console',
+        'version' => '0.5.1',
         'charset' => 'UTF-8',
         'timeZone' => 'Asia/Shanghai',
-        'version' => '0.5.1',
     ];
 
     /**
@@ -350,10 +351,10 @@ abstract class AbstractApp
 
     protected function checkName($name, $isGroup = false)
     {
-        $pattern = $isGroup ? '/^[a-z][\w-]+$/' : '/^[a-z][\w-]+:?([a-z][\w-]+)?$/';
+        $pattern = $isGroup ? '/^[a-z][\w-]+$/' : '/^[a-z][\w-]*:?([a-z][\w-]+)?$/';
 
         if (1 !== preg_match($pattern, $name)) {
-            throw new \InvalidArgumentException('The command name is must match: ^[a-z][\w-]+$');
+            throw new \InvalidArgumentException('The command name is must match: ' . $pattern);
         }
 
         if ( $this->isInternalCommand($name) ) {
