@@ -22,6 +22,7 @@ class Show
     const CHAR_SPACE = ' ';
     const CHAR_HYPHEN = '-';
     const CHAR_UNDERLINE = '_';
+    const CHAR_VERTICAL = '|';
     const CHAR_EQUAL = '=';
     const CHAR_STAR  = '*';
 
@@ -100,19 +101,43 @@ class Show
 
     /**
      * @param string $title The title text
-     * @param int    $width The title section width
-     * @param string $char
+     * @param array $opts
      */
-    public static function title($title, $width = 80, $char = self::CHAR_EQUAL)
+    public static function title($title, array $opts = [])
     {
+        $opts = array_merge([
+            'width' => 80,
+            'char'  => self::CHAR_EQUAL,
+            'titlePos'     => self::POS_LEFT,
+            'indent'       => 2,
+            'showBorder'   => true,
+        ], $opts);
+
+        // list($sW, $sH) = Helper::getScreenSize();
+        $width = (int)$opts['width'];
+        $char = trim($opts['char']);
+        $indent = (int)$opts['indent'] > 0 ? $opts['indent'] : 2;
+        $indentStr = str_pad(self::CHAR_SPACE, $indent, self::CHAR_SPACE);
+
         $title = ucwords(trim($title));
-        $msgLength = mb_strlen($title, 'UTF-8');
-        $width = is_int($width) && $width > 10 ? $width : 80;
+        $tLength = Helper::strLen($title);
+        $width = $width > 10 ? $width : 80;
 
-        $indentSpace = str_pad(' ', ceil($width/2) - ceil($msgLength/2), ' ');
-        $charStr = str_pad($char, $width, $char);
+        // title position
+        if ($tLength >= $width) {
+            $titleIndent = str_pad(self::CHAR_SPACE, $indent, self::CHAR_SPACE);
+        } elseif ($opts['titlePos'] === self::POS_RIGHT) {
+            $titleIndent = str_pad(self::CHAR_SPACE, ceil($width - $tLength) + $indent, self::CHAR_SPACE);
+        } elseif ($opts['titlePos'] === self::POS_MIDDLE) {
+            $titleIndent = str_pad(self::CHAR_SPACE, ceil(($width - $tLength)/2) + $indent, self::CHAR_SPACE);
+        } else {
+            $titleIndent = str_pad(self::CHAR_SPACE, $indent, self::CHAR_SPACE);
+        }
 
-        self::write("  {$indentSpace}{$title}   \n  {$charStr}\n");
+        $titleLine = "$titleIndent<bold>$title</bold>\n";
+        $border = $indentStr . str_pad($char, $width, $char);
+
+        self::write($titleLine . $border);
     }
 
     /**
@@ -125,7 +150,8 @@ class Show
         $opts = array_merge([
             'width' => 80,
             'char'  => self::CHAR_HYPHEN,
-            'pos'   => self::POS_LEFT,
+            'titlePos'     => self::POS_LEFT,
+            'indent'       => 2,
             'topBorder'    => true,
             'bottomBorder' => true,
         ], $opts);
@@ -133,34 +159,37 @@ class Show
         // list($sW, $sH) = Helper::getScreenSize();
         $width = (int)$opts['width'];
         $char = trim($opts['char']);
+        $indent = (int)$opts['indent'] > 0 ? $opts['indent'] : 2;
+        $indentStr = str_pad(self::CHAR_SPACE, $indent, self::CHAR_SPACE);
 
         $title = ucwords(trim($title));
         $tLength = Helper::strLen($title);
         $width = $width > 10 ? $width : 80;
-        $indentSpace = '';
 
         // title position
         if ($tLength >= $width) {
-            $indentSpace = '';
-        } elseif ($opts['pos'] === self::POS_RIGHT) {
-            $indentSpace = str_pad(self::CHAR_SPACE, ceil($width - $tLength), self::CHAR_SPACE);
-        } elseif ($opts['pos'] === self::POS_MIDDLE) {
-            $indentSpace = str_pad(self::CHAR_SPACE, ceil(($width - $tLength)/2), self::CHAR_SPACE);
+            $titleIndent = str_pad(self::CHAR_SPACE, $indent, self::CHAR_SPACE);
+        } elseif ($opts['titlePos'] === self::POS_RIGHT) {
+            $titleIndent = str_pad(self::CHAR_SPACE, ceil($width - $tLength) + $indent, self::CHAR_SPACE);
+        } elseif ($opts['titlePos'] === self::POS_MIDDLE) {
+            $titleIndent = str_pad(self::CHAR_SPACE, ceil(($width - $tLength)/2) + $indent, self::CHAR_SPACE);
+        } else {
+            $titleIndent = str_pad(self::CHAR_SPACE, $indent, self::CHAR_SPACE);
         }
 
-        $tpl = "  %s\n%s%s\n%s";// title topBorder body bottomBorder
+        $tpl = "%s\n%s%s\n%s";// title topBorder body bottomBorder
         $topBorder = $bottomBorder = '';
-        $titleLine = "$indentSpace<bold>$title</bold>";
+        $titleLine = "$titleIndent<bold>$title</bold>";
 
         if ( $opts['topBorder'] || $opts['bottomBorder']) {
             $border = str_pad($char, $width, $char);
 
             if ($opts['topBorder']) {
-                $topBorder = "  $border\n";
+                $topBorder = "{$indentStr}$border\n";
             }
 
             if ($opts['bottomBorder']) {
-                $bottomBorder = "  $border\n";
+                $bottomBorder = "{$indentStr}$border\n";
             }
         }
 
@@ -400,13 +429,51 @@ class Show
      * 表格数据信息展示
      * @param  array $data
      * @param  string $title
-     * @param  bool $showBorder
-     * @return void
+     * @param  array $opts
+     * @example
+     *
+     * ```
+     * // like from database query's data.
+     * $data = [
+     *  [ col1 => value1, col2 => value2, col3 => value3, ... ], // first row
+     *  [ col1 => value4, col2 => value5, col3 => value6, ... ], // second row
+     *  ... ...
+     * ];
+     * Show::table($data, 'a table');
+     *
+     * // use custom head
+     * $data = [
+     *  [ value1, value2, value3, ... ], // first row
+     *  [ value4, value5, value6, ... ], // second row
+     *  ... ...
+     * ];
+     *
+     * $opts = [
+     *   'showBorder' => true,
+     *   'tHead' => [col1, col2, col3, ...]
+     * ];
+     * Show::table($data, 'a table', $opts);
+     * ```
      */
-    public static function table(array $data, $title='Info List', $showBorder = true)
+    public static function table(array $data, $title='Info List', array $opts = [])
     {
+        $opts = array_merge([
+            'showBorder'    => true,
+            'leftIndent'    => '  ',
+            'titlePos'      => self::POS_LEFT,
+            'rowBorderChar' => self::CHAR_HYPHEN,   // default is '-'
+            'colBorderChar' => self::CHAR_VERTICAL, // default is '|'
+            'tHead'         => [],                  // custom head data
+        ], $opts);
+
         $rowIndex = 0;
         $head = $table = [];
+        $tableHead  = $opts['tHead'];
+        $leftIndent = $opts['leftIndent'];
+        $showBorder = $opts['showBorder'];
+        $rowBorderChar = $opts['rowBorderChar'];
+        $colBorderChar = $opts['colBorderChar'];
+
         $info = [
             'rowCount'  => count($data),
             'columnCount' => 0,     // how many column in the table.
@@ -418,7 +485,7 @@ class Show
         foreach ($data as $row) {
             // collection all field name
             if ($rowIndex === 0) {
-                $head = array_keys($row);
+                $head = $tableHead ?: array_keys($row);
                 $info['columnCount'] = count($row);
 
                 foreach ($head as $index => $name) {
@@ -458,52 +525,53 @@ class Show
             self::write("  {$indentSpace}<bold>{$title}</bold>");
         }
 
+        $border = $leftIndent . str_pad($rowBorderChar, $tableWidth + ($columnCount*3) + 2, $rowBorderChar);
+
         // output table top border
         if ($showBorder) {
-            $border = str_pad('-', $tableWidth + ($columnCount*3) + 2, '-');
-            self::write('  ' . $border);
+            self::write($border);
+        } else {
+            $colBorderChar = '';// clear column border char
         }
 
         // output table head
-        $headStr = '  | ';
+        $headStr = "{$leftIndent}{$colBorderChar} ";
         foreach ($head as $index => $name) {
             $colMaxWidth = $info['columnMaxWidth'][$index];
             $name = str_pad($name, $colMaxWidth, ' ');
-            $headStr .= " {$name} |";
+            $headStr .= " {$name} {$colBorderChar}";
         }
 
         self::write($headStr);
 
         // border: split head and body
-        if (isset($border)) {
-            self::write('  ' . $border);
-        }
+        self::write($border);
 
         $rowIndex = 0;
 
         // output table info
         foreach ($data as $row) {
             $colIndex = 0;
-            $rowStr = '  | ';
+            $rowStr = "  $colBorderChar ";
 
             foreach ($row as $value) {
                 $colMaxWidth = $info['columnMaxWidth'][$colIndex];
                 $value = str_pad($value, $colMaxWidth, ' ');
-                $rowStr .= " <info>{$value}</info> |";
+                $rowStr .= " <info>{$value}</info> {$colBorderChar}";
                 $colIndex++;
             }
 
-            self::write("{$rowStr}");
+            self::write($rowStr);
 
             $rowIndex++;
         }
 
         // output table bottom border
-        if (isset($border)) {
-            self::write('  ' . $border);
+        if ($showBorder) {
+            self::write($border);
         }
 
-        echo "\n";
+        self::write('');
     }
 
 

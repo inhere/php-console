@@ -45,9 +45,9 @@ class Output
      * @inheritdoc
      * @see Interact::title()
      */
-    public function title($title, $width = 50, $char = '=')
+    public function title($title, array $opts = [])
     {
-        Interact::title($title, $width, $char);
+        Interact::title($title, $opts);
     }
 
     /**

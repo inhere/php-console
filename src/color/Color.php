@@ -160,6 +160,10 @@ class Color
     }
     public function format($text)
     {
+        if (!$text) {
+            return $text;
+        }
+
         // if don't support output color text, clear color tag.
         if ( !Helper::isSupportColor() ) {
             return static::stripColor($text);
