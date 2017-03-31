@@ -102,11 +102,11 @@ class Interact extends Show
                 return $default;
             }
 
-            if ( !strncasecmp($answer, 'y', 1) ) {
+            if ( 0 === stripos($answer, 'y') ) {
                 return true;
             }
 
-            if ( !strncasecmp($answer, 'n', 1) ) {
+            if ( 0 === stripos($answer, 'n') ) {
                 return false;
             }
         }

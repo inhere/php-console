@@ -10,4 +10,5 @@
 composer.lock
 *.swp
 *.swo
+*.zip
 .DS_Store

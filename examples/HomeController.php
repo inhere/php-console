@@ -1,6 +1,7 @@
 <?php
 
 use inhere\console\Controller;
+use inhere\console\utils\Download;
 use inhere\console\utils\Interact;
 
 /**
@@ -138,5 +139,43 @@ class HomeController extends Controller
         ];
 
         Interact::panel($info);
+    }
+
+    /**
+     * download a file to local
+     *
+     * @usage {command} url=url saveTo=[saveAs] type=[bar|text]
+     * @example {command} url=https://github.com/inhere/php-librarys/archive/v2.0.1.zip type=bar
+     */
+    public function downCommand()
+    {
+        $url = $this->input->getArg('url');
+
+        if (!$url) {
+            \inhere\console\utils\Show::error('Please input you want to downloaded file url, use: url=[url]', 1);
+        }
+
+        $saveAs = $this->input->getArg('saveAs');
+        $type = $this->input->getArg('type', 'text');
+
+        if (!$saveAs) {
+            $saveAs = __DIR__ . '/' . basename($url);
+        }
+
+        $goon = Interact::confirm("Now, will download $url to $saveAs, go on");
+
+        if (!$goon) {
+            \inhere\console\utils\Show::notice('Quit download, Bye!');
+
+            return 0;
+        }
+
+        Download::down(
+            $url,
+            $saveAs,
+            $type === 'bar' ? Download::PROGRESS_BAR : Download::PROGRESS_TEXT
+        );
+
+        return 0;
     }
 }
