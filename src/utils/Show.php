@@ -343,10 +343,16 @@ class Show
      * @param  mixed  $data
      * @param  string $title
      * @param  string $borderChar
-     * @return void
+     * @return int
      */
     public static function panel($data, $title='Information Panel', $borderChar = '*')
     {
+        if (!$data) {
+            self::write('<info>No data to display!</info>');
+
+            return -404;
+        }
+
         $data = is_array($data) ? array_filter($data) : [trim($data)];
         $title = trim($title);
 
@@ -423,6 +429,7 @@ class Show
         }
 
         unset($panelData);
+        return 0;
     }
 
     /**
@@ -454,9 +461,16 @@ class Show
      * ];
      * Show::table($data, 'a table', $opts);
      * ```
+     * @return int
      */
     public static function table(array $data, $title='Info List', array $opts = [])
     {
+        if (!$data) {
+            self::write('<info>No data to display!</info>');
+
+            return -404;
+        }
+
         $opts = array_merge([
             'showBorder'    => true,
             'leftIndent'    => '  ',
@@ -572,6 +586,8 @@ class Show
         }
 
         self::write('');
+
+        return 0;
     }
 
 
