@@ -208,7 +208,7 @@ abstract class Controller extends AbstractCommand
         }
 
         $commands[] = "\nFor more information please use: <info>$sName/help [command]</info>";
-        $this->output->aList('<comment>Sub-Commands:</comment>', $commands);
+        $this->output->aList($commands, '<comment>Sub-Commands:</comment>');
     }
 
     /**

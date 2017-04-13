@@ -84,7 +84,7 @@ class HomeController extends Controller
             'list'    => 'List all group and independent commands',
         ];
         Interact::panel($commands, 'Internal Commands', '');
-        Interact::aList('Internal Commands', $commands);
+        Interact::aList($commands, 'Internal Commands');
     }
 
     /**

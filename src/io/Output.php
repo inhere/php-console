@@ -63,9 +63,9 @@ class Output
      * @inheritdoc
      * @see Interact::aList()
      */
-    public function aList($title, array $data, array $opts = [])
+    public function aList($data, $title, array $opts = [])
     {
-        Interact::aList($title, $data, $opts);
+        Interact::aList($data, $title, $opts);
     }
 
     /**
@@ -76,6 +76,10 @@ class Output
     {
         Interact::multiList($data, $opts);
     }
+    public function mList(array $data, array $opts = [])
+    {
+        Interact::multiList($data, $opts);
+    }
 
     /**
      * helpPanel
@@ -83,7 +87,7 @@ class Output
      * @see Interact::helpPanel()
      */
     public function helpPanel(
-        $usage, array $commands = [], array $options = [], array $examples = [],
+        $usage, $commands = null, $options = null, $examples = null,
         $description = '', $showAfterQuit = true
     ) {
         Interact::helpPanel($usage, $commands, $options, $examples, $description, $showAfterQuit);
@@ -148,14 +152,14 @@ class Output
 
     /**
      * 读取输入信息
-     * @param  string $message  若不为空，则先输出文本
+     * @param  string $question  若不为空，则先输出文本
      * @param  bool   $nl       true 会添加换行符 false 原样输出，不添加换行符
      * @return string
      */
-    public function read($message = null, $nl = false)
+    public function read($question = null, $nl = false)
     {
-        if ( $message ) {
-            $this->write($message, $nl);
+        if ($question) {
+            $this->write($question, $nl);
         }
 
         return trim(fgets(STDIN));

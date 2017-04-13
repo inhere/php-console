@@ -60,7 +60,7 @@ class Show
         $color = static::getColor();
 
         if (is_string($style) && $color->hasStyle($style)) {
-            $text = sprintf("<%s>%s</%s>", $style, $text, $style);
+            $text = sprintf('<%s>%s</%s>', $style, $text, $style);
         }
 
         // $this->write($text);
@@ -208,11 +208,11 @@ class Show
      *      'name2' => 'value text 2',
      * ];
      * ```
-     * @param $title
      * @param array $data
+     * @param string $title
      * @param array $opts More @see Helper::spliceKeyValue()
      */
-    public static function aList($title, $data, array $opts = [])
+    public static function aList($data, $title, array $opts = [])
     {
         // title
         if ( $title ) {
@@ -255,14 +255,14 @@ class Show
     public static function multiList(array $data, array $opts = [])
     {
         foreach ($data as $title => $list) {
-            self::aList($title, $list, $opts);
+            self::aList($list, $title, $opts);
         }
     }
 
     /**
      * Show console help message
      * @param  string $usage    The usage message text. e.g 'command [options] [arguments]'
-     * @param  array  $commands The command list
+     * @param  array|string  $commands The command list
      * e.g
      * [
      *     // command => description
@@ -277,24 +277,22 @@ class Show
      *     '-h, --help' => 'Display this help message'
      *     ... ...
      * ]
-     * @param  array  $examples The command usage example. e.g 'php server.php {start|reload|restart|stop} [-d]'
+     * @param  array|string  $examples The command usage example. e.g 'php server.php {start|reload|restart|stop} [-d]'
      * @param  string $description The description text. e.g 'Composer version 1.3.2'
      * @param  bool   $showAfterQuit Show help after quit
      */
-    public static function consoleHelp($usage, $commands = [], $options = [], $examples = [], $description = '', $showAfterQuit = true)
+    public static function helpPanel($usage, $commands = null, $options = null, $examples = null, $description = '', $showAfterQuit = true)
     {
-        self::helpPanel($usage, $commands, $options, $examples, $description, $showAfterQuit);
-    }
-    public static function helpPanel($usage, $commands = [], $options = [], $examples = [], $description = '', $showAfterQuit = true)
-    {
+        $help = [];
+
         // description
         if ( $description ) {
-            self::write($description . PHP_EOL);
+            $help[] = $description . PHP_EOL;
         }
 
         // usage
         if ($usage) {
-            self::write("<comment>Usage</comment>:\n  {$usage}\n");
+            $help[] = "<comment>Usage</comment>:\n  {$usage}\n";
         }
 
         // options list
@@ -305,10 +303,11 @@ class Show
                     'leftChar' => '  ',
                     'keyStyle' => 'info',
                 ]);
+                $options = "<comment>Options</comment>:\n{$options}";
             }
 
             if ( is_string($options) ) {
-                self::write("<comment>Options</comment>:\n{$options}");
+                $help[] = $options;
             }
         }
 
@@ -320,17 +319,22 @@ class Show
                     'leftChar' => '  ',
                     'keyStyle' => 'info',
                 ]);
+                $commands = "<comment>Commands</comment>:\n{$commands}";
             }
 
             if ( is_string($commands) ) {
-                self::write("<comment>Commands</comment>:\n{$commands}");
+                $help[] = $commands;
             }
         }
 
         // examples list
         if ( $examples ) {
             $examples = is_array($examples) ? implode(PHP_EOL . '  ', $examples) : (string)$examples;
-            self::write("<comment>Examples</comment>:\n  {$examples}\n");
+            $help[] = "<comment>Examples</comment>:\n  {$examples}\n";
+        }
+
+        if ($help) {
+            self::write($help);
         }
 
         if ($showAfterQuit) {
@@ -371,6 +375,7 @@ class Show
             if ( is_array($value) ) {
                 $temp = '';
 
+                /** @var array $value */
                 foreach ($value as $key => $val) {
                     if (is_bool($val)) {
                         $val = $val ? 'True' : 'False';
@@ -509,7 +514,7 @@ class Show
 
             $colIndex = 0;
 
-            foreach ($row as $value) {
+            foreach ((array)$row as $value) {
                 // collection column max width
                 if ( isset($info['columnMaxWidth'][$colIndex]) ) {
                     $colWidth = mb_strlen($value, 'UTF-8');
@@ -568,7 +573,7 @@ class Show
             $colIndex = 0;
             $rowStr = "  $colBorderChar ";
 
-            foreach ($row as $value) {
+            foreach ((array)$row as $value) {
                 $colMaxWidth = $info['columnMaxWidth'][$colIndex];
                 $value = str_pad($value, $colMaxWidth, ' ');
                 $rowStr .= " <info>{$value}</info> {$colBorderChar}";

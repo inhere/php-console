@@ -101,7 +101,7 @@ class ProgressBar
     private function setMaxSteps($max)
     {
         $this->max = max(0, (int) $max);
-        $this->stepWidth = $this->max ? Helper::strlen($this->max) : 4;
+        $this->stepWidth = $this->max ? Helper::strLen($this->max) : 4;
     }
 
     /**

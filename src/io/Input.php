@@ -54,51 +54,32 @@ class Input
 
     /**
      * 读取输入信息
-     * @param  string $message  若不为空，则先输出文本消息
+     * @param  string $question  若不为空，则先输出文本消息
      * @param  bool   $nl       true 会添加换行符 false 原样输出，不添加换行符
      * @return string
      */
-    public function read($message = null, $nl = false)
+    public function read($question = null, $nl = false)
     {
-        fwrite(STDOUT, $message . ($nl ? "\n" : ''));
+        fwrite(STDOUT, $question . ($nl ? "\n" : ''));
 
         return trim(fgets($this->inputStream));
     }
 
+    /////////////////////////////////////////////////////////////////////////////////////////
+    /// arguments (eg: name=john city=chengdu)
+    /////////////////////////////////////////////////////////////////////////////////////////
+
     /**
-     * @return string
+     * @param $name
+     * @return bool
      */
-    public function getScriptName()
+    public function hasArg($name)
     {
-        return self::$scriptName;
+        return isset($this->args[$name]);
     }
 
     /**
-     * @return string
-     */
-    public function getScript()
-    {
-        return self::$scriptName;
-    }
-
-    /**
-     * @return string
-     */
-    public function getCommand()
-    {
-        return self::$command;
-    }
-
-    /**
-     * @return array
-     */
-    public function getArgs()
-    {
-        return $this->args;
-    }
-
-    /**
-     * @param null|string $name
+     * @param null|int|string $name
      * @param mixed $default
      * @return mixed
      */
@@ -120,6 +101,24 @@ class Input
     }
 
     /**
+     * get first argument
+     * @return string
+     */
+    public function getFirstArg()
+    {
+        return $this->get(0);
+    }
+
+    /**
+     * get second argument
+     * @return string
+     */
+    public function getSecondArg()
+    {
+        return $this->get(1);
+    }
+
+    /**
      * @param $key
      * @param int $default
      * @return bool
@@ -132,12 +131,25 @@ class Input
     }
 
     /**
-     * @return array
+     * get bool value form args
+     * @param $key
+     * @param bool $default
+     * @return bool
      */
-    public function getOpts()
+    public function getBool($key, $default = false)
     {
-        return $this->opts;
+        if ( !$this->hasArg($key) ) {
+            return (bool)$default;
+        }
+
+        $value = $this->args[$key];
+
+        return !in_array(strtolower($value), ['0', 'false'], true);
     }
+
+    /////////////////////////////////////////////////////////////////////////////////////////
+    /// options (eg: -d --help)
+    /////////////////////////////////////////////////////////////////////////////////////////
 
     /**
      * @param $name
@@ -185,7 +197,7 @@ class Input
      * @param bool $default
      * @return bool
      */
-    public function getBool($key, $default = false)
+    public function boolOpt($key, $default = false)
     {
         return $this->getBoolOpt($key, $default);
     }
@@ -198,6 +210,66 @@ class Input
         $value = $this->opts[$key];
 
         return !in_array(strtolower($value), ['0', 'false'], true);
+    }
+
+    /////////////////////////////////////////////////////////////////////////////////////////
+    /// getter/setter
+    /////////////////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * @return string
+     */
+    public function getScriptName()
+    {
+        return self::$scriptName;
+    }
+
+    /**
+     * @return string
+     */
+    public function getScript()
+    {
+        return self::$scriptName;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCommand()
+    {
+        return self::$command;
+    }
+
+    /**
+     * @param array $args
+     */
+    public function setArgs(array $args)
+    {
+        $this->args = $args;
+    }
+
+    /**
+     * @return array
+     */
+    public function getArgs()
+    {
+        return $this->args;
+    }
+
+    /**
+     * @param array $opts
+     */
+    public function setOpts(array $opts)
+    {
+        $this->opts = $opts;
+    }
+
+    /**
+     * @return array
+     */
+    public function getOpts()
+    {
+        return $this->opts;
     }
 
     /**

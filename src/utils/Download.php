@@ -17,7 +17,14 @@ class Download
     const PROGRESS_TEXT = 1;
     const PROGRESS_BAR = 2;
 
-    private static $fileSize = null;
+    /**
+     * @var int
+     */
+    private static $fileSize;
+
+    /**
+     * @var int
+     */
     private static $showType = 1;
 
     /*
@@ -132,56 +139,6 @@ class Download
      */
 
     /**
-     * @param int $notifyCode       stream notify code
-     * @param int $severity         severity code
-     * @param string $message       Message text
-     * @param int $messageCode      Message code
-     * @param int $transferredBytes Have been transferred bytes
-     * @param int $maxBytes         Target max length bytes
-     */
-    protected static function progressText($notifyCode, $severity, $message, $messageCode, $transferredBytes, $maxBytes)
-    {
-        $msg = '';
-        switch($notifyCode) {
-            case STREAM_NOTIFY_RESOLVE:
-            case STREAM_NOTIFY_AUTH_REQUIRED:
-            case STREAM_NOTIFY_COMPLETED:
-            case STREAM_NOTIFY_FAILURE:
-            case STREAM_NOTIFY_AUTH_RESULT:
-                // var_dump($notifyCode, $severity, $message, $messageCode, $transferredBytes, $maxBytes);
-                $msg = "NOTIFY: $message(NO: $messageCode, Severity: $severity)";
-                /* Ignore */
-                break;
-
-            case STREAM_NOTIFY_REDIRECTED:
-                $msg = "Being redirected to: $message";
-                break;
-
-            case STREAM_NOTIFY_CONNECT:
-                $msg = 'Connected...';
-                break;
-
-            case STREAM_NOTIFY_FILE_SIZE_IS:
-                $fileSize = sprintf('%2d',$maxBytes/1024);
-                $msg = "Got the file size: <info>$fileSize</info> kb";
-                break;
-
-            case STREAM_NOTIFY_MIME_TYPE_IS:
-                $msg = "Found the mime-type: <info>$message</info>";
-                break;
-
-            case STREAM_NOTIFY_PROGRESS:
-                if ( $transferredBytes > 0 ) {
-                    printf("\r\rMade some progress, downloaded %2d kb so far", $transferredBytes/1024);
-                    //$msg = "Made some progress, downloaded <info>$transferredBytes</info> so far";
-                }
-                break;
-        }
-
-        $msg && Show::write($msg);
-    }
-
-    /**
      * eg: php down.php <http://example.com/file> <localFile>
      * @param string $url
      * @param string $saveAs
@@ -191,8 +148,9 @@ class Download
     {
         self::$showType = (int)$type;
         $ctx = stream_context_create();
+
+        // register stream notification callback
         stream_context_set_params($ctx, [
-            // register stream notification callback
             'notification' => [ self::class, 'progressShow']
         ]);
 

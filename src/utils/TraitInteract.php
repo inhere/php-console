@@ -20,7 +20,7 @@ trait TraitInteract
      */
     public function select($description, $options, $default = null, $allowExit=true)
     {
-        return self::choice($description, $options, $default, $allowExit);
+        return $this->choice($description, $options, $default, $allowExit);
     }
     public function choice($description, $options, $default = null, $allowExit=true)
     {
@@ -42,7 +42,7 @@ trait TraitInteract
      */
     public function ask($question, $default = null, \Closure $validator = null)
     {
-        return self::question($question, $default, $validator);
+        return $this->question($question, $default, $validator);
     }
     public function question($question, $default = null, \Closure $validator = null)
     {
