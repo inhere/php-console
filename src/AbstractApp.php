@@ -278,14 +278,14 @@ abstract class AbstractApp
 
         // allow get $config['top']['sub'] by 'top.sub'
         if ( strpos($name, '.') > 1 ) {
-            list($topKey, $subKey) = explode('.', $name, 2);
+            [$topKey, $subKey] = explode('.', $name, 2);
 
             if ( isset($this->config[$topKey]) && isset($this->config[$topKey][$subKey])) {
                 return $this->config[$topKey][$subKey];
             }
         }
 
-        return isset($this->config[$name]) ? $this->config[$name]: $default;
+        return $this->config[$name] ?? $default;
     }
 
     /**

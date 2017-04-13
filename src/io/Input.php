@@ -48,7 +48,7 @@ class Input
     public function __construct($parseArgv = true, $fillToGlobal = false)
     {
         if ($parseArgv) {
-            list($this->args, $this->opts) = self::parseGlobalArgv($fillToGlobal);
+            [$this->args, $this->opts] = self::parseGlobalArgv($fillToGlobal);
         }
     }
 
@@ -83,39 +83,37 @@ class Input
      * @param mixed $default
      * @return mixed
      */
-    public function getArgument($name=null, $default = null)
+    public function getArgument($name, $default = null)
     {
         return $this->get($name, $default);
     }
-    public function getArg($name=null, $default = null)
+    public function getArg($name, $default = null)
     {
         return $this->get($name, $default);
     }
-    public function get($name=null, $default = null)
+    public function get($name, $default = null)
     {
-        if (null === $name) {
-            return $this->args;
-        }
-
-        return isset($this->args[$name]) ? $this->args[$name] : $default;
+        return $this->args[$name] ?? $default;
     }
 
     /**
      * get first argument
+     * @param string $default
      * @return string
      */
-    public function getFirstArg()
+    public function getFirstArg($default = '')
     {
-        return $this->get(0);
+        return $this->get(0, $default);
     }
 
     /**
      * get second argument
+     * @param string $default
      * @return string
      */
-    public function getSecondArg()
+    public function getSecondArg($default = '')
     {
-        return $this->get(1);
+        return $this->get(1, $default);
     }
 
     /**

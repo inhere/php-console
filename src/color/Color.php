@@ -175,7 +175,7 @@ class Color
             return $text;
         }
 
-        foreach ($matches[0] as $i => $m) {
+        foreach ((array)$matches[0] as $i => $m) {
             if (array_key_exists($matches[1][$i], $this->styles)) {
                 $text = $this->replaceColor($text, $matches[1][$i], $matches[2][$i], $this->styles[$matches[1][$i]]);
 
@@ -198,8 +198,8 @@ class Color
      */
     protected function replaceColor($text, $tag, $match, Style $style)
     {
-        $style   = $style->toString();
-        $replace = $this->noColor ? $match : "\033[{$style}m{$match}\033[0m";
+        $styleStr   = $style->toString();
+        $replace = $this->noColor ? $match : "\033[{$styleStr}m{$match}\033[0m";
 
         return str_replace("<$tag>$match</$tag>", $replace, $text);
     }
@@ -220,7 +220,9 @@ class Color
     {
         if (is_array($fg)) {
             return $this->addStyleByArray($name, $fg);
-        } elseif (is_object($fg) && $fg instanceof Style) {
+        }
+
+        if (is_object($fg) && $fg instanceof Style) {
             $this->styles[$name] = $fg;
         } else {
             $this->styles[$name] = Style::make($fg, $bg, $options);
@@ -249,7 +251,7 @@ class Color
         ];
 
         $config = array_merge($style, $styleConfig);
-        list($fg, $bg, $options) = array_values($config);
+        [$fg, $bg, $options] = array_values($config);
 
         $this->styles[$name] = Style::make($fg, $bg, $options);
 

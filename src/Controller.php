@@ -8,9 +8,6 @@
 
 namespace inhere\console;
 
-use inhere\console\io\Input;
-use inhere\console\io\Output;
-
 /**
  * Class Command
  * @package inhere\console
@@ -122,7 +119,7 @@ abstract class Controller extends AbstractCommand
      */
     final public function helpCommand($action = '')
     {
-        if (!$action && !($action = $this->input->get(0)) ) {
+        if (!$action && !($action = $this->input->getFirstArg()) ) {
             $this->showCommandList();
             return 0;
         }

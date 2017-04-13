@@ -8,9 +8,6 @@
 
 namespace inhere\console;
 
-use inhere\console\io\Input;
-use inhere\console\io\Output;
-
 /**
  * Class Command
  * @package inhere\console
@@ -38,11 +35,11 @@ abstract class Command extends AbstractCommand
             return $this->showHelp();
         }
 
+        $status = 0;
+
         try {
             $this->beforeRun();
-
             $status = $this->execute();
-
             $this->afterRun();
 
         } catch (\Exception $e) {
