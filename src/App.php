@@ -232,7 +232,7 @@ EOF;
      */
     public function showCommandList($quit = true)
     {
-        $script = $this->input->getScriptName();
+        $script = $this->getScriptName();
         $controllerArr = $commandArr = [];
 
         // built in commands

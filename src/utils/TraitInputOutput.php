@@ -28,20 +28,9 @@ trait TraitInputOutput
     protected $output;
 
     /**
-     * Command constructor.
-     * @param Input $input
-     * @param Output $output
-     */
-    public function __construct(Input $input, Output $output)
-    {
-        $this->input  = $input;
-        $this->output = $output;
-    }
-
-    /**
      * @return string
      */
-    public function getScript()
+    public function getScriptName()
     {
         return $this->input->getScript();
     }
@@ -68,7 +57,7 @@ trait TraitInputOutput
     /**
      * @return Input
      */
-    public function getInput()
+    public function getInput(): Input
     {
         return $this->input;
     }
@@ -84,7 +73,7 @@ trait TraitInputOutput
     /**
      * @return Output
      */
-    public function getOutput()
+    public function getOutput(): Output
     {
         return $this->output;
     }
@@ -96,5 +85,4 @@ trait TraitInputOutput
     {
         $this->output = $output;
     }
-
 }

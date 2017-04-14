@@ -37,7 +37,7 @@ abstract class Controller extends AbstractCommand
      */
     public function run($action = '')
     {
-        $showCmdHelp = $action && ($this->input->getBool('h') || $this->input->getBool('help'));
+        $showCmdHelp = $action && ($this->input->boolOpt('h') || $this->input->boolOpt('help'));
 
         if ($showCmdHelp) {
             return $this->helpCommand($action);

@@ -10,6 +10,7 @@ namespace inhere\console;
 
 use inhere\console\io\Input;
 use inhere\console\io\Output;
+use inhere\console\utils\TraitInputOutput;
 
 /**
  * Class AbstractApp
@@ -17,6 +18,8 @@ use inhere\console\io\Output;
  */
 abstract class AbstractApp
 {
+    use TraitInputOutput;
+
     // event name list
     const ON_BEFORE_RUN = 'beforeRun';
     const ON_AFTER_RUN  = 'afterRun';
@@ -46,16 +49,6 @@ abstract class AbstractApp
         'charset' => 'UTF-8',
         'timeZone' => 'Asia/Shanghai',
     ];
-
-    /**
-     * @var Input
-     */
-    public $input;
-
-    /**
-     * @var Output
-     */
-    public $output;
 
     /**
      * @var array
@@ -161,7 +154,7 @@ abstract class AbstractApp
      * @param string $controller The controller class
      * @return static
      */
-    public function controller($name, $controller)
+    public function controller(string $name, string $controller)
     {
         if (!$name || !$controller) {
             throw new \InvalidArgumentException('Parameters are not allowed to is empty!');
@@ -194,7 +187,7 @@ abstract class AbstractApp
      * @param string|\Closure $handler
      * @return $this
      */
-    public function command($name, $handler)
+    public function command(string $name, $handler)
     {
         if (!$name || !$handler) {
             throw new \InvalidArgumentException('Parameters are not allowed to is empty!');
@@ -221,7 +214,7 @@ abstract class AbstractApp
     /**
      * @return array
      */
-    public static function hooks()
+    public static function hooks(): array
     {
         return array_keys(self::$hooks);
     }
@@ -230,7 +223,7 @@ abstract class AbstractApp
      * @param $event
      * @param callable $handler
      */
-    public function on($event, callable $handler)
+    public function on(string $event, callable $handler)
     {
         if (isset(self::$hooks[$event])) {
             self::$hooks[$event] = $handler;
@@ -240,7 +233,7 @@ abstract class AbstractApp
     /**
      * @return array
      */
-    public function getInternalCommands()
+    public function getInternalCommands(): array
     {
         return $this->internalCommands;
     }
@@ -249,7 +242,7 @@ abstract class AbstractApp
      * @param $name
      * @return bool
      */
-    public function isInternalCommand($name)
+    public function isInternalCommand(string $name): bool
     {
         return isset($this->internalCommands[$name]);
     }
@@ -303,7 +296,7 @@ abstract class AbstractApp
      * get config
      * @return array
      */
-    public function getConfig()
+    public function getConfig(): array
     {
         return $this->config;
     }
@@ -312,44 +305,16 @@ abstract class AbstractApp
      * is Debug
      * @return boolean
      */
-    public function isDebug()
+    public function isDebug(): bool
     {
         return (bool)$this->config['debug'];
     }
 
     /**
-     * @return Input
+     * @param $name
+     * @param bool $isGroup
      */
-    public function getInput()
-    {
-        return $this->input;
-    }
-
-    /**
-     * @param Input $input
-     */
-    public function setInput(Input $input)
-    {
-        $this->input = $input;
-    }
-
-    /**
-     * @return Output
-     */
-    public function getOutput()
-    {
-        return $this->output;
-    }
-
-    /**
-     * @param Output $output
-     */
-    public function setOutput(Output $output)
-    {
-        $this->output = $output;
-    }
-
-    protected function checkName($name, $isGroup = false)
+    protected function checkName(string $name, $isGroup = false)
     {
         $pattern = $isGroup ? '/^[a-z][\w-]+$/' : '/^[a-z][\w-]*:?([a-z][\w-]+)?$/';
 

@@ -8,6 +8,8 @@
 
 namespace inhere\console;
 
+use inhere\console\io\Input;
+use inhere\console\io\Output;
 use inhere\console\utils\TraitInputOutput;
 use inhere\console\utils\TraitInteract;
 
@@ -36,12 +38,23 @@ abstract class AbstractCommand
      */
     protected static $allowTags = ['description', 'usage', 'example'];
 
+    /**
+     * Command constructor.
+     * @param Input $input
+     * @param Output $output
+     */
+    public function __construct(Input $input, Output $output)
+    {
+        $this->input  = $input;
+        $this->output = $output;
+    }
+
     abstract public function run($arg = '');
 
     /**
      * @param string $name
      */
-    public function setName($name)
+    public function setName(string $name)
     {
         $this->name = $name;
     }
@@ -49,7 +62,7 @@ abstract class AbstractCommand
     /**
      * @return string
      */
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
@@ -57,7 +70,7 @@ abstract class AbstractCommand
     /**
      * @return array
      */
-    public static function getAllowTags()
+    public static function getAllowTags(): array
     {
         return self::$allowTags;
     }

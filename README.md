@@ -24,27 +24,76 @@ $app = new App([], $input, $output);
 example(in terminal):
 
 ```
-./bin/app image/packTask name=john -d -s=test --debug=true
-php bin/cli.php start name=john -d -s=test --debug=true
+$ examples/app home/useArg status=2 name=john name=tom name=jack arg0 -s=test --page=23 --id=23 --id=154 --id=456  -d -rf --debug --test=false
 ```
 
 get command info:
 
 ```
-$script = $input->getScript();   // './bin/app'    'bin/cli.php'
-$command = $input->getCommand(); // 'image/packTask' 'start'
-
-// argument
-$name = $input->get('name', 'default'); // 'john'
-$s = $input->get('s', 'default'); // 'test'
-
-// option
-$d = $input->getBool('d') // True
-$debug = $input->getBool('debug') // True
-$noexists = $input->getBool('noexists') // False
+echo $input->getScript();   // 'examples/app'
+echo $input->getCommand(); // 'home/useArg'
 ```
 
-get user input:
+get parsed arguments:
+
+```php
+var_dump($input->getArgs());
+```
+
+output:
+
+```php
+array(3) {            
+  'status' => string(1) "2"       
+  'name' =>  array(3) {          
+    [0] => string(4) "john"  
+    [1] => string(3) "tom"   
+    [2] => string(4) "jack"  
+  }                   
+  [0] => string(4) "arg0"    
+}                     
+```
+
+get parsed options:
+
+```php
+var_dump($input->getOpts());
+```
+
+output:
+
+```php
+array(8) {                  
+  's' => string(4) "test"   
+  'page' => string(2) "23"  
+  'id' => array(3) {        
+    [0] => string(2) "23"   
+    [1] => string(3) "154"  
+    [2] => string(3) "456"  
+  }                         
+  'd' => bool(true)         
+  'r' => bool(true)         
+  'f' => bool(true)         
+  'debug' => bool(true)     
+  'test' => bool(false)     
+}                           
+```
+
+more method:
+
+```php
+
+// argument
+$first = $input->getFirstArg(); // 'arg0'
+$status = $input->get('status', 'default'); // '2'
+
+// option
+$page = $input->getOpt('page') // '23'
+$debug = $input->boolOpt('debug') // True
+$test = $input->boolOpt('test') // False
+```
+
+### get user input:
 
 ```
 echo "Your name:";
@@ -183,4 +232,6 @@ var_dump($result); // bool(false)
 
 ```
 
-## formatted output
+## License
+
+MIT

@@ -31,7 +31,7 @@ abstract class Command extends AbstractCommand
     {
         $this->setName($name);
 
-        if ($this->input->getBool('h') || $this->input->getBool('help')) {
+        if ($this->input->boolOpt('h') || $this->input->boolOpt('help')) {
             return $this->showHelp();
         }
 
