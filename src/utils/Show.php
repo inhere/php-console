@@ -261,79 +261,120 @@ class Show
 
     /**
      * Show console help message
-     * @param  string $usage    The usage message text. e.g 'command [options] [arguments]'
-     * @param  array|string  $commands The command list
-     * e.g
+     *
+     * @param  array  $config The config data
+     *
+     * There are config structure. you can setting some or ignore some. will only render it when value is not empty.
+     *
      * [
-     *     // command => description
-     *     'start'    => 'Start the app server',
-     *     ... ...
+     *  description string         The description text. e.g 'Composer version 1.3.2'
+     *  usage       string         The usage message text. e.g 'command [options] [arguments]'
+     *
+     *  commands    array|string   The command list. e.g:
+     *      [
+     *          // command => description
+     *          'start'    => 'Start the app server',
+     *          ... ...
+     *      ]
+     *  arguments   array|string   The argument list. e.g:
+     *      [
+     *          // argument => description
+     *          'name'      => 'Your name',
+     *          'city'      => 'Your city name'
+     *          ... ...
+     *      ]
+     *  options     array|string   The option list. e.g:
+     *      [
+     *          // option    => description
+     *          '-d'         => 'Run the server on daemon.(default: <comment>false</comment>)',
+     *          '-h, --help' => 'Display this help message'
+     *          ... ...
+     *      ]
+     *
+     *  examples    array|string  The command usage example. e.g 'php server.php {start|reload|restart|stop} [-d]'
      * ]
-     * @param  array|string  $options The option list
-     * e.g
-     * [
-     *     // option    => description
-     *     '-d'         => 'Run the server on daemon.(default: <comment>false</comment>)',
-     *     '-h, --help' => 'Display this help message'
-     *     ... ...
-     * ]
-     * @param  array|string  $examples The command usage example. e.g 'php server.php {start|reload|restart|stop} [-d]'
-     * @param  string $description The description text. e.g 'Composer version 1.3.2'
      * @param  bool   $showAfterQuit Show help after quit
      */
-    public static function helpPanel($usage, $commands = null, $options = null, $examples = null, $description = '', $showAfterQuit = true)
+    public static function helpPanel(array $config, $showAfterQuit = true)
     {
         $help = [];
+        $config = array_merge([
+            'description' => '',
+            'usage' => '',
+
+            'commands' => [],
+            'arguments' => [],
+            'options' => [],
+
+            'examples' => [],
+        ], $config);
 
         // description
-        if ( $description ) {
-            $help[] = $description . PHP_EOL;
+        if ($config['description']) {
+            $help[] = $config['description'] . PHP_EOL;
         }
 
         // usage
-        if ($usage) {
-            $help[] = "<comment>Usage</comment>:\n  {$usage}\n";
-        }
-
-        // options list
-        if ( $options ) {
-            // translate array to string
-            if ( is_array($options)) {
-                $options = Helper::spliceKeyValue($options, [
-                    'leftChar' => '  ',
-                    'keyStyle' => 'info',
-                ]);
-                $options = "<comment>Options</comment>:\n{$options}";
-            }
-
-            if ( is_string($options) ) {
-                $help[] = $options;
-            }
+        if ($config['usage']) {
+            $help[] = "<comment>Usage</comment>:\n  {$config['usage']}\n";
         }
 
         // command list
-        if ( $commands ) {
+        if ($config['commands']) {
             // translate array to string
-            if ( is_array($commands)) {
-                $commands = Helper::spliceKeyValue($commands, [
+            if ( is_array($config['commands'])) {
+                $config['commands'] = Helper::spliceKeyValue($config['commands'], [
                     'leftChar' => '  ',
                     'keyStyle' => 'info',
                 ]);
-                $commands = "<comment>Commands</comment>:\n{$commands}";
+                $config['commands'] = "<comment>Commands</comment>:\n{$config['commands']}";
             }
 
-            if ( is_string($commands) ) {
-                $help[] = $commands;
+            if ( is_string($config['commands']) ) {
+                $help[] = $config['commands'];
+            }
+        }
+
+        // argument list
+        if ($config['arguments']) {
+            // translate array to string
+            if ( is_array($config['arguments'])) {
+                $config['arguments'] = Helper::spliceKeyValue($config['arguments'], [
+                    'leftChar' => '  ',
+                    'keyStyle' => 'info',
+                ]);
+                $config['arguments'] = "<comment>Commands</comment>:\n{$config['arguments']}";
+            }
+
+            if ( is_string($config['arguments']) ) {
+                $help[] = $config['arguments'];
+            }
+        }
+
+        // options list
+        if ($config['options']) {
+            // translate array to string
+            if ( is_array($config['options'])) {
+                $config['options'] = Helper::spliceKeyValue($config['options'], [
+                    'leftChar' => '  ',
+                    'keyStyle' => 'info',
+                ]);
+                $config['options'] = "<comment>Options</comment>:\n{$config['options']}";
+            }
+
+            if ( is_string($config['options']) ) {
+                $help[] = $config['options'];
             }
         }
 
         // examples list
-        if ( $examples ) {
-            $examples = is_array($examples) ? implode(PHP_EOL . '  ', $examples) : (string)$examples;
+        if ($config['examples']) {
+            $examples = is_array($config['examples']) ? implode(PHP_EOL . '  ', $config['examples']) : (string)$config['examples'];
             $help[] = "<comment>Examples</comment>:\n  {$examples}\n";
         }
 
         if ($help) {
+            unset($config);
             self::write($help);
         }
 

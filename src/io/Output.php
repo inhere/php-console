@@ -86,11 +86,9 @@ class Output
      * @inheritdoc
      * @see Interact::helpPanel()
      */
-    public function helpPanel(
-        $usage, $commands = null, $options = null, $examples = null,
-        $description = '', $showAfterQuit = true
-    ) {
-        Interact::helpPanel($usage, $commands, $options, $examples, $description, $showAfterQuit);
+    public function helpPanel(array $config, $showAfterQuit = true)
+    {
+        Interact::helpPanel($config, $showAfterQuit);
     }
 
     /**

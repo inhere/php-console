@@ -88,22 +88,9 @@ abstract class Command extends AbstractCommand
             return 91;
         }
 
-        $configure = array_merge([
-            'usage' => '',
+        $configure['description'] = static::DESCRIPTION;
 
-            'arguments' => [],
-            'options' => [],
-            'examples' => [],
-        ], $configure);
-
-        $this->output->helpPanel(
-            $configure['usage'],
-            $configure['arguments'],
-            $configure['options'],
-            (array)$configure['examples'],
-            static::DESCRIPTION,
-            false
-        );
+        $this->output->helpPanel($configure, false);
 
         return 0;
     }
