@@ -171,11 +171,9 @@ class HomeController extends Controller
             return 0;
         }
 
-        Download::down(
-            $url,
-            $saveAs,
-            $type === 'bar' ? Download::PROGRESS_BAR : Download::PROGRESS_TEXT
-        );
+        $d = Download::down($url, $saveAs, $type);
+
+        var_dump($d);
 
         return 0;
     }

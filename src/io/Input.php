@@ -138,13 +138,13 @@ class Input
      */
     public function getBool($key, $default = false): bool
     {
-        if ( !$this->hasArg($key) ) {
+        if (!$this->hasArg($key)) {
             return (bool)$default;
         }
 
         $value = strtolower($this->args[$key]);
 
-        return 'true' === $value || 'on' === $value;
+        return 'true' === $value || 'yes' === $value || 'on' === $value;
     }
 
     /////////////////////////////////////////////////////////////////////////////////////////
@@ -372,9 +372,9 @@ class Input
             $tVal = strtolower($val);
 
             // check it is a bool value.
-            if ($tVal === 'on' || $tVal === 'true') {
+            if ($tVal === 'on' || $tVal === 'yes' || $tVal === 'true') {
                 $opts[$name] = true;
-            } elseif ($tVal === 'off' || $tVal === 'false') {
+            } elseif ($tVal === 'off' || $tVal === 'no' || $tVal === 'false') {
                 $opts[$name] = false;
 
             // is array. eg: `--id=23 --id=154`
