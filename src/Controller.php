@@ -44,18 +44,18 @@ abstract class Controller extends AbstractCommand
         }
 
         $result = '';
-        $action = $action?: $this->defaultAction;
+        $action = $action ?: $this->defaultAction;
 
-        if ( $params = func_get_args() ) {
+        if ($params = func_get_args()) {
             array_shift($params);// the first argument is `$action`
         }
 
         $action = trim($action, '/');
 
         // convert 'first-second' to 'firstSecond'
-        if ( strpos($action, '-') ) {
+        if (strpos($action, '-')) {
             $action = ucwords(str_replace('-', ' ', $action));
-            $action = str_replace(' ','',lcfirst($action));
+            $action = str_replace(' ', '', lcfirst($action));
         }
 
         $method = $this->actionSuffix ? $action . ucfirst($this->actionSuffix) : $action;
@@ -78,7 +78,7 @@ abstract class Controller extends AbstractCommand
             }
 
             // if you defined the method '$this->notFoundCallback' , will call it
-        } elseif ( ( $notFoundCallback = $this->notFoundCallback) && method_exists($this, $notFoundCallback)) {
+        } elseif (($notFoundCallback = $this->notFoundCallback) && method_exists($this, $notFoundCallback)) {
             $result = $this->{$notFoundCallback}($action);
         } else {
             // throw new \RuntimeException('Sorry, the page you want to visit already does not exist!');
@@ -101,10 +101,12 @@ abstract class Controller extends AbstractCommand
     }
 
     protected function beforeRun($action)
-    {}
+    {
+    }
 
     protected function afterRun($action)
-    {}
+    {
+    }
 
     /**
      * Show help of the controller command group or specified command action
@@ -119,15 +121,15 @@ abstract class Controller extends AbstractCommand
      */
     final public function helpCommand($action = '')
     {
-        if (!$action && !($action = $this->input->getFirstArg()) ) {
+        if (!$action && !($action = $this->input->getFirstArg())) {
             $this->showCommandList();
             return 0;
         }
 
         // convert 'first-second' to 'firstSecond'
-        if ( strpos($action, '-') ) {
+        if (strpos($action, '-')) {
             $action = ucwords(str_replace('-', ' ', $action));
-            $action = str_replace(' ','',lcfirst($action));
+            $action = str_replace(' ', '', lcfirst($action));
         }
 
         $method = $this->actionSuffix ? $action . ucfirst($this->actionSuffix) : $action;
@@ -135,7 +137,7 @@ abstract class Controller extends AbstractCommand
         $ref = new \ReflectionClass($this);
         $sName = lcfirst($this->getName() ?: $ref->getShortName());
 
-        if ( !$ref->hasMethod($method) || !$ref->getMethod($method)->isPublic() ) {
+        if (!$ref->hasMethod($method) || !$ref->getMethod($method)->isPublic()) {
             $this->write("Command [<info>$sName/$action</info>] don't exist or don't allow access in the class.");
             return 0;
         }
@@ -164,7 +166,7 @@ abstract class Controller extends AbstractCommand
         $sName = lcfirst($this->getName() ?: $ref->getShortName());
         $this->write("This is in the console controller [<bold>$class</bold>]\n");
 
-        if ( !($desc = static::DESCRIPTION) ) {
+        if (!($desc = static::DESCRIPTION)) {
             $desc = $this->parseDocCommentDetail($ref->getDocComment()) ?: 'No Description';
         }
 
@@ -188,16 +190,16 @@ abstract class Controller extends AbstractCommand
                 $length = strlen($this->actionSuffix);
                 $cmd = '';
 
-                if ( $length ) {
-                    if ( substr($mName, - $length) === $this->actionSuffix ) {
-                        $cmd = substr($mName, 0, - $length);
+                if ($length) {
+                    if (substr($mName, -$length) === $this->actionSuffix) {
+                        $cmd = substr($mName, 0, -$length);
                     }
 
                 } else {
                     $cmd = $mName;
                 }
 
-                if ( $cmd ) {
+                if ($cmd) {
                     //$this->write("  <info>$cmd</info>  $desc");
                     $commands[$cmd] = $desc;
                 }

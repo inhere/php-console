@@ -15,16 +15,16 @@ namespace inhere\console;
 abstract class Command extends AbstractCommand
 {
     // command usage message
-    protected $usage       = '';
+    protected $usage = '';
 
     // command arguments message
-    protected $arguments     = [];
+    protected $arguments = [];
 
     // command arguments message
-    protected $options     = [];
+    protected $options = [];
 
     // command example message
-    protected $example     = '';
+    protected $example = '';
 
     // run command
     public function run($name = '')
@@ -64,10 +64,12 @@ abstract class Command extends AbstractCommand
     }
 
     protected function beforeRun()
-    {}
+    {
+    }
 
     protected function afterRun()
-    {}
+    {
+    }
 
     protected function configure()
     {
@@ -84,7 +86,7 @@ abstract class Command extends AbstractCommand
     {
         $configure = $this->configure();
 
-        if ( !$configure ) {
+        if (!$configure) {
             return 91;
         }
 

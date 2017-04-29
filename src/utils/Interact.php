@@ -23,32 +23,33 @@ class Interact extends Show
 
     /**
      * Select one of the options 在多个选项中选择一个
-     * @param  string  $description 说明
-     * @param  mixed   $options     选项数据
+     * @param  string $description 说明
+     * @param  mixed $options 选项数据
      * e.g
      * [
      *    // option => value
      *    '1' => 'chengdu',
      *    '2' => 'beijing'
      * ]
-     * @param  mixed   $default     默认选项
-     * @param  bool    $allowExit   有退出选项 默认 true
+     * @param  mixed $default 默认选项
+     * @param  bool $allowExit 有退出选项 默认 true
      * @return string
      */
-    public static function select($description, $options, $default = null, $allowExit=true)
+    public static function select($description, $options, $default = null, $allowExit = true)
     {
         return self::choice($description, $options, $default, $allowExit);
     }
-    public static function choice($description, $options, $default = null, $allowExit=true)
+
+    public static function choice($description, $options, $default = null, $allowExit = true)
     {
-        if ( !$description = trim($description) ) {
+        if (!$description = trim($description)) {
             self::error('Please provide a description text!', 1);
         }
 
         $options = is_array($options) ? $options : explode(',', $options);
 
         // If default option is error
-        if ( null !== $default && !isset($options[$default]) ) {
+        if (null !== $default && !isset($options[$default])) {
             self::error("The default option [{$default}] don't exists.", true);
         }
 
@@ -66,12 +67,12 @@ class Interact extends Show
         $r = self::read($text . "\n You choice{$defaultText} : ");
 
         // error, allow try again once.
-        if ( !array_key_exists($r, $options) ) {
+        if (!array_key_exists($r, $options)) {
             goto beginChoice;
         }
 
         // exit
-        if ( $r === 'q' ) {
+        if ($r === 'q') {
             self::write("\n  Quit,ByeBye.", true, true);
         }
 
@@ -81,12 +82,12 @@ class Interact extends Show
     /**
      * 确认, 发出信息要求确认
      * @param string $question 发出的信息
-     * @param bool   $default  Default value
+     * @param bool $default Default value
      * @return bool
      */
     public static function confirm($question, $default = true)
     {
-        if ( !$question = trim($question) ) {
+        if (!$question = trim($question)) {
             self::error('Please provide a question text!', 1);
         }
 
@@ -98,15 +99,15 @@ class Interact extends Show
         while (true) {
             $answer = self::read($message);
 
-            if ( empty($answer) ) {
+            if (empty($answer)) {
                 return $default;
             }
 
-            if ( 0 === stripos($answer, 'y') ) {
+            if (0 === stripos($answer, 'y')) {
                 return true;
             }
 
-            if ( 0 === stripos($answer, 'n') ) {
+            if (0 === stripos($answer, 'n')) {
                 return false;
             }
         }
@@ -116,9 +117,9 @@ class Interact extends Show
 
     /**
      * 询问，提出问题；返回 输入的结果
-     * @param string      $question   问题
-     * @param null|string $default    默认值
-     * @param \Closure    $validator  The validate callback. It must return bool.
+     * @param string $question 问题
+     * @param null|string $default 默认值
+     * @param \Closure $validator The validate callback. It must return bool.
      * @example This is an example
      *
      * ```
@@ -139,17 +140,18 @@ class Interact extends Show
     {
         return self::question($question, $default, $validator);
     }
+
     public static function question($question, $default = null, \Closure $validator = null)
     {
-        if ( !$question = trim($question) ) {
+        if (!$question = trim($question)) {
             self::error('Please provide a question text!', 1);
         }
 
         $defaultText = null !== $default ? "(default: <info>$default</info>)" : '';
-        $answer = self::read( '<comment>' . ucfirst($question) . "</comment>$defaultText " );
+        $answer = self::read('<comment>' . ucfirst($question) . "</comment>$defaultText ");
 
-        if ( '' === $answer ) {
-            if ( null === $default) {
+        if ('' === $answer) {
+            if (null === $default) {
                 self::error('A value is required.', false);
 
                 return static::question($question, $default, $validator);
@@ -158,7 +160,7 @@ class Interact extends Show
             return $default;
         }
 
-        if ( $validator ) {
+        if ($validator) {
             return $validator($answer) ? $answer : static::question($question, $default, $validator);
         }
 
@@ -169,9 +171,9 @@ class Interact extends Show
      * 有次数限制的询问,提出问题
      *   若输入了值且验证成功则返回 输入的结果
      *   否则，会连续询问 $allowed 次， 若仍然错误，退出
-     * @param string      $question 问题
-     * @param null|string $default    默认值
-     * @param \Closure    $validator (默认验证输入是否为空)自定义回调验证输入是否符合要求; 验证成功返回true 否则 可返回错误消息
+     * @param string $question 问题
+     * @param null|string $default 默认值
+     * @param \Closure $validator (默认验证输入是否为空)自定义回调验证输入是否符合要求; 验证成功返回true 否则 可返回错误消息
      * @example This is an example
      *
      * ```
@@ -201,9 +203,9 @@ class Interact extends Show
      * @param int $times Allow input times
      * @return string
      */
-    public static function loopAsk($question, $default = null, \Closure $validator = null, $times=3)
+    public static function loopAsk($question, $default = null, \Closure $validator = null, $times = 3)
     {
-        if ( !$question = trim($question) ) {
+        if (!$question = trim($question)) {
             self::error('Please provide a question text!', 1);
         }
 
@@ -214,10 +216,10 @@ class Interact extends Show
         $defaultText = null !== $default ? "(default: <info>$default</info>)" : '';
 
         while ($times--) {
-            if ( $defaultText ) {
+            if ($defaultText) {
                 $answer = self::read("<comment>{$question}</comment>{$defaultText} ");
 
-                if ( '' === $answer ) {
+                if ('' === $answer) {
                     $answer = $default;
                     $result = true;
 
@@ -229,21 +231,21 @@ class Interact extends Show
             }
 
             // If setting verify callback
-            if ($validator && ($result = $validator($answer)) === true ) {
+            if ($validator && ($result = $validator($answer)) === true) {
                 break;
             }
 
             // no setting verify callback
-            if ( !$validator && $answer !== '') {
+            if (!$validator && $answer !== '') {
                 $result = true;
 
                 break;
             }
         }
 
-        if ( !$result ) {
+        if (!$result) {
 
-            if ( null !== $default ) {
+            if (null !== $default) {
                 return $default;
             }
 
@@ -258,6 +260,7 @@ class Interact extends Show
     {
 
     }
+
     public static function progressBarStart()
     {
 
@@ -275,17 +278,18 @@ class Interact extends Show
 
     /**
      * 读取输入信息
-     * @param  string $message  若不为空，则先输出文本
-     * @param  bool   $nl       true 会添加换行符 false 原样输出，不添加换行符
+     * @param  string $message 若不为空，则先输出文本
+     * @param  bool $nl true 会添加换行符 false 原样输出，不添加换行符
      * @return string
      */
     public static function readRow($message = null, $nl = false)
     {
         return self::read($message, $nl);
     }
+
     public static function read($message = null, $nl = false)
     {
-        if ( $message ) {
+        if ($message) {
             self::write($message, $nl);
         }
 

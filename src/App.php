@@ -26,7 +26,7 @@ class App extends AbstractApp
         try {
             $status = $this->dispatch();
         } catch (\Exception $e) {
-            $status = - $e->getCode();
+            $status = -$e->getCode();
             $this->dispatchExHandler($e);
         }
 
@@ -49,7 +49,7 @@ class App extends AbstractApp
 
         //// is a command name
 
-        if ( isset($this->commands[$name]) ) {
+        if (isset($this->commands[$name])) {
             return $this->runCommand($name, true);
         }
 
@@ -58,16 +58,16 @@ class App extends AbstractApp
         $action = '';
 
         // like 'home/index'
-        if ( strpos($name, $sep) > 0 ) {
+        if (strpos($name, $sep) > 0) {
             $input = array_filter(explode($sep, $name));
             [$name, $action] = count($input) > 2 ? array_splice($input, 2) : $input;
         }
 
-        if ( isset($this->controllers[$name]) ) {
+        if (isset($this->controllers[$name])) {
             return $this->runAction($name, $action, true);
         }
 
-        if ( $cb = self::$hooks[self::ON_NOT_FOUND] ) {
+        if ($cb = self::$hooks[self::ON_NOT_FOUND]) {
             $cb($command, $this);
         } else {
             // not match, output error message
@@ -80,31 +80,31 @@ class App extends AbstractApp
 
     /**
      * run a command
-     * @param string $name       Command name
-     * @param bool   $believable The `$name` is believable
+     * @param string $name Command name
+     * @param bool $believable The `$name` is believable
      * @return mixed
      */
     public function runCommand($name, $believable = false)
     {
         // if $believable = true, will skip check.
-        if ( !$believable && !isset($this->commands[$name]) ) {
+        if (!$believable && !isset($this->commands[$name])) {
             throw new \InvalidArgumentException("The console independent-command [$name] not exists!");
         }
 
         // Command class
         $handler = $this->commands[$name];
 
-        if ( is_object($handler) && ($handler instanceof \Closure) ) {
+        if (is_object($handler) && ($handler instanceof \Closure)) {
             $status = $handler($this->input, $this->output);
         } else {
-            if ( !class_exists($handler) ) {
+            if (!class_exists($handler)) {
                 throw new \InvalidArgumentException("The console command class [$handler] not exists!");
             }
 
             /** @var Command $object */
             $object = new $handler($this->input, $this->output);
 
-            if ( !($object instanceof Command ) ) {
+            if (!($object instanceof Command)) {
                 throw new \InvalidArgumentException("The console command class [$handler] must instanceof the " . Command::class);
             }
 
@@ -115,22 +115,22 @@ class App extends AbstractApp
     }
 
     /**
-     * @param string $name       Controller name
+     * @param string $name Controller name
      * @param string $action
-     * @param bool   $believable The `$name` is believable
+     * @param bool $believable The `$name` is believable
      * @return mixed
      */
     public function runAction($name, $action, $believable = false)
     {
         // if $believable = true, will skip check.
-        if ( !$believable && !isset($this->controllers[$name]) ) {
+        if (!$believable && !isset($this->controllers[$name])) {
             throw new \InvalidArgumentException("The console controller-command [$name] not exists!");
         }
 
         // Controller class
         $controller = $this->controllers[$name];
 
-        if ( !class_exists($controller) ) {
+        if (!class_exists($controller)) {
             throw new \InvalidArgumentException("The console controller class [$controller] not exists!");
         }
 
@@ -138,7 +138,7 @@ class App extends AbstractApp
         $object = new $controller($this->input, $this->output);
         $object->setName($name);
 
-        if ( !($object instanceof Controller) ) {
+        if (!($object instanceof Controller)) {
             throw new \InvalidArgumentException("The console controller class [$object] must instanceof the " . Controller::class);
         }
 
@@ -150,12 +150,12 @@ class App extends AbstractApp
      * @param \Exception $e
      * @throws \Exception
      */
-    public function dispatchExHandler(\Exception $e )
+    public function dispatchExHandler(\Exception $e)
     {
         // $this->logger->ex($e);
 
         // open debug, throw exception
-        if ( $this->isDebug() ) {
+        if ($this->isDebug()) {
             throw $e;
         }
 
@@ -243,7 +243,7 @@ EOF;
         $controllers = $this->controllers;
         ksort($controllers);
         foreach ($controllers as $name => $controller) {
-            $controllerArr[$name] = $controller::DESCRIPTION ? : 'No description';
+            $controllerArr[$name] = $controller::DESCRIPTION ?: 'No description';
         }
 
         // all independent commands
@@ -252,11 +252,11 @@ EOF;
         foreach ($commands as $name => $command) {
             $desc = 'No description';
 
-            if ( is_subclass_of($command, Command::class) ) {
-                $desc = $command::DESCRIPTION ? : 'No description';
-            } else if ( is_string($command) ) {
+            if (is_subclass_of($command, Command::class)) {
+                $desc = $command::DESCRIPTION ?: 'No description';
+            } else if (is_string($command)) {
                 $desc = 'A handler: ' . $command;
-            } else if ( is_object($command) ) {
+            } else if (is_object($command)) {
                 $desc = $command instanceof \Closure ? 'A Closure' : 'A Object';
             }
 

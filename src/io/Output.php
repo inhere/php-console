@@ -76,6 +76,7 @@ class Output
     {
         Interact::multiList($data, $opts);
     }
+
     public function mList(array $data, array $opts = [])
     {
         Interact::multiList($data, $opts);
@@ -95,7 +96,7 @@ class Output
      * @inheritdoc
      * @see Interact::panel()
      */
-    public function panel(array $data, $title='Info panel', $borderChar = '*')
+    public function panel(array $data, $title = 'Info panel', $borderChar = '*')
     {
         Interact::panel($data, $title, $borderChar);
     }
@@ -104,45 +105,52 @@ class Output
      * @inheritdoc
      * @see Interact::table()
      */
-    public function table(array $data, $title='Info List', $showBorder = true)
+    public function table(array $data, $title = 'Info List', $showBorder = true)
     {
         Interact::table($data, $title, $showBorder);
     }
 
     /**
-     * @param mixed         $messages
-     * @param string|null   $type
-     * @param string        $style
-     * @param int|boolean   $quit  If is int, setting it is exit code.
+     * @param mixed $messages
+     * @param string|null $type
+     * @param string $style
+     * @param int|boolean $quit If is int, setting it is exit code.
      */
-    public function block($messages, $type = 'MESSAGE', $style='default', $quit = false)
+    public function block($messages, $type = 'MESSAGE', $style = 'default', $quit = false)
     {
         Interact::block($messages, $type, $style, $quit);
     }
+
     public function primary($messages, $quit = false)
     {
         $this->block($messages, 'IMPORTANT', 'primary', $quit);
     }
+
     public function success($messages, $quit = false)
     {
         $this->block($messages, 'SUCCESS', 'success', $quit);
     }
+
     public function info($messages, $quit = false)
     {
         $this->block($messages, 'INFO', 'info', $quit);
     }
+
     public function warning($messages, $quit = false)
     {
         $this->block($messages, 'WARNING', 'warning', $quit);
     }
+
     public function danger($messages, $quit = false)
     {
         $this->block($messages, 'DANGER', 'danger', $quit);
     }
+
     public function error($messages, $quit = false)
     {
         $this->block($messages, 'ERROR', 'error', $quit);
     }
+
     public function notice($messages, $quit = false)
     {
         $this->block($messages, 'NOTICE', 'comment', $quit);
@@ -150,8 +158,8 @@ class Output
 
     /**
      * 读取输入信息
-     * @param  string $question  若不为空，则先输出文本
-     * @param  bool   $nl       true 会添加换行符 false 原样输出，不添加换行符
+     * @param  string $question 若不为空，则先输出文本
+     * @param  bool $nl true 会添加换行符 false 原样输出，不添加换行符
      * @return string
      */
     public function read($question = null, $nl = false)
@@ -165,15 +173,15 @@ class Output
 
     /**
      * Write a message to standard output stream.
-     * @param  mixed       $messages  Output message
-     * @param  bool        $nl        true 会添加换行符 false 原样输出，不添加换行符
-     * @param  int|boolean $quit      If is int, setting it is exit code.
+     * @param  mixed $messages Output message
+     * @param  bool $nl true 会添加换行符 false 原样输出，不添加换行符
+     * @param  int|boolean $quit If is int, setting it is exit code.
      * @return static
      */
     public function write($messages = '', $nl = true, $quit = false)
     {
-        if ( is_array($messages) ) {
-            $messages = implode( $nl ? PHP_EOL : '', $messages );
+        if (is_array($messages)) {
+            $messages = implode($nl ? PHP_EOL : '', $messages);
         }
 
         $messages = $this->getColor()->format($messages);
@@ -183,7 +191,7 @@ class Output
             throw new \RuntimeException('Unable to write output.');
         }
 
-        if ( is_int($quit) || true === $quit) {
+        if (is_int($quit) || true === $quit) {
             $code = true === $quit ? 0 : $quit;
             exit($code);
         }
@@ -195,7 +203,7 @@ class Output
 
     /**
      * Write a message to standard error output stream.
-     * @param string  $text
+     * @param string $text
      * @param boolean $nl True (default) to append a new line at the end of the output string.
      * @return $this
      */

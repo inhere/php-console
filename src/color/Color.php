@@ -73,9 +73,9 @@ class Color
 
     /**
      * Constructor
-     * @param  string     $fg      前景色(字体颜色)
-     * @param  string     $bg      背景色
-     * @param  array      $options 其它选项
+     * @param  string $fg 前景色(字体颜色)
+     * @param  string $bg 背景色
+     * @param  array $options 其它选项
      * @throws  \InvalidArgumentException
      */
     public function __construct($fg = '', $bg = '', array $options = [])
@@ -98,8 +98,8 @@ class Color
     protected function addDefaultStyles()
     {
         $this->addStyle('default', [
-                'fgColor' => 'default', 'options' => ['underscore']
-            ])
+            'fgColor' => 'default', 'options' => ['underscore']
+        ])
             ->addStyle('faintly', [ // 不明显的 浅灰色的
                 'fgColor' => 'default', 'options' => ['italic']
             ])
@@ -107,7 +107,7 @@ class Color
                 'options' => ['bold']
             ])
             ->addStyle('notice', [
-                'options' => ['bold','underscore'],
+                'options' => ['bold', 'underscore'],
             ])
             ->addStyle('primary', [
                 'fgColor' => 'blue', //'options' => ['bold']
@@ -132,8 +132,7 @@ class Color
             ])
             ->addStyle('error', [
                 'fgColor' => 'white', 'bgColor' => 'red'
-            ])
-        ;
+            ]);
     }
 
 //////////////////////////////////////////// Text Color handle ////////////////////////////////////////////
@@ -158,6 +157,7 @@ class Color
     {
         return $this->format($text);
     }
+
     public function format($text)
     {
         if (!$text) {
@@ -165,7 +165,7 @@ class Color
         }
 
         // if don't support output color text, clear color tag.
-        if ( !Helper::isSupportColor() ) {
+        if (!Helper::isSupportColor()) {
             return static::stripColor($text);
         }
 
@@ -179,7 +179,7 @@ class Color
             if (array_key_exists($matches[1][$i], $this->styles)) {
                 $text = $this->replaceColor($text, $matches[1][$i], $matches[2][$i], $this->styles[$matches[1][$i]]);
 
-            // Custom style format @see Style::makeByString()
+                // Custom style format @see Style::makeByString()
             } elseif (strpos($matches[1][$i], '=')) {
                 $text = $this->replaceColor($text, $matches[1][$i], $matches[2][$i], Style::makeByString($matches[1][$i]));
             }
@@ -191,14 +191,14 @@ class Color
     /**
      * Replace color tags in a string.
      * @param string $text
-     * @param   string $tag  The matched tag.
+     * @param   string $tag The matched tag.
      * @param   string $match The match.
-     * @param   Style $style  The color style to apply.
+     * @param   Style $style The color style to apply.
      * @return  string
      */
     protected function replaceColor($text, $tag, $match, Style $style)
     {
-        $styleStr   = $style->toString();
+        $styleStr = $style->toString();
         $replace = $this->noColor ? $match : "\033[{$styleStr}m{$match}\033[0m";
 
         return str_replace("<$tag>$match</$tag>", $replace, $text);
@@ -210,10 +210,10 @@ class Color
     /**
      * Add a style.
      * @param $name
-     * @param  string|Style|array  $fg      前景色|也可以穿入Style对象|也可以是style配置数组(@see self::addStyleByArray())
+     * @param  string|Style|array $fg 前景色|也可以穿入Style对象|也可以是style配置数组(@see self::addStyleByArray())
      *                                      当它为Style对象或配置数组时，后面两个参数无效
-     * @param  string              $bg      背景色
-     * @param  array               $options 其它选项
+     * @param  string $bg 背景色
+     * @param  array $options 其它选项
      * @return $this
      */
     public function addStyle($name, $fg = '', $bg = '', array $options = [])
@@ -265,6 +265,7 @@ class Color
     {
         return array_keys($this->styles);
     }
+
     public function getStyleNames()
     {
         return $this->getStyleList();

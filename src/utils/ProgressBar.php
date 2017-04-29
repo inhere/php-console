@@ -36,7 +36,7 @@ class ProgressBar
     private $max;
     private $stepWidth;
 
-    private $format ='{bar} {percent}({complete}/{total})';
+    private $format = '{bar} {percent}({complete}/{total})';
 
     /**
      * @param Output $output
@@ -57,7 +57,7 @@ class ProgressBar
      * 开始
      * @param null $max
      */
-    public function start($max=null)
+    public function start($max = null)
     {
         $this->startTime = time();
         $this->step = 0;
@@ -89,7 +89,7 @@ class ProgressBar
 
     protected function display()
     {
-        return preg_replace_callback('/({[\w_]+})/', function($matched) {
+        return preg_replace_callback('/({[\w_]+})/', function ($matched) {
 
         }, $this->format);
     }
@@ -100,7 +100,7 @@ class ProgressBar
      */
     private function setMaxSteps($max)
     {
-        $this->max = max(0, (int) $max);
+        $this->max = max(0, (int)$max);
         $this->stepWidth = $this->max ? Helper::strLen($this->max) : 4;
     }
 

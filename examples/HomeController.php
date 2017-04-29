@@ -29,7 +29,7 @@ class HomeController extends Controller
      */
     public function colorCommand()
     {
-        if ( !$this->output->supportColor() ) {
+        if (!$this->output->supportColor()) {
             $this->write('Current terminal is not support output color text.');
 
             return 0;
@@ -71,8 +71,7 @@ class HomeController extends Controller
             'Word wrap text with indentation to fit the screen size,' .
             'Word wrap text with indentation to fit the screen size,' .
             'Word wrap text with indentation to fit the screen size,' .
-            'Word wrap text with indentation to fit the screen size,'
-        ;
+            'Word wrap text with indentation to fit the screen size,';
 
         $this->output->section('section title', $body, [
             'pos' => 'l'
@@ -80,8 +79,8 @@ class HomeController extends Controller
 
         $commands = [
             'version' => 'Show application version information',
-            'help'    => 'Show application help information',
-            'list'    => 'List all group and independent commands',
+            'help' => 'Show application help information',
+            'list' => 'List all group and independent commands',
         ];
         Interact::panel($commands, 'Internal Commands', '');
         Interact::aList($commands, 'Internal Commands');
@@ -113,7 +112,7 @@ class HomeController extends Controller
     {
         $a = Interact::confirm('continue');
 
-        $this->write('you answer is: ' . ($a ? 'yes' : 'no') );
+        $this->write('you answer is: ' . ($a ? 'yes' : 'no'));
     }
 
     /**
@@ -122,10 +121,10 @@ class HomeController extends Controller
      */
     public function selectCommand()
     {
-        $opts = ['john','simon','rose'];
+        $opts = ['john', 'simon', 'rose'];
         $a = Interact::select('you name is', $opts);
 
-        $this->write('you answer is: ' . $opts[$a] );
+        $this->write('you answer is: ' . $opts[$a]);
     }
 
     /**
@@ -135,8 +134,8 @@ class HomeController extends Controller
     {
         $info = [
             'phpVersion' => PHP_VERSION,
-            'env'        => 'test',
-            'debug'      => true,
+            'env' => 'test',
+            'debug' => true,
         ];
 
         Interact::panel($info);

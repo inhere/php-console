@@ -75,7 +75,7 @@ class Download
 
         // register stream notification callback
         stream_context_set_params($ctx, [
-            'notification' => [ $this, 'progressShow']
+            'notification' => [$this, 'progressShow']
         ]);
 
         Show::write("Download: {$this->url}\nSave As: {$this->saveAs}\n");
@@ -106,18 +106,18 @@ class Download
     */
 
     /**
-     * @param int $notifyCode       stream notify code
-     * @param int $severity         severity code
-     * @param string $message       Message text
-     * @param int $messageCode      Message code
+     * @param int $notifyCode stream notify code
+     * @param int $severity severity code
+     * @param string $message Message text
+     * @param int $messageCode Message code
      * @param int $transferredBytes Have been transferred bytes
-     * @param int $maxBytes         Target max length bytes
+     * @param int $maxBytes Target max length bytes
      */
     protected function progressShow($notifyCode, $severity, $message, $messageCode, $transferredBytes, $maxBytes)
     {
         $msg = '';
 
-        switch($notifyCode) {
+        switch ($notifyCode) {
             case STREAM_NOTIFY_RESOLVE:
             case STREAM_NOTIFY_AUTH_REQUIRED:
             case STREAM_NOTIFY_COMPLETED:
@@ -137,7 +137,7 @@ class Download
 
             case STREAM_NOTIFY_FILE_SIZE_IS:
                 $this->fileSize = $maxBytes;
-                $fileSize = sprintf('%2d',$maxBytes/1024);
+                $fileSize = sprintf('%2d', $maxBytes / 1024);
                 $msg = "Got the file size: <info>$fileSize</info> kb";
                 break;
 
@@ -166,7 +166,7 @@ class Download
             return '';
         }
 
-        $tfKb = $transferredBytes/1024;
+        $tfKb = $transferredBytes / 1024;
 
         if ($this->showType === self::PROGRESS_BAR) {
             $size = $this->fileSize;
@@ -174,8 +174,8 @@ class Download
             if ($size === null) {
                 printf("\rUnknown file size... %2d kb done..", $tfKb);
             } else {
-                $length = ceil(($transferredBytes/$size)*100); // ■ =
-                printf("\r[%-100s] %d%% (%2d/%2d kb)", str_repeat('=', $length). '>', $length, $tfKb, $size/1024);
+                $length = ceil(($transferredBytes / $size) * 100); // ■ =
+                printf("\r[%-100s] %d%% (%2d/%2d kb)", str_repeat('=', $length) . '>', $length, $tfKb, $size / 1024);
             }
         } else {
             printf("\r\rMade some progress, downloaded %2d kb so far", $tfKb);

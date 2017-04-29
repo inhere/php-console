@@ -50,11 +50,10 @@ class Helper
     {
         if (DIRECTORY_SEPARATOR === '\\') {
             return
-                '10.0.10586' === PHP_WINDOWS_VERSION_MAJOR.'.'.PHP_WINDOWS_VERSION_MINOR.'.'.PHP_WINDOWS_VERSION_BUILD
+                '10.0.10586' === PHP_WINDOWS_VERSION_MAJOR . '.' . PHP_WINDOWS_VERSION_MINOR . '.' . PHP_WINDOWS_VERSION_BUILD
                 || false !== getenv('ANSICON')
                 || 'ON' === getenv('ConEmuANSI')
-                || 'xterm' === getenv('TERM')
-               // || 'cygwin' === getenv('TERM')
+                || 'xterm' === getenv('TERM')// || 'cygwin' === getenv('TERM')
                 ;
         }
 
@@ -116,7 +115,7 @@ class Helper
 
         foreach ($data as $key => $value) {
             // key is not a integer
-            if ( !$expectInt || !is_numeric($key) ) {
+            if (!$expectInt || !is_numeric($key)) {
                 $width = mb_strlen($key, 'UTF-8');
                 $keyMaxWidth = $width > $keyMaxWidth ? $width : $keyMaxWidth;
             }
@@ -127,25 +126,25 @@ class Helper
 
     /**
      * spliceArray
-     * @param  array  $data
+     * @param  array $data
      * e.g [
      *     'system'  => 'Linux',
      *     'version'  => '4.4.5',
      * ]
-     * @param  array  $opts
+     * @param  array $opts
      * @return string
      */
     public static function spliceKeyValue(array $data, array $opts = [])
     {
         $text = '';
         $opts = array_merge([
-            'leftChar'    => '',   // e.g '  ', ' * '
-            'sepChar'     => ' ',  // e.g ' | ' => OUT: key | value
-            'keyStyle'    => '',   // e.g 'info','comment'
+            'leftChar' => '',   // e.g '  ', ' * '
+            'sepChar' => ' ',  // e.g ' | ' => OUT: key | value
+            'keyStyle' => '',   // e.g 'info','comment'
             'keyMaxWidth' => null, // if not set, will automatic calculation
         ], $opts);
 
-        if ( !is_numeric($opts['keyMaxWidth']) ) {
+        if (!is_numeric($opts['keyMaxWidth'])) {
             $opts['keyMaxWidth'] = self::getKeyMaxWidth($data);
         }
 
@@ -156,11 +155,11 @@ class Helper
 
             if ($opts['keyMaxWidth'] && !is_int($key)) {
                 $key = str_pad($key, $opts['keyMaxWidth'], ' ');
-                $text .= ( $keyStyle ? "<{$keyStyle}>$key</{$keyStyle}> " : $key ) . $opts['sepChar'];
+                $text .= ($keyStyle ? "<{$keyStyle}>$key</{$keyStyle}> " : $key) . $opts['sepChar'];
             }
 
             // if value is array, translate array to string
-            if ( is_array($value) ) {
+            if (is_array($value)) {
                 $temp = '';
 
                 foreach ($value as $k => $val) {
@@ -217,7 +216,7 @@ class Helper
             $output = [];
             exec('mode con', $output);
             if (isset($output, $output[1]) && strpos($output[1], 'CON') !== false) {
-                return $size = [(int) preg_replace('~\D~', '', $output[3]), (int) preg_replace('~\D~', '', $output[4])];
+                return $size = [(int)preg_replace('~\D~', '', $output[3]), (int)preg_replace('~\D~', '', $output[4])];
             }
         } else {
             // try stty if available
@@ -227,12 +226,12 @@ class Helper
             }
 
             // fallback to tput, which may not be updated on terminal resize
-            if (($width = (int) exec('tput cols 2>&1')) > 0 && ($height = (int) exec('tput lines 2>&1')) > 0) {
+            if (($width = (int)exec('tput cols 2>&1')) > 0 && ($height = (int)exec('tput lines 2>&1')) > 0) {
                 return $size = [$width, $height];
             }
 
             // fallback to ENV variables, which may not be updated on terminal resize
-            if (($width = (int) getenv('COLUMNS')) > 0 && ($height = (int) getenv('LINES')) > 0) {
+            if (($width = (int)getenv('COLUMNS')) > 0 && ($height = (int)getenv('LINES')) > 0) {
                 return $size = [$width, $height];
             }
         }
@@ -266,10 +265,10 @@ class Helper
             return $text;
         }
 
-        if ( (int)$width <= 0 ) {
+        if ((int)$width <= 0) {
             $size = static::getScreenSize();
 
-            if ( $size === false || $size[0] <= $indent) {
+            if ($size === false || $size[0] <= $indent) {
                 return $text;
             }
 

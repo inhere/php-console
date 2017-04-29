@@ -9,7 +9,7 @@
 namespace inhere\console\color;
 
 /**
- *@link https://github.com/ventoviro/windwalker-IO
+ * @link https://github.com/ventoviro/windwalker-IO
  */
 final class Style
 {
@@ -20,14 +20,14 @@ final class Style
      * Known color list
      */
     private static $knownColors = array(
-        'black'   => 0,
-        'red'     => 1,
-        'green'   => 2,
-        'yellow'  => 3,
-        'blue'    => 4,
+        'black' => 0,
+        'red' => 1,
+        'green' => 2,
+        'yellow' => 3,
+        'blue' => 4,
         'magenta' => 5, // 洋红色 洋红 品红色
-        'cyan'    => 6, // 青色 青绿色 蓝绿色
-        'white'   => 7,
+        'cyan' => 6, // 青色 青绿色 蓝绿色
+        'white' => 7,
         'default' => 9
     );
 
@@ -36,12 +36,12 @@ final class Style
      * @var array
      */
     private static $knownOptions = [
-        'bold'       => 1,      // 加粗
-        'fuzzy'      => 2,      // 模糊(不是所有的终端仿真器都支持)
-        'italic'     => 3,      // 斜体(不是所有的终端仿真器都支持)
+        'bold' => 1,      // 加粗
+        'fuzzy' => 2,      // 模糊(不是所有的终端仿真器都支持)
+        'italic' => 3,      // 斜体(不是所有的终端仿真器都支持)
         'underscore' => 4,      // 下划线
-        'blink'      => 5,      // 闪烁
-        'reverse'    => 7,      // 颠倒的 交换背景色与前景色
+        'blink' => 5,      // 闪烁
+        'reverse' => 7,      // 颠倒的 交换背景色与前景色
     ];
 
     /**
@@ -196,7 +196,7 @@ final class Style
      * @param bool $onlyName
      * @return array
      */
-    public function getKnownColors($onlyName=true)
+    public function getKnownColors($onlyName = true)
     {
         return (bool)$onlyName ? array_keys(static::$knownColors) : static::$knownColors;
     }
@@ -206,7 +206,7 @@ final class Style
      * @param bool $onlyName
      * @return array
      */
-    public function getKnownOptions($onlyName=true)
+    public function getKnownOptions($onlyName = true)
     {
         return (bool)$onlyName ? array_keys(static::$knownOptions) : static::$knownOptions;
     }

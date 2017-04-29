@@ -24,11 +24,11 @@ class Show
     const CHAR_UNDERLINE = '_';
     const CHAR_VERTICAL = '|';
     const CHAR_EQUAL = '=';
-    const CHAR_STAR  = '*';
+    const CHAR_STAR = '*';
 
-    const POS_LEFT    = 'l';
-    const POS_MIDDLE  = 'm';
-    const POS_RIGHT   = 'r';
+    const POS_LEFT = 'l';
+    const POS_MIDDLE = 'm';
+    const POS_RIGHT = 'r';
 
     /**
      * @var array
@@ -42,12 +42,12 @@ class Show
 /////////////////////////////////////////////////////////////////
 
     /**
-     * @param mixed         $messages
-     * @param string|null   $type
-     * @param string        $style
-     * @param int|boolean   $quit  If is int, setting it is exit code.
+     * @param mixed $messages
+     * @param string|null $type
+     * @param string $style
+     * @param int|boolean $quit If is int, setting it is exit code.
      */
-    public static function block($messages, $type = 'MESSAGE', $style='default', $quit = false)
+    public static function block($messages, $type = 'MESSAGE', $style = 'default', $quit = false)
     {
         $messages = is_array($messages) ? array_values($messages) : array($messages);
 
@@ -66,30 +66,37 @@ class Show
         // $this->write($text);
         self::write($text, true, $quit);
     }
+
     public static function primary($messages, $quit = false)
     {
         static::block($messages, 'IMPORTANT', 'primary', $quit);
     }
+
     public static function success($messages, $quit = false)
     {
         static::block($messages, 'SUCCESS', 'success', $quit);
     }
+
     public static function info($messages, $quit = false)
     {
         static::block($messages, 'INFO', 'info', $quit);
     }
+
     public static function notice($messages, $quit = false)
     {
         static::block($messages, 'NOTICE', 'comment', $quit);
     }
+
     public static function warning($messages, $quit = false)
     {
         static::block($messages, 'WARNING', 'warning', $quit);
     }
+
     public static function danger($messages, $quit = false)
     {
         static::block($messages, 'DANGER', 'danger', $quit);
     }
+
     public static function error($messages, $quit = false)
     {
         static::block($messages, 'ERROR', 'error', $quit);
@@ -107,10 +114,10 @@ class Show
     {
         $opts = array_merge([
             'width' => 80,
-            'char'  => self::CHAR_EQUAL,
-            'titlePos'     => self::POS_LEFT,
-            'indent'       => 2,
-            'showBorder'   => true,
+            'char' => self::CHAR_EQUAL,
+            'titlePos' => self::POS_LEFT,
+            'indent' => 2,
+            'showBorder' => true,
         ], $opts);
 
         // list($sW, $sH) = Helper::getScreenSize();
@@ -129,7 +136,7 @@ class Show
         } elseif ($opts['titlePos'] === self::POS_RIGHT) {
             $titleIndent = str_pad(self::CHAR_SPACE, ceil($width - $tLength) + $indent, self::CHAR_SPACE);
         } elseif ($opts['titlePos'] === self::POS_MIDDLE) {
-            $titleIndent = str_pad(self::CHAR_SPACE, ceil(($width - $tLength)/2) + $indent, self::CHAR_SPACE);
+            $titleIndent = str_pad(self::CHAR_SPACE, ceil(($width - $tLength) / 2) + $indent, self::CHAR_SPACE);
         } else {
             $titleIndent = str_pad(self::CHAR_SPACE, $indent, self::CHAR_SPACE);
         }
@@ -141,18 +148,18 @@ class Show
     }
 
     /**
-     * @param string       $title The title text
-     * @param string|array $body  The section body message
+     * @param string $title The title text
+     * @param string|array $body The section body message
      * @param array $opts
      */
     public static function section($title, $body, array $opts = [])
     {
         $opts = array_merge([
             'width' => 80,
-            'char'  => self::CHAR_HYPHEN,
-            'titlePos'     => self::POS_LEFT,
-            'indent'       => 2,
-            'topBorder'    => true,
+            'char' => self::CHAR_HYPHEN,
+            'titlePos' => self::POS_LEFT,
+            'indent' => 2,
+            'topBorder' => true,
             'bottomBorder' => true,
         ], $opts);
 
@@ -172,7 +179,7 @@ class Show
         } elseif ($opts['titlePos'] === self::POS_RIGHT) {
             $titleIndent = str_pad(self::CHAR_SPACE, ceil($width - $tLength) + $indent, self::CHAR_SPACE);
         } elseif ($opts['titlePos'] === self::POS_MIDDLE) {
-            $titleIndent = str_pad(self::CHAR_SPACE, ceil(($width - $tLength)/2) + $indent, self::CHAR_SPACE);
+            $titleIndent = str_pad(self::CHAR_SPACE, ceil(($width - $tLength) / 2) + $indent, self::CHAR_SPACE);
         } else {
             $titleIndent = str_pad(self::CHAR_SPACE, $indent, self::CHAR_SPACE);
         }
@@ -181,7 +188,7 @@ class Show
         $topBorder = $bottomBorder = '';
         $titleLine = "$titleIndent<bold>$title</bold>";
 
-        if ( $opts['topBorder'] || $opts['bottomBorder']) {
+        if ($opts['topBorder'] || $opts['bottomBorder']) {
             $border = str_pad($char, $width, $char);
 
             if ($opts['topBorder']) {
@@ -215,7 +222,7 @@ class Show
     public static function aList($data, $title, array $opts = [])
     {
         // title
-        if ( $title ) {
+        if ($title) {
             $title = ucwords(trim($title));
 
             self::write($title);
@@ -262,7 +269,7 @@ class Show
     /**
      * Show console help message
      *
-     * @param  array  $config The config data
+     * @param  array $config The config data
      *
      * There are config structure. you can setting some or ignore some. will only render it when value is not empty.
      *
@@ -293,7 +300,7 @@ class Show
      *
      *  examples    array|string  The command usage example. e.g 'php server.php {start|reload|restart|stop} [-d]'
      * ]
-     * @param  bool   $showAfterQuit Show help after quit
+     * @param  bool $showAfterQuit Show help after quit
      */
     public static function helpPanel(array $config, $showAfterQuit = true)
     {
@@ -322,7 +329,7 @@ class Show
         // command list
         if ($config['commands']) {
             // translate array to string
-            if ( is_array($config['commands'])) {
+            if (is_array($config['commands'])) {
                 $config['commands'] = Helper::spliceKeyValue($config['commands'], [
                     'leftChar' => '  ',
                     'keyStyle' => 'info',
@@ -330,7 +337,7 @@ class Show
                 $config['commands'] = "<comment>Commands</comment>:\n{$config['commands']}";
             }
 
-            if ( is_string($config['commands']) ) {
+            if (is_string($config['commands'])) {
                 $help[] = $config['commands'];
             }
         }
@@ -338,7 +345,7 @@ class Show
         // argument list
         if ($config['arguments']) {
             // translate array to string
-            if ( is_array($config['arguments'])) {
+            if (is_array($config['arguments'])) {
                 $config['arguments'] = Helper::spliceKeyValue($config['arguments'], [
                     'leftChar' => '  ',
                     'keyStyle' => 'info',
@@ -346,7 +353,7 @@ class Show
                 $config['arguments'] = "<comment>Commands</comment>:\n{$config['arguments']}";
             }
 
-            if ( is_string($config['arguments']) ) {
+            if (is_string($config['arguments'])) {
                 $help[] = $config['arguments'];
             }
         }
@@ -354,7 +361,7 @@ class Show
         // options list
         if ($config['options']) {
             // translate array to string
-            if ( is_array($config['options'])) {
+            if (is_array($config['options'])) {
                 $config['options'] = Helper::spliceKeyValue($config['options'], [
                     'leftChar' => '  ',
                     'keyStyle' => 'info',
@@ -362,7 +369,7 @@ class Show
                 $config['options'] = "<comment>Options</comment>:\n{$config['options']}";
             }
 
-            if ( is_string($config['options']) ) {
+            if (is_string($config['options'])) {
                 $help[] = $config['options'];
             }
         }
@@ -385,12 +392,12 @@ class Show
 
     /**
      * Show information data panel
-     * @param  mixed  $data
+     * @param  mixed $data
      * @param  string $title
      * @param  string $borderChar
      * @return int
      */
-    public static function panel($data, $title='Information Panel', $borderChar = '*')
+    public static function panel($data, $title = 'Information Panel', $borderChar = '*')
     {
         if (!$data) {
             self::write('<info>No data to display!</info>');
@@ -407,13 +414,13 @@ class Show
 
         foreach ($data as $label => $value) {
             // label exists
-            if ( !is_numeric($label) ) {
+            if (!is_numeric($label)) {
                 $width = mb_strlen($label, 'UTF-8');
                 $labelMaxWidth = $width > $labelMaxWidth ? $width : $labelMaxWidth;
             }
 
             // translate array to string
-            if ( is_array($value) ) {
+            if (is_array($value)) {
                 $temp = '';
 
                 /** @var array $value */
@@ -449,20 +456,20 @@ class Show
             $title = ucwords($title);
             $titleLength = mb_strlen($title, 'UTF-8');
             $panelWidth = $panelWidth > $titleLength ? $panelWidth : $titleLength;
-            $indentSpace = str_pad(' ', ceil($panelWidth/2) - ceil($titleLength/2) + 2*2, ' ');
+            $indentSpace = str_pad(' ', ceil($panelWidth / 2) - ceil($titleLength / 2) + 2 * 2, ' ');
             self::write("  {$indentSpace}<bold>{$title}</bold>");
         }
 
         // output panel top border
         if ($borderChar) {
-            $border = str_pad($borderChar, $panelWidth + (3*3), $borderChar);
+            $border = str_pad($borderChar, $panelWidth + (3 * 3), $borderChar);
             self::write('  ' . $border);
         }
 
         // output panel body
         $panelStr = Helper::spliceKeyValue($panelData, [
-            'leftChar'    => "  $borderChar ",
-            'sepChar'     => ' | ',
+            'leftChar' => "  $borderChar ",
+            'sepChar' => ' | ',
             'keyMaxWidth' => $labelMaxWidth,
         ]);
 
@@ -509,7 +516,7 @@ class Show
      * ```
      * @return int
      */
-    public static function table(array $data, $title='Info List', array $opts = [])
+    public static function table(array $data, $title = 'Info List', array $opts = [])
     {
         if (!$data) {
             self::write('<info>No data to display!</info>');
@@ -518,24 +525,24 @@ class Show
         }
 
         $opts = array_merge([
-            'showBorder'    => true,
-            'leftIndent'    => '  ',
-            'titlePos'      => self::POS_LEFT,
+            'showBorder' => true,
+            'leftIndent' => '  ',
+            'titlePos' => self::POS_LEFT,
             'rowBorderChar' => self::CHAR_HYPHEN,   // default is '-'
             'colBorderChar' => self::CHAR_VERTICAL, // default is '|'
-            'tHead'         => [],                  // custom head data
+            'tHead' => [],                  // custom head data
         ], $opts);
 
         $rowIndex = 0;
         $head = $table = [];
-        $tableHead  = $opts['tHead'];
+        $tableHead = $opts['tHead'];
         $leftIndent = $opts['leftIndent'];
         $showBorder = $opts['showBorder'];
         $rowBorderChar = $opts['rowBorderChar'];
         $colBorderChar = $opts['colBorderChar'];
 
         $info = [
-            'rowCount'  => count($data),
+            'rowCount' => count($data),
             'columnCount' => 0,     // how many column in the table.
             'columnMaxWidth' => [], // table column max width
             'tableWidth' => 0,      // table width. equals to all max column width's sum.
@@ -557,7 +564,7 @@ class Show
 
             foreach ((array)$row as $value) {
                 // collection column max width
-                if ( isset($info['columnMaxWidth'][$colIndex]) ) {
+                if (isset($info['columnMaxWidth'][$colIndex])) {
                     $colWidth = mb_strlen($value, 'UTF-8');
 
                     // If current column width gt old column width. override old width.
@@ -581,11 +588,11 @@ class Show
         if ($title) {
             $title = ucwords(trim($title));
             $titleLength = mb_strlen($title, 'UTF-8');
-            $indentSpace = str_pad(' ', ceil($tableWidth/2) - ceil($titleLength/2) + ($columnCount*2), ' ');
+            $indentSpace = str_pad(' ', ceil($tableWidth / 2) - ceil($titleLength / 2) + ($columnCount * 2), ' ');
             self::write("  {$indentSpace}<bold>{$title}</bold>");
         }
 
-        $border = $leftIndent . str_pad($rowBorderChar, $tableWidth + ($columnCount*3) + 2, $rowBorderChar);
+        $border = $leftIndent . str_pad($rowBorderChar, $tableWidth + ($columnCount * 3) + 2, $rowBorderChar);
 
         // output table top border
         if ($showBorder) {
@@ -651,21 +658,21 @@ class Show
 
     /**
      * Write a message to standard output stream.
-     * @param  string|array $messages    Output message
-     * @param  boolean      $nl          true 会添加换行符 false 原样输出，不添加换行符
-     * @param  int|boolean  $quit        If is int, setting it is exit code.
+     * @param  string|array $messages Output message
+     * @param  boolean $nl true 会添加换行符 false 原样输出，不添加换行符
+     * @param  int|boolean $quit If is int, setting it is exit code.
      */
     public static function write($messages, $nl = true, $quit = false)
     {
-        if ( is_array($messages) ) {
-            $messages = implode( $nl ? PHP_EOL : '', $messages );
+        if (is_array($messages)) {
+            $messages = implode($nl ? PHP_EOL : '', $messages);
         }
 
         $messages = static::getColor()->format($messages);
 
         fwrite(STDOUT, $messages . ($nl ? PHP_EOL : ''));
 
-        if ( is_int($quit) || true === $quit) {
+        if (is_int($quit) || true === $quit) {
             $code = true === $quit ? 0 : $quit;
             exit($code);
         }

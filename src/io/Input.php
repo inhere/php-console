@@ -56,8 +56,8 @@ class Input
 
     /**
      * 读取输入信息
-     * @param  string $question  若不为空，则先输出文本消息
-     * @param  bool   $nl       true 会添加换行符 false 原样输出，不添加换行符
+     * @param  string $question 若不为空，则先输出文本消息
+     * @param  bool $nl true 会添加换行符 false 原样输出，不添加换行符
      * @return string
      */
     public function read($question = null, $nl = false)
@@ -89,10 +89,12 @@ class Input
     {
         return $this->get($name, $default);
     }
+
     public function getArg($name, $default = null)
     {
         return $this->get($name, $default);
     }
+
     public function get($name, $default = null)
     {
         return $this->args[$name] ?? $default;
@@ -160,9 +162,10 @@ class Input
     {
         return $this->getOpt($name, $default);
     }
+
     public function getOpt(string $name, $default = null)
     {
-        if ( !$this->hasOpt($name) ) {
+        if (!$this->hasOpt($name)) {
             return $default;
         }
 
@@ -199,6 +202,7 @@ class Input
     {
         return $this->getBoolOpt($name, $default);
     }
+
     public function getBoolOpt(string $name, $default = false)
     {
         if ($this->isBoolOpt($name)) {
@@ -311,7 +315,7 @@ class Input
         $scriptName = array_shift($tmp);
 
         // collect command `image/packTask`
-        if ( isset($tmp[0]) && $tmp[0]{0} !== '-' && (false === strpos($tmp[0], '=')) ) {
+        if (isset($tmp[0]) && $tmp[0]{0} !== '-' && (false === strpos($tmp[0], '='))) {
             $command = trim(array_shift($tmp), '/');
         }
 
@@ -328,7 +332,7 @@ class Input
                 if ($item{0} === '-') {
                     static::parseOption($item, $opts);
 
-                // is a argument
+                    // is a argument
                 } else {
                     static::parseArgument($item, $args);
                 }
@@ -366,8 +370,8 @@ class Input
     protected static function parseOption($item, &$opts)
     {
         // is a have value option. eg: `-s=test --page=23`
-        if ( strpos($item, '=') ) {
-            $item = trim($item,'-= ');
+        if (strpos($item, '=')) {
+            $item = trim($item, '-= ');
             [$name, $val] = explode('=', $item);
             $tVal = strtolower($val);
 
@@ -377,12 +381,12 @@ class Input
             } elseif ($tVal === 'off' || $tVal === 'no' || $tVal === 'false') {
                 $opts[$name] = false;
 
-            // is array. eg: `--id=23 --id=154`
+                // is array. eg: `--id=23 --id=154`
             } elseif (isset($opts[$name])) {
                 if (is_array($opts[$name])) {
                     $opts[$name][] = $val;
 
-                // expect bool option. so not use `else`
+                    // expect bool option. so not use `else`
                 } elseif (is_string($opts[$name])) {
                     $prev = $opts[$name];
                     $opts[$name] = [$prev, $val];
@@ -391,18 +395,18 @@ class Input
                 $opts[$name] = $val;
             }
 
-        // is a no value option
+            // is a no value option
         } else {
             // is a short option. eg: `-d -rf`
             if ($item{1} !== '-') {
-                $item = trim($item,'-');
+                $item = trim($item, '-');
                 foreach (str_split($item) as $char) {
                     $opts[$char] = true;
                 }
 
-            // is a long option. eg: `--debug`
+                // is a long option. eg: `--debug`
             } else {
-                $item = trim($item,'-');
+                $item = trim($item, '-');
                 $opts[$item] = true;
             }
         }
@@ -424,11 +428,11 @@ class Input
      */
     protected static function parseArgument($item, &$args)
     {
-        $item = trim($item,'= ');
+        $item = trim($item, '= ');
 
         // eg: `name=john`
-        if ( strpos($item, '=') ) {
-            [$name, $val] =  explode('=', $item);
+        if (strpos($item, '=')) {
+            [$name, $val] = explode('=', $item);
 
             // is array. eg: `name=john name=tom`
             if (isset($args[$name])) {

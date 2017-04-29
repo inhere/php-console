@@ -22,9 +22,9 @@ abstract class AbstractApp
 
     // event name list
     const ON_BEFORE_RUN = 'beforeRun';
-    const ON_AFTER_RUN  = 'afterRun';
-    const ON_APP_STOP   = 'appStop';
-    const ON_NOT_FOUND  = 'notFound';
+    const ON_AFTER_RUN = 'afterRun';
+    const ON_APP_STOP = 'appStop';
+    const ON_NOT_FOUND = 'notFound';
 
     /**
      * @var array
@@ -42,7 +42,7 @@ abstract class AbstractApp
      * @var array
      */
     protected $config = [
-        'env'   => 'pdt', // dev test pdt
+        'env' => 'pdt', // dev test pdt
         'debug' => false,
         'name' => 'My Console',
         'version' => '0.5.1',
@@ -55,8 +55,8 @@ abstract class AbstractApp
      */
     protected $internalCommands = [
         'version' => 'Show application version information',
-        'help'    => 'Show application help information',
-        'list'    => 'List all group and independent commands',
+        'help' => 'Show application help information',
+        'list' => 'List all group and independent commands',
     ];
 
     /**
@@ -104,12 +104,12 @@ abstract class AbstractApp
      * run app
      * @param bool $exit
      */
-    public function run($exit=true)
+    public function run($exit = true)
     {
         $this->prepareRun();
 
         // call 'onBeforeRun' service, if it is registered.
-        if ( $cb = self::$hooks[self::ON_BEFORE_RUN] ) {
+        if ($cb = self::$hooks[self::ON_BEFORE_RUN]) {
             $cb($this);
         }
 
@@ -117,7 +117,7 @@ abstract class AbstractApp
         $returnCode = $this->doRun();
 
         // call 'onAfterRun' service, if it is registered.
-        if ( $cb = self::$hooks[self::ON_AFTER_RUN] ) {
+        if ($cb = self::$hooks[self::ON_AFTER_RUN]) {
             $cb($this);
         }
 
@@ -137,7 +137,7 @@ abstract class AbstractApp
     public function stop($code = 0)
     {
         // call 'onAppStop' service, if it is registered.
-        if ( $cb = self::$hooks[self::ON_APP_STOP] ) {
+        if ($cb = self::$hooks[self::ON_APP_STOP]) {
             $cb($this);
         }
 
@@ -162,7 +162,7 @@ abstract class AbstractApp
 
         $this->checkName($name, true);
 
-        if ( !class_exists($controller) ) {
+        if (!class_exists($controller)) {
             throw new \InvalidArgumentException("The console controller class [$controller] not exists!");
         }
 
@@ -270,10 +270,10 @@ abstract class AbstractApp
         }
 
         // allow get $config['top']['sub'] by 'top.sub'
-        if ( strpos($name, '.') > 1 ) {
+        if (strpos($name, '.') > 1) {
             [$topKey, $subKey] = explode('.', $name, 2);
 
-            if ( isset($this->config[$topKey]) && isset($this->config[$topKey][$subKey])) {
+            if (isset($this->config[$topKey]) && isset($this->config[$topKey][$subKey])) {
                 return $this->config[$topKey][$subKey];
             }
         }
@@ -322,7 +322,7 @@ abstract class AbstractApp
             throw new \InvalidArgumentException('The command name is must match: ' . $pattern);
         }
 
-        if ( $this->isInternalCommand($name) ) {
+        if ($this->isInternalCommand($name)) {
             throw new \InvalidArgumentException("The command name [$name] is not allowed. It is a built in command.");
         }
     }

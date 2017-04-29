@@ -45,7 +45,7 @@ abstract class AbstractCommand
      */
     public function __construct(Input $input, Output $output)
     {
-        $this->input  = $input;
+        $this->input = $input;
         $this->output = $output;
     }
 
