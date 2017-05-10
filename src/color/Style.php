@@ -13,6 +13,17 @@ namespace inhere\console\color;
  */
 final class Style
 {
+    /**
+     * Foreground base value
+     * @var int
+     */
+    const FG_BASE = 30;
+
+    /**
+     * Background base value
+     * @var int
+     */
+    const BG_BASE = 40;
 
 //////////////////////////////////////////// Color Style ////////////////////////////////////////////
 
@@ -43,16 +54,6 @@ final class Style
         'blink' => 5,      // 闪烁
         'reverse' => 7,      // 颠倒的 交换背景色与前景色
     ];
-
-    /**
-     * Foreground base value
-     */
-    private static $fgBase = 30;
-
-    /**
-     * Background base value
-     */
-    private static $bgBase = 40;
 
     /**
      * Foreground color
@@ -131,7 +132,7 @@ final class Style
                 );
             }
 
-            $this->fgColor = static::$fgBase + static::$knownColors[$fg];
+            $this->fgColor = self::FG_BASE + static::$knownColors[$fg];
         }
 
         if ($bg) {
@@ -144,7 +145,7 @@ final class Style
                 );
             }
 
-            $this->bgColor = static::$bgBase + static::$knownColors[$bg];
+            $this->bgColor = self::BG_BASE + static::$knownColors[$bg];
         }
 
         foreach ($options as $option) {
