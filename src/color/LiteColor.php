@@ -7,12 +7,13 @@
  */
 
 namespace inhere\console\color;
+use inhere\console\Helper;
 
 /**
- * Class Lite
+ * Class LiteColor
  * @package inhere\console\color
  */
-class Lite
+class LiteColor
 {
     const NORMAL       = 0;
 
@@ -71,11 +72,14 @@ class Lite
     /**
      * @param $text
      * @param string|int|array $style
-     * @param bool $return
      * @return string
      */
-    public static function render($text, $style = self::NORMAL, $return = true)
+    public static function render($text, $style = self::NORMAL)
     {
+        if (!Helper::isSupportColor()) {
+            return $text;
+        }
+
         if(is_string($style)) {
             $out = isset(self::$styles[$style]) ? self::$styles[$style] : self::NORMAL;
         } elseif (is_int($style)) {
@@ -91,13 +95,7 @@ class Lite
 //        $result = chr(27). "$out{$text}" . chr(27) . chr(27) . "[0m". chr(27);
         $result = "\033[{$out}m{$text}\033[0m";
 
-        if($return ){
-            return $result;
-        }
-
-        echo $result;
-
-        return true;
+        return $result;
     }
 
 }
