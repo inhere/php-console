@@ -6,14 +6,15 @@
  * Time: 下午7:45
  */
 
-namespace inhere\console\color;
+namespace inhere\console\style;
+
 use inhere\console\Helper;
 
 /**
- * Class LiteColor
+ * Class LiteStyle
  * @package inhere\console\color
  */
-class LiteColor
+class LiteStyle
 {
     const NORMAL       = 0;
 
@@ -74,6 +75,10 @@ class LiteColor
      * @param string|int|array $style
      * @return string
      */
+    public static function add($text, $style = self::NORMAL)
+    {
+        return self::render($text, $style);
+    }
     public static function render($text, $style = self::NORMAL)
     {
         if (!Helper::isSupportColor()) {

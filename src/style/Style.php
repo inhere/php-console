@@ -8,17 +8,33 @@
  * file: Color.php
  */
 
-namespace inhere\console\color;
+namespace inhere\console\style;
 
 use inhere\console\Helper;
 
 /**
- * Class Color
- * @package inhere\console\color
+ * Class Style
+ * @package inhere\console\style
  * @link https://github.com/ventoviro/windwalker-IO
  */
-class Color
+class Style
 {
+    /**
+     * there are some default styles
+     */
+    const NORMAL = 'normal';
+    const FAINTLY = 'faintly';
+    const BOLD = 'bold';
+    const NOTICE = 'notice';
+    const PRIMARY = 'primary';
+    const SUCCESS = 'success';
+    const INFO = 'info';
+    const WARNING = 'warning';
+    const COMMENT = 'comment';
+    const QUESTION = 'question';
+    const DANGER = 'danger';
+    const ERROR = 'error';
+
     /**
      * @var self
      */
@@ -48,24 +64,12 @@ class Color
     protected $styles = [];
 
     /**
-     * Foreground base value
-     * @var int
-     */
-    const FG_BASE = 30;
-
-    /**
-     * Background base value
-     * @var int
-     */
-    const BG_BASE = 40;
-
-    /**
-     * @return Color
+     * @return Style
      */
     public static function create()
     {
         if (!self::$instance) {
-            self::$instance = new Color();
+            self::$instance = new self();
         }
 
         return self::$instance;
@@ -81,7 +85,7 @@ class Color
     public function __construct($fg = '', $bg = '', array $options = [])
     {
         if ($fg || $bg || $options) {
-            $this->addStyle('base', [
+            $this->add('base', [
                 'fgColor' => $fg,
                 'bgColor' => $bg,
                 'options' => $options
@@ -97,40 +101,40 @@ class Color
      */
     protected function addDefaultStyles()
     {
-        $this->addStyle('default', [
-            'fgColor' => 'default', 'options' => ['underscore']
-        ])
-            ->addStyle('faintly', [ // 不明显的 浅灰色的
-                'fgColor' => 'default', 'options' => ['italic']
+        $this->add(self::NORMAL, [
+                'fgColor' => 'normal', 'options' => ['underscore']
             ])
-            ->addStyle('bold', [
+            ->add(self::FAINTLY, [ // 不明显的 浅灰色的
+                'fgColor' => 'normal', 'options' => ['italic']
+            ])
+            ->add(self::BOLD, [
                 'options' => ['bold']
             ])
-            ->addStyle('notice', [
+            ->add(self::NOTICE, [
                 'options' => ['bold', 'underscore'],
             ])
-            ->addStyle('primary', [
+            ->add(self::PRIMARY, [
                 'fgColor' => 'blue', //'options' => ['bold']
             ])
-            ->addStyle('success', [
+            ->add(self::SUCCESS, [
                 'fgColor' => 'green', 'options' => ['bold']
             ])
-            ->addStyle('info', [
+            ->add(self::INFO, [
                 'fgColor' => 'green', //'options' => ['bold']
             ])
-            ->addStyle('warning', [
+            ->add(self::WARNING, [
                 'fgColor' => 'black', 'bgColor' => 'yellow', //'options' => ['bold']
             ])
-            ->addStyle('comment', [
+            ->add(self::COMMENT, [
                 'fgColor' => 'yellow', //'options' => ['bold']
             ])
-            ->addStyle('question', [
+            ->add(self::QUESTION, [
                 'fgColor' => 'black', 'bgColor' => 'cyan'
             ])
-            ->addStyle('danger', [
+            ->add(self::DANGER, [
                 'fgColor' => 'red', // 'bgColor' => 'magenta', 'options' => ['bold']
             ])
-            ->addStyle('error', [
+            ->add(self::ERROR, [
                 'fgColor' => 'white', 'bgColor' => 'red'
             ]);
     }
@@ -153,11 +157,15 @@ class Color
      * @param $text
      * @return mixed
      */
-    public function handle($text)
+    public function render($text)
     {
         return $this->format($text);
     }
 
+    /**
+     * @param $text
+     * @return mixed|string
+     */
     public function format($text)
     {
         if (!$text) {
@@ -181,7 +189,7 @@ class Color
 
                 // Custom style format @see Style::makeByString()
             } elseif (strpos($matches[1][$i], '=')) {
-                $text = $this->replaceColor($text, $matches[1][$i], $matches[2][$i], Style::makeByString($matches[1][$i]));
+                $text = $this->replaceColor($text, $matches[1][$i], $matches[2][$i], Color::makeByString($matches[1][$i]));
             }
         }
 
@@ -193,39 +201,38 @@ class Color
      * @param string $text
      * @param   string $tag The matched tag.
      * @param   string $match The match.
-     * @param   Style $style The color style to apply.
+     * @param   Color $color The color style to apply.
      * @return  string
      */
-    protected function replaceColor($text, $tag, $match, Style $style)
+    protected function replaceColor($text, $tag, $match, Color $color)
     {
-        $styleStr = $style->toString();
-        $replace = $this->noColor ? $match : "\033[{$styleStr}m{$match}\033[0m";
+        $style = $color->toStyle();
+        $replace = $this->noColor ? $match : "\033[{$style}m{$match}\033[0m";
 
         return str_replace("<$tag>$match</$tag>", $replace, $text);
     }
 
 ///////////////////////////////////////// Attr Color Style /////////////////////////////////////////
 
-
     /**
      * Add a style.
-     * @param $name
-     * @param  string|Style|array $fg 前景色|也可以穿入Style对象|也可以是style配置数组(@see self::addStyleByArray())
-     *                                      当它为Style对象或配置数组时，后面两个参数无效
+     * @param  string $name
+     * @param  string|Color|array $fg 前景色|也可以穿入Color对象|也可以是style配置数组(@see self::addByArray())
+     *                                      当它为Color对象或配置数组时，后面两个参数无效
      * @param  string $bg 背景色
      * @param  array $options 其它选项
      * @return $this
      */
-    public function addStyle($name, $fg = '', $bg = '', array $options = [])
+    public function add($name, $fg = '', $bg = '', array $options = [])
     {
         if (is_array($fg)) {
-            return $this->addStyleByArray($name, $fg);
+            return $this->addByArray($name, $fg);
         }
 
-        if (is_object($fg) && $fg instanceof Style) {
+        if (is_object($fg) && $fg instanceof Color) {
             $this->styles[$name] = $fg;
         } else {
-            $this->styles[$name] = Style::make($fg, $bg, $options);
+            $this->styles[$name] = Color::make($fg, $bg, $options);
         }
 
         return $this;
@@ -242,7 +249,7 @@ class Color
      *   ]
      * @return $this
      */
-    public function addStyleByArray($name, array $styleConfig)
+    public function addByArray($name, array $styleConfig)
     {
         $style = [
             'fgColor' => '',
@@ -253,7 +260,7 @@ class Color
         $config = array_merge($style, $styleConfig);
         [$fg, $bg, $options] = array_values($config);
 
-        $this->styles[$name] = Style::make($fg, $bg, $options);
+        $this->styles[$name] = Color::make($fg, $bg, $options);
 
         return $this;
     }
@@ -261,14 +268,9 @@ class Color
     /**
      * @return array
      */
-    public function getStyleList()
-    {
-        return array_keys($this->styles);
-    }
-
     public function getStyleNames()
     {
-        return $this->getStyleList();
+        return array_keys($this->styles);
     }
 
     /**

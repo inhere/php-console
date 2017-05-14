@@ -8,8 +8,8 @@
 
 namespace inhere\console\utils;
 
+use inhere\console\style\Style;
 use inhere\console\Helper;
-use inhere\console\color\Color;
 
 /**
  * Class Show
@@ -31,6 +31,17 @@ class Show
     const POS_RIGHT = 'r';
 
     /**
+     * help panel keys
+     */
+    const HELP_DES = 'description';
+    const HELP_USAGE = 'usage';
+    const HELP_COMMANDS = 'commands';
+    const HELP_ARGUMENTS = 'arguments';
+    const HELP_OPTIONS = 'options';
+    const HELP_EXAMPLES = 'examples';
+    const HELP_EXTRAS = 'extras';
+
+    /**
      * @var array
      */
     public static $defaultBlocks = [
@@ -47,7 +58,7 @@ class Show
      * @param string $style
      * @param int|boolean $quit If is int, setting it is exit code.
      */
-    public static function block($messages, $type = 'MESSAGE', $style = 'default', $quit = false)
+    public static function block($messages, $type = 'MESSAGE', $style = Style::NORMAL, $quit = false)
     {
         $messages = is_array($messages) ? array_values($messages) : array($messages);
 
@@ -57,7 +68,7 @@ class Show
         }
 
         $text = implode(PHP_EOL, $messages);
-        $color = static::getColor();
+        $color = static::getStyle();
 
         if (is_string($style) && $color->hasStyle($style)) {
             $text = sprintf('<%s>%s</%s>', $style, $text, $style);
@@ -69,37 +80,37 @@ class Show
 
     public static function primary($messages, $quit = false)
     {
-        static::block($messages, 'IMPORTANT', 'primary', $quit);
+        static::block($messages, 'IMPORTANT', Style::PRIMARY, $quit);
     }
 
     public static function success($messages, $quit = false)
     {
-        static::block($messages, 'SUCCESS', 'success', $quit);
+        static::block($messages, 'SUCCESS', Style::SUCCESS, $quit);
     }
 
     public static function info($messages, $quit = false)
     {
-        static::block($messages, 'INFO', 'info', $quit);
+        static::block($messages, 'INFO', Style::INFO, $quit);
     }
 
     public static function notice($messages, $quit = false)
     {
-        static::block($messages, 'NOTICE', 'comment', $quit);
+        static::block($messages, 'NOTICE', Style::COMMENT, $quit);
     }
 
     public static function warning($messages, $quit = false)
     {
-        static::block($messages, 'WARNING', 'warning', $quit);
+        static::block($messages, 'WARNING', Style::WARNING, $quit);
     }
 
     public static function danger($messages, $quit = false)
     {
-        static::block($messages, 'DANGER', 'danger', $quit);
+        static::block($messages, 'DANGER', Style::DANGER, $quit);
     }
 
     public static function error($messages, $quit = false)
     {
-        static::block($messages, 'ERROR', 'error', $quit);
+        static::block($messages, 'ERROR', Style::ERROR, $quit);
     }
 
 /////////////////////////////////////////////////////////////////
@@ -304,7 +315,7 @@ class Show
      */
     public static function helpPanel(array $config, $showAfterQuit = true)
     {
-        $help = [];
+        $help = '';
         $config = array_merge([
             'description' => '',
             'usage' => '',
@@ -314,70 +325,42 @@ class Show
             'options' => [],
 
             'examples' => [],
+
+            // extra
+            'extras' => [],
         ], $config);
 
         // description
         if ($config['description']) {
-            $help[] = $config['description'] . PHP_EOL;
+            $help .= $config['description'] . "\n\n";
+            unset($config['description']);
         }
 
-        // usage
-        if ($config['usage']) {
-            $help[] = "<comment>Usage</comment>:\n  {$config['usage']}\n";
-        }
-
-        // command list
-        if ($config['commands']) {
-            // translate array to string
-            if (is_array($config['commands'])) {
-                $config['commands'] = Helper::spliceKeyValue($config['commands'], [
-                    'leftChar' => '  ',
-                    'keyStyle' => 'info',
-                ]);
-                $config['commands'] = "<comment>Commands</comment>:\n{$config['commands']}";
+        // now, render usage,commands,arguments,options,examples ...
+        foreach ($config as $section => $value) {
+            if (!$value) {
+                continue;
             }
 
-            if (is_string($config['commands'])) {
-                $help[] = $config['commands'];
-            }
-        }
+            // if $value is array, translate array to string
+            if (is_array($value)) {
+                // is natural key ['text1', 'text2'](like usage,examples)
+                if (isset($value[0])) {
+                    $value = '  ' . implode(PHP_EOL . '  ', $value) . PHP_EOL;
 
-        // argument list
-        if ($config['arguments']) {
-            // translate array to string
-            if (is_array($config['arguments'])) {
-                $config['arguments'] = Helper::spliceKeyValue($config['arguments'], [
-                    'leftChar' => '  ',
-                    'keyStyle' => 'info',
-                ]);
-                $config['arguments'] = "<comment>Commands</comment>:\n{$config['arguments']}";
-            }
-
-            if (is_string($config['arguments'])) {
-                $help[] = $config['arguments'];
-            }
-        }
-
-        // options list
-        if ($config['options']) {
-            // translate array to string
-            if (is_array($config['options'])) {
-                $config['options'] = Helper::spliceKeyValue($config['options'], [
-                    'leftChar' => '  ',
-                    'keyStyle' => 'info',
-                ]);
-                $config['options'] = "<comment>Options</comment>:\n{$config['options']}";
+                    // is key-value [ 'key1' => 'text1', 'key2' => 'text2']
+                } else {
+                    $value = Helper::spliceKeyValue($config['commands'], [
+                        'leftChar' => '  ',
+                        'keyStyle' => 'info',
+                    ]);
+                }
             }
 
-            if (is_string($config['options'])) {
-                $help[] = $config['options'];
+            if (is_string($value)) {
+                $section = ucfirst($section);
+                $help .= "<comment>$section</comment>:\n{$value}\n";
             }
-        }
-
-        // examples list
-        if ($config['examples']) {
-            $examples = is_array($config['examples']) ? implode(PHP_EOL . '  ', $config['examples']) : (string)$config['examples'];
-            $help[] = "<comment>Examples</comment>:\n  {$examples}\n";
         }
 
         if ($help) {
@@ -649,11 +632,11 @@ class Show
 /////////////////////////////////////////////////////////////////
 
     /**
-     * @return Color
+     * @return Style
      */
-    public static function getColor()
+    public static function getStyle()
     {
-        return Color::create();
+        return Style::create();
     }
 
     /**
@@ -668,7 +651,7 @@ class Show
             $messages = implode($nl ? PHP_EOL : '', $messages);
         }
 
-        $messages = static::getColor()->format($messages);
+        $messages = static::getStyle()->format($messages);
 
         fwrite(STDOUT, $messages . ($nl ? PHP_EOL : ''));
 

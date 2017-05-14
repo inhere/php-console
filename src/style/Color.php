@@ -6,12 +6,13 @@
  * @todo  unused
  */
 
-namespace inhere\console\color;
+namespace inhere\console\style;
 
 /**
- * @link https://github.com/ventoviro/windwalker-IO
+ * Class Color
+ * @package inhere\console\style
  */
-final class Style
+final class Color
 {
     /**
      * Foreground base value
@@ -26,22 +27,23 @@ final class Style
     const BG_BASE = 40;
 
     // color
-    const BLACK        = 0;
-    const RED          = 1;
-    const GREEN        = 2;
-    const BROWN        = 3;
-    const BLUE         = 4;
-    const CYAN         = 6;
-    const WHITE        = 7;
-    const NORMAL       = 9;
+    const BLACK        = 'black';
+    const RED          = 'red';
+    const GREEN        = 'green';
+    const YELLOW       = 'yellow'; // BROWN
+    const BLUE         = 'blue';
+    const MAGENTA      = 'magenta';
+    const CYAN         = 'cyan';
+    const WHITE        = 'white';
+    const NORMAL       = 'normal';
 
     // color option
-    const BOLD          = 1;      // 加粗
-    const FUZZY         = 2;      // 模糊(不是所有的终端仿真器都支持)
-    const ITALIC        = 3;      // 斜体(不是所有的终端仿真器都支持)
-    const UNDERSCORE    = 4;      // 下划线
-    const BLINK         = 5;      // 闪烁
-    const REVERSE       = 7;      // 颠倒的 交换背景色与前景色
+    const BOLD          = 'bold';       // 加粗
+    const FUZZY         = 'fuzzy';      // 模糊(不是所有的终端仿真器都支持)
+    const ITALIC        = 'italic';     // 斜体(不是所有的终端仿真器都支持)
+    const UNDERSCORE    = 'underscore'; // 下划线
+    const BLINK         = 'blink';      // 闪烁
+    const REVERSE       = 'reverse';    // 颠倒的 交换背景色与前景色
 
 //////////////////////////////////////////// Color Style ////////////////////////////////////////////
 
@@ -57,7 +59,7 @@ final class Style
         'magenta' => 5, // 洋红色 洋红 品红色
         'cyan' => 6, // 青色 青绿色 蓝绿色
         'white' => 7,
-        'normal' => 9
+        'normal' => 9,
     );
 
     /**
@@ -185,13 +187,13 @@ final class Style
      */
     public function __toString()
     {
-        return $this->toString();
+        return $this->toStyle();
     }
 
     /**
      * Get the translated color code.
      */
-    public function toString()
+    public function toStyle()
     {
         $values = [];
 

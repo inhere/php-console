@@ -9,7 +9,7 @@
 namespace inhere\console\io;
 
 use inhere\console\Helper;
-use inhere\console\color\Color;
+use inhere\console\style\Style;
 use inhere\console\utils\Interact;
 
 /**
@@ -33,9 +33,9 @@ class Output
     /**
      * 控制台窗口(字体/背景)颜色添加处理
      * window colors
-     * @var Color
+     * @var Style
      */
-    protected $color;
+    protected $style;
 
 /////////////////////////////////////////////////////////////////
 /// Output Message
@@ -116,44 +116,44 @@ class Output
      * @param string $style
      * @param int|boolean $quit If is int, setting it is exit code.
      */
-    public function block($messages, $type = 'MESSAGE', $style = 'default', $quit = false)
+    public function block($messages, $type = 'MESSAGE', $style = Style::NORMAL, $quit = false)
     {
         Interact::block($messages, $type, $style, $quit);
     }
 
     public function primary($messages, $quit = false)
     {
-        $this->block($messages, 'IMPORTANT', 'primary', $quit);
+        $this->block($messages, 'IMPORTANT', Style::PRIMARY, $quit);
     }
 
     public function success($messages, $quit = false)
     {
-        $this->block($messages, 'SUCCESS', 'success', $quit);
+        $this->block($messages, 'SUCCESS', Style::SUCCESS, $quit);
     }
 
     public function info($messages, $quit = false)
     {
-        $this->block($messages, 'INFO', 'info', $quit);
+        $this->block($messages, 'INFO', Style::INFO, $quit);
     }
 
     public function warning($messages, $quit = false)
     {
-        $this->block($messages, 'WARNING', 'warning', $quit);
+        $this->block($messages, 'WARNING', Style::WARNING, $quit);
     }
 
     public function danger($messages, $quit = false)
     {
-        $this->block($messages, 'DANGER', 'danger', $quit);
+        $this->block($messages, 'DANGER', Style::DANGER, $quit);
     }
 
     public function error($messages, $quit = false)
     {
-        $this->block($messages, 'ERROR', 'error', $quit);
+        $this->block($messages, 'ERROR', Style::ERROR, $quit);
     }
 
     public function notice($messages, $quit = false)
     {
-        $this->block($messages, 'NOTICE', 'comment', $quit);
+        $this->block($messages, 'NOTICE', Style::COMMENT, $quit);
     }
 
     /**
@@ -184,7 +184,7 @@ class Output
             $messages = implode($nl ? PHP_EOL : '', $messages);
         }
 
-        $messages = $this->getColor()->format($messages);
+        $messages = $this->getStyle()->format($messages);
 
         if (false === @fwrite($this->outputStream, $messages . ($nl ? PHP_EOL : ''))) {
             // should never happen
@@ -209,7 +209,7 @@ class Output
      */
     public function err($text = '', $nl = true)
     {
-        $text = $this->getColor()->format($text);
+        $text = $this->getStyle()->format($text);
 
         fwrite($this->errorStream, $text . ($nl ? "\n" : null));
 
@@ -221,15 +221,15 @@ class Output
 /////////////////////////////////////////////////////////////////
 
     /**
-     * @return Color
+     * @return Style
      */
-    public function getColor()
+    public function getStyle()
     {
-        if (!$this->color) {
-            $this->color = new Color;
+        if (!$this->style) {
+            $this->style = new Style;
         }
 
-        return $this->color;
+        return $this->style;
     }
 
     /**

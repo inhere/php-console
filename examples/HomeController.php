@@ -35,7 +35,7 @@ class HomeController extends Controller
             return 0;
         }
 
-        $styles = $this->output->getColor()->getStyleNames();
+        $styles = $this->output->getStyle()->getStyleNames();
         $this->write('normal text output');
 
         $this->write('color text output');
