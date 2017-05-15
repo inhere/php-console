@@ -92,18 +92,17 @@ class ProgressBar
 
     /**
      * @param OutputInterface $output
-     * @param array $config
+     * @param int $maxSteps
      * @return ProgressBar
      */
     public static function create(OutputInterface $output = null, int $maxSteps = 0)
     {
-        return new self($output, $config);
+        return new self($output, $maxSteps);
     }
 
     /**
      * @param OutputInterface $output
-     * @param array $config
-     * @return ProgressBar
+     * @param int $maxSteps
      */
     public function __construct(OutputInterface $output = null, int $maxSteps = 0)
     {
@@ -121,7 +120,7 @@ class ProgressBar
     public function start($maxSteps = null)
     {
         if ($this->started) {
-            throw new LogicException('Progress bar already started.');
+            throw new \LogicException('Progress bar already started.');
         }
 
         $this->startTime = time();
@@ -143,7 +142,7 @@ class ProgressBar
     public function advance(int $step = 1)
     {
         if (!$this->started) {
-            throw new LogicException('Progress indicator has not yet been started.');
+            throw new \LogicException('Progress indicator has not yet been started.');
         }
 
         $this->advanceTo($this->step + $step);
@@ -243,8 +242,12 @@ class ProgressBar
         $this->output->write($text, false);
     }
 
+    /**
+     * @return mixed
+     */
     protected function buildLine()
     {
+//        $regex = "{%([a-z\-_]+)(?:\:([^%]+))?%}i";
         return preg_replace_callback('/({[\w_]+})/i', function ($matches) {
             if ($formatter = $this->getFormatter($matches[1])) {
                 $text = call_user_func($formatter, $this, $this->output);
@@ -296,6 +299,22 @@ class ProgressBar
     }
 
     /**
+     * @return array
+     */
+    public function getMessages(): array
+    {
+        return $this->messages;
+    }
+
+    /**
+     * @param array $messages
+     */
+    public function setMessages(array $messages)
+    {
+        $this->messages = $messages;
+    }
+
+    /**
      * set a named Message
      * @param string $message The text to associate with the placeholder
      * @param string $name    The name of the placeholder
@@ -305,6 +324,10 @@ class ProgressBar
         $this->messages[$name] = $message;
     }
 
+    /**
+     * @param string $name
+     * @return string
+     */
     public function getMessage(string $name = 'message')
     {
         return $this->messages[$name];
@@ -352,6 +375,30 @@ class ProgressBar
     /**
      * @return int
      */
+    public function getMaxSteps(): int
+    {
+        return $this->maxSteps;
+    }
+
+    /**
+     * @return int
+     */
+    public function getStepWidth(): int
+    {
+        return $this->stepWidth;
+    }
+
+    /**
+     * @param int $stepWidth
+     */
+    public function setStepWidth(int $stepWidth)
+    {
+        $this->stepWidth = $stepWidth;
+    }
+
+    /**
+     * @return int
+     */
     public function getBarWidth(): int
     {
         return $this->barWidth;
@@ -380,7 +427,7 @@ class ProgressBar
     public function getCompleteChar(): string
     {
         if (null === $this->completeChar) {
-            return $this->max ? '=' : $this->completeChar;
+            return $this->maxSteps ? '=' : $this->completeChar;
         }
 
         return $this->completeChar;
@@ -418,16 +465,25 @@ class ProgressBar
         $this->remainingChar = $remainingChar;
     }
 
+    /**
+     * @return float
+     */
     public function getPercent()
     {
         return $this->percent;
     }
 
+    /**
+     * @return mixed
+     */
     public function getStartTime()
     {
         return $this->startTime;
     }
 
+    /**
+     * @return mixed
+     */
     public function getFinishTime()
     {
         return $this->finishTime;
@@ -449,12 +505,15 @@ class ProgressBar
         $this->format = $format;
     }
 
+    /**
+     * @return array
+     */
     private static function loadDefaultFormatters()
     {
         return [
-            'bar' => function (ProgressBar $bar, OutputInterface $output) {
+            'bar' => function (ProgressBar $bar) {
                 $completeBars = floor($bar->getMaxSteps() > 0 ? $bar->getPercent() * $bar->getBarWidth() : $bar->getProgress() % $bar->getBarWidth());
-                $display = str_repeat($bar->getBarCharacter(), $completeBars);
+                $display = str_repeat($bar->getCompleteChar(), $completeBars);
 
                 if ($completeBars < $bar->getBarWidth()) {
                     $emptyBars = $bar->getBarWidth() - $completeBars;
@@ -468,7 +527,7 @@ class ProgressBar
             },
             'remaining' => function (ProgressBar $bar) {
                 if (!$bar->getMaxSteps()) {
-                    throw new LogicException('Unable to display the remaining time if the maximum number of steps is not set.');
+                    throw new \LogicException('Unable to display the remaining time if the maximum number of steps is not set.');
                 }
 
                 if (!$bar->getProgress()) {
@@ -481,7 +540,7 @@ class ProgressBar
             },
             'estimated' => function (ProgressBar $bar) {
                 if (!$bar->getMaxSteps()) {
-                    throw new LogicException('Unable to display the estimated time if the maximum number of steps is not set.');
+                    throw new \LogicException('Unable to display the estimated time if the maximum number of steps is not set.');
                 }
 
                 if (!$bar->getProgress()) {
@@ -492,7 +551,7 @@ class ProgressBar
 
                 return Helper::formatTime($estimated);
             },
-            'memory' => function (ProgressBar $bar) {
+            'memory' => function () {
                 return Helper::formatMemory(memory_get_usage(true));
             },
             'current' => function (ProgressBar $bar) {
@@ -507,6 +566,9 @@ class ProgressBar
         ];
     }
 
+    /**
+     * @return array
+     */
     private static function defaultFormats()
     {
         return [

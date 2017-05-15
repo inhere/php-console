@@ -255,25 +255,39 @@ class Interact extends Show
         return $answer;
     }
 
+    public static $startTime = 0;
+    public static $endTime = 0;
+    public static $stepWidth = 2;
+    public static $step = 0;
+    public static $max = 0;
+    private static $options = [
+        'format' => '[{bar}] {percent:3s}%({current}/{max})',
+    ];
 
-    public static function progressBarSetting()
+    /**
+     * @param array $options
+     */
+    public static function progressBarOptions(array $options)
     {
-
+        self::$options = array_merge(self::$options, $options);
     }
 
-    public static function progressBarStart()
+    public static function progressBarStart($max)
     {
-
+        self::$startTime = time();
+        self::$max = time();
     }
 
-    public static function progressBarUp()
+    public static function progressBarUp($step = 1)
     {
 
     }
 
     public static function progressBarEnd()
     {
+        self::$endTime = time();
 
+        self::$max = 0;
     }
 
     /**
