@@ -81,6 +81,7 @@ class Input
     }
 
     /**
+     * get Argument
      * @param null|int|string $name
      * @param mixed $default
      * @return mixed
@@ -90,11 +91,23 @@ class Input
         return $this->get($name, $default);
     }
 
+    /**
+     * get Argument
+     * @param null|int|string $name
+     * @param mixed $default
+     * @return mixed
+     */
     public function getArg($name, $default = null)
     {
         return $this->get($name, $default);
     }
 
+    /**
+     * get Argument
+     * @param null|int|string $name
+     * @param mixed $default
+     * @return mixed
+     */
     public function get($name, $default = null)
     {
         return $this->args[$name] ?? $default;
@@ -163,6 +176,11 @@ class Input
         return $this->getOpt($name, $default);
     }
 
+    /**
+     * @param string $name
+     * @param null $default
+     * @return bool|mixed|null
+     */
     public function getOpt(string $name, $default = null)
     {
         if (!$this->hasOpt($name)) {

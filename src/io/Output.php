@@ -207,7 +207,7 @@ class Output
      * @param boolean $nl True (default) to append a new line at the end of the output string.
      * @return $this
      */
-    public function err($text = '', $nl = true)
+    public function stderr($text = '', $nl = true)
     {
         $text = $this->getStyle()->format($text);
 

@@ -17,6 +17,18 @@ namespace inhere\console;
 class Helper
 {
     /**
+     * 给对象设置属性值
+     * @param $object
+     * @param array $options
+     */
+    public static function loadAttrs($object, array $options)
+    {
+        foreach ($options as $property => $value) {
+            $object->$property = $value;
+        }
+    }
+
+    /**
      * clear Ansi Code
      * @param $string
      * @return mixed
@@ -96,6 +108,40 @@ class Helper
         }
 
         return sprintf('%d B', $memory);
+    }
+
+    /**
+     * formatTime
+     * @param  int $secs
+     * @return string
+     */
+    public static function formatTime($secs)
+    {
+        static $timeFormats = [
+            [0, '< 1 sec'],
+            [1, '1 sec'],
+            [2, 'secs', 1],
+            [60, '1 min'],
+            [120, 'mins', 60],
+            [3600, '1 hr'],
+            [7200, 'hrs', 3600],
+            [86400, '1 day'],
+            [172800, 'days', 86400],
+        ];
+
+        foreach ($timeFormats as $index => $format) {
+            if ($secs >= $format[0]) {
+                if ((isset($timeFormats[$index + 1]) && $secs < $timeFormats[$index + 1][0])
+                    || $index == count($timeFormats) - 1
+                ) {
+                    if (2 == count($format)) {
+                        return $format[1];
+                    }
+
+                    return floor($secs / $format[2]).' '.$format[1];
+                }
+            }
+        }
     }
 
     /**

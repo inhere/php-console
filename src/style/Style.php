@@ -86,71 +86,37 @@ class Style
     {
         if ($fg || $bg || $options) {
             $this->add('base', [
-                'fgColor' => $fg,
-                'bgColor' => $bg,
+                'fg' => $fg,
+                'bg' => $bg,
                 'options' => $options
             ]);
         }
 
-        $this->addDefaultStyles();
+        $this->loadDefaultStyles();
     }
 
     /**
      * Adds predefined color styles to the Color styles
      * default primary success info warning danger
      */
-    protected function addDefaultStyles()
+    protected function loadDefaultStyles()
     {
-        $this->add(self::NORMAL, [
-                'fgColor' => 'normal', 'options' => ['underscore']
-            ])
-            ->add(self::FAINTLY, [ // 不明显的 浅灰色的
-                'fgColor' => 'normal', 'options' => ['italic']
-            ])
-            ->add(self::BOLD, [
-                'options' => ['bold']
-            ])
-            ->add(self::NOTICE, [
-                'options' => ['bold', 'underscore'],
-            ])
-            ->add(self::PRIMARY, [
-                'fgColor' => 'blue', //'options' => ['bold']
-            ])
-            ->add(self::SUCCESS, [
-                'fgColor' => 'green', 'options' => ['bold']
-            ])
-            ->add(self::INFO, [
-                'fgColor' => 'green', //'options' => ['bold']
-            ])
-            ->add(self::WARNING, [
-                'fgColor' => 'black', 'bgColor' => 'yellow', //'options' => ['bold']
-            ])
-            ->add(self::COMMENT, [
-                'fgColor' => 'yellow', //'options' => ['bold']
-            ])
-            ->add(self::QUESTION, [
-                'fgColor' => 'black', 'bgColor' => 'cyan'
-            ])
-            ->add(self::DANGER, [
-                'fgColor' => 'red', // 'bgColor' => 'magenta', 'options' => ['bold']
-            ])
-            ->add(self::ERROR, [
-                'fgColor' => 'white', 'bgColor' => 'red'
-            ]);
+        $this->add(self::NORMAL, ['fg' => 'normal', 'options' => ['underscore'] ])
+            // 不明显的 浅灰色的
+            ->add(self::FAINTLY, ['fg' => 'normal', 'options' => ['italic'] ])
+            ->add(self::BOLD, ['options' => ['bold'] ])
+            ->add(self::INFO, [ 'fg' => 'green', ])     //'options' => ['bold']
+            ->add(self::PRIMARY, [ 'fg' => 'blue', ])   //'options' => ['bold']
+            ->add(self::SUCCESS, ['fg' => 'green', 'options' => ['bold'] ])
+            ->add(self::NOTICE, ['options' => ['bold', 'underscore'], ])
+            ->add(self::WARNING, ['fg' => 'black', 'bg' => 'yellow', ]) //'options' => ['bold']
+            ->add(self::COMMENT, [ 'fg' => 'yellow', ])  //'options' => ['bold']
+            ->add(self::QUESTION, ['fg' => 'black', 'bg' => 'cyan'])
+            ->add(self::DANGER, ['fg' => 'red', ])       // 'bg' => 'magenta', 'options' => ['bold']
+            ->add(self::ERROR, ['fg' => 'white', 'bg' => 'red']);
     }
 
 //////////////////////////////////////////// Text Color handle ////////////////////////////////////////////
-
-    /**
-     * Strip color tags from a string.
-     * @param $string
-     * @return mixed
-     */
-    public static function stripColor($string)
-    {
-        // $text = strip_tags($text);
-        return preg_replace(static::$stripFilter, '', $string);
-    }
 
     /**
      * Process a string.
@@ -212,6 +178,17 @@ class Style
         return str_replace("<$tag>$match</$tag>", $replace, $text);
     }
 
+    /**
+     * Strip color tags from a string.
+     * @param $string
+     * @return mixed
+     */
+    public static function stripColor($string)
+    {
+        // $text = strip_tags($text);
+        return preg_replace(static::$stripFilter, '', $string);
+    }
+
 ///////////////////////////////////////// Attr Color Style /////////////////////////////////////////
 
     /**
@@ -243,8 +220,8 @@ class Style
      * @param $name
      * @param array $styleConfig 样式设置信息
      * e.g  [
-     *       'fgColor' => 'white',
-     *       'bgColor' => 'black',
+     *       'fg' => 'white',
+     *       'bg' => 'black',
      *       'options' => ['bold', 'underscore']
      *   ]
      * @return $this
@@ -252,8 +229,8 @@ class Style
     public function addByArray($name, array $styleConfig)
     {
         $style = [
-            'fgColor' => '',
-            'bgColor' => '',
+            'fg' => '',
+            'bg' => '',
             'options' => []
         ];
 

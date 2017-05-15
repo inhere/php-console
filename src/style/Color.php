@@ -1,9 +1,6 @@
 <?php
 /**
  * Created by PhpStorm.
- * Used:
- * file: Style.php
- * @todo  unused
  */
 
 namespace inhere\console\style;
