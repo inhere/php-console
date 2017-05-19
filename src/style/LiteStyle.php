@@ -103,4 +103,13 @@ class LiteStyle
         return $result;
     }
 
+    /**
+     * @param string $text
+     * @return string
+     */
+    public static function clear($text)
+    {
+        // return preg_replace('/\033\[(?:\d;?)+m/', '' , "\033[0;36mtext\033[0m");
+        return preg_replace('/\033\[(?:\d;?)+m/', '', $text);
+    }
 }
