@@ -642,25 +642,63 @@ class Show
     /**
      * Write a message to standard output stream.
      * @param  string|array $messages Output message
-     * @param  boolean $nl true 会添加换行符 false 原样输出，不添加换行符
-     * @param  int|boolean $quit If is int, setting it is exit code.
+     * @param  boolean $nl True 会添加换行符, False 原样输出，不添加换行符
+     * @param  int|boolean $quit If is int, setting it is exit code. 'True' translate as code 0 and exit, 'False' will not exit.
      */
-    public static function write($messages, $nl = true, $quit = false)
+    public static function write($messages, $nl = true, $quit = false, array $opts = [])
     {
         if (is_array($messages)) {
             $messages = implode($nl ? PHP_EOL : '', $messages);
         }
 
-        $messages = static::getStyle()->format($messages);
+        $messages = static::getStyle()->render($messages);
+        $stream = isset($opts['stream']) ? $opts['stream']: STDOUT;
 
-        fwrite(STDOUT, $messages . ($nl ? PHP_EOL : ''));
+        fwrite($stream, $messages . ($nl ? PHP_EOL : ''));
 
         if (is_int($quit) || true === $quit) {
             $code = true === $quit ? 0 : $quit;
             exit($code);
         }
 
-        fflush(STDOUT);
+        if (isset($opts['flush']) && $opts['flush']) {
+            fflush($stream);
+        }
+    }
+
+    /**
+     * Logs data to stdout
+     * @param string|array $text
+     * @param bool $nl
+     * @param bool|int $quit
+     */
+    public static function writeln($text, $quit = false, array $opts = [])
+    {
+        self::write($text, true, $quit, $opts);
+    }
+
+    /**
+     * Logs data to stdout
+     * @param string|array $text
+     * @param bool $nl
+     * @param bool|int $quit
+     */
+    public static function stdout($text, $nl = true, $quit = false)
+    {
+        self::write($text, $nl, $quit);
+    }
+
+    /**
+     * Logs data to stderr
+     * @param string|array $text
+     * @param bool $nl
+     * @param bool|int $quit
+     */
+    public static function stderr($text, $nl = true, $quit = -200)
+    {
+        self::write($text, $nl, $quit, [
+            'stream' => STDERR,
+        ]);
     }
 
 }
