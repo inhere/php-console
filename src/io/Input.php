@@ -20,18 +20,23 @@ class Input
     protected $inputStream = STDIN;
 
     /**
+     * @var string
+     */
+    private $fullScript;
+
+    /**
      * the script name
      * e.g `./bin/app` OR `bin/cli.php`
      * @var string
      */
-    private $scriptName = '';
+    private $script;
 
     /**
      * the script name
-     * e.g `image/packTask` OR `start`
+     * e.g `start` OR `start`
      * @var string
      */
-    private $command = '';
+    private $command;
 
     /**
      * Input data
@@ -51,7 +56,7 @@ class Input
      */
     public function __construct($fillToGlobal = false)
     {
-        [$this->scriptName, $this->command, $this->args, $this->opts] = self::parseGlobalArgv($fillToGlobal);
+        [$this->script, $this->command, $this->args, $this->opts] = self::parseGlobalArgv($fillToGlobal);
     }
 
     /**
@@ -237,9 +242,9 @@ class Input
     /**
      * @return string
      */
-    public function getScript(): string
+    public function getFullScript(): string
     {
-        return $this->scriptName;
+        return $this->fullScript;
     }
 
     /**
@@ -247,15 +252,23 @@ class Input
      */
     public function getScriptName(): string
     {
-        return $this->scriptName;
+        return $this->script;
     }
 
     /**
-     * @param string $scriptName
+     * @return string
      */
-    public function setScriptName(string $scriptName)
+    public function getScript(): string
     {
-        $this->scriptName = $scriptName;
+        return $this->script;
+    }
+
+    /**
+     * @param string $script
+     */
+    public function setScript(string $script)
+    {
+        $this->script = $script;
     }
 
     /**
@@ -324,23 +337,18 @@ class Input
      */
     public static function parseGlobalArgv($fillToGlobal = false)
     {
-        // eg: `./bin/app image/packTask name=john city -s=test --page=23 -d -rf --debug`
-        // eg: `php cli.php image/packTask name=john city -s=test --page=23 -d -rf --debug`
+        // eg: `./bin/app server name=john city -s=test --page=23 -d -rf --debug`
+        // eg: `php cli.php server name=john city -s=test --page=23 -d -rf --debug`
         global $argv;
 
         $tmp = $argv;
-        $command = '';
-        $scriptName = array_shift($tmp);
-
-        // collect command `image/packTask`
-        if (isset($tmp[0]) && $tmp[0]{0} !== '-' && (false === strpos($tmp[0], '='))) {
-            $command = trim(array_shift($tmp), '/');
-        }
+        $fullScript = implode(' ', $tmp);
+        $script = array_shift($tmp);
 
         $args = $opts = [];
 
         // parse query params
-        // `./bin/app image/packTask start name=john city=chengdu -s=test --page=23 -d -rf --debug --task=off`
+        // `./bin/app server start name=john city=chengdu -s=test --page=23 -d -rf --debug --task=off`
         // parse to
         // $args = [ 'name' => 'john', 0 => 'start', 'city' => 'chengdu' ];
         // $opts = [ 'd' => true, 'f' => true, 'r' => true, 's' => 'test', 'debug' => true, 'task' => false ]
@@ -361,8 +369,11 @@ class Input
             }
         }
 
+        // collect command `server`
+        $command = isset($args[0]) ? array_shift($args) : '';
+
         unset($tmp);
-        return [$scriptName, $command, $args, $opts];
+        return [$fullScript, $script, $command, $args, $opts];
     }
 
     /**
