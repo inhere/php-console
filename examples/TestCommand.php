@@ -6,6 +6,8 @@
  * Time: 18:58
  */
 
+namespace inhere\console\examples;
+
 use inhere\console\Command;
 use inhere\console\utils\AnsiCode;
 

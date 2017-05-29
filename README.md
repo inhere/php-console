@@ -24,8 +24,13 @@ $app = new App([], $input, $output);
 example(in terminal):
 
 ```
-$ examples/app home/useArg status=2 name=john name=tom name=jack arg0 -s=test --page=23 --id=23 --id=154 --id=456  -d -rf --debug --test=false
+$ examples/app home/useArg status=2 name=john arg0 -s=test --page=23 --id=23 --id=154 -e dev -v vvv -d -rf --debug --test=false
 ```
+
+**NOTICE:**
+
+- These words will be as a Boolean(`true`) value: `on|yes|true` 
+- These words will be as a Boolean(`false`) value: `off|no|false` 
 
 get command info:
 

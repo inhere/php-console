@@ -8,7 +8,7 @@ defined('STDERR') or define('STDERR', fopen('php://stderr', 'wb'));
 
 define('PROJECT_PATH', dirname(__DIR__));
 
-require dirname(__DIR__) . '/../../autoload.php';
+require __DIR__ . '/s-autoload.php';
 
 // create app instance
 $app = new \inhere\console\App();

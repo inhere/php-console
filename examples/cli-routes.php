@@ -8,10 +8,12 @@
  * @var inhere\console\App $app
  */
 
-require 'TestCommand.php';
-require 'HomeController.php';
+use inhere\console\examples\HomeController;
+use inhere\console\examples\TestCommand;
+use inhere\console\io\Input;
+use inhere\console\io\Output;
 
-$app->command('demo', function (\inhere\console\io\Input $in, \inhere\console\io\Output $out) {
+$app->command('demo', function (Input $in, Output $out) {
     $cmd = $in->getCommand();
 
     $out->info('hello, this is a test command: ' . $cmd);

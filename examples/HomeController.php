@@ -1,5 +1,7 @@
 <?php
 
+namespace inhere\console\examples;
+
 use inhere\console\Controller;
 use inhere\console\utils\Download;
 use inhere\console\utils\Interact;

@@ -19,6 +19,12 @@ use inhere\console\utils\Interact;
 interface InputInterface
 {
     /**
+     * These words will be as a Boolean value
+     */
+    const TRUE_WORDS = '|on|yes|true|';
+    const FALSE_WORDS = '|off|no|false|';
+
+    /**
      * 读取输入信息
      * @param  string $question 若不为空，则先输出文本消息
      * @param  bool $nl true 会添加换行符 false 原样输出，不添加换行符

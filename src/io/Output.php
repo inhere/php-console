@@ -16,7 +16,7 @@ use inhere\console\utils\Interact;
  * Class Output
  * @package inhere\console\io
  */
-class Output
+class Output implements OutputInterface
 {
     /**
      * 正常输出流

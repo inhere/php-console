@@ -335,4 +335,37 @@ class Helper
 
         return $pad . '  ' . implode("\n", $lines);
     }
+
+
+    /**
+     * dump vars
+     * @param array ...$args
+     * @return string
+     */
+    public static function dumpVar(...$args)
+    {
+        ob_start();
+        var_dump(...$args);
+        $string = ob_get_clean();
+
+        return preg_replace("/=>\n\s+/", '=> ', $string);
+    }
+
+    /**
+     * print vars
+     * @param array ...$args
+     * @return string
+     */
+    public static function printR(...$args)
+    {
+        ob_start();
+
+        foreach ($args as $arg) {
+            print_r($arg);
+        }
+
+        $string = ob_get_clean();
+
+        return preg_replace("/Array\n\s+\(/", 'Array (', $string);
+    }
 }
