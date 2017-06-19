@@ -143,8 +143,8 @@ class HomeController extends Controller
         $this->write('input options:');
         var_dump($this->input->getOpts());
 
-        $this->write('the Input object:');
-        var_dump($this->input);
+        // $this->write('the Input object:');
+        // var_dump($this->input);
     }
 
     /**

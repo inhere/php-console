@@ -220,7 +220,7 @@ class Show
      * Show a list
      *
      * ```
-     * $title = 'list1 title';
+     * $title = 'list title';
      * $data = [
      *      'name'  => 'value text',
      *      'name2' => 'value text 2',
@@ -271,6 +271,10 @@ class Show
      * @param array $opts
      */
     public static function multiList(array $data, array $opts = [])
+    {
+        self::mList($data, $opts);
+    }
+    public static function mList(array $data, array $opts = [])
     {
         foreach ($data as $title => $list) {
             self::aList($list, $title, $opts);
@@ -499,7 +503,7 @@ class Show
      * ```
      * @return int
      */
-    public static function table(array $data, $title = 'Info List', array $opts = [])
+    public static function table(array $data, $title = 'Data Table', array $opts = [])
     {
         if (!$data) {
             self::write('<info>No data to display!</info>');

@@ -201,7 +201,7 @@ class Input implements InputInterface
      */
     public function boolOpt(string $name, $default = false)
     {
-        return $this->getOpt($name, (bool)$default);
+        return (bool)$this->getOpt($name, $default);
     }
 
     /**

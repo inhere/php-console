@@ -35,7 +35,7 @@ $app->run();
 example(in terminal):
 
 ```bash
-$ examples/app home/useArg status=2 name=john arg0 -s=test --page=23 --id=23 --id=154 -e dev -v vvv -d -rf --debug --test=false
+$ examples/app home/useArg status=2 name=john arg0 -s=test --page=23 --id=154 -e dev -v vvv -d -rf --debug --test=false
 ```
 
 **NOTICE:**
@@ -45,7 +45,7 @@ $ examples/app home/useArg status=2 name=john arg0 -s=test --page=23 --id=23 --i
 
 get command info:
 
-```
+```php
 echo $input->getScript();   // 'examples/app'
 echo $input->getCommand(); // 'home/useArg'
 ```
@@ -118,8 +118,12 @@ echo $text; // 'simon'
 
 basic output:
 
+```php
+public function write(mixed $messages = '', $nl = true, $quit = false)
 ```
-$output->write($message);
+
+```php
+$output->write('hello');
 ```
 
 ### formatted output

@@ -70,16 +70,20 @@ class Output implements OutputInterface
 
     /**
      * @inheritdoc
-     * @see Interact::multiList()
+     * @see Interact::mList()
      */
     public function multiList(array $data, array $opts = [])
     {
-        Interact::multiList($data, $opts);
+        Interact::mList($data, $opts);
     }
 
+    /**
+     * @inheritdoc
+     * @see Interact::mList()
+     */
     public function mList(array $data, array $opts = [])
     {
-        Interact::multiList($data, $opts);
+        Interact::mList($data, $opts);
     }
 
     /**

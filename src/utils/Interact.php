@@ -79,6 +79,11 @@ class Interact extends Show
         return $r;
     }
 
+    public static function mSelect($description, $options, $default = null, $allowExit = true)
+    {
+
+    }
+
     /**
      * 确认, 发出信息要求确认
      * @param string $question 发出的信息
@@ -204,6 +209,10 @@ class Interact extends Show
      * @return string
      */
     public static function loopAsk($question, $default = null, \Closure $validator = null, $times = 3)
+    {
+        return limitedAsk($question, $default, $validator, $times);
+    }
+    public static function limitedAsk($question, $default = null, \Closure $validator = null, $times = 3)
     {
         if (!$question = trim($question)) {
             self::error('Please provide a question text!', 1);

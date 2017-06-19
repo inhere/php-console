@@ -8,6 +8,9 @@
 
 namespace inhere\console;
 
+use inhere\console\io\Input;
+use inhere\console\io\Output;
+
 /**
  * Class Command
  * @package inhere\console
@@ -26,7 +29,11 @@ abstract class Command extends AbstractCommand
     // command example message
     protected $example = '';
 
-    // run command
+    /**
+     * run command
+     * @param  string $name
+     * @return int
+     */
     public function run($name = '')
     {
         $this->setName($name);
@@ -39,7 +46,7 @@ abstract class Command extends AbstractCommand
 
         try {
             $this->beforeRun();
-            $status = $this->execute();
+            $status = $this->execute($this->input, $this->output);
             $this->afterRun();
 
         } catch (\Exception $e) {
@@ -49,8 +56,13 @@ abstract class Command extends AbstractCommand
         return $status;
     }
 
-    // do execute
-    abstract protected function execute();
+    /**
+     * do execute
+     * @param  Input $input
+     * @param  Output $output
+     * @return int
+     */
+    abstract protected function execute($input, $output);
 
     /**
      * handle command runtime exception

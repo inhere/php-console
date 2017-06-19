@@ -17,7 +17,7 @@ use inhere\console\utils\AnsiCode;
  */
 class TestCommand extends Command
 {
-    public function execute()
+    public function execute($input, $output)
     {
         $this->output->write('hello, this in ' . __METHOD__);
 
