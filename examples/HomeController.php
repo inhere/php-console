@@ -4,6 +4,7 @@ namespace inhere\console\examples;
 
 use inhere\console\Controller;
 use inhere\console\utils\Download;
+use inhere\console\utils\Show;
 use inhere\console\utils\Interact;
 
 /**
@@ -68,14 +69,16 @@ class HomeController extends Controller
      */
     public function fmtMsgCommand()
     {
-        $this->output->title('title');
+        $this->output->title('title show');
+        echo "\n";
+
         $body = 'If screen size could not be detected, or the indentation is greater than the screen size, the text will not be wrapped.' .
             'Word wrap text with indentation to fit the screen size,' .
             'Word wrap text with indentation to fit the screen size,' .
             'Word wrap text with indentation to fit the screen size,' .
             'Word wrap text with indentation to fit the screen size,';
 
-        $this->output->section('section title', $body, [
+        $this->output->section('section show', $body, [
             'pos' => 'l'
         ]);
 
@@ -84,8 +87,46 @@ class HomeController extends Controller
             'help' => 'Show application help information',
             'list' => 'List all group and independent commands',
         ];
-        Interact::panel($commands, 'Internal Commands', '');
-        Interact::aList($commands, 'Internal Commands');
+        Show::panel($commands, 'panel show', '#');
+
+        echo "\n";
+        Show::helpPanel([
+            Show::HELP_DES => 'a help panel description text. (help panel show)',
+            Show::HELP_USAGE => 'a usage text',
+            Show::HELP_ARGUMENTS => [
+                'arg1' => 'arg1 description',
+                'arg2' => 'arg2 description',
+            ],
+            Show::HELP_OPTIONS => [
+                '--opt1' => 'a long option',
+                '-s' => 'a short option',
+                '-d' => 'Run the server on daemon.(default: <comment>false</comment>)',
+                '-h, --help' => 'Display this help message'
+            ],
+        ], false);
+
+        Show::aList($commands, 'aList show');
+
+        Show::table([
+            [
+                'id' => 1,
+                'name' => 'john',
+                'status' => 2,
+                'email' => 'john@email.com',
+            ],
+            [
+                'id' => 2,
+                'name' => 'tom',
+                'status' => 0,
+                'email' => 'tom@email.com',
+            ],
+            [
+                'id' => 3,
+                'name' => 'jack',
+                'status' => 1,
+                'email' => 'jack-test@email.com',
+            ],
+        ], 'table show');
     }
 
     /**
@@ -118,7 +159,7 @@ class HomeController extends Controller
     }
 
     /**
-     * use <default>Interact::select</default> method
+     * use <normal>Interact::select</normal> method
      *
      */
     public function selectCommand()

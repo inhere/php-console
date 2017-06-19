@@ -9,21 +9,32 @@ a php console application library.
 
 ## usage
 
-```
+```php
 use inhere\console\io\Input;
 use inhere\console\io\Output;
 use inhere\console\App;
 
+$config = [];
 $input = new Input;
 $output = new Output;
-$app = new App([], $input, $output);
+$app = new App($config, $input, $output);
+
+// add command routes
+$app->command('demo', function (Input $in, Output $out) {
+    $cmd = $in->getCommand();
+
+    $out->info('hello, this is a test command: ' . $cmd);
+});
+
+// run
+$app->run();
 ```
 
 ## input
 
 example(in terminal):
 
-```
+```bash
 $ examples/app home/useArg status=2 name=john arg0 -s=test --page=23 --id=23 --id=154 -e dev -v vvv -d -rf --debug --test=false
 ```
 
@@ -48,15 +59,11 @@ var_dump($input->getArgs());
 output:
 
 ```php
-array(3) {            
-  'status' => string(1) "2"       
-  'name' =>  array(3) {          
-    [0] => string(4) "john"  
-    [1] => string(3) "tom"   
-    [2] => string(4) "jack"  
-  }                   
-  [0] => string(4) "arg0"    
-}                     
+array(3) {
+  'status' => string(1) "2"
+  'name' => string(4) "john"
+  [0] => string(4) "arg0"
+}
 ```
 
 get parsed options:
@@ -68,26 +75,23 @@ var_dump($input->getOpts());
 output:
 
 ```php
-array(8) {                  
+array(10) {          
   's' => string(4) "test"   
-  'page' => string(2) "23"  
-  'id' => array(3) {        
-    [0] => string(2) "23"   
-    [1] => string(3) "154"  
-    [2] => string(3) "456"  
-  }                         
+  'e' => string(3) "dev"    
+  'v' => string(3) "vvv"    
   'd' => bool(true)         
   'r' => bool(true)         
   'f' => bool(true)         
-  'debug' => bool(true)     
-  'test' => bool(false)     
-}                           
+  'page' => string(2) "23"     
+  'id' =>   string(3) "154"    
+  'debug' => bool(true)         
+  'test' => bool(false)        
+}
 ```
 
 more method:
 
 ```php
-
 // argument
 $first = $input->getFirstArg(); // 'arg0'
 $status = $input->get('status', 'default'); // '2'
@@ -100,7 +104,7 @@ $test = $input->boolOpt('test') // False
 
 ### get user input:
 
-```
+```php
 echo "Your name:";
 
 $text = $input->read(); 
@@ -122,9 +126,9 @@ $output->write($message);
 
 #### use color style 
 
-![alt text](images/output-color-text.jpg "Title")
+![alt text](images/output-color-text.png "Title")
 
-#### special format  
+#### special format output
 
 - `$output->title()`
 - `$output->section()`
@@ -132,7 +136,7 @@ $output->write($message);
 - `$output->table()`
 - `$output->helpPanel()`
 
-![alt text](images/output-panel-table-title.jpg "Title")
+![alt text](images/output-format-msg.png "Title")
 
 ## more interactive
 
@@ -144,7 +148,7 @@ interactive method:
 
 Select one of the options
 
-```
+```php
 select($description, $options, $default = null, $allowExit=true)
 choice($description, $options, $default = null, $allowExit=true)
 ```
@@ -153,7 +157,7 @@ choice($description, $options, $default = null, $allowExit=true)
 
  only values, no setting option
 
-```
+```php
 $select = Interact::select('Your city is ?', [
     'chengdu', 'beijing', 'shanghai'
 ]);
@@ -161,6 +165,7 @@ $select = Interact::select('Your city is ?', [
 ```
 
 output in terminal:
+
 ```
 Your city is ? 
   0) chengdu
@@ -170,7 +175,7 @@ Your city is ?
 You choice: 0
 ```
 
-```
+```php
 echo $select; // '0'
 ```
 
@@ -178,7 +183,7 @@ echo $select; // '0'
 
 custom option, setting a default value.
 
-```
+```php
 $select = Interact::select('Your city is ?', [
     'a' => 'chengdu',
     'b' => 'beijing',
@@ -197,22 +202,21 @@ Your city is?
 You choice[default:a] : b
 ```
 
-```
+```php
 echo $select; // 'b'
 ```
 
 ### `Interact::confirm()`
 
-```
-confirm(string $question, bool $default = true) bool
+```php
+public static function confirm($question, $default = true) bool
 ```
 
 usage:
 
 
-```
+```php
 $result = Interact::confirm('Whether you want to continue ?');
-
 ```
 
 output in terminal:
@@ -224,19 +228,29 @@ Please confirm (yes|no) [default:yes]: n
 
 result: 
 
-```
+```php
 var_dump($result); // bool(false)
 ```
 
 
-### `Interact::question()`
+### `Interact::question()`/`Interact::ask()`
 
-### `Interact::loopAsk()`
-
+```php
+public static function ask($question, $default = null, \Closure $validator = null)
+public static function question($question, $default = null, \Closure $validator = null)
 ```
 
-```
+```php
+ $answer = Interact::ask('Please input your name?', null, function ($answer) {
+     if ( !preg_match('/\w+/', $answer) ) {
+         Interact::error('The name must match "/\w+/"');
 
+         return false;
+     }
+
+     return true;
+  });
+```
 ## License
 
 MIT

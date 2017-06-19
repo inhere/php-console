@@ -350,7 +350,7 @@ class Show
 
                     // is key-value [ 'key1' => 'text1', 'key2' => 'text2']
                 } else {
-                    $value = Helper::spliceKeyValue($config['commands'], [
+                    $value = Helper::spliceKeyValue($value, [
                         'leftChar' => '  ',
                         'keyStyle' => 'info',
                     ]);
