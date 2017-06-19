@@ -37,9 +37,7 @@ abstract class Controller extends AbstractCommand
      */
     public function run($action = '')
     {
-        $showCmdHelp = $action && ($this->input->boolOpt('h') || $this->input->boolOpt('help'));
-
-        if ($showCmdHelp) {
+        if ($action && $this->input->sameOpt(['h','help'])) {
             return $this->helpCommand($action);
         }
 
@@ -87,25 +85,6 @@ abstract class Controller extends AbstractCommand
         }
 
         return $result;
-    }
-
-    /**
-     * handle action runtime exception
-     *
-     * @param  \Exception $e
-     * @throws \Exception
-     */
-    protected function handleRuntimeException(\Exception $e)
-    {
-        throw $e;
-    }
-
-    protected function beforeRun($action)
-    {
-    }
-
-    protected function afterRun($action)
-    {
     }
 
     /**

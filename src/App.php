@@ -136,11 +136,12 @@ class App extends AbstractApp
 
         /** @var Controller $object */
         $object = new $controller($this->input, $this->output);
-        $object->setName($name);
 
         if (!($object instanceof Controller)) {
             throw new \InvalidArgumentException("The console controller class [$object] must instanceof the " . Controller::class);
         }
+
+        $object->setName($name);
 
         return $object->run($action);
     }

@@ -122,14 +122,15 @@ class Interact extends Show
 
     /**
      * 询问，提出问题；返回 输入的结果
+     *
      * @param string $question 问题
      * @param null|string $default 默认值
      * @param \Closure $validator The validate callback. It must return bool.
      * @example This is an example
      *
-     * ```
+     * ```php
      *  $answer = Interact::ask('Please input your name?', null, function ($answer) {
-     *      if ( !preg_match('/\w+/', $answer) ) {
+     *      if (!preg_match('/\w+/', $answer)) {
      *          Interact::error('The name must match "/\w+/"');
      *
      *          return false;
@@ -145,7 +146,6 @@ class Interact extends Show
     {
         return self::question($question, $default, $validator);
     }
-
     public static function question($question, $default = null, \Closure $validator = null)
     {
         if (!$question = trim($question)) {
@@ -157,7 +157,7 @@ class Interact extends Show
 
         if ('' === $answer) {
             if (null === $default) {
-                self::error('A value is required.', false);
+                self::error('A value is required.');
 
                 return static::question($question, $default, $validator);
             }
@@ -175,7 +175,7 @@ class Interact extends Show
     /**
      * 有次数限制的询问,提出问题
      *   若输入了值且验证成功则返回 输入的结果
-     *   否则，会连续询问 $allowed 次， 若仍然错误，退出
+     *   否则，会连续询问 $times 次， 若仍然错误，退出
      * @param string $question 问题
      * @param null|string $default 默认值
      * @param \Closure $validator (默认验证输入是否为空)自定义回调验证输入是否符合要求; 验证成功返回true 否则 可返回错误消息
@@ -183,7 +183,7 @@ class Interact extends Show
      *
      * ```
      * // no default value
-     * Interact::loopAsk('please entry you age?', null, function($age)
+     * Interact::limitedAsk('please entry you age?', null, function($age)
      * {
      *     if ($age<1 || $age>100) {
      *         Interact::error('Allow the input range is 1-100');
@@ -194,7 +194,7 @@ class Interact extends Show
      * } );
      *
      * // has default value
-     * Interact::loopAsk('please entry you age?', 89, function($age)
+     * Interact::limitedAsk('please entry you age?', 89, function($age)
      * {
      *     if ($age<1 || $age>100) {
      *         Interact::error('Allow the input range is 1-100');
@@ -210,7 +210,7 @@ class Interact extends Show
      */
     public static function loopAsk($question, $default = null, \Closure $validator = null, $times = 3)
     {
-        return limitedAsk($question, $default, $validator, $times);
+        return self::limitedAsk($question, $default, $validator, $times);
     }
     public static function limitedAsk($question, $default = null, \Closure $validator = null, $times = 3)
     {
@@ -253,7 +253,6 @@ class Interact extends Show
         }
 
         if (!$result) {
-
             if (null !== $default) {
                 return $default;
             }
@@ -301,7 +300,7 @@ class Interact extends Show
 
     /**
      * 读取输入信息
-     * @param  string $message 若不为空，则先输出文本
+     * @param  mixed $message 若不为空，则先输出文本
      * @param  bool $nl true 会添加换行符 false 原样输出，不添加换行符
      * @return string
      */
@@ -310,6 +309,11 @@ class Interact extends Show
         return self::read($message, $nl);
     }
 
+    /**
+     * @param mixed $message
+     * @param bool $nl
+     * @return string
+     */
     public static function read($message = null, $nl = false)
     {
         if ($message) {

@@ -467,7 +467,7 @@ class Input implements InputInterface
      * @param bool $mergeOpts Whether merge short-opts and long-opts
      * @return array
      */
-    public static function parseOptArgs($noValues = [], $mergeOpts = false)
+    public static function parseOptArgs(array $noValues = [], $mergeOpts = false)
     {
         $params = $GLOBALS['argv'];
         reset($params);
@@ -476,7 +476,7 @@ class Input implements InputInterface
         $fullScript = implode(' ', $params);
         $script = array_shift($params);
 
-        while (list(, $p) = each($params)) {
+        while (list(,$p) = each($params)) {
             // is options
             if ($p{0} === '-') {
                 $isLong = false;
@@ -490,19 +490,19 @@ class Input implements InputInterface
 
                     // long-opt: value specified inline (--<opt>=<value>)
                     if (strpos($opt, '=') !== false) {
-                        list($opt, $value) = explode('=', $opt, 2);
+                        [$opt, $value] = explode('=', $opt, 2);
                     }
 
                     // short-opt: value specified inline (-<opt>=<value>)
                 } elseif (strlen($opt) > 2 && $opt{1} === '=') {
-                    list($opt, $value) = explode('=', $opt, 2);
+                    [$opt, $value] = explode('=', $opt, 2);
                 }
 
                 // check if next parameter is a descriptor or a value
                 $nxp = current($params);
 
-                if (!in_array($opt, $noValues) && $value === true && $nxp !== false && $nxp{0} !== '-') {
-                    list(, $value) = each($params);
+                if ($value === true && $nxp !== false && $nxp{0} !== '-' && !in_array($opt, $noValues, true)) {
+                    list(,$value) = each($params);
 
                     // short-opt: bool opts. like -e -abc
                 } elseif (!$isLong && $value === true) {
@@ -523,7 +523,7 @@ class Input implements InputInterface
             } else {
                 // value specified inline (<arg>=<value>)
                 if (strpos($p, '=') !== false) {
-                    list($name, $value) = explode('=', $p, 2);
+                    [$name, $value] = explode('=', $p, 2);
                     $args[$name] = self::filterBool($value);
                 } else {
                     $args[] = $p;
@@ -541,7 +541,7 @@ class Input implements InputInterface
     }
 
     /**
-     * @param string $val
+     * @param string|bool $val
      * @param bool $enable
      * @return bool
      */
@@ -557,7 +557,9 @@ class Input implements InputInterface
             // check it is a bool value.
             if (false !== strpos(self::TRUE_WORDS, "|$tVal|")) {
                 return true;
-            } elseif (false !== strpos(self::FALSE_WORDS, "|$tVal|")) {
+            }
+
+            if (false !== strpos(self::FALSE_WORDS, "|$tVal|")) {
                 return false;
             }
         }

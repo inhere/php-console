@@ -8,11 +8,14 @@ use inhere\console\utils\Show;
 use inhere\console\utils\Interact;
 
 /**
- * default command controller. there are some command usage examples
+ * default command controller. there are some command usage examples(1)
+ *
+ * Class HomeController
+ * @package inhere\console\examples
  */
 class HomeController extends Controller
 {
-    const DESCRIPTION = 'default command controller. there are some command usage examples';
+    const DESCRIPTION = 'default command controller. there are some command usage examples(2)';
 
     /**
      * this is a command's description message

@@ -17,16 +17,28 @@ use inhere\console\io\Output;
  */
 abstract class Command extends AbstractCommand
 {
-    // command usage message
+    /**
+     * command usage message
+     * @var string
+     */
     protected $usage = '';
 
-    // command arguments message
+    /**
+     * command arguments message
+     * @var array
+     */
     protected $arguments = [];
 
-    // command arguments message
+    /**
+     * command arguments message
+     * @var array
+     */
     protected $options = [];
 
-    // command example message
+    /**
+     * command example message
+     * @var string
+     */
     protected $example = '';
 
     /**
@@ -38,16 +50,16 @@ abstract class Command extends AbstractCommand
     {
         $this->setName($name);
 
-        if ($this->input->boolOpt('h') || $this->input->boolOpt('help')) {
+        if ($this->input->sameOpt(['h','help'])) {
             return $this->showHelp();
         }
 
         $status = 0;
 
         try {
-            $this->beforeRun();
+            $this->beforeRun($name);
             $status = $this->execute($this->input, $this->output);
-            $this->afterRun();
+            $this->afterRun($name);
 
         } catch (\Exception $e) {
             $this->handleRuntimeException($e);
@@ -65,24 +77,8 @@ abstract class Command extends AbstractCommand
     abstract protected function execute($input, $output);
 
     /**
-     * handle command runtime exception
-     *
-     * @param  \Exception $e
-     * @throws \Exception
+     * @return array
      */
-    protected function handleRuntimeException(\Exception $e)
-    {
-        throw $e;
-    }
-
-    protected function beforeRun()
-    {
-    }
-
-    protected function afterRun()
-    {
-    }
-
     protected function configure()
     {
         return [
@@ -94,12 +90,15 @@ abstract class Command extends AbstractCommand
         ];
     }
 
+    /**
+     * @return int
+     */
     public function showHelp()
     {
         $configure = $this->configure();
 
         if (!$configure) {
-            return 91;
+            return __LINE__;
         }
 
         $configure['description'] = static::DESCRIPTION;

@@ -51,6 +51,25 @@ abstract class AbstractCommand
 
     abstract public function run($arg = '');
 
+    protected function beforeRun($action)
+    {
+    }
+
+    protected function afterRun($action)
+    {
+    }
+
+    /**
+     * handle action/command runtime exception
+     *
+     * @param  \Throwable $e
+     * @throws \Throwable
+     */
+    protected function handleRuntimeException(\Throwable $e)
+    {
+        throw $e;
+    }
+
     /**
      * @param string $name
      */
@@ -78,7 +97,7 @@ abstract class AbstractCommand
     /**
      * @param array $allowTags
      */
-    public static function setAllowTags($allowTags)
+    public static function setAllowTags(array $allowTags)
     {
         self::$allowTags = $allowTags;
     }

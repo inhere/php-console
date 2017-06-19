@@ -132,9 +132,9 @@ class Helper
         foreach ($timeFormats as $index => $format) {
             if ($secs >= $format[0]) {
                 if ((isset($timeFormats[$index + 1]) && $secs < $timeFormats[$index + 1][0])
-                    || $index == count($timeFormats) - 1
+                    || $index === count($timeFormats) - 1
                 ) {
-                    if (2 == count($format)) {
+                    if (2 === count($format)) {
                         return $format[1];
                     }
 
@@ -142,6 +142,8 @@ class Helper
                 }
             }
         }
+
+        return date('Y-m-d H:i:s', $secs);
     }
 
     /**
@@ -199,7 +201,7 @@ class Helper
         foreach ($data as $key => $value) {
             $text .= $opts['leftChar'];
 
-            if ($opts['keyMaxWidth'] && !is_int($key)) {
+            if (!is_int($key) && $opts['keyMaxWidth']) {
                 $key = str_pad($key, $opts['keyMaxWidth'], ' ');
                 $text .= ($keyStyle ? "<{$keyStyle}>$key</{$keyStyle}> " : $key) . $opts['sepChar'];
             }
@@ -208,6 +210,7 @@ class Helper
             if (is_array($value)) {
                 $temp = '';
 
+                /** @var array $value */
                 foreach ($value as $k => $val) {
                     if (is_bool($val)) {
                         $val = $val ? 'True' : 'False';
@@ -261,28 +264,32 @@ class Helper
         if (static::isOnWindows()) {
             $output = [];
             exec('mode con', $output);
+
             if (isset($output, $output[1]) && strpos($output[1], 'CON') !== false) {
-                return $size = [(int)preg_replace('~\D~', '', $output[3]), (int)preg_replace('~\D~', '', $output[4])];
+                return ($size = [
+                    (int)preg_replace('~\D~', '', $output[3]),
+                    (int)preg_replace('~\D~', '', $output[4])
+                ]);
             }
         } else {
             // try stty if available
             $stty = [];
             if (exec('stty -a 2>&1', $stty) && preg_match('/rows\s+(\d+);\s*columns\s+(\d+);/mi', implode(' ', $stty), $matches)) {
-                return $size = [$matches[2], $matches[1]];
+                return ($size = [$matches[2], $matches[1]]);
             }
 
             // fallback to tput, which may not be updated on terminal resize
             if (($width = (int)exec('tput cols 2>&1')) > 0 && ($height = (int)exec('tput lines 2>&1')) > 0) {
-                return $size = [$width, $height];
+                return ($size = [$width, $height]);
             }
 
             // fallback to ENV variables, which may not be updated on terminal resize
             if (($width = (int)getenv('COLUMNS')) > 0 && ($height = (int)getenv('LINES')) > 0) {
-                return $size = [$width, $height];
+                return ($size = [$width, $height]);
             }
         }
 
-        return $size = false;
+        return ($size = false);
     }
 
     /**

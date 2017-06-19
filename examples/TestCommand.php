@@ -17,9 +17,12 @@ use inhere\console\utils\AnsiCode;
  */
 class TestCommand extends Command
 {
+    /**
+     * {@inheritdoc}
+     */
     public function execute($input, $output)
     {
-        $this->output->write('hello, this in ' . __METHOD__);
+        $output->write('hello, this in ' . __METHOD__);
 
         // $this->output->panel($_SERVER, 'Server information', '');
 

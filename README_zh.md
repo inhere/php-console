@@ -86,9 +86,63 @@ more please see: examples/app [controller|command]
 
 ```
 
+## 添加命令
+
+添加命令的方式有三种
+
+- 如上所示，使用闭包可以快速的添加一个简单的命令
+- 通过继承 `inhere\console\Command` 添加独立命令
+
+```php
+use inhere\console\utils\AnsiCode;
+
+/**
+ * Class Test
+ * @package app\console\commands
+ */
+class TestCommand extends Command
+{
+    /**
+     * {@inheritdoc}
+     */
+    public function execute($input, $output)
+    {
+        $output->write('hello, this in ' . __METHOD__);
+    }
+}
+```
+
+- 通过继承 `inhere\console\Controller` 添加一组命令(命令行的控制器类)
+
+```php
+use inhere\console\Controller;
+
+/**
+ * default command controller. there are some command usage examples
+ */
+class HomeController extends Controller
+{
+    const DESCRIPTION = 'default command controller. there are some command usage examples';
+
+    /**
+     * this is a command's description message
+     * the second line text
+     * @usage usage message
+     * @example example text one
+     *  the second line example
+     */
+    public function indexCommand()
+    {
+        $this->write('hello, welcome!! this is ' . __METHOD__);
+    }
+}
+```
+
+更多请查看 [](./examples) 中的示例代码
+
 ## 输入
 
-> 输出对象是 `inhere\console\io\Input` 的实例
+> 输入对象是 `inhere\console\io\Input` 的实例
 
 在终端中执行如下命令，用于演示参数选项等信息的解析:
 
@@ -242,29 +296,29 @@ $output->write('hello <info>world<info>');
 
 > output 实例拥有 `inhere\console\utils\Show` 的所有格式化输出方法。不过都是通过对象式访问的。
 
-#### `Show::title()/$output->title()`
+#### 标题文本输出
+
+使用 `Show::title()/$output->title()`
 
 ```php
 public static function title(string $title, array $opts = [])
 ```
 
-标题文本输出
+#### 段落式文本输出
 
-#### `Show::section()/$output->section()`
+使用 `Show::section()/$output->section()`
 
 ```php
 public static function section(string $title, string|array $body, array $opts = [])
 ```
 
-段落式输出
-
-#### `Show::aList()/$output->aList()`
+#### 列表数据展示输出 
 
 ```php
 public static function aList(array $data, string $title, array $opts = [])
 ```
 
-列表数据展示输出
+使用 `Show::aList()/$output->aList()`
 
 ```php
 $title = 'list title';
@@ -275,13 +329,12 @@ $data = [
 Show::aList($data, $title);
 ```
 
-#### `Show::mList()/$output->mList()` 别名方法 `Show::multiList()`
+#### 多列表数据展示输出
 
 ```php
 public static function multiList(array $data, array $opts = [])
 ```
-
-多列表数据展示输出
+使用 `Show::mList()/$output->mList()` 别名方法 `Show::multiList()`
 
 ```php
 $data = [
@@ -299,21 +352,21 @@ $data = [
 Show::mList($data);
 ```
 
-#### `Show::panel()/$output->panel()`
+#### 面板展示信息输出
 
 ```php
 public static function panel(mixed $data, $title = 'Information Panel', $borderChar = '*')
 ```
+使用 `Show::panel()/$output->panel()`
 
-面板展示信息输出
 
-#### `Show::table()/$output->table()`
+#### 数据表格信息输出
 
 ```php
 public static function table(array $data, $title = 'Data Table', array $opts = [])
 ```
 
-数据表格信息输出
+使用 `Show::table()/$output->table()`
 
 - 可直接渲染从数据库拉取的数据(会自动提取字段名作为表头)
 
@@ -345,13 +398,13 @@ $opts = [
 Show::table($data, 'a table', $opts);
 ```
 
-#### `Show::helpPanel()/$output->helpPanel()`
+#### 快速的渲染一个帮助信息面板 
 
 ```php
 public static function helpPanel(array $config, $showAfterQuit = true)
 ```
 
-快速的渲染一个帮助信息面板
+使用 `Show::helpPanel()/$output->helpPanel()`
 
 ```php
 Show::helpPanel([
@@ -378,16 +431,14 @@ Show::helpPanel([
 
 需引入类 `inhere\console\utils\Interact`
 
-interactive method:
-
-### `Interact::select()` (alias `Interact::chioce()`)
-
-从给出的列表中选择
+### 从给出的列表中选择一项
 
 ```php
-select($description, $options, $default = null, $allowExit=true)
-choice($description, $options, $default = null, $allowExit=true)
+public static function select($description, $options, $default = null, $allowExit=true)
+public static function choice($description, $options, $default = null, $allowExit=true) // alias method
 ```
+
+使用 `Interact::select()` (alias `Interact::chioce()`)
 
 - 示例 1: 只有值，没有选项key
 
@@ -439,15 +490,13 @@ You choice[default:a] : b
 echo $select; // 'b'
 ```
 
-### `Interact::confirm()`
+### 要求确认是否继续执行
 
 ```php
 public static function confirm($question, $default = true) bool
 ```
 
-要求确认是否继续执行
-
-使用:
+使用 `Interact::confirm()` :
 
 ```php
 $result = Interact::confirm('Whether you want to continue ?');
@@ -466,25 +515,50 @@ Please confirm (yes|no) [default:yes]: n
 var_dump($result); // bool(false)
 ```
 
-### `Interact::question()`/`Interact::ask()`
+### 询问，并返回用户的回答
 
 ```php
 public static function ask($question, $default = null, \Closure $validator = null)
 public static function question($question, $default = null, \Closure $validator = null)
 ```
 
-询问，并返回用户的回答
+使用 `Interact::question()`/`Interact::ask()`
 
 ```php
- $answer = Interact::ask('Please input your name?', null, function ($answer) {
-     if ( !preg_match('/\w+/', $answer) ) {
+$answer = Interact::ask('Please input your name?', null, function ($answer) {
+    if (!preg_match('/\w+/', $answer)) {
          Interact::error('The name must match "/\w+/"');
-
+        
          return false;
-     }
+    }
 
-     return true;
-  });
+    return true;
+});
+```
+
+### 有次数限制的询问
+
+```php
+public static function limitedAsk($question, $default = null, \Closure $validator = null, $times = 3)
+```
+
+有次数限制的询问,提出问题
+
+* 若输入了值且验证成功则返回 输入的结果
+* 否则，会连续询问 `$times` 次，若仍然错误，退出
+
+
+```php
+// no default value
+$answer = Interact::limitedAsk('please input you age?', null, function($age)
+{
+    if ($age<1 || $age>100) {
+        Interact::error('Allow the input range is 1-100');
+        return false;
+    }
+
+    return true;
+});
 ```
 
 ## License

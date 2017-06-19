@@ -199,20 +199,24 @@ class Show
         $topBorder = $bottomBorder = '';
         $titleLine = "$titleIndent<bold>$title</bold>";
 
-        if ($opts['topBorder'] || $opts['bottomBorder']) {
+        $showTBorder = (bool)$opts['topBorder'];
+        $showBBorder = (bool)$opts['bottomBorder'];
+
+        if ($showTBorder || $showBBorder) {
             $border = str_pad($char, $width, $char);
 
-            if ($opts['topBorder']) {
+            if ($showTBorder) {
                 $topBorder = "{$indentStr}$border\n";
             }
 
-            if ($opts['bottomBorder']) {
+            if ($showBBorder) {
                 $bottomBorder = "{$indentStr}$border\n";
             }
         }
 
         $body = is_array($body) ? implode(PHP_EOL, $body) : $body;
         $body = Helper::wrapText($body, 4, $opts['width']);
+
         self::write(sprintf($tpl, $titleLine, $topBorder, $body, $bottomBorder));
     }
 
@@ -368,7 +372,6 @@ class Show
         }
 
         if ($help) {
-            unset($config);
             self::write($help);
         }
 
@@ -436,6 +439,7 @@ class Show
             $panelData[$label] = $value;
         }
 
+        $border = null;
         $panelWidth = $labelMaxWidth + $valueMaxWidth;
 
         // output title
@@ -464,7 +468,7 @@ class Show
         self::write($panelStr, false);
 
         // output panel bottom border
-        if (isset($border)) {
+        if ($border) {
             self::write("  $border\n");
         }
 
@@ -645,9 +649,10 @@ class Show
 
     /**
      * Write a message to standard output stream.
-     * @param  string|array $messages Output message
-     * @param  boolean $nl True 会添加换行符, False 原样输出，不添加换行符
-     * @param  int|boolean $quit If is int, setting it is exit code. 'True' translate as code 0 and exit, 'False' will not exit.
+     * @param string|array $messages Output message
+     * @param boolean $nl True 会添加换行符, False 原样输出，不添加换行符
+     * @param int|boolean $quit If is int, setting it is exit code. 'True' translate as code 0 and exit, 'False' will not exit.
+     * @param array $opts
      */
     public static function write($messages, $nl = true, $quit = false, array $opts = [])
     {
@@ -656,7 +661,7 @@ class Show
         }
 
         $messages = static::getStyle()->render($messages);
-        $stream = isset($opts['stream']) ? $opts['stream']: STDOUT;
+        $stream = $opts['stream'] ?? STDOUT;
 
         fwrite($stream, $messages . ($nl ? PHP_EOL : ''));
 
@@ -673,7 +678,7 @@ class Show
     /**
      * Logs data to stdout
      * @param string|array $text
-     * @param bool $nl
+     * @param array $opts
      * @param bool|int $quit
      */
     public static function writeln($text, $quit = false, array $opts = [])
