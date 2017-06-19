@@ -8,10 +8,6 @@
 
 namespace inhere\console\io;
 
-use inhere\console\Helper;
-use inhere\console\style\Style;
-use inhere\console\utils\Interact;
-
 /**
  * Class Input
  * @package inhere\console\io

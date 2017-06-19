@@ -79,6 +79,12 @@ class LiteStyle
     {
         return self::render($text, $style);
     }
+
+    /**
+     * @param $text
+     * @param string|int|array $style
+     * @return string
+     */
     public static function render($text, $style = self::NORMAL)
     {
         if (!Helper::isSupportColor()) {
@@ -86,7 +92,7 @@ class LiteStyle
         }
 
         if(is_string($style)) {
-            $out = isset(self::$styles[$style]) ? self::$styles[$style] : self::NORMAL;
+            $out = self::$styles[$style] ?? self::NORMAL;
         } elseif (is_int($style)) {
             $out = $style;
 
@@ -98,9 +104,7 @@ class LiteStyle
         }
 
 //        $result = chr(27). "$out{$text}" . chr(27) . chr(27) . "[0m". chr(27);
-        $result = "\033[{$out}m{$text}\033[0m";
-
-        return $result;
+        return "\033[{$out}m{$text}\033[0m";
     }
 
     /**

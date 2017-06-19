@@ -7,11 +7,12 @@
 - 颜色风格输出支持
 - 特殊格式信息显示
 - 用户信息交互支持
+- 其他功能
 
 ## 项目地址
 
-- **git@osc** https://git.oschina.net/inhere/php-console.git
 - **github** https://github.com/inhere/php-console.git
+- **git@osc** https://git.oschina.net/inhere/php-console.git
 
 ## 安装
 
