@@ -387,7 +387,7 @@ class Show
      * @param  string $borderChar
      * @return int
      */
-    public static function panel($data, $title = 'Information Panel', $borderChar = '*')
+    public static function panel($data, $title = 'Information Panel', $borderChar = '*'): int
     {
         if (!$data) {
             self::write('<info>No data to display!</info>');
@@ -507,7 +507,7 @@ class Show
      * ```
      * @return int
      */
-    public static function table(array $data, $title = 'Data Table', array $opts = [])
+    public static function table(array $data, $title = 'Data Table', array $opts = []): int
     {
         if (!$data) {
             self::write('<info>No data to display!</info>');
@@ -642,7 +642,7 @@ class Show
     /**
      * @return Style
      */
-    public static function getStyle()
+    public static function getStyle(): Style
     {
         return Style::create();
     }
@@ -650,11 +650,12 @@ class Show
     /**
      * Write a message to standard output stream.
      * @param string|array $messages Output message
-     * @param boolean $nl True 会添加换行符, False 原样输出，不添加换行符
-     * @param int|boolean $quit If is int, setting it is exit code. 'True' translate as code 0 and exit, 'False' will not exit.
-     * @param array $opts
+     * @param boolean      $nl       True 会添加换行符, False 原样输出，不添加换行符
+     * @param int|boolean  $quit     If is int, setting it is exit code. 'True' translate as code 0 and exit, 'False' will not exit.
+     * @param array        $opts
+     * @return int
      */
-    public static function write($messages, $nl = true, $quit = false, array $opts = [])
+    public static function write($messages, $nl = true, $quit = false, array $opts = []): int
     {
         if (is_array($messages)) {
             $messages = implode($nl ? PHP_EOL : '', $messages);
@@ -665,14 +666,16 @@ class Show
 
         fwrite($stream, $messages . ($nl ? PHP_EOL : ''));
 
-        if (is_int($quit) || true === $quit) {
-            $code = true === $quit ? 0 : $quit;
-            exit($code);
-        }
-
         if (isset($opts['flush']) && $opts['flush']) {
             fflush($stream);
         }
+
+        if ($quit !== false) {
+            $code = true === $quit ? 0 : (int)$quit;
+            exit($code);
+        }
+
+        return 0;
     }
 
     /**

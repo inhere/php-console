@@ -10,7 +10,8 @@ namespace inhere\console\io;
 
 use inhere\console\Helper;
 use inhere\console\style\Style;
-use inhere\console\utils\Interact;
+use inhere\console\utils\Show;
+use inhere\console\utils\TraitFormatShow;
 
 /**
  * Class Output
@@ -18,6 +19,8 @@ use inhere\console\utils\Interact;
  */
 class Output implements OutputInterface
 {
+    use TraitFormatShow;
+
     /**
      * 正常输出流
      * Property outStream.
@@ -42,131 +45,12 @@ class Output implements OutputInterface
 /////////////////////////////////////////////////////////////////
 
     /**
-     * @inheritdoc
-     * @see Interact::title()
-     */
-    public function title($title, array $opts = [])
-    {
-        Interact::title($title, $opts);
-    }
-
-    /**
-     * @inheritdoc
-     * @see Interact::section()
-     */
-    public function section($title, $body, array $opts = [])
-    {
-        Interact::section($title, $body, $opts);
-    }
-
-    /**
-     * @inheritdoc
-     * @see Interact::aList()
-     */
-    public function aList($data, $title, array $opts = [])
-    {
-        Interact::aList($data, $title, $opts);
-    }
-
-    /**
-     * @inheritdoc
-     * @see Interact::mList()
-     */
-    public function multiList(array $data, array $opts = [])
-    {
-        Interact::mList($data, $opts);
-    }
-
-    /**
-     * @inheritdoc
-     * @see Interact::mList()
-     */
-    public function mList(array $data, array $opts = [])
-    {
-        Interact::mList($data, $opts);
-    }
-
-    /**
-     * helpPanel
-     * @inheritdoc
-     * @see Interact::helpPanel()
-     */
-    public function helpPanel(array $config, $showAfterQuit = true)
-    {
-        Interact::helpPanel($config, $showAfterQuit);
-    }
-
-    /**
-     * @inheritdoc
-     * @see Interact::panel()
-     */
-    public function panel(array $data, $title = 'Info panel', $borderChar = '*')
-    {
-        Interact::panel($data, $title, $borderChar);
-    }
-
-    /**
-     * @inheritdoc
-     * @see Interact::table()
-     */
-    public function table(array $data, $title = 'Info List', $showBorder = true)
-    {
-        Interact::table($data, $title, $showBorder);
-    }
-
-    /**
-     * @param mixed $messages
-     * @param string|null $type
-     * @param string $style
-     * @param int|boolean $quit If is int, setting it is exit code.
-     */
-    public function block($messages, $type = 'MESSAGE', $style = Style::NORMAL, $quit = false)
-    {
-        Interact::block($messages, $type, $style, $quit);
-    }
-
-    public function primary($messages, $quit = false)
-    {
-        $this->block($messages, 'IMPORTANT', Style::PRIMARY, $quit);
-    }
-
-    public function success($messages, $quit = false)
-    {
-        $this->block($messages, 'SUCCESS', Style::SUCCESS, $quit);
-    }
-
-    public function info($messages, $quit = false)
-    {
-        $this->block($messages, 'INFO', Style::INFO, $quit);
-    }
-
-    public function warning($messages, $quit = false)
-    {
-        $this->block($messages, 'WARNING', Style::WARNING, $quit);
-    }
-
-    public function danger($messages, $quit = false)
-    {
-        $this->block($messages, 'DANGER', Style::DANGER, $quit);
-    }
-
-    public function error($messages, $quit = false)
-    {
-        $this->block($messages, 'ERROR', Style::ERROR, $quit);
-    }
-
-    public function notice($messages, $quit = false)
-    {
-        $this->block($messages, 'NOTICE', Style::COMMENT, $quit);
-    }
-
-    /**
      * 读取输入信息
      * @param  string $question 若不为空，则先输出文本
      * @param  bool $nl true 会添加换行符 false 原样输出，不添加换行符
      * @return string
      */
-    public function read($question = null, $nl = false)
+    public function read($question = null, $nl = false): string
     {
         if ($question) {
             $this->write($question, $nl);
@@ -180,29 +64,14 @@ class Output implements OutputInterface
      * @param  mixed $messages Output message
      * @param  bool $nl true 会添加换行符 false 原样输出，不添加换行符
      * @param  int|boolean $quit If is int, setting it is exit code.
-     * @return static
+     * @return integer
      */
-    public function write($messages = '', $nl = true, $quit = false)
+    public function write($messages = '', $nl = true, $quit = false): int
     {
-        if (is_array($messages)) {
-            $messages = implode($nl ? PHP_EOL : '', $messages);
-        }
-
-        $messages = $this->getStyle()->format($messages);
-
-        if (false === @fwrite($this->outputStream, $messages . ($nl ? PHP_EOL : ''))) {
-            // should never happen
-            throw new \RuntimeException('Unable to write output.');
-        }
-
-        if (is_int($quit) || true === $quit) {
-            $code = true === $quit ? 0 : $quit;
-            exit($code);
-        }
-
-        fflush($this->outputStream);
-
-        return $this;
+        return Show::write($messages, $nl, $quit, [
+            'flush' => true,
+            'stream' => $this->outputStream,
+        ]);
     }
 
     /**
@@ -227,7 +96,7 @@ class Output implements OutputInterface
     /**
      * @return Style
      */
-    public function getStyle()
+    public function getStyle(): Style
     {
         if (!$this->style) {
             $this->style = new Style;
@@ -239,7 +108,7 @@ class Output implements OutputInterface
     /**
      * @return bool
      */
-    public function supportColor()
+    public function supportColor(): bool
     {
         return Helper::isSupportColor();
     }

@@ -241,7 +241,7 @@ class Helper
      * Returns true if the console is running on windows
      * @return boolean
      */
-    public static function isOnWindows()
+    public static function isOnWindows(): bool
     {
         return DIRECTORY_SEPARATOR === '\\';
     }
@@ -310,7 +310,7 @@ class Helper
      * @param integer $indent number of spaces to use for indentation.
      * @param integer $width
      * @return string the wrapped text.
-     * @since 2.0.4
+     * @from yii2
      */
     public static function wrapText($text, $indent = 0, $width = 0)
     {

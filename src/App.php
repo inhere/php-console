@@ -60,7 +60,7 @@ class App extends AbstractApp
         // like 'home/index'
         if (strpos($name, $sep) > 0) {
             $input = array_filter(explode($sep, $name));
-            [$name, $action] = count($input) > 2 ? array_splice($input, 2) : $input;
+            list($name, $action) = count($input) > 2 ? array_splice($input, 2) : $input;
         }
 
         if (isset($this->controllers[$name])) {

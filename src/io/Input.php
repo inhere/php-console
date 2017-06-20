@@ -68,13 +68,13 @@ class Input implements InputInterface
     {
         $this->pwd = $this->getPwd();
 
-        [
+        list(
             $this->fullScript,
             $this->script,
             $this->args,
             $this->sOpts,
             $this->lOpts
-        ] = self::parseOptArgs();
+        ) = self::parseOptArgs();
 
         // collect command `server`
         $this->command = isset($this->args[0]) ? array_shift($this->args) : '';
@@ -86,7 +86,7 @@ class Input implements InputInterface
      * @param  bool $nl true 会添加换行符 false 原样输出，不添加换行符
      * @return string
      */
-    public function read($question = null, $nl = false)
+    public function read($question = null, $nl = false): string
     {
         fwrite(STDOUT, $question . ($nl ? "\n" : ''));
 
@@ -101,7 +101,7 @@ class Input implements InputInterface
      * @param string|int $name
      * @return bool
      */
-    public function hasArg($name)
+    public function hasArg($name): bool
     {
         return isset($this->args[$name]);
     }
@@ -199,7 +199,7 @@ class Input implements InputInterface
      * @param bool $default
      * @return bool
      */
-    public function boolOpt(string $name, $default = false)
+    public function boolOpt(string $name, $default = false): bool
     {
         return (bool)$this->getOpt($name, $default);
     }
@@ -209,7 +209,7 @@ class Input implements InputInterface
      * @param $name
      * @return bool
      */
-    public function hasOpt(string $name)
+    public function hasOpt(string $name): bool
     {
         return isset($this->sOpts[$name]) || isset($this->lOpts[$name]);
     }
@@ -255,7 +255,7 @@ class Input implements InputInterface
      * @param $name
      * @return bool
      */
-    public function hasSOpt(string $name)
+    public function hasSOpt(string $name): bool
     {
         return isset($this->sOpts[$name]);
     }
@@ -266,7 +266,7 @@ class Input implements InputInterface
      * @param bool $default
      * @return bool
      */
-    public function sBoolOpt(string $name, $default = false)
+    public function sBoolOpt(string $name, $default = false): bool
     {
         $val = $this->sOpt($name);
 
@@ -291,7 +291,7 @@ class Input implements InputInterface
      * @param $name
      * @return bool
      */
-    public function hasLOpt(string $name)
+    public function hasLOpt(string $name): bool
     {
         return isset($this->lOpts[$name]);
     }
@@ -302,7 +302,7 @@ class Input implements InputInterface
      * @param bool $default
      * @return bool
      */
-    public function lBoolOpt(string $name, $default = false)
+    public function lBoolOpt(string $name, $default = false): bool
     {
         $val = $this->lOpt($name);
 
@@ -428,7 +428,7 @@ class Input implements InputInterface
     /**
      * @return string
      */
-    public function getPwd()
+    public function getPwd(): string
     {
         if (!$this->pwd) {
             $this->pwd =getcwd();
@@ -467,7 +467,7 @@ class Input implements InputInterface
      * @param bool $mergeOpts Whether merge short-opts and long-opts
      * @return array
      */
-    public static function parseOptArgs(array $noValues = [], $mergeOpts = false)
+    public static function parseOptArgs(array $noValues = [], $mergeOpts = false): array
     {
         $params = $GLOBALS['argv'];
         reset($params);
@@ -490,12 +490,12 @@ class Input implements InputInterface
 
                     // long-opt: value specified inline (--<opt>=<value>)
                     if (strpos($opt, '=') !== false) {
-                        [$opt, $value] = explode('=', $opt, 2);
+                        list($opt, $value) = explode('=', $opt, 2);
                     }
 
                     // short-opt: value specified inline (-<opt>=<value>)
                 } elseif (strlen($opt) > 2 && $opt{1} === '=') {
-                    [$opt, $value] = explode('=', $opt, 2);
+                    list($opt, $value) = explode('=', $opt, 2);
                 }
 
                 // check if next parameter is a descriptor or a value
@@ -523,7 +523,7 @@ class Input implements InputInterface
             } else {
                 // value specified inline (<arg>=<value>)
                 if (strpos($p, '=') !== false) {
-                    [$name, $value] = explode('=', $p, 2);
+                    list($name, $value) = explode('=', $p, 2);
                     $args[$name] = self::filterBool($value);
                 } else {
                     $args[] = $p;
@@ -543,7 +543,7 @@ class Input implements InputInterface
     /**
      * @param string|bool $val
      * @param bool $enable
-     * @return bool
+     * @return bool|mixed
      */
     private static function filterBool($val, $enable = true)
     {

@@ -271,7 +271,7 @@ abstract class AbstractApp
 
         // allow get $config['top']['sub'] by 'top.sub'
         if (strpos($name, '.') > 1) {
-            [$topKey, $subKey] = explode('.', $name, 2);
+            list($topKey, $subKey) = explode('.', $name, 2);
 
             if (isset($this->config[$topKey], $this->config[$topKey][$subKey])) {
                 return $this->config[$topKey][$subKey];

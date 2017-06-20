@@ -75,7 +75,7 @@ class LiteStyle
      * @param string|int|array $style
      * @return string
      */
-    public static function add($text, $style = self::NORMAL)
+    public static function add($text, $style = self::NORMAL): string
     {
         return self::render($text, $style);
     }
@@ -85,7 +85,7 @@ class LiteStyle
      * @param string|int|array $style
      * @return string
      */
-    public static function render($text, $style = self::NORMAL)
+    public static function render($text, $style = self::NORMAL): string
     {
         if (!Helper::isSupportColor()) {
             return $text;
@@ -111,7 +111,7 @@ class LiteStyle
      * @param string $text
      * @return string
      */
-    public static function clear($text)
+    public static function clear($text): string
     {
         // return preg_replace('/\033\[(?:\d;?)+m/', '' , "\033[0;36mtext\033[0m");
         return preg_replace('/\033\[(?:\d;?)+m/', '', $text);

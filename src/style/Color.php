@@ -87,6 +87,12 @@ final class Color
      */
     private $options = [];
 
+    /**
+     * @param string $fg
+     * @param string $bg
+     * @param array  $options
+     * @return Color
+     */
     public static function make($fg = '', $bg = '', array $options = [])
     {
         return new self($fg, $bg, $options);

@@ -23,6 +23,10 @@ trait TraitInteract
         return $this->choice($description, $options, $default, $allowExit);
     }
 
+    /**
+     * @inheritdoc
+     * @see Interact::choice()
+     */
     public function choice($description, $options, $default = null, $allowExit = true)
     {
         return Interact::choice($description, $options, $default, $allowExit);
@@ -53,11 +57,20 @@ trait TraitInteract
 
     /**
      * @inheritdoc
-     * @see Interact::loopAsk()
+     * @see Interact::limitedAsk()
      */
     public function loopAsk($question, $default = null, \Closure $validator = null, $times = 3)
     {
-        return Interact::loopAsk($question, $default, $validator, $times);
+        return Interact::limitedAsk($question, $default, $validator, $times);
+    }
+
+    /**
+     * @inheritdoc
+     * @see Interact::limitedAsk()
+     */
+    public function limitedAsk($question, $default = null, \Closure $validator = null, $times = 3)
+    {
+        return Interact::limitedAsk($question, $default, $validator, $times);
     }
 
 }

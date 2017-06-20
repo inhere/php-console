@@ -26,7 +26,7 @@ interface InputInterface
      * @param  bool $nl true 会添加换行符 false 原样输出，不添加换行符
      * @return string
      */
-    public function read($question = null, $nl = false);
+    public function read($question = null, $nl = false): string;
 
     public function getScript(): string;
 

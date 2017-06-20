@@ -66,9 +66,7 @@ abstract class Controller extends AbstractCommand
             // run action
             try {
                 $this->beforeRun($action);
-
                 $result = $params ? call_user_func_array([$this, $method], $params) : $this->$method();
-
                 $this->afterRun($action);
 
             } catch (\Exception $e) {
@@ -192,7 +190,7 @@ abstract class Controller extends AbstractCommand
     /**
      * @return string
      */
-    public function getDefaultAction()
+    public function getDefaultAction(): string
     {
         return $this->defaultAction;
     }
@@ -208,7 +206,7 @@ abstract class Controller extends AbstractCommand
     /**
      * @return string
      */
-    public function getActionSuffix()
+    public function getActionSuffix(): string
     {
         return $this->actionSuffix;
     }
@@ -266,6 +264,7 @@ abstract class Controller extends AbstractCommand
                 }
             }
         }
+
         return $tags;
     }
 
@@ -275,7 +274,7 @@ abstract class Controller extends AbstractCommand
      * @param  $comment
      * @return string
      */
-    protected function parseDocCommentSummary($comment)
+    protected function parseDocCommentSummary($comment): string
     {
         $docLines = preg_split('~\R~u', $comment);
 
@@ -292,7 +291,7 @@ abstract class Controller extends AbstractCommand
      * @param  $comment
      * @return string
      */
-    protected function parseDocCommentDetail($comment)
+    protected function parseDocCommentDetail($comment): string
     {
         $comment = strtr(trim(preg_replace('/^\s*\**( |\t)?/m', '', trim($comment, '/'))), "\r", '');
 
