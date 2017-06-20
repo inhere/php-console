@@ -104,7 +104,10 @@ use inhere\console\utils\AnsiCode;
 class TestCommand extends Command
 {
     /**
-     * {@inheritdoc}
+     * execute
+     * @param  inhere\console\io\Input $input
+     * @param  inhere\console\io\Output $output
+     * @return int
      */
     public function execute($input, $output)
     {
@@ -112,6 +115,8 @@ class TestCommand extends Command
     }
 }
 ```
+
+注册命令，在 `$app->run()` 之前通过 `$app->command('test', TestCommand::class)` 注册独立命令。
 
 - 通过继承 `inhere\console\Controller` 添加一组命令(命令行的控制器类)
 
@@ -139,7 +144,18 @@ class HomeController extends Controller
 }
 ```
 
-更多请查看 [](./examples) 中的示例代码
+注册命令，在 `$app->run()` 之前通过 `$app->controller('home', HomeController::class)` 注册命令组。
+
+说明：
+
+命令组(eg `HomeController`) 中的命令(eg: `indexCommand`)上注释是可被解析的。
+
+- 当你使用 `php examples/app home -h` 时，可以查看到 `HomeController::indexCommand` 的描述注释文本
+- 当使用 `php examples/app home/index -h` 时，可以查看到关于 `HomeController::indexCommand` 更详细的信息。包括描述注释文本、`@usage` 、`@example`
+
+> 小提示：注释里面同样支持带颜色的文本输出 `eg: this is a command's description <info>message</info>`
+
+更多请查看 [examples](./examples) 中的示例代码
 
 ## 输入
 
@@ -151,18 +167,16 @@ class HomeController extends Controller
 $ php examples/app home/useArg status=2 name=john arg0 -s=test --page=23 --id=154 -e dev -v vvv -d -rf --debug --test=false
 ```
 
-一点说明：
+**一点说明：**
 
 - 没有 `-` 开头的都认为是参数 (eg: `status=2` `arg0`)
-- 反之，以 `-` 开头的则是选项数据。
+- 反之，以 `-` 开头的则是选项数据
     - `--` 开头的是长选项(long-option)
     - 一个 `-` 开头的是短选项(short-option)
 
 > 支持混合式选项的赋值 `--id=154` 和 `--id 154` 是等效的
 
-**注意:**
-
-输入如下的字符串将会认为是布尔值
+**注意:** 输入如下的字符串将会认为是布尔值
 
 - `on|yes|true` -- `true`
 - `off|no|false` -- `false`
@@ -177,7 +191,7 @@ echo $input->getFullScript(); // 命令行输入的原样字符串
 
 ### 获取解析后的参数信息
 
-> 通常的参数如 `arg0` 只能根据 index key 来获取值。但是提供以等号(`=`)连接的命名方式来指定/获取参数(eg: `status=2`)
+> 通常的参数如 `arg0` 只能根据 index key 来获取值。但是提供以等号(`=`)连接的方式来指定参数名(eg: `status=2`)
 
 打印所有的参数信息：
 
@@ -206,8 +220,8 @@ $status = $input->get('status', 'default value'); // '2'
 ### 获取解析后的选项信息
 
 - 没有值的选项，将设置默认值为 `bool(true)`
-- 短选项不仅仅只是以一个 `-` 开头，而且名称只能是一个字符
-- 多个(默认值的)短选项可以合并到一起写。如 `-rf` 会被解析为两个短选项
+- 短选项不仅仅只是以一个 `-` 开头，而且名称 **只能是一个字符**
+- 多个(默认值的)短选项可以合并到一起写。如 `-rf` 会被解析为两个短选项 `'r' => bool(true)` `'f' => bool(true)`
 
 打印所有的选项信息：
 
@@ -244,6 +258,7 @@ $test = $input->boolOpt('test') // False
 
 $d = $input->boolOpt('d') // True
 $d = $input->sBoolOpt('d') // True
+$showHelp = $input->sameOpt(['h','help']) // 获取到一个值就返回，适合同一个含义的选项
 ```
 
 ### 读取用户输入
@@ -251,12 +266,14 @@ $d = $input->sBoolOpt('d') // True
 ```php
 echo "Your name:";
 
-$text = $input->read(); 
+$name = $input->read(); 
 // in terminal
 // Your name: simon
 
-echo $text; // 'simon'
+echo $name; // 'simon'
 ```
+
+也可以直接将消息文本放入参数 `$name = $input->read("Your name:");`
 
 ## 输出
 
@@ -333,8 +350,9 @@ Show::aList($data, $title);
 #### 多列表数据展示输出
 
 ```php
-public static function multiList(array $data, array $opts = [])
+public static function mList(array $data, array $opts = [])
 ```
+
 使用 `Show::mList()/$output->mList()` 别名方法 `Show::multiList()`
 
 ```php
@@ -358,8 +376,8 @@ Show::mList($data);
 ```php
 public static function panel(mixed $data, $title = 'Information Panel', $borderChar = '*')
 ```
-使用 `Show::panel()/$output->panel()`
 
+使用 `Show::panel()/$output->panel()`
 
 #### 数据表格信息输出
 
@@ -389,7 +407,7 @@ Show::table($data, 'a table');
 $data = [
  [ value1, value2, value3, ... ], // first row
  [ value4, value5, value6, ... ], // second row
- ... ...
+ // ... ...
 ];
 
 $opts = [
