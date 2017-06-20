@@ -14,6 +14,11 @@
 - **github** https://github.com/inhere/php-console.git
 - **git@osc** https://git.oschina.net/inhere/php-console.git
 
+**注意：**
+
+- master 分支是要求 `php >= 7` 的(推荐使用)。
+- [php5](./tree/php5/) 是 php 5 的分支，但有些时间没更新了(但是基本的功能都支持)。
+
 ## 安装
 
 - 使用 composer

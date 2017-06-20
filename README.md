@@ -7,6 +7,8 @@ a php console application library.
 - console color support
 - console interactive
 
+[中文README](./README_zh.md)
+
 ## usage
 
 ```php
