@@ -198,7 +198,7 @@ class HomeController extends Controller
         $url = $this->input->getArg('url');
 
         if (!$url) {
-            \inhere\console\utils\Show::error('Please input you want to downloaded file url, use: url=[url]', 1);
+            $this->output->error('Please input you want to downloaded file url, use: url=[url]', 1);
         }
 
         $saveAs = $this->input->getArg('saveAs');
@@ -211,7 +211,7 @@ class HomeController extends Controller
         $goon = Interact::confirm("Now, will download $url to $saveAs, go on");
 
         if (!$goon) {
-            \inhere\console\utils\Show::notice('Quit download, Bye!');
+            $this->output->notice('Quit download, Bye!');
 
             return 0;
         }

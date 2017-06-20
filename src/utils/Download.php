@@ -45,7 +45,7 @@ class Download
      * @param string $type
      * @return Download
      */
-    public static function down(string $url, string $saveAs, string $type = self::PROGRESS_TEXT)
+    public static function down($url, $saveAs, $type = self::PROGRESS_TEXT)
     {
         $d = new self($url, $saveAs, $type);
 
@@ -58,7 +58,7 @@ class Download
      * @param string $saveAs
      * @param string $type
      */
-    public function __construct(string $url, string $saveAs, $type = self::PROGRESS_TEXT)
+    public function __construct( $url, $saveAs, $type = self::PROGRESS_TEXT)
     {
         $this->url = $url;
         $this->saveAs = $saveAs;
@@ -188,7 +188,7 @@ class Download
     /**
      * @return int
      */
-    public function getShowType(): int
+    public function getShowType()
     {
         return $this->showType;
     }
@@ -196,7 +196,7 @@ class Download
     /**
      * @param int $showType
      */
-    public function setShowType(int $showType)
+    public function setShowType($showType)
     {
         $this->showType = $showType;
     }
@@ -204,7 +204,7 @@ class Download
     /**
      * @return string
      */
-    public function getUrl(): string
+    public function getUrl()
     {
         return $this->url;
     }
@@ -212,7 +212,7 @@ class Download
     /**
      * @param string $url
      */
-    public function setUrl(string $url)
+    public function setUrl( $url)
     {
         $this->url = $url;
     }
@@ -220,7 +220,7 @@ class Download
     /**
      * @return string
      */
-    public function getSaveAs(): string
+    public function getSaveAs()
     {
         return $this->saveAs;
     }
@@ -228,7 +228,7 @@ class Download
     /**
      * @param string $saveAs
      */
-    public function setSaveAs(string $saveAs)
+    public function setSaveAs( $saveAs)
     {
         $this->saveAs = $saveAs;
     }

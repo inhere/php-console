@@ -190,7 +190,7 @@ abstract class Controller extends AbstractCommand
     /**
      * @return string
      */
-    public function getDefaultAction(): string
+    public function getDefaultAction()
     {
         return $this->defaultAction;
     }
@@ -206,7 +206,7 @@ abstract class Controller extends AbstractCommand
     /**
      * @return string
      */
-    public function getActionSuffix(): string
+    public function getActionSuffix()
     {
         return $this->actionSuffix;
     }
@@ -274,7 +274,7 @@ abstract class Controller extends AbstractCommand
      * @param  $comment
      * @return string
      */
-    protected function parseDocCommentSummary($comment): string
+    protected function parseDocCommentSummary($comment)
     {
         $docLines = preg_split('~\R~u', $comment);
 
@@ -291,7 +291,7 @@ abstract class Controller extends AbstractCommand
      * @param  $comment
      * @return string
      */
-    protected function parseDocCommentDetail($comment): string
+    protected function parseDocCommentDetail($comment)
     {
         $comment = strtr(trim(preg_replace('/^\s*\**( |\t)?/m', '', trim($comment, '/'))), "\r", '');
 

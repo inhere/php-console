@@ -26,8 +26,8 @@
 编辑 `composer.json`，在 `require` 添加
 
 ```
-"inhere/console": "dev-master",
-// "inhere/console": "dev-php5", // for php5
+"inhere/console": "dev-php5", 
+// "inhere/console": "dev-master", // for php7
 ```
 
 然后执行: `composer update`
@@ -68,7 +68,7 @@ $app->run();
 
 然后在命令行里执行 `php examples/app`, 立即就可以看到如下输出了:
 
-```bash
+```
 $ php examples/app
 Usage:
   examples/app [route|command] [arg1=value1 arg2=value ...] [-v|-h ...]

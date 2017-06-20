@@ -90,7 +90,7 @@ class Interact extends Show
      * @param bool $default Default value
      * @return bool
      */
-    public static function confirm($question, $default = true): bool
+    public static function confirm($question, $default = true)
     {
         if (!$question = trim($question)) {
             self::error('Please provide a question text!', 1);
@@ -304,7 +304,7 @@ class Interact extends Show
      * @param  bool $nl true 会添加换行符 false 原样输出，不添加换行符
      * @return string
      */
-    public static function readRow($message = null, $nl = false): string
+    public static function readRow($message = null, $nl = false)
     {
         return self::read($message, $nl);
     }
@@ -314,7 +314,7 @@ class Interact extends Show
      * @param bool $nl
      * @return string
      */
-    public static function read($message = null, $nl = false): string
+    public static function read($message = null, $nl = false)
     {
         if ($message) {
             self::write($message, $nl);

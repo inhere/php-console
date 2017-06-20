@@ -387,7 +387,7 @@ class Show
      * @param  string $borderChar
      * @return int
      */
-    public static function panel($data, $title = 'Information Panel', $borderChar = '*'): int
+    public static function panel($data, $title = 'Information Panel', $borderChar = '*')
     {
         if (!$data) {
             self::write('<info>No data to display!</info>');
@@ -507,7 +507,7 @@ class Show
      * ```
      * @return int
      */
-    public static function table(array $data, $title = 'Data Table', array $opts = []): int
+    public static function table(array $data, $title = 'Data Table', array $opts = [])
     {
         if (!$data) {
             self::write('<info>No data to display!</info>');
@@ -642,7 +642,7 @@ class Show
     /**
      * @return Style
      */
-    public static function getStyle(): Style
+    public static function getStyle()
     {
         return Style::create();
     }
@@ -655,14 +655,14 @@ class Show
      * @param array        $opts
      * @return int
      */
-    public static function write($messages, $nl = true, $quit = false, array $opts = []): int
+    public static function write($messages, $nl = true, $quit = false, array $opts = [])
     {
         if (is_array($messages)) {
             $messages = implode($nl ? PHP_EOL : '', $messages);
         }
 
         $messages = static::getStyle()->render($messages);
-        $stream = $opts['stream'] ?? STDOUT;
+        $stream = isset($opts['stream']) ? $opts['stream'] : STDOUT;
 
         fwrite($stream, $messages . ($nl ? PHP_EOL : ''));
 

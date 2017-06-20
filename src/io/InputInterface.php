@@ -26,11 +26,11 @@ interface InputInterface
      * @param  bool $nl true 会添加换行符 false 原样输出，不添加换行符
      * @return string
      */
-    public function read($question = null, $nl = false): string;
+    public function read($question = null, $nl = false);
 
-    public function getScript(): string;
+    public function getScript();
 
-    public function getCommand(): string;
+    public function getCommand();
 
     /**
      * get Argument
@@ -45,5 +45,5 @@ interface InputInterface
      * @param null $default
      * @return bool|mixed|null
      */
-    public function getOpt(string $name, $default = null);
+    public function getOpt($name, $default = null);
 }

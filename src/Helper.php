@@ -241,7 +241,7 @@ class Helper
      * Returns true if the console is running on windows
      * @return boolean
      */
-    public static function isOnWindows(): bool
+    public static function isOnWindows()
     {
         return DIRECTORY_SEPARATOR === '\\';
     }
@@ -346,13 +346,16 @@ class Helper
 
     /**
      * dump vars
-     * @param array ...$args
      * @return string
      */
-    public static function dumpVar(...$args)
+    public static function dumpVar()
     {
+        $args = func_get_args();
+
         ob_start();
-        var_dump(...$args);
+        foreach ($args as $arg) {
+            print_r($arg);
+        }
         $string = ob_get_clean();
 
         return preg_replace("/=>\n\s+/", '=> ', $string);
@@ -360,11 +363,11 @@ class Helper
 
     /**
      * print vars
-     * @param array ...$args
      * @return string
      */
-    public static function printR(...$args)
+    public static function printR()
     {
+        $args = func_get_args();
         ob_start();
 
         foreach ($args as $arg) {

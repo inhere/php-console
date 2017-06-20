@@ -86,7 +86,7 @@ class Input implements InputInterface
      * @param  bool $nl true 会添加换行符 false 原样输出，不添加换行符
      * @return string
      */
-    public function read($question = null, $nl = false): string
+    public function read($question = null, $nl = false)
     {
         fwrite(STDOUT, $question . ($nl ? "\n" : ''));
 
@@ -101,7 +101,7 @@ class Input implements InputInterface
      * @param string|int $name
      * @return bool
      */
-    public function hasArg($name): bool
+    public function hasArg($name)
     {
         return isset($this->args[$name]);
     }
@@ -136,7 +136,7 @@ class Input implements InputInterface
      */
     public function get($name, $default = null)
     {
-        return $this->args[$name] ?? $default;
+        return isset($this->args[$name]) ? $this->args[$name] : $default;
     }
 
     /**
@@ -144,7 +144,7 @@ class Input implements InputInterface
      * @param string $default
      * @return string
      */
-    public function getFirstArg($default = ''): string
+    public function getFirstArg($default = '')
     {
         return $this->get(0, $default);
     }
@@ -154,7 +154,7 @@ class Input implements InputInterface
      * @param string $default
      * @return string
      */
-    public function getSecondArg($default = ''): string
+    public function getSecondArg($default = '')
     {
         return $this->get(1, $default);
     }
@@ -164,7 +164,7 @@ class Input implements InputInterface
      * @param int $default
      * @return int
      */
-    public function getInt($key, $default = 0): int
+    public function getInt($key, $default = 0)
     {
         $value = $this->get($key);
 
@@ -182,7 +182,7 @@ class Input implements InputInterface
      * @param null $default
      * @return bool|mixed|null
      */
-    public function getOpt(string $name, $default = null)
+    public function getOpt( $name, $default = null)
     {
         // is long-opt
         if (isset($name{1})) {
@@ -199,7 +199,7 @@ class Input implements InputInterface
      * @param bool $default
      * @return bool
      */
-    public function boolOpt(string $name, $default = false): bool
+    public function boolOpt( $name, $default = false)
     {
         return (bool)$this->getOpt($name, $default);
     }
@@ -209,7 +209,7 @@ class Input implements InputInterface
      * @param $name
      * @return bool
      */
-    public function hasOpt(string $name): bool
+    public function hasOpt( $name)
     {
         return isset($this->sOpts[$name]) || isset($this->lOpts[$name]);
     }
@@ -247,7 +247,7 @@ class Input implements InputInterface
      */
     public function sOpt($name, $default = null)
     {
-        return $this->sOpts[$name] ?? $default;
+        return isset($this->sOpts[$name]) ? $this->sOpts[$name] : $default;
     }
 
     /**
@@ -255,7 +255,7 @@ class Input implements InputInterface
      * @param $name
      * @return bool
      */
-    public function hasSOpt(string $name): bool
+    public function hasSOpt( $name)
     {
         return isset($this->sOpts[$name]);
     }
@@ -266,7 +266,7 @@ class Input implements InputInterface
      * @param bool $default
      * @return bool
      */
-    public function sBoolOpt(string $name, $default = false): bool
+    public function sBoolOpt( $name, $default = false)
     {
         $val = $this->sOpt($name);
 
@@ -283,7 +283,7 @@ class Input implements InputInterface
      */
     public function lOpt($name, $default = null)
     {
-        return $this->lOpts[$name] ?? $default;
+        return isset($this->lOpts[$name]) ? $this->lOpts[$name] : $default;
     }
 
     /**
@@ -291,7 +291,7 @@ class Input implements InputInterface
      * @param $name
      * @return bool
      */
-    public function hasLOpt(string $name): bool
+    public function hasLOpt( $name)
     {
         return isset($this->lOpts[$name]);
     }
@@ -302,7 +302,7 @@ class Input implements InputInterface
      * @param bool $default
      * @return bool
      */
-    public function lBoolOpt(string $name, $default = false): bool
+    public function lBoolOpt( $name, $default = false)
     {
         $val = $this->lOpt($name);
 
@@ -312,7 +312,7 @@ class Input implements InputInterface
     /**
      * @return array
      */
-    public function getOpts(): array
+    public function getOpts()
     {
         return array_merge($this->sOpts, $this->lOpts);
     }
@@ -324,7 +324,7 @@ class Input implements InputInterface
     /**
      * @return string
      */
-    public function getFullScript(): string
+    public function getFullScript()
     {
         return $this->fullScript;
     }
@@ -332,7 +332,7 @@ class Input implements InputInterface
     /**
      * @return string
      */
-    public function getScriptName(): string
+    public function getScriptName()
     {
         return $this->script;
     }
@@ -340,7 +340,7 @@ class Input implements InputInterface
     /**
      * @return string
      */
-    public function getScript(): string
+    public function getScript()
     {
         return $this->script;
     }
@@ -348,7 +348,7 @@ class Input implements InputInterface
     /**
      * @param string $script
      */
-    public function setScript(string $script)
+    public function setScript($script)
     {
         $this->script = $script;
     }
@@ -356,7 +356,7 @@ class Input implements InputInterface
     /**
      * @return string
      */
-    public function getCommand(): string
+    public function getCommand()
     {
         return $this->command;
     }
@@ -364,7 +364,7 @@ class Input implements InputInterface
     /**
      * @param string $command
      */
-    public function setCommand(string $command)
+    public function setCommand($command)
     {
         $this->command = $command;
     }
@@ -372,7 +372,7 @@ class Input implements InputInterface
     /**
      * @return array
      */
-    public function getArgs(): array
+    public function getArgs()
     {
         return $this->args;
     }
@@ -388,7 +388,7 @@ class Input implements InputInterface
     /**
      * @return array
      */
-    public function getSOpts(): array
+    public function getSOpts()
     {
         return $this->sOpts;
     }
@@ -404,7 +404,7 @@ class Input implements InputInterface
     /**
      * @return array
      */
-    public function getLOpts(): array
+    public function getLOpts()
     {
         return $this->lOpts;
     }
@@ -428,7 +428,7 @@ class Input implements InputInterface
     /**
      * @return string
      */
-    public function getPwd(): string
+    public function getPwd()
     {
         if (!$this->pwd) {
             $this->pwd =getcwd();
@@ -467,7 +467,7 @@ class Input implements InputInterface
      * @param bool $mergeOpts Whether merge short-opts and long-opts
      * @return array
      */
-    public static function parseOptArgs(array $noValues = [], $mergeOpts = false): array
+    public static function parseOptArgs(array $noValues = [], $mergeOpts = false)
     {
         $params = $GLOBALS['argv'];
         reset($params);

@@ -30,7 +30,7 @@ trait TraitInputOutput
     /**
      * @return string
      */
-    public function getScriptName(): string
+    public function getScriptName()
     {
         return $this->input->getScript();
     }
@@ -39,7 +39,7 @@ trait TraitInputOutput
      * @param string $msg
      * @return string
      */
-    protected function read($msg = ''): string
+    protected function read($msg = '')
     {
         return $this->input->read($msg);
     }
@@ -50,7 +50,7 @@ trait TraitInputOutput
      * @param bool|int $quit
      * @return int
      */
-    protected function write($message, $nl = true, $quit = false): int
+    protected function write($message, $nl = true, $quit = false)
     {
         return $this->output->write($message, $nl, $quit);
     }
@@ -58,7 +58,7 @@ trait TraitInputOutput
     /**
      * @return Input
      */
-    public function getInput(): Input
+    public function getInput()
     {
         return $this->input;
     }
@@ -74,7 +74,7 @@ trait TraitInputOutput
     /**
      * @return Output
      */
-    public function getOutput(): Output
+    public function getOutput()
     {
         return $this->output;
     }

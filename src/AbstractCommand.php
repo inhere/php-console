@@ -62,10 +62,10 @@ abstract class AbstractCommand
     /**
      * handle action/command runtime exception
      *
-     * @param  \Throwable $e
-     * @throws \Throwable
+     * @param  \Exception $e
+     * @throws \Exception
      */
-    protected function handleRuntimeException(\Throwable $e)
+    protected function handleRuntimeException(\Exception $e)
     {
         throw $e;
     }
@@ -73,7 +73,7 @@ abstract class AbstractCommand
     /**
      * @param string $name
      */
-    public function setName(string $name)
+    public function setName($name)
     {
         $this->name = $name;
     }
@@ -81,7 +81,7 @@ abstract class AbstractCommand
     /**
      * @return string
      */
-    public function getName(): string
+    public function getName()
     {
         return $this->name;
     }
@@ -89,7 +89,7 @@ abstract class AbstractCommand
     /**
      * @return array
      */
-    public static function getAllowTags(): array
+    public static function getAllowTags()
     {
         return self::$allowTags;
     }

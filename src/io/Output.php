@@ -50,7 +50,7 @@ class Output implements OutputInterface
      * @param  bool $nl true 会添加换行符 false 原样输出，不添加换行符
      * @return string
      */
-    public function read($question = null, $nl = false): string
+    public function read($question = null, $nl = false)
     {
         if ($question) {
             $this->write($question, $nl);
@@ -66,7 +66,7 @@ class Output implements OutputInterface
      * @param  int|boolean $quit If is int, setting it is exit code.
      * @return integer
      */
-    public function write($messages = '', $nl = true, $quit = false): int
+    public function write($messages = '', $nl = true, $quit = false)
     {
         return Show::write($messages, $nl, $quit, [
             'flush' => true,
@@ -96,7 +96,7 @@ class Output implements OutputInterface
     /**
      * @return Style
      */
-    public function getStyle(): Style
+    public function getStyle()
     {
         if (!$this->style) {
             $this->style = new Style;
@@ -108,7 +108,7 @@ class Output implements OutputInterface
     /**
      * @return bool
      */
-    public function supportColor(): bool
+    public function supportColor()
     {
         return Helper::isSupportColor();
     }

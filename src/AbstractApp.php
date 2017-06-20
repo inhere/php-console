@@ -154,7 +154,7 @@ abstract class AbstractApp
      * @param string $controller The controller class
      * @return static
      */
-    public function controller(string $name, string $controller)
+    public function controller($name, $controller)
     {
         if (!$name || !$controller) {
             throw new \InvalidArgumentException('Parameters are not allowed to is empty!');
@@ -187,7 +187,7 @@ abstract class AbstractApp
      * @param string|\Closure $handler
      * @return $this
      */
-    public function command(string $name, $handler)
+    public function command($name, $handler)
     {
         if (!$name || !$handler) {
             throw new \InvalidArgumentException('Parameters are not allowed to is empty!');
@@ -214,7 +214,7 @@ abstract class AbstractApp
     /**
      * @return array
      */
-    public static function hooks(): array
+    public static function hooks()
     {
         return array_keys(self::$hooks);
     }
@@ -223,7 +223,7 @@ abstract class AbstractApp
      * @param $event
      * @param callable $handler
      */
-    public function on(string $event, callable $handler)
+    public function on($event, callable $handler)
     {
         if (isset(self::$hooks[$event])) {
             self::$hooks[$event] = $handler;
@@ -233,7 +233,7 @@ abstract class AbstractApp
     /**
      * @return array
      */
-    public function getInternalCommands(): array
+    public function getInternalCommands()
     {
         return $this->internalCommands;
     }
@@ -242,7 +242,7 @@ abstract class AbstractApp
      * @param $name
      * @return bool
      */
-    public function isInternalCommand(string $name): bool
+    public function isInternalCommand($name)
     {
         return isset($this->internalCommands[$name]);
     }
@@ -278,7 +278,7 @@ abstract class AbstractApp
             }
         }
 
-        return $this->config[$name] ?? $default;
+        return isset($this->config[$name]) ? $this->config[$name] : $default;
     }
 
     /**
@@ -296,7 +296,7 @@ abstract class AbstractApp
      * get config
      * @return array
      */
-    public function getConfig(): array
+    public function getConfig()
     {
         return $this->config;
     }
@@ -305,7 +305,7 @@ abstract class AbstractApp
      * is Debug
      * @return boolean
      */
-    public function isDebug(): bool
+    public function isDebug()
     {
         return (bool)$this->config['debug'];
     }
@@ -314,7 +314,7 @@ abstract class AbstractApp
      * @param $name
      * @param bool $isGroup
      */
-    protected function checkName(string $name, $isGroup = false)
+    protected function checkName($name, $isGroup = false)
     {
         $pattern = $isGroup ? '/^[a-z][\w-]+$/' : '/^[a-z][\w-]*:?([a-z][\w-]+)?$/';
 

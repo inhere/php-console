@@ -66,7 +66,7 @@ class Style
     /**
      * @return Style
      */
-    public static function create(): Style
+    public static function create()
     {
         if (!self::$instance) {
             self::$instance = new self();
@@ -170,7 +170,7 @@ class Style
      * @param   Color $color The color style to apply.
      * @return  string
      */
-    protected function replaceColor($text, $tag, $match, Color $color): string
+    protected function replaceColor($text, $tag, $match, Color $color)
     {
         $style = $color->toStyle();
         $replace = $this->noColor ? $match : "\033[{$style}m{$match}\033[0m";
@@ -245,7 +245,7 @@ class Style
     /**
      * @return array
      */
-    public function getStyleNames(): array
+    public function getStyleNames()
     {
         return array_keys($this->styles);
     }
@@ -253,7 +253,7 @@ class Style
     /**
      * @return array
      */
-    public function getStyles(): array
+    public function getStyles()
     {
         return $this->styles;
     }
@@ -275,7 +275,7 @@ class Style
      * @param $name
      * @return bool
      */
-    public function hasStyle($name): bool
+    public function hasStyle($name)
     {
         return isset($this->styles[$name]);
     }
@@ -283,7 +283,7 @@ class Style
     /**
      * Method to get property NoColor
      */
-    public function isNoColor(): bool
+    public function isNoColor()
     {
         return (bool)$this->noColor;
     }
