@@ -17,7 +17,7 @@
 **注意：**
 
 - master 分支是要求 `php >= 7` 的(推荐使用)。
-- [php5](./php5) 是 php 5 的分支，但有些时间没更新了(但是基本的功能都支持)。
+- [php5](/inhere/php-console/tree/php5) 是 php 5 的分支，但有些时间没更新了(但是基本的功能都支持)。
 
 ## 安装
 
@@ -27,6 +27,7 @@
 
 ```
 "inhere/console": "dev-master",
+// "inhere/console": "dev-php5", // for php5
 ```
 
 然后执行: `composer update`

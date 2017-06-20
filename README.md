@@ -9,6 +9,36 @@ a php console application library.
 
 [中文README](./README_zh.md)
 
+## project
+
+- **github** https://github.com/inhere/php-console.git
+- **git@osc** https://git.oschina.net/inhere/php-console.git
+
+**NOTICE**
+
+- master branch is require `php >= 7` (recommended use)。
+- [php5](/inhere/php-console/tree/php5) It's a branch of PHP 5, but it hasn't been updated for some time (the basic functionality is complete).
+
+## install
+
+- by composer
+
+编辑 `composer.json`，在 `require` 添加
+
+```
+"inhere/console": "dev-master",
+// "inhere/console": "dev-php5", // for php5
+```
+
+然后执行: `composer update`
+
+- Direct fetch
+
+```
+git clone https://git.oschina.net/inhere/php-console.git // git@osc
+git clone https://github.com/inhere/php-console.git // github
+```
+
 ## usage
 
 ```php
@@ -237,7 +267,6 @@ result:
 ```php
 var_dump($result); // bool(false)
 ```
-
 
 ### `Interact::question()`/`Interact::ask()`
 
