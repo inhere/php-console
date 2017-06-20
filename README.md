@@ -16,8 +16,8 @@ a php console application library.
 
 **NOTICE**
 
-- master branch is require `php >= 7` (recommended use)。
-- [php5](/inhere/php-console/tree/php5) It's a branch of PHP 5, but it hasn't been updated for some time (the basic functionality is complete).
+- master branch -- is require `php >= 7` (recommended use)。
+- php5 branch -- It's a branch of PHP 5, but it hasn't been updated for some time (the basic functionality is complete).
 
 ## install
 
