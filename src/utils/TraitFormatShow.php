@@ -18,6 +18,27 @@ trait TraitFormatShow
 {
     /**
      * @inheritdoc
+     * @see Show::write()
+     */
+    public function write($messages = '', $nl = true, $quit = false): int
+    {
+        return Show::write($messages, $nl, $quit, [
+            'flush' => true,
+            'stream' => $this->outputStream,
+        ]);
+    }
+
+    /**
+     * @inheritdoc
+     * @see Show::writeln()
+     */
+    public function writeln($text, $quit = false, array $opts = [])
+    {
+        return Show::writeln($text, $quit, $opts);
+    }
+
+    /**
+     * @inheritdoc
      * @see Show::title()
      */
     public function title($title, array $opts = [])

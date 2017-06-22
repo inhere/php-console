@@ -27,10 +27,18 @@ abstract class AbstractCommand
     const DESCRIPTION = '';
 
     /**
+     * TODO ...
+     * command description message
+     * please use the property setting current controller/command description
+     * @var string
+     */
+    public static $description = '';
+
+    /**
      * command name e.g 'test' 'test:one'
      * @var string
      */
-    private $name = '';
+    public static $name = '';
 
     /**
      * allow display message tags in the command
@@ -73,17 +81,17 @@ abstract class AbstractCommand
     /**
      * @param string $name
      */
-    public function setName(string $name)
+    public static function setName(string $name)
     {
-        $this->name = $name;
+        static::$name = $name;
     }
 
     /**
      * @return string
      */
-    public function getName(): string
+    public static function getName(): string
     {
-        return $this->name;
+        return static::$name;
     }
 
     /**

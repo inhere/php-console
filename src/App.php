@@ -141,7 +141,7 @@ class App extends AbstractApp
             throw new \InvalidArgumentException("The console controller class [$object] must instanceof the " . Controller::class);
         }
 
-        $object->setName($name);
+        $object::setName($name);
 
         return $object->run($action);
     }

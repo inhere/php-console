@@ -683,10 +683,11 @@ class Show
      * @param string|array $text
      * @param array $opts
      * @param bool|int $quit
+     * @return int
      */
     public static function writeln($text, $quit = false, array $opts = [])
     {
-        self::write($text, true, $quit, $opts);
+        return self::write($text, true, $quit, $opts);
     }
 
     /**
