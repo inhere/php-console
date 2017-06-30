@@ -10,7 +10,7 @@ namespace inhere\console;
 
 use inhere\console\io\Input;
 use inhere\console\io\Output;
-use inhere\console\utils\TraitInputOutput;
+use inhere\console\traits\TraitInputOutput;
 
 /**
  * Class AbstractApp

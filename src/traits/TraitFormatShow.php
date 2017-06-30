@@ -6,13 +6,14 @@
  * Time: 15:10
  */
 
-namespace inhere\console\utils;
+namespace inhere\console\traits;
 
 use inhere\console\style\Style;
+use inhere\console\utils\Show;
 
 /**
  * Class TraitFormatShow
- * @package inhere\console\utils
+ * @package inhere\console\traits
  */
 trait TraitFormatShow
 {

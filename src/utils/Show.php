@@ -9,7 +9,7 @@
 namespace inhere\console\utils;
 
 use inhere\console\style\Style;
-use inhere\console\Helper;
+use inhere\console\helpers\Helper;
 
 /**
  * Class Show

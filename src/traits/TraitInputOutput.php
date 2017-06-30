@@ -6,14 +6,14 @@
  * Time: 11:38
  */
 
-namespace inhere\console\utils;
+namespace inhere\console\traits;
 
 use inhere\console\io\Input;
 use inhere\console\io\Output;
 
 /**
  * Class TraitInputOutput
- * @package inhere\console\utils
+ * @package inhere\console\traits
  */
 trait TraitInputOutput
 {

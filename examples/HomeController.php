@@ -3,6 +3,7 @@
 namespace inhere\console\examples;
 
 use inhere\console\Controller;
+use inhere\console\utils\AnsiCode;
 use inhere\console\utils\Download;
 use inhere\console\utils\Show;
 use inhere\console\utils\Interact;
@@ -21,6 +22,12 @@ class HomeController extends Controller
      * this is a command's description message
      * the second line text
      * @usage usage message
+     * @arguments
+     * arg1  argument description 1
+     * arg2  argument description 2
+     * @options
+     * --long,-s option description 1
+     * --opt    option description 2
      * @example example text one
      *  the second line example
      */
@@ -198,7 +205,7 @@ class HomeController extends Controller
         $url = $this->input->getArg('url');
 
         if (!$url) {
-            \inhere\console\utils\Show::error('Please input you want to downloaded file url, use: url=[url]', 1);
+            Show::error('Please input you want to downloaded file url, use: url=[url]', 1);
         }
 
         $saveAs = $this->input->getArg('saveAs');
@@ -211,7 +218,7 @@ class HomeController extends Controller
         $goon = Interact::confirm("Now, will download $url to $saveAs, go on");
 
         if (!$goon) {
-            \inhere\console\utils\Show::notice('Quit download, Bye!');
+            Show::notice('Quit download, Bye!');
 
             return 0;
         }
@@ -221,5 +228,39 @@ class HomeController extends Controller
         var_dump($d);
 
         return 0;
+    }
+
+    public function cursorCommand()
+    {
+        $this->write('hello, this in ' . __METHOD__);
+
+        // $this->output->panel($_SERVER, 'Server information', '');
+
+        $this->write('this is a message text.', false);
+
+        sleep(1);
+        AnsiCode::make()->cursor(AnsiCode::CURSOR_BACKWARD, 6);
+
+        sleep(1);
+        AnsiCode::make()->cursor(AnsiCode::CURSOR_FORWARD, 3);
+
+        sleep(1);
+        AnsiCode::make()->cursor(AnsiCode::CURSOR_BACKWARD, 2);
+
+        sleep(2);
+
+        AnsiCode::make()->screen(AnsiCode::CLEAR_LINE, 3);
+
+        $this->write('after 2s scroll down 3 row.');
+
+        sleep(2);
+
+        AnsiCode::make()->screen(AnsiCode::SCROLL_DOWN, 3);
+
+        $this->write('after 3s clear screen.');
+
+        sleep(3);
+
+        AnsiCode::make()->screen(AnsiCode::CLEAR);
     }
 }

@@ -10,7 +10,7 @@
 
 namespace inhere\console\style;
 
-use inhere\console\Helper;
+use inhere\console\helpers\Helper;
 
 /**
  * Class Style

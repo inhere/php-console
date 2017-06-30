@@ -48,7 +48,7 @@ abstract class Command extends AbstractCommand
      */
     public function run($name = '')
     {
-        $this->setName($name);
+        self::setName($name);
 
         if ($this->input->sameOpt(['h','help'])) {
             return $this->showHelp();
@@ -61,7 +61,7 @@ abstract class Command extends AbstractCommand
             $status = $this->execute($this->input, $this->output);
             $this->afterRun($name);
 
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             $this->handleRuntimeException($e);
         }
 
@@ -95,16 +95,6 @@ abstract class Command extends AbstractCommand
      */
     public function showHelp()
     {
-        $configure = $this->configure();
-
-        if (!$configure) {
-            return __LINE__;
-        }
-
-        $configure['description'] = static::DESCRIPTION;
-
-        $this->output->helpPanel($configure, false);
-
-        return 0;
+        return $this->showHelpByMethodAnnotation('execute');
     }
 }

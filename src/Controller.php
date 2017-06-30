@@ -8,6 +8,9 @@
 
 namespace inhere\console;
 
+use inhere\console\helpers\Helper;
+use inhere\console\helpers\Annotation;
+
 /**
  * Class Command
  * @package inhere\console
@@ -66,10 +69,10 @@ abstract class Controller extends AbstractCommand
             // run action
             try {
                 $this->beforeRun($action);
-                $result = $params ? call_user_func_array([$this, $method], $params) : $this->$method();
+                $result = $this->$method($this->input, $this->output, $params);
                 $this->afterRun($action);
 
-            } catch (\Exception $e) {
+            } catch (\Throwable $e) {
                 $this->handleRuntimeException($e);
             }
 
@@ -111,25 +114,7 @@ abstract class Controller extends AbstractCommand
 
         $method = $this->actionSuffix ? $action . ucfirst($this->actionSuffix) : $action;
 
-        $ref = new \ReflectionClass($this);
-        $sName = lcfirst($this->getName() ?: $ref->getShortName());
-
-        if (!$ref->hasMethod($method) || !$ref->getMethod($method)->isPublic()) {
-            $this->write("Command [<info>$sName/$action</info>] don't exist or don't allow access in the class.");
-            return 0;
-        }
-
-        $m = $ref->getMethod($method);
-        $tags = $this->parseDocCommentTags($m->getDocComment());
-
-        foreach ($tags as $tag => $msg) {
-            if (!self::$allowTags || in_array($tag, self::$allowTags, true)) {
-                $tag = ucfirst($tag);
-                $this->write("<comment>$tag:</comment>\n   $msg\n");
-            }
-        }
-
-        return 0;
+        return $this->showHelpByMethodAnnotation($method, $action);
     }
 
     /**
@@ -140,11 +125,11 @@ abstract class Controller extends AbstractCommand
         $ref = new \ReflectionClass($this);
 
         $class = $ref->getName();
-        $sName = lcfirst($this->getName() ?: $ref->getShortName());
+        $sName = lcfirst(self::getName() ?: $ref->getShortName());
         $this->write("This is in the console controller [<bold>$class</bold>]\n");
 
         if (!($desc = static::DESCRIPTION)) {
-            $desc = $this->parseDocCommentDetail($ref->getDocComment()) ?: 'No Description';
+            $desc = Annotation::description($ref->getDocComment()) ?: 'No Description';
         }
 
         $suffix = $this->actionSuffix;
@@ -163,7 +148,7 @@ abstract class Controller extends AbstractCommand
             $mName = $m->getName();
 
             if ($m->isPublic() && substr($mName, -$suffixLen) === $suffix) {
-                $desc = $this->parseDocCommentSummary($m->getDocComment());
+                $desc = Annotation::firstLine($m->getDocComment());
                 $length = strlen($this->actionSuffix);
                 $cmd = '';
 
@@ -233,75 +218,5 @@ abstract class Controller extends AbstractCommand
     public function setNotFoundCallback($notFoundCallback)
     {
         $this->notFoundCallback = $notFoundCallback;
-    }
-
-    /*
-     * 以下三个方法来自 yii2 console/Controller.php
-     */
-
-    /**
-     * Parses the comment block into tags.
-     * @param string $comment the comment block
-     * @return array the parsed tags
-     */
-    protected function parseDocCommentTags($comment)
-    {
-//        $comment = $reflection->getDocComment();
-        $comment = "@description \n" . strtr(trim(preg_replace('/^\s*\**( |\t)?/m', '', trim($comment, '/'))), "\r", '');
-
-        $parts = preg_split('/^\s*@/m', $comment, -1, PREG_SPLIT_NO_EMPTY);
-        $tags = [];
-
-        foreach ($parts as $part) {
-            if (preg_match('/^(\w+)(.*)/ms', trim($part), $matches)) {
-                $name = $matches[1];
-                if (!isset($tags[$name])) {
-                    $tags[$name] = trim($matches[2]);
-                } elseif (is_array($tags[$name])) {
-                    $tags[$name][] = trim($matches[2]);
-                } else {
-                    $tags[$name] = [$tags[$name], trim($matches[2])];
-                }
-            }
-        }
-
-        return $tags;
-    }
-
-    /**
-     * Returns the first line of docBlock.
-     *
-     * @param  $comment
-     * @return string
-     */
-    protected function parseDocCommentSummary($comment): string
-    {
-        $docLines = preg_split('~\R~u', $comment);
-
-        if (isset($docLines[1])) {
-            return trim($docLines[1], "\t *");
-        }
-
-        return '';
-    }
-
-    /**
-     * Returns full description from the doc block.
-     *
-     * @param  $comment
-     * @return string
-     */
-    protected function parseDocCommentDetail($comment): string
-    {
-        $comment = strtr(trim(preg_replace('/^\s*\**( |\t)?/m', '', trim($comment, '/'))), "\r", '');
-
-        if (preg_match('/^\s*@\w+/m', $comment, $matches, PREG_OFFSET_CAPTURE)) {
-            $comment = trim(substr($comment, 0, $matches[0][1]));
-        }
-//        if ($comment !== '') {
-//            return $this->write($comment);
-//        }
-
-        return $comment;
     }
 }

@@ -6,11 +6,13 @@
  * Time: 11:38
  */
 
-namespace inhere\console\utils;
+namespace inhere\console\traits;
+
+use inhere\console\utils\Interact;
 
 /**
  * Class TraitInteract
- * @package inhere\console\utils
+ * @package inhere\console\traits
  */
 trait TraitInteract
 {

@@ -8,7 +8,7 @@
 
 namespace inhere\console\utils;
 
-use inhere\console\Helper;
+use inhere\console\helpers\Helper;
 use inhere\console\io\Output;
 use inhere\console\io\OutputInterface;
 

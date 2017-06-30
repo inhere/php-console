@@ -8,9 +8,9 @@
 
 namespace inhere\console\io;
 
-use inhere\console\Helper;
+use inhere\console\helpers\Helper;
 use inhere\console\style\Style;
-use inhere\console\utils\TraitFormatShow;
+use inhere\console\traits\TraitFormatShow;
 
 /**
  * Class Output

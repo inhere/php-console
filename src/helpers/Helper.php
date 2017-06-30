@@ -8,11 +8,11 @@
  * file: Color.php
  */
 
-namespace inhere\console;
+namespace inhere\console\helpers;
 
 /**
  * Class Helper
- * @package inhere\console
+ * @package inhere\console\helpers
  */
 class Helper
 {
@@ -342,7 +342,6 @@ class Helper
 
         return $pad . '  ' . implode("\n", $lines);
     }
-
 
     /**
      * dump vars
