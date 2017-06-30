@@ -18,6 +18,14 @@ class App extends AbstractApp
      * app run
      **********************************************************/
 
+    protected function prepareRun()
+    {
+        parent::prepareRun();
+
+        // like show help info
+        $this->filterSpecialCommand($this->getCommandName());
+    }
+
     /**
      * @inheritdoc
      */
@@ -26,7 +34,8 @@ class App extends AbstractApp
         try {
             $status = $this->dispatch();
         } catch (\Exception $e) {
-            $status = -$e->getCode();
+            self::fire(self::ON_RUN_ERROR, [$e, $this]);
+            $status = $e->getCode() === 0 ? __LINE__ : $e->getCode();
             $this->dispatchExHandler($e);
         }
 
@@ -43,9 +52,7 @@ class App extends AbstractApp
     public function dispatch()
     {
         $sep = '/';
-        $command = $name = trim($this->input->getCommand(), $sep);
-
-        $this->filterSpecialCommand($command);
+        $command = $name = $this->getCommandName();
 
         //// is a command name
 
@@ -67,9 +74,7 @@ class App extends AbstractApp
             return $this->runAction($name, $action, true);
         }
 
-        if ($cb = self::$hooks[self::ON_NOT_FOUND]) {
-            $cb($command, $this);
-        } else {
+        if (false !== self::fire(self::ON_NOT_FOUND, [$this])) {
             // not match, output error message
             $this->output->error("Console Controller or Command [$command] not exists!");
             $this->showCommandList(false);
@@ -108,7 +113,8 @@ class App extends AbstractApp
                 throw new \InvalidArgumentException("The console command class [$handler] must instanceof the " . Command::class);
             }
 
-            $status = $object->run($name);
+            $object::setName($name);
+            $status = $object->run();
         }
 
         return $status;
@@ -143,7 +149,7 @@ class App extends AbstractApp
 
         $object::setName($name);
 
-        return $object->run($action);
+        return $object->setAction($action)->run();
     }
 
     /**
@@ -170,9 +176,7 @@ class App extends AbstractApp
     protected function filterSpecialCommand($command)
     {
         // show help `./bin/app` OR `./bin/app help`
-        $showHelp = !$command || $command === 'help';
-
-        if ($showHelp) {
+        if (!$command || $command === 'help') {
             $this->showHelpInfo(false);
             $this->showCommandList();
         }

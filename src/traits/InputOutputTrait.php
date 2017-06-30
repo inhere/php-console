@@ -12,10 +12,10 @@ use inhere\console\io\Input;
 use inhere\console\io\Output;
 
 /**
- * Class TraitInputOutput
+ * Class InputOutputTrait
  * @package inhere\console\traits
  */
-trait TraitInputOutput
+trait InputOutputTrait
 {
     /**
      * @var Input
@@ -53,6 +53,16 @@ trait TraitInputOutput
     protected function write($message, $nl = true, $quit = false): int
     {
         return $this->output->write($message, $nl, $quit);
+    }
+
+    /**
+     * @param mixed $message
+     * @param bool|int $quit
+     * @return int
+     */
+    protected function writeln($message, $quit = false): int
+    {
+        return $this->output->write($message, true, $quit);
     }
 
     /**

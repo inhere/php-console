@@ -8,9 +8,9 @@
 
 namespace inhere\console\io;
 
-use inhere\console\helpers\Helper;
 use inhere\console\style\Style;
-use inhere\console\traits\TraitFormatShow;
+use inhere\console\traits\FormatOutputTrait;
+use inhere\console\utils\Helper;
 
 /**
  * Class Output
@@ -18,7 +18,7 @@ use inhere\console\traits\TraitFormatShow;
  */
 class Output implements OutputInterface
 {
-    use TraitFormatShow;
+    use FormatOutputTrait;
 
     /**
      * 正常输出流

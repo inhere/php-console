@@ -6,11 +6,11 @@
  * Time: 17:29
  */
 
-namespace inhere\console\helpers;
+namespace inhere\console\utils;
 
 /**
  * Class Annotation
- * @package inhere\console\helpers
+ * @package inhere\console\utils
  */
 class Annotation
 {

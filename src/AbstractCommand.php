@@ -8,11 +8,12 @@
 
 namespace inhere\console;
 
-use inhere\console\helpers\Annotation;
 use inhere\console\io\Input;
+use inhere\console\io\InputDefinition;
 use inhere\console\io\Output;
-use inhere\console\traits\TraitInputOutput;
-use inhere\console\traits\TraitInteract;
+use inhere\console\traits\InputOutputTrait;
+use inhere\console\traits\UserInteractTrait;
+use inhere\console\utils\Annotation;
 
 /**
  * Class AbstractCommand
@@ -20,8 +21,8 @@ use inhere\console\traits\TraitInteract;
  */
 abstract class AbstractCommand
 {
-    use TraitInputOutput;
-    use TraitInteract;
+    use InputOutputTrait;
+    use UserInteractTrait;
 
     // command description message
     // please use the const setting current controller/command description
@@ -58,32 +59,72 @@ abstract class AbstractCommand
     ];
 
     /**
+     * @var InputDefinition
+     */
+    private $definition;
+
+    ////// for strict mode //////
+
+    /**
      * Command constructor.
      * @param Input $input
      * @param Output $output
+     * @param InputDefinition|null $definition
      */
-    public function __construct(Input $input, Output $output)
+    public function __construct(Input $input, Output $output, InputDefinition $definition = null)
     {
         $this->input = $input;
         $this->output = $output;
+
+        if (null === $definition) {
+            $this->definition = new InputDefinition();
+        } else {
+            $this->definition = $definition;
+            $this->validate();
+        }
     }
 
     /**
-     * @param string $arg
+     * @return array
      */
-    abstract public function run($arg = '');
+    protected function configure()
+    {
+        return [
+            // 'arguments' => [],
+            // 'options' => [],
+        ];
+    }
+
+    public function validate()
+    {
+        $definition = $this->definition;
+        $givenArguments = $this->input->getArgs();
+
+        $missingArguments = array_filter(array_keys($definition->getArguments()), function ($name) use ($definition, $givenArguments) {
+            return !array_key_exists($name, $givenArguments) && $definition->argumentIsRequired($name);
+        });
+
+        if (count($missingArguments) > 0) {
+            throw new \RuntimeException(sprintf('Not enough arguments (missing: "%s").', implode(', ', $missingArguments)));
+        }
+    }
 
     /**
-     * @param string $action
+     * run
      */
-    protected function beforeRun($action)
+    abstract public function run();
+
+    /**
+     * beforeRun
+     */
+    protected function beforeRun()
     {
     }
 
     /**
-     * @param string $action
+     * afterRun
      */
-    protected function afterRun($action)
+    protected function afterRun()
     {
     }
 
@@ -129,7 +170,11 @@ abstract class AbstractCommand
             if (isset(self::$allowTags[$tag])) {
                 // need multi align
                 if (self::$allowTags[$tag]) {
-                    $msg = implode("\n  ", array_filter(explode("\n", $msg), 'trim'));
+                    $lines = array_map(function ($line) {
+                        return trim($line);
+                    }, explode("\n", $msg));
+
+                    $msg = implode("\n  ", array_filter($lines, 'trim'));
                 }
 
                 $tag = ucfirst($tag);
@@ -182,4 +227,38 @@ abstract class AbstractCommand
     {
         self::$allowTags = $allowTags;
     }
+
+    /**
+     * @return string
+     */
+    public static function getDescription(): string
+    {
+        return self::$description;
+    }
+
+    /**
+     * @param string $description
+     */
+    public static function setDescription(string $description)
+    {
+        self::$description = $description;
+    }
+
+    /**
+     * @return InputDefinition
+     */
+    public function getDefinition(): InputDefinition
+    {
+        return $this->definition;
+    }
+
+    /**
+     * @param InputDefinition $definition
+     */
+    public function setDefinition(InputDefinition $definition)
+    {
+        $this->definition = $definition;
+    }
+
+
 }

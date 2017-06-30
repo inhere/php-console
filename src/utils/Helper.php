@@ -8,11 +8,11 @@
  * file: Color.php
  */
 
-namespace inhere\console\helpers;
+namespace inhere\console\utils;
 
 /**
  * Class Helper
- * @package inhere\console\helpers
+ * @package inhere\console\utils
  */
 class Helper
 {
@@ -50,6 +50,42 @@ class Helper
         }
 
         return mb_strwidth($string, $encoding);
+    }
+
+    /**
+     * @param $string
+     * @param $width
+     * @return array
+     */
+    public static function splitStringByWidth($string, $width)
+    {
+        // str_split is not suitable for multi-byte characters, we should use preg_split to get char array properly.
+        // additionally, array_slice() is not enough as some character has doubled width.
+        // we need a function to split string not by character count but by string width
+        if (false === $encoding = mb_detect_encoding($string, null, true)) {
+            return str_split($string, $width);
+        }
+
+        $utf8String = mb_convert_encoding($string, 'utf8', $encoding);
+        $lines = array();
+        $line = '';
+        foreach (preg_split('//u', $utf8String) as $char) {
+            // test if $char could be appended to current line
+            if (mb_strwidth($line.$char, 'utf8') <= $width) {
+                $line .= $char;
+                continue;
+            }
+            // if not, push current line to array and make new line
+            $lines[] = str_pad($line, $width);
+            $line = $char;
+        }
+        if ('' !== $line) {
+            $lines[] = count($lines) ? str_pad($line, $width) : $line;
+        }
+
+        mb_convert_variables($encoding, 'utf8', $lines);
+
+        return $lines;
     }
 
     /**

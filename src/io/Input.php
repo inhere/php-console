@@ -8,6 +8,8 @@
 
 namespace inhere\console\io;
 
+use inhere\console\utils\OptArg;
+
 /**
  * Class Input
  * @package inhere\console\io
@@ -44,6 +46,12 @@ class Input implements InputInterface
     private $command;
 
     /**
+     * raw argv data
+     * @var array
+     */
+    private $tokens;
+
+    /**
      * Input args data
      * @var array
      */
@@ -63,21 +71,48 @@ class Input implements InputInterface
 
     /**
      * Input constructor.
+     * @param null|array $argv
      */
-    public function __construct()
+    public function __construct($argv = null)
     {
+        if (null === $argv) {
+            $argv = $_SERVER['argv'];
+        }
+
         $this->pwd = $this->getPwd();
 
+        $this->fullScript = implode(' ', $argv);
+        $this->script = array_shift($argv);
+        $this->tokens = $argv;
+
         list(
-            $this->fullScript,
-            $this->script,
             $this->args,
             $this->sOpts,
             $this->lOpts
-        ) = self::parseOptArgs();
+            ) = OptArg::parseArgv($argv);
 
         // collect command `server`
         $this->command = isset($this->args[0]) ? array_shift($this->args) : '';
+    }
+
+    /**
+     * @return string
+     */
+    public function __toString()
+    {
+        $tokens = array_map(function ($token) {
+            if (preg_match('{^(-[^=]+=)(.+)}', $token, $match)) {
+                return $match[1] . OptArg::escapeToken($match[2]);
+            }
+
+            if ($token && $token[0] !== '-') {
+                return OptArg::escapeToken($token);
+            }
+
+            return $token;
+        }, $this->tokens);
+
+        return implode(' ', $tokens);
     }
 
     /**
@@ -190,6 +225,17 @@ class Input implements InputInterface
         }
 
         return $this->sOpt($name, $default);
+    }
+
+    /**
+     * alias of the getOpt()
+     * @param string $name
+     * @param mixed $default
+     * @return mixed
+     */
+    public function getOption(string $name, $default = null)
+    {
+        return $this->getOpt($name, $default);
     }
 
     /**
@@ -372,6 +418,14 @@ class Input implements InputInterface
     /**
      * @return array
      */
+    public function getArguments(): array
+    {
+        return $this->args;
+    }
+
+    /**
+     * @return array
+     */
     public function getArgs(): array
     {
         return $this->args;
@@ -388,6 +442,14 @@ class Input implements InputInterface
     /**
      * @return array
      */
+    public function getShortOpts(): array
+    {
+        return $this->sOpts;
+    }
+
+    /**
+     * @return array
+     */
     public function getSOpts(): array
     {
         return $this->sOpts;
@@ -399,6 +461,14 @@ class Input implements InputInterface
     public function setSOpts(array $sOpts)
     {
         $this->sOpts = $sOpts;
+    }
+
+    /**
+     * @return array
+     */
+    public function getLongOpts(): array
+    {
+        return $this->lOpts;
     }
 
     /**
@@ -431,139 +501,9 @@ class Input implements InputInterface
     public function getPwd(): string
     {
         if (!$this->pwd) {
-            $this->pwd =getcwd();
+            $this->pwd = getcwd();
         }
 
         return $this->pwd;
-    }
-
-    /////////////////////////////////////////////////////////////////////////////////////////
-    /// argument and option parser
-    /////////////////////////////////////////////////////////////////////////////////////////
-
-    /**
-     * Parses $GLOBALS['argv'] for parameters and assigns them to an array.
-     *
-     * eg:
-     *
-     * ```
-     * php cli.php server start name=john city=chengdu -s=test --page=23 -d -rf --debug --task=off -y=false -D -e dev -v vvv
-     * ```
-     *
-     * Supports args:
-     * <value>
-     * arg=<value>
-     *
-     * Supports opts:
-     * -e
-     * -e <value>
-     * -e=<value>
-     * --long-opt
-     * --long-opt <value>
-     * --long-opt=<value>
-     *
-     * @link http://php.net/manual/zh/function.getopt.php#83414
-     * @param array $noValues List of parameters without values(bool option keys)
-     * @param bool $mergeOpts Whether merge short-opts and long-opts
-     * @return array
-     */
-    public static function parseOptArgs(array $noValues = [], $mergeOpts = false): array
-    {
-        $params = $GLOBALS['argv'];
-        reset($params);
-
-        $args = $sOpts = $lOpts = [];
-        $fullScript = implode(' ', $params);
-        $script = array_shift($params);
-
-        while (list(,$p) = each($params)) {
-            // is options
-            if ($p{0} === '-') {
-                $isLong = false;
-                $opt = substr($p, 1);
-                $value = true;
-
-                // long-opt: (--<opt>)
-                if ($opt{0} === '-') {
-                    $isLong = true;
-                    $opt = substr($opt, 1);
-
-                    // long-opt: value specified inline (--<opt>=<value>)
-                    if (strpos($opt, '=') !== false) {
-                        list($opt, $value) = explode('=', $opt, 2);
-                    }
-
-                    // short-opt: value specified inline (-<opt>=<value>)
-                } elseif (strlen($opt) > 2 && $opt{1} === '=') {
-                    list($opt, $value) = explode('=', $opt, 2);
-                }
-
-                // check if next parameter is a descriptor or a value
-                $nxp = current($params);
-
-                if ($value === true && $nxp !== false && $nxp{0} !== '-' && !in_array($opt, $noValues, true)) {
-                    list(,$value) = each($params);
-
-                    // short-opt: bool opts. like -e -abc
-                } elseif (!$isLong && $value === true) {
-                    foreach (str_split($opt) as $char) {
-                        $sOpts[$char] = true;
-                    }
-
-                    continue;
-                }
-
-                if ($isLong) {
-                    $lOpts[$opt] = self::filterBool($value);
-                } else {
-                    $sOpts[$opt] = self::filterBool($value);
-                }
-
-                // arguments: param doesn't belong to any option, define it is args
-            } else {
-                // value specified inline (<arg>=<value>)
-                if (strpos($p, '=') !== false) {
-                    list($name, $value) = explode('=', $p, 2);
-                    $args[$name] = self::filterBool($value);
-                } else {
-                    $args[] = $p;
-                }
-            }
-        }
-
-        unset($params);
-
-        if ($mergeOpts) {
-            return [$fullScript, $script, $args, array_merge($sOpts, $lOpts)];
-        }
-
-        return [$fullScript, $script, $args, $sOpts, $lOpts];
-    }
-
-    /**
-     * @param string|bool $val
-     * @param bool $enable
-     * @return bool|mixed
-     */
-    private static function filterBool($val, $enable = true)
-    {
-        if ($enable) {
-            if (is_bool($val) || is_numeric($val)) {
-                return $val;
-            }
-
-            $tVal = strtolower($val);
-
-            // check it is a bool value.
-            if (false !== strpos(self::TRUE_WORDS, "|$tVal|")) {
-                return true;
-            }
-
-            if (false !== strpos(self::FALSE_WORDS, "|$tVal|")) {
-                return false;
-            }
-        }
-
-        return $val;
     }
 }

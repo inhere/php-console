@@ -8,8 +8,8 @@
 
 namespace inhere\console;
 
-use inhere\console\helpers\Helper;
-use inhere\console\helpers\Annotation;
+use inhere\console\utils\Helper;
+use inhere\console\utils\Annotation;
 
 /**
  * Class Command
@@ -20,12 +20,17 @@ abstract class Controller extends AbstractCommand
     /**
      * @var string
      */
-    protected $defaultAction = 'help';
+    private $action;
 
     /**
      * @var string
      */
-    protected $actionSuffix = 'Command';
+    private $defaultAction = 'help';
+
+    /**
+     * @var string
+     */
+    private $actionSuffix = 'Command';
 
     /**
      * @var string
@@ -34,23 +39,19 @@ abstract class Controller extends AbstractCommand
 
     /**
      * 运行控制器的 action
-     * @param $action
      * @return mixed
      * @throws \HttpException
      */
-    public function run($action = '')
+    public function run()
     {
+        $action = $this->action;
+
         if ($action && $this->input->sameOpt(['h','help'])) {
-            return $this->helpCommand($action);
+            return $this->helpCommand();
         }
 
         $result = '';
         $action = $action ?: $this->defaultAction;
-
-        if ($params = func_get_args()) {
-            array_shift($params);// the first argument is `$action`
-        }
-
         $action = trim($action, '/');
 
         // convert 'first-second' to 'firstSecond'
@@ -68,11 +69,16 @@ abstract class Controller extends AbstractCommand
         ) {
             // run action
             try {
-                $this->beforeRun($action);
-                $result = $this->$method($this->input, $this->output, $params);
-                $this->afterRun($action);
+                App::fire(App::ON_BEFORE_EXEC, [$this]);
+
+                $this->beforeRun();
+                $result = $this->$method($this->input, $this->output);
+                $this->afterRun();
+
+                App::fire(App::ON_AFTER_EXEC, [$this]);
 
             } catch (\Throwable $e) {
+                App::fire(App::ON_EXEC_ERROR, [$e, $this]);
                 $this->handleRuntimeException($e);
             }
 
@@ -96,11 +102,12 @@ abstract class Controller extends AbstractCommand
      *    home/index -h
      *    home index
      *
-     * @param string $action
      * @return int
      */
-    final public function helpCommand($action = '')
+    final public function helpCommand()
     {
+        $action = $this->action;
+
         if (!$action && !($action = $this->input->getFirstArg())) {
             $this->showCommandList();
             return 0;
@@ -170,6 +177,27 @@ abstract class Controller extends AbstractCommand
 
         $commands[] = "\nFor more information please use: <info>$sName/help [command]</info>";
         $this->output->aList($commands, '<comment>Commands:</comment>');
+    }
+
+    /**
+     * @return string
+     */
+    public function getAction(): string
+    {
+        return $this->action;
+    }
+
+    /**
+     * @param string $action
+     * @return $this
+     */
+    public function setAction(string $action)
+    {
+        if ($action) {
+            $this->action = $action;
+        }
+
+        return $this;
     }
 
     /**

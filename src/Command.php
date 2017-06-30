@@ -43,13 +43,10 @@ abstract class Command extends AbstractCommand
 
     /**
      * run command
-     * @param  string $name
      * @return int
      */
-    public function run($name = '')
+    public function run()
     {
-        self::setName($name);
-
         if ($this->input->sameOpt(['h','help'])) {
             return $this->showHelp();
         }
@@ -57,11 +54,16 @@ abstract class Command extends AbstractCommand
         $status = 0;
 
         try {
-            $this->beforeRun($name);
+            App::fire(App::ON_BEFORE_EXEC, [$this]);
+
+            $this->beforeRun();
             $status = $this->execute($this->input, $this->output);
-            $this->afterRun($name);
+            $this->afterRun();
+
+            App::fire(App::ON_AFTER_EXEC, [$this]);
 
         } catch (\Throwable $e) {
+            App::fire(App::ON_EXEC_ERROR, [$e, $this]);
             $this->handleRuntimeException($e);
         }
 
@@ -82,11 +84,8 @@ abstract class Command extends AbstractCommand
     protected function configure()
     {
         return [
-            // 'usage' => '',
-
             // 'arguments' => [],
             // 'options' => [],
-            // 'examples' => [],
         ];
     }
 

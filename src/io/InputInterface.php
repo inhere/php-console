@@ -14,11 +14,15 @@ namespace inhere\console\io;
  */
 interface InputInterface
 {
-    /**
-     * These words will be as a Boolean value
-     */
-    const TRUE_WORDS = '|on|yes|true|';
-    const FALSE_WORDS = '|off|no|false|';
+    // for fixed arg and opt command/controller
+    const ARG_REQUIRED = 1;
+    const ARG_OPTIONAL = 2;
+    const ARG_IS_ARRAY = 4;
+
+    const OPT_BOOLEAN  = 1;
+    const OPT_REQUIRED = 2;
+    const OPT_OPTIONAL = 4;
+    const OPT_IS_ARRAY = 8;
 
     /**
      * 读取输入信息

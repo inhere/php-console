@@ -230,6 +230,9 @@ class HomeController extends Controller
         return 0;
     }
 
+    /**
+     * show cursor move on the screen
+     */
     public function cursorCommand()
     {
         $this->write('hello, this in ' . __METHOD__);

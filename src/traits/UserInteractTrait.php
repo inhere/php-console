@@ -11,10 +11,10 @@ namespace inhere\console\traits;
 use inhere\console\utils\Interact;
 
 /**
- * Class TraitInteract
+ * Class UserInteractTrait
  * @package inhere\console\traits
  */
-trait TraitInteract
+trait UserInteractTrait
 {
     /**
      * @inheritdoc

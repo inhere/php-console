@@ -12,10 +12,10 @@ use inhere\console\style\Style;
 use inhere\console\utils\Show;
 
 /**
- * Class TraitFormatShow
+ * Class FormatOutputTrait
  * @package inhere\console\traits
  */
-trait TraitFormatShow
+trait FormatOutputTrait
 {
     /**
      * @inheritdoc

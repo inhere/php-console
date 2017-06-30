@@ -10,7 +10,8 @@ namespace inhere\console;
 
 use inhere\console\io\Input;
 use inhere\console\io\Output;
-use inhere\console\traits\TraitInputOutput;
+use inhere\console\traits\InputOutputTrait;
+use inhere\console\traits\SimpleEventStaticTrait;
 
 /**
  * Class AbstractApp
@@ -18,24 +19,18 @@ use inhere\console\traits\TraitInputOutput;
  */
 abstract class AbstractApp
 {
-    use TraitInputOutput;
+    use InputOutputTrait;
+    use SimpleEventStaticTrait;
 
     // event name list
     const ON_BEFORE_RUN = 'beforeRun';
     const ON_AFTER_RUN = 'afterRun';
-    const ON_APP_STOP = 'appStop';
+    const ON_RUN_ERROR = 'runError';
+    const ON_BEFORE_EXEC = 'beforeExec';
+    const ON_AFTER_EXEC = 'afterExec';
+    const ON_EXEC_ERROR = 'execError';
+    const ON_STOP_RUN = 'stopRun';
     const ON_NOT_FOUND = 'notFound';
-
-    /**
-     * @var array
-     */
-    protected static $hooks = [
-        // 'appInit' => '',
-        'beforeRun' => '',
-        'afterRun' => '',
-        'appStop' => '',
-        'notFound' => '',
-    ];
 
     /**
      * app config
@@ -70,6 +65,11 @@ abstract class AbstractApp
     protected $commands = [];
 
     /**
+     * @var string
+     */
+    private $commandName;
+
+    /**
      * App constructor.
      * @param array $config
      * @param Input $input
@@ -86,7 +86,7 @@ abstract class AbstractApp
 
     protected function init()
     {
-        // ...
+        $this->commandName = $this->input->getCommand();
     }
 
     /**********************************************************
@@ -96,7 +96,6 @@ abstract class AbstractApp
     protected function prepareRun()
     {
         date_default_timezone_set($this->config('timeZone', 'UTC'));
-
         // ...
     }
 
@@ -109,17 +108,13 @@ abstract class AbstractApp
         $this->prepareRun();
 
         // call 'onBeforeRun' service, if it is registered.
-        if ($cb = self::$hooks[self::ON_BEFORE_RUN]) {
-            $cb($this);
-        }
+        self::fire(self::ON_BEFORE_RUN, [$this]);
 
         // do run ...
         $returnCode = $this->doRun();
 
         // call 'onAfterRun' service, if it is registered.
-        if ($cb = self::$hooks[self::ON_AFTER_RUN]) {
-            $cb($this);
-        }
+        self::fire(self::ON_AFTER_RUN, [$this]);
 
         if ($exit) {
             $this->stop((int)$returnCode);
@@ -137,9 +132,7 @@ abstract class AbstractApp
     public function stop($code = 0)
     {
         // call 'onAppStop' service, if it is registered.
-        if ($cb = self::$hooks[self::ON_APP_STOP]) {
-            $cb($this);
-        }
+        self::fire(self::ON_STOP_RUN, [$this]);
 
         exit((int)$code);
     }
@@ -160,7 +153,7 @@ abstract class AbstractApp
             throw new \InvalidArgumentException('Parameters are not allowed to is empty!');
         }
 
-        $this->checkName($name, true);
+        $this->validateName($name, true);
 
         if (!class_exists($controller)) {
             throw new \InvalidArgumentException("The console controller class [$controller] not exists!");
@@ -193,7 +186,7 @@ abstract class AbstractApp
             throw new \InvalidArgumentException('Parameters are not allowed to is empty!');
         }
 
-        $this->checkName($name);
+        $this->validateName($name);
 
         // is an class name string
         $this->commands[$name] = $handler;
@@ -208,25 +201,6 @@ abstract class AbstractApp
     {
         foreach ($commands as $name => $handler) {
             $this->command($name, $handler);
-        }
-    }
-
-    /**
-     * @return array
-     */
-    public static function hooks(): array
-    {
-        return array_keys(self::$hooks);
-    }
-
-    /**
-     * @param $event
-     * @param callable $handler
-     */
-    public function on(string $event, callable $handler)
-    {
-        if (isset(self::$hooks[$event])) {
-            self::$hooks[$event] = $handler;
         }
     }
 
@@ -314,7 +288,7 @@ abstract class AbstractApp
      * @param $name
      * @param bool $isGroup
      */
-    protected function checkName(string $name, $isGroup = false)
+    protected function validateName(string $name, $isGroup = false)
     {
         $pattern = $isGroup ? '/^[a-z][\w-]+$/' : '/^[a-z][\w-]*:?([a-z][\w-]+)?$/';
 
@@ -325,5 +299,13 @@ abstract class AbstractApp
         if ($this->isInternalCommand($name)) {
             throw new \InvalidArgumentException("The command name [$name] is not allowed. It is a built in command.");
         }
+    }
+
+    /**
+     * @return string
+     */
+    public function getCommandName(): string
+    {
+        return $this->commandName;
     }
 }
