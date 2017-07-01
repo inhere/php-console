@@ -197,18 +197,15 @@ class App extends AbstractApp
      */
     public function showHelpInfo($quit = true)
     {
-        $script = $this->input->getScriptName();
-        $message = <<<EOF
-<comment>Usage:</comment>
-  $script [route|command] [arg1=value1 arg2=value ...] [-v|-h ...]
+        $script = $this->input->getScript();
 
-<comment>Example:</comment>
-  $script test
-  $script home/index
-
-EOF;
-        $this->output->write($message);
-        $quit && $this->stop();
+        $this->output->helpPanel([
+            'usage' => "$script [route|command] [arg1=value1 arg2=value ...] [-v|-h ...]",
+            'example' => [
+                "$script test",
+                "$script home/index"
+            ]
+        ], $quit);
     }
 
     /**
@@ -237,6 +234,7 @@ EOF;
      */
     public function showCommandList($quit = true)
     {
+        $desPlaceholder = 'No description of the command';
         $script = $this->getScriptName();
         $controllerArr = $commandArr = [];
 
@@ -248,17 +246,19 @@ EOF;
         $controllers = $this->controllers;
         ksort($controllers);
         foreach ($controllers as $name => $controller) {
-            $controllerArr[$name] = $controller::DESCRIPTION ?: 'No description';
+            /** @var AbstractCommand $controller */
+            $controllerArr[$name] = $controller::getDescription() ?: $desPlaceholder;
         }
 
         // all independent commands
         $commands = $this->commands;
         ksort($commands);
         foreach ($commands as $name => $command) {
-            $desc = 'No description';
+            $desc = $desPlaceholder;
 
+            /** @var AbstractCommand $command */
             if (is_subclass_of($command, Command::class)) {
-                $desc = $command::DESCRIPTION ?: 'No description';
+                $desc = $command::getDescription() ?: $desPlaceholder;
             } else if (is_string($command)) {
                 $desc = 'A handler: ' . $command;
             } else if (is_object($command)) {
@@ -269,10 +269,10 @@ EOF;
         }
 
         $this->output->write('There are all console controllers and independent commands.');
-        $this->output->multiList([
-            '<comment>Group Commands:</comment>(by controller)' => $controllerArr ?: '... No register any group command',
-            '<comment>Independent Commands:</comment>' => $commandArr ?: '... No register any independent command',
-            '<comment>Internal Commands:</comment>' => $internalCommands
+        $this->output->mList([
+            'Group Commands:(by controller)' => $controllerArr ?: '... No register any group command',
+            'Independent Commands:' => $commandArr ?: '... No register any independent command',
+            'Internal Commands:' => $internalCommands
         ]);
 
         $this->output->write("more please see: <info>$script [controller|command]</info>");

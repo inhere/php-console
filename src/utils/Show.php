@@ -9,7 +9,6 @@
 namespace inhere\console\utils;
 
 use inhere\console\style\Style;
-use inhere\console\utils\Helper;
 
 /**
  * Class Show
@@ -236,17 +235,22 @@ class Show
      */
     public static function aList($data, $title, array $opts = [])
     {
+        $opts = array_merge([
+            'leftChar' => '  ',
+            'keyStyle'  => 'info',
+            'titleStyle' => 'comment',
+        ], $opts);
+
         // title
         if ($title) {
             $title = ucwords(trim($title));
 
+            if ($style = $opts['titleStyle']) {
+                $title = "<$style>$title</$style>";
+            }
+
             self::write($title);
         }
-
-        $opts = array_merge([
-            'leftChar' => '  ',
-            'keyStyle' => 'info',
-        ], $opts);
 
         // item list
         $items = Helper::spliceKeyValue((array)$data, $opts);
@@ -340,7 +344,7 @@ class Show
 
         // description
         if ($config['description']) {
-            $help .= $config['description'] . "\n\n";
+            $help .=  "  {$config['description']}\n\n";
             unset($config['description']);
         }
 
@@ -354,7 +358,7 @@ class Show
             if (is_array($value)) {
                 // is natural key ['text1', 'text2'](like usage,examples)
                 if (isset($value[0])) {
-                    $value = '  ' . implode(PHP_EOL . '  ', $value) . PHP_EOL;
+                    $value = implode(PHP_EOL . '  ', $value);
 
                     // is key-value [ 'key1' => 'text1', 'key2' => 'text2']
                 } else {
@@ -366,13 +370,14 @@ class Show
             }
 
             if (is_string($value)) {
+                $value = trim($value);
                 $section = ucfirst($section);
-                $help .= "<comment>$section</comment>:\n{$value}\n";
+                $help .= "<comment>$section</comment>:\n  {$value}\n\n";
             }
         }
 
         if ($help) {
-            self::write($help);
+            self::write($help, false);
         }
 
         if ($showAfterQuit) {
@@ -519,6 +524,7 @@ class Show
             'showBorder' => true,
             'leftIndent' => '  ',
             'titlePos' => self::POS_LEFT,
+            'titleStyle' => 'bold',
             'rowBorderChar' => self::CHAR_HYPHEN,   // default is '-'
             'colBorderChar' => self::CHAR_VERTICAL, // default is '|'
             'tHead' => [],                  // custom head data
@@ -577,10 +583,11 @@ class Show
 
         // output title
         if ($title) {
+            $tStyle = $opts['titleStyle'] ?: 'bold';
             $title = ucwords(trim($title));
             $titleLength = mb_strlen($title, 'UTF-8');
             $indentSpace = str_pad(' ', ceil($tableWidth / 2) - ceil($titleLength / 2) + ($columnCount * 2), ' ');
-            self::write("  {$indentSpace}<bold>{$title}</bold>");
+            self::write("  {$indentSpace}<$tStyle>{$title}</$tStyle>");
         }
 
         $border = $leftIndent . str_pad($rowBorderChar, $tableWidth + ($columnCount * 3) + 2, $rowBorderChar);

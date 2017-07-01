@@ -147,16 +147,26 @@ abstract class AbstractApp
      * @param string $controller The controller class
      * @return static
      */
-    public function controller(string $name, string $controller)
+    public function controller(string $name, string $controller = null)
     {
+        if (class_exists($name, false)) {
+            /** @var Controller $controller */
+            $controller = $name;
+            $name = $controller::getName();
+        }
+
         if (!$name || !$controller) {
-            throw new \InvalidArgumentException('Parameters are not allowed to is empty!');
+            throw new \InvalidArgumentException('Group-command "name" and "controller" not allowed to is empty!');
         }
 
         $this->validateName($name, true);
 
         if (!class_exists($controller)) {
             throw new \InvalidArgumentException("The console controller class [$controller] not exists!");
+        }
+
+        if (!is_subclass_of($controller, Controller::class)) {
+            throw new \InvalidArgumentException('The console controller class must is subclass of the: ' . Controller::class);
         }
 
         $this->controllers[$name] = $controller;
@@ -180,13 +190,34 @@ abstract class AbstractApp
      * @param string|\Closure $handler
      * @return $this
      */
-    public function command(string $name, $handler)
+    public function command(string $name, $handler = null)
     {
+        if (class_exists($name, false)) {
+            /** @var Command $handler */
+            $handler = $name;
+            $name = $handler::getName();
+        }
+
         if (!$name || !$handler) {
-            throw new \InvalidArgumentException('Parameters are not allowed to is empty!');
+            throw new \InvalidArgumentException('Command "name" and "handler" not allowed to is empty!');
         }
 
         $this->validateName($name);
+
+        if (is_string($handler)) {
+            if (!class_exists($handler)) {
+                throw new \InvalidArgumentException("The console command class [$handler] not exists!");
+            }
+
+            if (!is_subclass_of($handler, Command::class)) {
+                throw new \InvalidArgumentException('The console command class must is subclass of the: ' . Command::class);
+            }
+        } elseif (!is_object($handler) || !method_exists($handler, '__invoke')) {
+            throw new \InvalidArgumentException(sprintf(
+                'The console command handler must is an subclass of %s OR a Closure OR a object have method __invoke()',
+                Command::class
+            ));
+        }
 
         // is an class name string
         $this->commands[$name] = $handler;
@@ -270,7 +301,7 @@ abstract class AbstractApp
      * get config
      * @return array
      */
-    public function getConfig(): array
+    public function getConfig()
     {
         return $this->config;
     }

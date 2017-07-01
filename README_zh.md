@@ -68,30 +68,10 @@ $app->run();
 
 然后在命令行里执行 `php examples/app`, 立即就可以看到如下输出了:
 
-```bash
-$ php examples/app
-Usage:
-  examples/app [route|command] [arg1=value1 arg2=value ...] [-v|-h ...]
+!['output-commands-info'](images/output-commands-info.png)
 
-Example:
-  examples/app test
-  examples/app home/index
+> `Independent Commands` 中的 demo 就是我们上面添加的命令
 
-There are all console controllers and independent commands.
-Group Commands:(by Controller)
-  ... No register any group command
-
-Independent Commands:
-  demo  A Closure // 这就是我们添加的一个独立命令
-
-Internal Commands:
-  help     Show application help information
-  list     List all group and independent commands
-  version  Show application version information
-
-more please see: examples/app [controller|command]
-
-```
 
 ## 添加命令
 
@@ -342,13 +322,23 @@ public static function section(string $title, string|array $body, array $opts = 
 public static function aList(array $data, string $title, array $opts = [])
 ```
 
+- `$data` array 列表数据。可以是key-value 形式，也可以只有 value，还可以两种混合。
+- `$title` string 列表标题。可选的
+- `$opts` array 选项设置(**同表格、面板的选项**)
+    - `leftChar` 左侧边框字符。默认两个空格，也可以是其他字符(eg: `*` `.`)
+    - `keyStyle` 当key-value 形式时，渲染 key 的颜色风格。 默认 `info`, 设为空即是不加颜色渲染
+    - `titleStyle` 标题的颜色风格。 默认 `comment`
+
+> `aList` 的默认选项，可以渲染一个命令的帮助信息。
+
 使用 `Show::aList()/$output->aList()`
 
 ```php
 $title = 'list title';
 $data = [
-     'name'  => 'value text',
+     'name'  => 'value text', // key-value
      'name2' => 'value text 2',
+     'more info please XXX', // only value
 ];
 Show::aList($data, $title);
 ```
@@ -358,6 +348,9 @@ Show::aList($data, $title);
 ```php
 public static function mList(array $data, array $opts = [])
 ```
+
+> `mList` 的默认选项，可以渲染一组命令的帮助信息。效果与 `helpPanel()` 相同，并且自定义性更高。
+
 
 使用 `Show::mList()/$output->mList()` 别名方法 `Show::multiList()`
 
@@ -383,7 +376,19 @@ Show::mList($data);
 public static function panel(mixed $data, $title = 'Information Panel', $borderChar = '*')
 ```
 
+展示信息面板。比如 命令行应用 开始运行时需要显示一些 版本信息，环境信息等等。
+
 使用 `Show::panel()/$output->panel()`
+
+```php
+$data = [
+    'application version' => '1.2.0',
+    'system version' => '5.2.3',
+    'see help' => 'please use php bin/app -h',
+    'a only value message',
+];
+Show::panel($data, 'panel show', '#');
+```
 
 #### 数据表格信息输出
 

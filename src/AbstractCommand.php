@@ -37,13 +37,13 @@ abstract class AbstractCommand
      * please use the property setting current controller/command description
      * @var string
      */
-    public static $description = '';
+    protected static $description = '';
 
     /**
      * command name e.g 'test' 'test:one'
      * @var string
      */
-    public static $name = '';
+    protected static $name = '';
 
     /**
      * Allow display message tags in the command annotation
@@ -63,6 +63,11 @@ abstract class AbstractCommand
      */
     private $definition;
 
+    /**
+     * @var string
+     */
+    private $processTitle;
+
     ////// for strict mode //////
 
     /**
@@ -76,37 +81,50 @@ abstract class AbstractCommand
         $this->input = $input;
         $this->output = $output;
 
-        if (null === $definition) {
-            $this->definition = new InputDefinition();
-        } else {
+        if ($definition) {
             $this->definition = $definition;
-            $this->validate();
         }
     }
 
     /**
-     * @return array
+     * configure input definition
      */
     protected function configure()
     {
-        return [
-            // 'arguments' => [],
-            // 'options' => [],
-        ];
+        return null;
     }
 
+    /**
+     * validate input arguments and options
+     * @return bool
+     */
     public function validate()
     {
-        $definition = $this->definition;
-        $givenArguments = $this->input->getArgs();
+        if (!$definition = $this->definition) {
+            return true;
+        }
 
-        $missingArguments = array_filter(array_keys($definition->getArguments()), function ($name) use ($definition, $givenArguments) {
-            return !array_key_exists($name, $givenArguments) && $definition->argumentIsRequired($name);
+        $givenArgs = $this->input->getArgs();
+
+        $missingArgs = array_filter(array_keys($definition->getArguments()), function ($name) use ($definition, $givenArgs) {
+            return !array_key_exists($name, $givenArgs) && $definition->argumentIsRequired($name);
         });
 
-        if (count($missingArguments) > 0) {
-            throw new \RuntimeException(sprintf('Not enough arguments (missing: "%s").', implode(', ', $missingArguments)));
+        if (count($missingArgs) > 0) {
+            throw new \RuntimeException(sprintf('Not enough arguments (missing: "%s").', implode(', ', $missingArgs)));
         }
+
+        return true;
+    }
+
+    /**
+     * @return InputDefinition
+     */
+    protected function createDefinition()
+    {
+        $this->definition = new InputDefinition();
+
+        return $this->definition;
     }
 
     /**
@@ -119,6 +137,24 @@ abstract class AbstractCommand
      */
     protected function beforeRun()
     {
+        if ($this->processTitle) {
+            if (function_exists('cli_set_process_title')) {
+                if (false === @cli_set_process_title($this->processTitle)) {
+                    if ('Darwin' === PHP_OS) {
+                        $this->output->writeln('<comment>Running "cli_get_process_title" as an unprivileged user is not supported on MacOS.</comment>');
+                    } else {
+                        $error = error_get_last();
+                        trigger_error($error['message'], E_USER_WARNING);
+                    }
+                }
+            } elseif (function_exists('setproctitle')) {
+                setproctitle($this->processTitle);
+//            } elseif (isDebug) {
+//                $output->writeln('<comment>Install the proctitle PECL to be able to change the process title.</comment>');
+            }
+        }
+
+        $this->validate();
     }
 
     /**
@@ -231,9 +267,9 @@ abstract class AbstractCommand
     /**
      * @return string
      */
-    public static function getDescription(): string
+    final public static function getDescription(): string
     {
-        return self::$description;
+        return static::$description;
     }
 
     /**
@@ -241,13 +277,13 @@ abstract class AbstractCommand
      */
     public static function setDescription(string $description)
     {
-        self::$description = $description;
+        static::$description = $description;
     }
 
     /**
      * @return InputDefinition
      */
-    public function getDefinition(): InputDefinition
+    public function getDefinition()
     {
         return $this->definition;
     }
@@ -259,6 +295,4 @@ abstract class AbstractCommand
     {
         $this->definition = $definition;
     }
-
-
 }

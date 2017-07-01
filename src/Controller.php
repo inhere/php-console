@@ -38,6 +38,20 @@ abstract class Controller extends AbstractCommand
     protected $notFoundCallback = 'notFound';
 
     /**
+     * load command configure
+     */
+    protected function configure()
+    {
+        if ($action = $this->action) {
+            $method = $action . 'Configure';
+
+            if (method_exists($this, $method)) {
+                $this->$method();
+            }
+        }
+    }
+
+    /**
      * 运行控制器的 action
      * @return mixed
      * @throws \HttpException
@@ -45,6 +59,7 @@ abstract class Controller extends AbstractCommand
     public function run()
     {
         $action = $this->action;
+//        $this->configure();
 
         if ($action && $this->input->sameOpt(['h','help'])) {
             return $this->helpCommand();
@@ -52,13 +67,7 @@ abstract class Controller extends AbstractCommand
 
         $result = '';
         $action = $action ?: $this->defaultAction;
-        $action = trim($action, '/');
-
-        // convert 'first-second' to 'firstSecond'
-        if (strpos($action, '-')) {
-            $action = ucwords(str_replace('-', ' ', $action));
-            $action = str_replace(' ', '', lcfirst($action));
-        }
+        $action = Helper::transName(trim($action, '/'));
 
         $method = $this->actionSuffix ? $action . ucfirst($this->actionSuffix) : $action;
 
@@ -113,10 +122,10 @@ abstract class Controller extends AbstractCommand
             return 0;
         }
 
-        // convert 'first-second' to 'firstSecond'
-        if (strpos($action, '-')) {
-            $action = ucwords(str_replace('-', ' ', $action));
-            $action = str_replace(' ', '', lcfirst($action));
+        $action = Helper::transName($action);
+
+        if ($def = $this->getDefinition()) {
+            return $this->write($def->getSynopsis());
         }
 
         $method = $this->actionSuffix ? $action . ucfirst($this->actionSuffix) : $action;
@@ -135,20 +144,12 @@ abstract class Controller extends AbstractCommand
         $sName = lcfirst(self::getName() ?: $ref->getShortName());
         $this->write("This is in the console controller [<bold>$class</bold>]\n");
 
-        if (!($desc = static::DESCRIPTION)) {
-            $desc = Annotation::description($ref->getDocComment()) ?: 'No Description';
+        if (!($classDes = self::getDescription())) {
+            $classDes = Annotation::description($ref->getDocComment()) ?: 'No Description';
         }
 
         $suffix = $this->actionSuffix;
         $suffixLen = Helper::strLen($suffix);
-        $text = "<comment>Description:</comment>
-  $desc
-<comment>Usage</comment>:
-  $sName/[command] [options] [arguments]
-<comment>Group Name:</comment>
-  <info>$sName</info>";
-
-        $this->write($text);
 
         $commands = [];
         foreach ($ref->getMethods() as $m) {
@@ -176,7 +177,13 @@ abstract class Controller extends AbstractCommand
         }
 
         $commands[] = "\nFor more information please use: <info>$sName/help [command]</info>";
-        $this->output->aList($commands, '<comment>Commands:</comment>');
+
+        $this->output->mList([
+            'Description:' => $classDes,
+            'Usage:' => "$sName/[command] [arguments] [options]",
+            'Group Name:' => "<info>$sName</info>",
+            'Commands:' => $commands,
+        ]);
     }
 
     /**
@@ -194,7 +201,7 @@ abstract class Controller extends AbstractCommand
     public function setAction(string $action)
     {
         if ($action) {
-            $this->action = $action;
+            $this->action = Helper::transName($action);
         }
 
         return $this;

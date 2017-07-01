@@ -15,6 +15,8 @@ namespace inhere\console\io;
  */
 class InputDefinition
 {
+    private $description;
+
     /**
      * @var array[]
      */
@@ -32,6 +34,11 @@ class InputDefinition
      * @var array
      */
     private $shortcuts;
+
+    public static function make(array $arguments = [], array $options = [])
+    {
+        return new self($arguments, $options);
+    }
 
     /**
      * Constructor.
@@ -446,5 +453,32 @@ class InputDefinition
     protected function optionIsAcceptValue($mode)
     {
         return $mode === Input::OPT_REQUIRED || $mode === Input::OPT_OPTIONAL;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDescription()
+    {
+        return $this->description;
+    }
+
+    /**
+     * @param string $description
+     * @return $this
+     */
+    public function setDescription($description)
+    {
+        $this->description = $description;
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getShortcuts(): array
+    {
+        return $this->shortcuts;
     }
 }

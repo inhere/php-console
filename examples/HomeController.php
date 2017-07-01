@@ -3,6 +3,7 @@
 namespace inhere\console\examples;
 
 use inhere\console\Controller;
+use inhere\console\io\Input;
 use inhere\console\utils\AnsiCode;
 use inhere\console\utils\Download;
 use inhere\console\utils\Show;
@@ -16,7 +17,7 @@ use inhere\console\utils\Interact;
  */
 class HomeController extends Controller
 {
-    const DESCRIPTION = 'default command controller. there are some command usage examples(2)';
+    protected static $description = 'default command controller. there are some command usage examples(2)';
 
     /**
      * this is a command's description message
@@ -34,6 +35,17 @@ class HomeController extends Controller
     public function indexCommand()
     {
         $this->write('hello, welcome!! this is ' . __METHOD__);
+    }
+
+    /**
+     * command config
+     */
+    protected function colorConfigure()
+    {
+        $this->createDefinition()
+            ->setDescription('command description')
+            ->addArgument('name', Input::ARG_REQUIRED)
+            ->addOption('yes', 'y', Input::OPT_BOOLEAN);
     }
 
     /**
@@ -92,12 +104,13 @@ class HomeController extends Controller
             'pos' => 'l'
         ]);
 
-        $commands = [
-            'version' => 'Show application version information',
-            'help' => 'Show application help information',
-            'list' => 'List all group and independent commands',
+        $data = [
+            'application version' => '1.2.0',
+            'system version' => '5.2.3',
+            'see help' => 'please use php bin/app -h',
+            'a only value message',
         ];
-        Show::panel($commands, 'panel show', '#');
+        Show::panel($data, 'panel show', '#');
 
         echo "\n";
         Show::helpPanel([
@@ -115,6 +128,11 @@ class HomeController extends Controller
             ],
         ], false);
 
+        $commands = [
+            'version' => 'Show application version information',
+            'help' => 'Show application help information',
+            'list' => 'List all group and independent commands',
+        ];
         Show::aList($commands, 'aList show');
 
         Show::table([

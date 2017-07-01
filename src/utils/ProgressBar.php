@@ -8,14 +8,13 @@
 
 namespace inhere\console\utils;
 
-use inhere\console\utils\Helper;
 use inhere\console\io\Output;
 use inhere\console\io\OutputInterface;
 
 /**
  * Class ProgressBar
  * @package inhere\console\utils
- * @form Symfony\Component\Console\Helper\ProgressBar
+ * @form \Symfony\Component\Console\Helper\ProgressBar
  *
  * ```
  *     1 [->--------------------------]

@@ -18,35 +18,14 @@ use inhere\console\io\Output;
 abstract class Command extends AbstractCommand
 {
     /**
-     * command usage message
-     * @var string
-     */
-    protected $usage = '';
-
-    /**
-     * command arguments message
-     * @var array
-     */
-    protected $arguments = [];
-
-    /**
-     * command arguments message
-     * @var array
-     */
-    protected $options = [];
-
-    /**
-     * command example message
-     * @var string
-     */
-    protected $example = '';
-
-    /**
      * run command
      * @return int
      */
     public function run()
     {
+        // load input definition
+//        $this->configure();
+
         if ($this->input->sameOpt(['h','help'])) {
             return $this->showHelp();
         }
@@ -79,14 +58,14 @@ abstract class Command extends AbstractCommand
     abstract protected function execute($input, $output);
 
     /**
-     * @return array
+     * configure
      */
     protected function configure()
     {
-        return [
-            // 'arguments' => [],
-            // 'options' => [],
-        ];
+        $this
+            ->createDefinition()
+            ->addArgument('test')
+            ->addOption('test');
     }
 
     /**

@@ -117,15 +117,30 @@ class OptArg
         return [$args, $sOpts, $lOpts];
     }
 
+    public static function findSpecial(array $params)
+    {
+        //
+    }
+
     /**
-     * @param array $parameters
+     * parse custom array params
+     *
+     * ```php
+     * $result = OptArg::parseArray([
+     *  'arg' => 'val',
+     *  '--lp' => 'val2',
+     *  '--s' => 'val3',
+     * ]);
+     * ```
+     *
+     * @param array $params
      * @return array
      */
-    public static function parseArray(array $parameters)
+    public static function parseArray(array $params)
     {
         $args = $sOpts = $lOpts = [];
 
-        foreach ($parameters as $key => $value) {
+        foreach ($params as $key => $value) {
             if ($key === '--' || $key === '-') {
                 continue;
             }
@@ -140,6 +155,19 @@ class OptArg
         }
 
         return [$args, $sOpts, $lOpts];
+    }
+
+    /**
+     *
+     * ```php
+     * $result = OptArg::parseString('foo --bar="foobar"');
+     * ```
+     *
+     * @param string $string
+     */
+    public static function parseString(string $string)
+    {
+
     }
 
     /**

@@ -53,6 +53,23 @@ class Helper
     }
 
     /**
+     * @param $name
+     * @return mixed|string
+     */
+    public static function transName($name)
+    {
+        $name = trim($name, '-_');
+
+        // convert 'first-second' to 'firstSecond'
+        if (strpos($name, '-')) {
+            $name = ucwords(str_replace('-', ' ', $name));
+            $name = str_replace(' ', '', lcfirst($name));
+        }
+
+        return $name;
+    }
+
+    /**
      * @param $string
      * @param $width
      * @return array
