@@ -192,7 +192,7 @@ abstract class AbstractApp
      */
     public function command(string $name, $handler = null)
     {
-        if (class_exists($name, false)) {
+        if (class_exists($name)) {
             /** @var Command $handler */
             $handler = $name;
             $name = $handler::getName();

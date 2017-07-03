@@ -152,7 +152,7 @@ final class AnsiCode
     public function cursor($typeName, $arg1 = 1, $arg2 = null)
     {
         if (!isset(self::$ctrlCursorCodes[$typeName])) {
-            Interact::error("The [$typeName] is not supported cursor control.", __LINE__);
+            Show::error("The [$typeName] is not supported cursor control.", __LINE__);
         }
 
         $code = self::$ctrlCursorCodes[$typeName];
@@ -188,7 +188,7 @@ final class AnsiCode
     public function screen($typeName, $arg = null)
     {
         if (!isset(self::$ctrlScreenCodes[$typeName])) {
-            Interact::error("The [$typeName] is not supported cursor control.", __LINE__);
+            Show::error("The [$typeName] is not supported cursor control.", __LINE__);
         }
 
         $code = self::$ctrlScreenCodes[$typeName];

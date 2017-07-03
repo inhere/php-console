@@ -21,7 +21,6 @@ use inhere\console\io\OutputInterface;
  *     3 [■■■>------------------------]
  * 25/50 [==============>-------------]  50%
  * ```
- *
  */
 class ProgressBar
 {
@@ -87,7 +86,7 @@ class ProgressBar
         // 'precent' => function () { ... },
     ];
 
-    const DEFAULT_FORMAT = '[{bar}] {percent}({current}/{max}) {memory}';
+    const DEFAULT_FORMAT = '[{@bar}] {@percent}({@current}/{@max}) {@memory}';
 
     /**
      * @param OutputInterface $output

@@ -87,6 +87,27 @@ class HomeController extends Controller
     }
 
     /**
+     * a progress bar example show
+     * @return int
+     */
+    public function progressCommand()
+    {
+        $i = 0;
+        $total = 120;
+        $bar = $this->output->progressBar($total, 'Msg Text', '#');
+
+        $this->write('Progress:');
+
+        while ($i <= $total) {
+            $bar->send($i);
+            usleep(50000);
+            $i++;
+        }
+
+        return 0;
+    }
+
+    /**
      * output more format message text
      */
     public function fmtMsgCommand()

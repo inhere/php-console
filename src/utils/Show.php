@@ -92,6 +92,11 @@ class Show
         static::block($messages, 'INFO', Style::INFO, $quit);
     }
 
+    public static function note($messages, $quit = false)
+    {
+        static::block($messages, 'NOTE', Style::INFO, $quit);
+    }
+
     public static function notice($messages, $quit = false)
     {
         static::block($messages, 'NOTICE', Style::COMMENT, $quit);
@@ -237,7 +242,7 @@ class Show
     {
         $opts = array_merge([
             'leftChar' => '  ',
-            'keyStyle'  => 'info',
+            'keyStyle' => 'info',
             'titleStyle' => 'comment',
         ], $opts);
 
@@ -282,6 +287,7 @@ class Show
     {
         self::mList($data, $opts);
     }
+
     public static function mList(array $data, array $opts = [])
     {
         foreach ($data as $title => $list) {
@@ -344,7 +350,7 @@ class Show
 
         // description
         if ($config['description']) {
-            $help .=  "  {$config['description']}\n\n";
+            $help .= "  {$config['description']}\n\n";
             unset($config['description']);
         }
 
@@ -641,6 +647,57 @@ class Show
         return 0;
     }
 
+    /**
+     * a simple progress bar by 'yield'
+     *
+     * ```php
+     * $i = 0;
+     * $total = 120;
+     * $bar = Show::progressBar($total, 'Msg Text', '#');
+     * echo "progress:\n";
+     *
+     * while ($i <= $total) {
+     *      $bar->send($i);
+     *      usleep(50000);
+     *      $i++;
+     * }
+     * ```
+     *
+     * @param int $total
+     * @param string $msg
+     * @param string $char
+     * @internal int $current
+     * @return \Generator
+     */
+    public static function progressBar($total, $msg, $char = '=')
+    {
+        $finished = false;
+
+        while (true) {
+            if ($finished) {
+                return;
+            }
+
+            $current = yield;
+            $progress = ceil(($current / $total) * 100);
+
+            if ($progress >= 100) {
+                $progress = 100;
+                $finished = true;
+            }
+
+            printf("\r[%-100s] %d%% %s",
+                str_repeat($char, $progress) . ($finished ? '' : '>'),
+                $progress,
+                $msg
+            );// ♥
+
+            if ($finished) {
+                echo "\n";
+                break;
+            }
+        }
+    }
 
 /////////////////////////////////////////////////////////////////
 /// Helper Method
@@ -657,9 +714,9 @@ class Show
     /**
      * Write a message to standard output stream.
      * @param string|array $messages Output message
-     * @param boolean      $nl       True 会添加换行符, False 原样输出，不添加换行符
-     * @param int|boolean  $quit     If is int, setting it is exit code. 'True' translate as code 0 and exit, 'False' will not exit.
-     * @param array        $opts
+     * @param boolean $nl True 会添加换行符, False 原样输出，不添加换行符
+     * @param int|boolean $quit If is int, setting it is exit code. 'True' translate as code 0 and exit, 'False' will not exit.
+     * @param array $opts
      * @return int
      */
     public static function write($messages, $nl = true, $quit = false, array $opts = []): int

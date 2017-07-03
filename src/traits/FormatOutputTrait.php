@@ -112,6 +112,15 @@ trait FormatOutputTrait
     }
 
     /**
+     * @inheritdoc
+     * @see Show::progressBar()
+     */
+    public function progressBar($total, $msg, $char = '=')
+    {
+        return Show::progressBar($total, $msg, $char);
+    }
+
+    /**
      * @param mixed $messages
      * @param string|null $type
      * @param string $style
@@ -153,6 +162,24 @@ trait FormatOutputTrait
      * @param mixed $messages
      * @param bool $quit
      */
+    public function note($messages, $quit = false)
+    {
+        $this->block($messages, 'NOTE', Style::INFO, $quit);
+    }
+
+    /**
+     * @param mixed $messages
+     * @param bool $quit
+     */
+    public function notice($messages, $quit = false)
+    {
+        $this->block($messages, 'NOTICE', Style::COMMENT, $quit);
+    }
+
+    /**
+     * @param mixed $messages
+     * @param bool $quit
+     */
     public function warning($messages, $quit = false)
     {
         $this->block($messages, 'WARNING', Style::WARNING, $quit);
@@ -175,14 +202,4 @@ trait FormatOutputTrait
     {
         $this->block($messages, 'ERROR', Style::ERROR, $quit);
     }
-
-    /**
-     * @param mixed $messages
-     * @param bool $quit
-     */
-    public function notice($messages, $quit = false)
-    {
-        $this->block($messages, 'NOTICE', Style::COMMENT, $quit);
-    }
-
 }
