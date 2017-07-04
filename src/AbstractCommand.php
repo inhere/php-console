@@ -24,26 +24,21 @@ abstract class AbstractCommand
     use InputOutputTrait;
     use UserInteractTrait;
 
-    // command description message
-    // please use the const setting current controller/command description
-    const DESCRIPTION = '';
-
     // name -> {$name}
     const ANNOTATION_VAR = '{%s}'; // '{$%s}';
-
-    /**
-     * TODO ...
-     * command description message
-     * please use the property setting current controller/command description
-     * @var string
-     */
-    protected static $description = '';
 
     /**
      * command name e.g 'test' 'test:one'
      * @var string
      */
     protected static $name = '';
+
+    /**
+     * command/controller description message
+     * please use the property setting current controller/command description
+     * @var string
+     */
+    protected static $description = '';
 
     /**
      * Allow display message tags in the command annotation
@@ -180,7 +175,8 @@ abstract class AbstractCommand
 
     /**
      * 为命令注解提供可解析解析变量. 可以在命令的注释中使用
-     * @return array
+     * @param string $str
+     * @return string
      */
     protected function replaceAnnotationVars($str)
     {
@@ -191,11 +187,7 @@ abstract class AbstractCommand
             $map[$key] = $value;
         }
 
-        if ($map) {
-            return strtr($str, $map);
-        }
-
-        return $str;
+        return $map ? strtr($str, $map) : $str;
     }
 
     /**
@@ -264,25 +256,9 @@ abstract class AbstractCommand
     /**
      * @return string
      */
-    public static function getName(): string
+    final public static function getName(): string
     {
         return static::$name;
-    }
-
-    /**
-     * @return array
-     */
-    public static function getAllowTags(): array
-    {
-        return self::$allowTags;
-    }
-
-    /**
-     * @param array $allowTags
-     */
-    public static function setAllowTags(array $allowTags)
-    {
-        self::$allowTags = $allowTags;
     }
 
     /**
@@ -299,6 +275,23 @@ abstract class AbstractCommand
     public static function setDescription(string $description)
     {
         static::$description = $description;
+    }
+
+    /**
+     * @return array
+     */
+    public static function getAllowTags(): array
+    {
+        return self::$allowTags;
+    }
+
+    /**
+     * @param array $allowTags
+     * @param bool $replace
+     */
+    public static function setAllowTags(array $allowTags, $replace = false)
+    {
+        self::$allowTags = $replace ? $allowTags : array_merge(self::$allowTags, $allowTags);
     }
 
     /**

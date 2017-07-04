@@ -238,7 +238,7 @@ class Show
      * @param string $title
      * @param array $opts More @see Helper::spliceKeyValue()
      */
-    public static function aList($data, $title, array $opts = [])
+    public static function aList($data, $title = null, array $opts = [])
     {
         $opts = array_merge([
             'leftChar' => '  ',
@@ -288,6 +288,11 @@ class Show
         self::mList($data, $opts);
     }
 
+    /**
+     * alias of the `multiList()`
+     * @param array $data
+     * @param array $opts
+     */
     public static function mList(array $data, array $opts = [])
     {
         foreach ($data as $title => $list) {
@@ -648,6 +653,42 @@ class Show
     }
 
     /**
+     * @param int $total
+     * @param string $msg
+     * @param string $doneMsg
+     * @return \Generator
+     */
+    public static function progressTxt($total, $msg, $doneMsg = '')
+    {
+        $finished = false;
+        $msg = self::getStyle()->render($msg);
+
+        while (true) {
+            $current = yield;
+
+            if ($finished) {
+                return;
+            }
+
+            $percent = ceil(($current / $total) * 100);
+
+            if ($percent >= 100) {
+                $percent = 100;
+                $finished = true;
+                $msg = $doneMsg ?: $msg;
+            }
+
+//            printf("\r%d%% %s", $percent, $msg);
+            printf("\x0D\x1B[2K%d%% %s", $percent, $msg);
+
+            if ($finished) {
+                echo "\n";
+                break;
+            }
+        }
+    }
+
+    /**
      * a simple progress bar by 'yield'
      *
      * ```php
@@ -667,8 +708,7 @@ class Show
      * ```
      *
      * @param int $total
-     * @param string $msg
-     * @param string $char
+     * @param array $opts
      * @internal int $current
      * @return \Generator
      */
@@ -681,6 +721,7 @@ class Show
             'signChar' => '>',
             'msg' => '',
         ], $opts);
+        $msg = self::getStyle()->render($opts['msg']);
         $waitChar = $opts['waitChar'];
 
         while (true) {
@@ -696,11 +737,11 @@ class Show
                 $finished = true;
             }
 
-            // printf("\r[%'-100s] %d%% %s",
-            printf("\r[%'{$waitChar}-100s] %d%% %s",
+            // printf("\r[%'--100s] %d%% %s",
+            printf("\x0D\x1B[2K[%'{$waitChar}-100s] %d%% %s",
                 str_repeat($opts['doneChar'], $percent) . ($finished ? '' : $opts['signChar']),
                 $percent,
-                $opts['msg']
+                $msg
             );// ♥ ■ ☺ ☻ = #
 
             if ($finished) {

@@ -30,14 +30,14 @@ class LiteStyle
 
     // extra Foreground color
 
-    const DARK_GRAY        = 90;
-    const LIGHT_RED        = 91;
-    const LIGHT_GREEN      = 92;
-    const LIGHT_YELLOW     = 93;
-    const LIGHT_BLUE       = 94;
-    const LIGHT_MAGENTA    = 95;
-    const LIGHT_CYAN       = 96;
-    const WHITE            = 97;
+    const FG_DARK_GRAY        = 90;
+    const FG_LIGHT_RED        = 91;
+    const FG_LIGHT_GREEN      = 92;
+    const FG_LIGHT_YELLOW     = 93;
+    const FG_LIGHT_BLUE       = 94;
+    const FG_LIGHT_MAGENTA    = 95;
+    const FG_LIGHT_CYAN       = 96;
+    const FG_WHITE_W          = 97;
 
     // Background color
     const BG_BLACK        = 40;
@@ -57,7 +57,7 @@ class LiteStyle
     const BG_LIGHT_BLUE    = 104;
     const BG_LIGHT_MAGENTA = 105;
     const BG_LIGHT_CYAN    = 106;
-    const BG_WHITE         = 107;
+    const BG_WHITE_W       = 107;
 
     // color option
     const BOLD          = 1;      // 加粗
@@ -97,7 +97,7 @@ class LiteStyle
      * @param string|int|array $style
      * @return string
      */
-    public static function add($text, $style = self::NORMAL)
+    public static function color($text, $style = self::NORMAL)
     {
         return self::render($text, $style);
     }

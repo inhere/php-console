@@ -17,6 +17,57 @@ namespace inhere\console\utils;
 class Helper
 {
     /**
+     * Returns true if the console is running on windows
+     * @return boolean
+     */
+    public static function isOnWindows(): bool
+    {
+        return DIRECTORY_SEPARATOR === '\\';
+    }
+
+    /**
+     * Returns true if STDOUT supports colorization.
+     * This code has been copied and adapted from
+     * \Symfony\Component\Console\Output\OutputStream.
+     * @return boolean
+     */
+    public static function isSupportColor()
+    {
+        if (DIRECTORY_SEPARATOR === '\\') {
+            return
+                '10.0.10586' === PHP_WINDOWS_VERSION_MAJOR . '.' . PHP_WINDOWS_VERSION_MINOR . '.' . PHP_WINDOWS_VERSION_BUILD
+                || false !== getenv('ANSICON')
+                || 'ON' === getenv('ConEmuANSI')
+                || 'xterm' === getenv('TERM')// || 'cygwin' === getenv('TERM')
+                ;
+        }
+
+        if (!defined('STDOUT')) {
+            return false;
+        }
+
+        return self::isInteractive(STDOUT);
+    }
+
+    /**
+     * @return bool
+     */
+    public function isSupport256Color()
+    {
+        return DIRECTORY_SEPARATOR === '/' && strpos(getenv('TERM'), '256color') !== false;
+    }
+
+    /**
+     * Returns if the file descriptor is an interactive terminal or not.
+     * @param  int|resource $fileDescriptor
+     * @return boolean
+     */
+    public static function isInteractive($fileDescriptor)
+    {
+        return function_exists('posix_isatty') && @posix_isatty($fileDescriptor);
+    }
+
+    /**
      * 给对象设置属性值
      * @param $object
      * @param array $options
@@ -103,40 +154,6 @@ class Helper
         mb_convert_variables($encoding, 'utf8', $lines);
 
         return $lines;
-    }
-
-    /**
-     * Returns true if STDOUT supports colorization.
-     * This code has been copied and adapted from
-     * \Symfony\Component\Console\Output\OutputStream.
-     * @return boolean
-     */
-    public static function isSupportColor()
-    {
-        if (DIRECTORY_SEPARATOR === '\\') {
-            return
-                '10.0.10586' === PHP_WINDOWS_VERSION_MAJOR . '.' . PHP_WINDOWS_VERSION_MINOR . '.' . PHP_WINDOWS_VERSION_BUILD
-                || false !== getenv('ANSICON')
-                || 'ON' === getenv('ConEmuANSI')
-                || 'xterm' === getenv('TERM')// || 'cygwin' === getenv('TERM')
-                ;
-        }
-
-        if (!defined('STDOUT')) {
-            return false;
-        }
-
-        return self::isInteractive(STDOUT);
-    }
-
-    /**
-     * Returns if the file descriptor is an interactive terminal or not.
-     * @param  int|resource $fileDescriptor
-     * @return boolean
-     */
-    public static function isInteractive($fileDescriptor)
-    {
-        return function_exists('posix_isatty') && @posix_isatty($fileDescriptor);
     }
 
     /**
@@ -252,9 +269,10 @@ class Helper
         $keyStyle = trim($opts['keyStyle']);
 
         foreach ($data as $key => $value) {
+            $hasKey = !is_int($key);
             $text .= $opts['leftChar'];
 
-            if (!is_int($key) && $opts['keyMaxWidth']) {
+            if ($hasKey && $opts['keyMaxWidth']) {
                 $key = str_pad($key, $opts['keyMaxWidth'], ' ');
                 $text .= ($keyStyle ? "<{$keyStyle}>$key</{$keyStyle}> " : $key) . $opts['sepChar'];
             }
@@ -268,7 +286,7 @@ class Helper
                     if (is_bool($val)) {
                         $val = $val ? 'True' : 'False';
                     } else {
-                        $val = (string)$val;
+                        $val = is_scalar($val) ? (string)$val : gettype($val);
                     }
 
                     $temp .= (!is_numeric($k) ? "$k: " : '') . "<info>$val</info>, ";
@@ -281,7 +299,7 @@ class Helper
                 $value = (string)$value;
             }
 
-            $value = ucfirst($value);
+            $value = $hasKey ? ucfirst($value) : $value;
             $text .= "$value\n";
         }
 
@@ -289,15 +307,6 @@ class Helper
     }
 
     // next: form yii2
-
-    /**
-     * Returns true if the console is running on windows
-     * @return boolean
-     */
-    public static function isOnWindows(): bool
-    {
-        return DIRECTORY_SEPARATOR === '\\';
-    }
 
     /**
      * Usage: list($width, $height) = ConsoleHelper::getScreenSize();
@@ -314,7 +323,7 @@ class Helper
             return $size;
         }
 
-        if (static::isOnWindows()) {
+        if (self::isOnWindows()) {
             $output = [];
             exec('mode con', $output);
 

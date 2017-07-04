@@ -20,7 +20,7 @@ use inhere\console\utils\Helper;
 class Style
 {
     /**
-     * there are some default styles
+     * there are some default style tags
      */
     const NORMAL = 'normal';
     const FAINTLY = 'faintly';
@@ -29,6 +29,7 @@ class Style
     const PRIMARY = 'primary';
     const SUCCESS = 'success';
     const INFO = 'info';
+    const NOTE = 'note';
     const WARNING = 'warning';
     const COMMENT = 'comment';
     const QUESTION = 'question';
@@ -101,11 +102,13 @@ class Style
      */
     protected function loadDefaultStyles()
     {
-        $this->add(self::NORMAL, ['fg' => 'normal', 'options' => ['underscore'] ])
+        $this
+            ->add(self::NORMAL, ['fg' => 'normal'])
             // 不明显的 浅灰色的
             ->add(self::FAINTLY, ['fg' => 'normal', 'options' => ['italic'] ])
             ->add(self::BOLD, ['options' => ['bold'] ])
             ->add(self::INFO, [ 'fg' => 'green', ])     //'options' => ['bold']
+            ->add(self::NOTE, [ 'fg' => 'green', 'options' => ['bold'] ])     //'options' => ['bold']
             ->add(self::PRIMARY, [ 'fg' => 'blue', ])   //'options' => ['bold']
             ->add(self::SUCCESS, ['fg' => 'green', 'options' => ['bold'] ])
             ->add(self::NOTICE, ['options' => ['bold', 'underscore'], ])
@@ -113,10 +116,12 @@ class Style
             ->add(self::COMMENT, [ 'fg' => 'yellow', ])  //'options' => ['bold']
             ->add(self::QUESTION, ['fg' => 'black', 'bg' => 'cyan'])
             ->add(self::DANGER, ['fg' => 'red', ])       // 'bg' => 'magenta', 'options' => ['bold']
-            ->add(self::ERROR, ['fg' => 'white', 'bg' => 'red']);
+            ->add(self::ERROR, ['fg' => 'black', 'bg' => 'red'])
+            ->add('underline', ['fg' => 'normal', 'options' => ['underscore'] ])
+            ->add('cyan', ['fg' => 'cyan'])
+            ->add('magenta', ['fg' => 'magenta'])
+            ->add('yellow', ['fg' => 'yellow']);
     }
-
-//////////////////////////////////////////// Text Color handle ////////////////////////////////////////////
 
     /**
      * Process a string.
@@ -246,6 +251,14 @@ class Style
      * @return array
      */
     public function getStyleNames(): array
+    {
+        return array_keys($this->styles);
+    }
+
+    /**
+     * @return array
+     */
+    public function getNames(): array
     {
         return array_keys($this->styles);
     }

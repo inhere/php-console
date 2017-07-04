@@ -60,7 +60,7 @@ trait FormatOutputTrait
      * @inheritdoc
      * @see Show::aList()
      */
-    public function aList($data, $title, array $opts = [])
+    public function aList($data, $title = null, array $opts = [])
     {
         Show::aList($data, $title, $opts);
     }
@@ -109,6 +109,15 @@ trait FormatOutputTrait
     public function table(array $data, $title = 'Info List', $showBorder = true)
     {
         Show::table($data, $title, $showBorder);
+    }
+
+    /**
+     * @inheritdoc
+     * @see Show::progressBar()
+     */
+    public function progressTxt($total, $msg, $doneMsg = '')
+    {
+        return Show::progressTxt($total, $msg, $doneMsg);
     }
 
     /**

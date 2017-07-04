@@ -9,8 +9,11 @@
 namespace inhere\console\utils;
 
 /**
- * Class AnsiCode
+ * Class AnsiCode terminal
  * @package inhere\console\utils
+ *
+ * \r = \x0D -> 13 回到行首
+ * ESC = \x1B -> 27
  */
 final class AnsiCode
 {
@@ -69,17 +72,17 @@ final class AnsiCode
         // Moves the terminal cursor down
         'down' => '%B',
 
-        // Moves the terminal cursor forward
+        // Moves the terminal cursor forward - 移动终端光标前进多远
         'forward' => '%dC',
 
-        // Moves the terminal cursor backward
+        // Moves the terminal cursor backward - 移动终端光标后退多远
         'backward' => '%dD',
 
-        // Moves the terminal cursor to the beginning of the next line
-        'nextLine' => '%dE',
-
-        // Moves the terminal cursor to the beginning of the previous line
+        // Moves the terminal cursor to the beginning of the previous line - 移动终端光标到前一行的开始
         'prevLine' => '%dF',
+
+        // Moves the terminal cursor to the beginning of the next line - 移动终端光标到下一行的开始
+        'nextLine' => '%dE',
 
         // Moves the cursor to an absolute position given as column and row
         // $column 1-based column number, 1 is the left edge of the screen.
@@ -98,19 +101,19 @@ final class AnsiCode
         // Clears text from cursor to the beginning of the screen
         'clearBeforeCursor' => '1J',
 
-        // Clears the line
+        // Clears the line - 清除此行
         'clearLine' => '2K',
 
-        // Clears text from cursor position to the beginning of the line
+        // Clears text from cursor position to the beginning of the line - 清除此行从光标位置开始到开始的字符
         'clearLineBeforeCursor' => '1K',
 
-        // Clears text from cursor position to the end of the line
+        // Clears text from cursor position to the end of the line - 清除此行从光标位置开始到结束的字符
         'clearLineAfterCursor' => '0K',
 
-        // Scrolls whole page up. e.g "\033[2S" scroll up 2 line.
+        // Scrolls whole page up. e.g "\033[2S" scroll up 2 line. - 上移多少行
         'scrollUp' => '%dS',
 
-        // Scrolls whole page down.e.g "\033[2T" scroll down 2 line.
+        // Scrolls whole page down.e.g "\033[2T" scroll down 2 line. - 下移多少行
         'scrollDown' => '%dT',
     ];
 

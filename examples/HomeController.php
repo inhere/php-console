@@ -6,6 +6,7 @@ use inhere\console\Controller;
 use inhere\console\io\Input;
 use inhere\console\utils\AnsiCode;
 use inhere\console\utils\Download;
+use inhere\console\utils\Helper;
 use inhere\console\utils\Show;
 use inhere\console\utils\Interact;
 
@@ -60,10 +61,9 @@ class HomeController extends Controller
             return 0;
         }
 
+        $this->write('color text output:');
         $styles = $this->output->getStyle()->getStyleNames();
-        $this->write('normal text output');
 
-        $this->write('color text output');
         foreach ($styles as $style) {
             $this->output->write("<$style>$style style text</$style>");
         }
@@ -90,24 +90,30 @@ class HomeController extends Controller
      * a progress bar example show
      *
      * @options
+     * --type      the progress type, allow: bar,txt. default <cyan>txt</cyan>
      * --done-char the done show char. default <info>=</info>
      * --wait-char the waiting show char. default <info>-</info>
      * --sign-char the sign char show. default <info>></info>
      * @example
      * {script} home/progress
      * {script} home/progress --done-char '#' --wait-char ' '
+     * @param Input $input
      * @return int
      */
     public function progressCommand($input)
     {
         $i = 0;
         $total = 120;
-        $bar = $this->output->progressBar($total, [
-            'msg' => 'Msg Text',
-            'doneChar' => $input->getOpt('done-char', '='),
-            'waitChar' => $input->getOpt('wait-char', '-'),
-            'signChar' => $input->getOpt('sign-char', '>'),
-        ]);
+        if ($input->getOpt('type') === 'bar') {
+            $bar = $this->output->progressBar($total, [
+                'msg' => 'Msg Text',
+                'doneChar' => $input->getOpt('done-char', '='),
+                'waitChar' => $input->getOpt('wait-char', '-'),
+                'signChar' => $input->getOpt('sign-char', '>'),
+            ]);
+        } else {
+            $bar = $this->output->progressTxt($total, 'Doing df df', 'Done');
+        }
 
         $this->write('Progress:');
 
@@ -194,16 +200,17 @@ class HomeController extends Controller
     /**
      * a example for use arguments on command
      * @usage home/useArg [arg1=val1 arg2=arg2] [options]
-     * @example home/useArg status=2 name=john arg0 -s=test --page=23 -d -rf --debug --test=false
-     *   home/useArg status=2 name=john name=tom name=jack arg0 -s=test --page=23 --id=23 --id=154 --id=456  -d -rf --debug --test=false
+     * @example
+     * home/useArg status=2 name=john arg0 -s=test --page=23 -d -rf --debug --test=false
+     * home/useArg status=2 name=john name=tom name=jack arg0 -s=test --page=23 --id=23 --id=154 --id=456  -d -rf --debug --test=false
      */
     public function useArgCommand()
     {
         $this->write('input arguments:');
-        var_dump($this->input->getArgs());
+        echo Helper::dumpVar($this->input->getArgs());
 
         $this->write('input options:');
-        var_dump($this->input->getOpts());
+        echo Helper::dumpVar($this->input->getOpts());
 
         // $this->write('the Input object:');
         // var_dump($this->input);
@@ -277,7 +284,7 @@ class HomeController extends Controller
 
         $d = Download::down($url, $saveAs, $type);
 
-        var_dump($d);
+        echo Helper::dumpVar($d);
 
         return 0;
     }

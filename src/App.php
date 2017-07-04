@@ -74,9 +74,8 @@ class App extends AbstractApp
             return $this->runAction($name, $action, true);
         }
 
-        if (false !== self::fire(self::ON_NOT_FOUND, [$this])) {
-            // not match, output error message
-            $this->output->error("Console Controller or Command [$command] not exists!");
+        if (true !== self::fire(self::ON_NOT_FOUND, [$this])) {
+            $this->output->error("Console controller or command [$command] not exists!");
             $this->showCommandList(false);
         }
 
@@ -214,17 +213,19 @@ class App extends AbstractApp
      */
     public function showVersionInfo($quit = true)
     {
+        $date = date('Y-m-d');
         $version = $this->config('version', 'Unknown');
+        $publishAt = $this->config['publishAt'];
         $phpVersion = PHP_VERSION;
         $os = PHP_OS;
 
-        $message = <<<EOF
-Console App Version <comment>$version</comment>
+        $this->output->aList([
+            "Console Application <info>{$this->config['name']}</info> Version <comment>$version</comment>(publish at $publishAt)",
+            'System' => "PHP version <info>$phpVersion</info>, on OS <info>$os</info>, current Date $date",
+        ], null, [
+            'leftChar' => ''
+        ]);
 
-<comment>System:</comment>
-  PHP <info>$phpVersion</info>, on OS <info>$os</info>
-EOF;
-        $this->output->write($message);
         $quit && $this->stop();
     }
 
@@ -270,7 +271,8 @@ EOF;
 
         $this->output->write('There are all console controllers and independent commands.');
         $this->output->mList([
-            'Group Commands:(by controller)' => $controllerArr ?: '... No register any group command',
+            //'There are all console controllers and independent commands.',
+            'Group Commands:(by controller)' => $controllerArr ?: '... No register any group command(controller)',
             'Independent Commands:' => $commandArr ?: '... No register any independent command',
             'Internal Commands:' => $internalCommands
         ]);

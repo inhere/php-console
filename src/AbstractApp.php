@@ -41,6 +41,7 @@ abstract class AbstractApp
         'debug' => false,
         'name' => 'My Console',
         'version' => '0.5.1',
+        'publishAt' => '2017.03.24',
         'charset' => 'UTF-8',
         'timeZone' => 'Asia/Shanghai',
     ];
