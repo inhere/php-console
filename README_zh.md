@@ -294,13 +294,11 @@ $output->write('hello <info>world<info>');
 
 ![alt text](images/output-color-text.png "Title")
 
-### 更多特殊格式化输出
-
 来自于类 `inhere\console\utils\Show`。
 
 > output 实例拥有 `inhere\console\utils\Show` 的所有格式化输出方法。不过都是通过对象式访问的。
 
-#### 标题文本输出
+### 标题文本输出
 
 使用 `Show::title()/$output->title()`
 
@@ -308,7 +306,7 @@ $output->write('hello <info>world<info>');
 public static function title(string $title, array $opts = [])
 ```
 
-#### 段落式文本输出
+### 段落式文本输出
 
 使用 `Show::section()/$output->section()`
 
@@ -316,7 +314,34 @@ public static function title(string $title, array $opts = [])
 public static function section(string $title, string|array $body, array $opts = [])
 ```
 
-#### 列表数据展示输出 
+### 简单的进度条输出
+
+使用 `Show::progressBar()/$output->progressBar()`
+
+```php
+public static function progressBar(int $total, array $opts = [])
+```
+
+示例代码：
+
+```php
+
+$total = 120;
+$bar = Show::progressBar($total, [
+    'msg' => 'Msg Text',
+    'doneChar' => '#'
+]);
+echo "progress:\n";
+
+$i = 0;
+while ($i <= $total) {
+     $bar->send($i);
+     usleep(50000);
+     $i++;
+}
+```
+
+### 列表数据展示输出 
 
 ```php
 public static function aList(array $data, string $title, array $opts = [])
@@ -343,7 +368,7 @@ $data = [
 Show::aList($data, $title);
 ```
 
-#### 多列表数据展示输出
+### 多列表数据展示输出
 
 ```php
 public static function mList(array $data, array $opts = [])
@@ -370,7 +395,7 @@ $data = [
 Show::mList($data);
 ```
 
-#### 面板展示信息输出
+### 面板展示信息输出
 
 ```php
 public static function panel(mixed $data, $title = 'Information Panel', $borderChar = '*')
@@ -390,7 +415,7 @@ $data = [
 Show::panel($data, 'panel show', '#');
 ```
 
-#### 数据表格信息输出
+### 数据表格信息输出
 
 ```php
 public static function table(array $data, $title = 'Data Table', array $opts = [])
@@ -428,7 +453,7 @@ $opts = [
 Show::table($data, 'a table', $opts);
 ```
 
-#### 快速的渲染一个帮助信息面板 
+### 快速的渲染一个帮助信息面板 
 
 ```php
 public static function helpPanel(array $config, $showAfterQuit = true)

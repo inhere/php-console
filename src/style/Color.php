@@ -13,13 +13,11 @@ final class Color
 {
     /**
      * Foreground base value
-     * @var int
      */
     const FG_BASE = 30;
 
     /**
      * Background base value
-     * @var int
      */
     const BG_BASE = 40;
 
@@ -41,8 +39,7 @@ final class Color
     const UNDERSCORE    = 'underscore'; // 下划线
     const BLINK         = 'blink';      // 闪烁
     const REVERSE       = 'reverse';    // 颠倒的 交换背景色与前景色
-
-//////////////////////////////////////////// Color Style ////////////////////////////////////////////
+    const CONCEALED     = 'concealed';  // 隐匿的
 
     /**
      * Known color list
@@ -70,6 +67,7 @@ final class Color
         'underscore' => 4,      // 下划线
         'blink' => 5,      // 闪烁
         'reverse' => 7,      // 颠倒的 交换背景色与前景色
+        'concealed' => 8,      // 隐匿的
     ];
 
     /**

@@ -28,6 +28,17 @@ class LiteStyle
     const FG_WHITE        = 37;
     const FG_DEFAULT      = 39;
 
+    // extra Foreground color
+
+    const DARK_GRAY        = 90;
+    const LIGHT_RED        = 91;
+    const LIGHT_GREEN      = 92;
+    const LIGHT_YELLOW     = 93;
+    const LIGHT_BLUE       = 94;
+    const LIGHT_MAGENTA    = 95;
+    const LIGHT_CYAN       = 96;
+    const WHITE            = 97;
+
     // Background color
     const BG_BLACK        = 40;
     const BG_RED          = 41;
@@ -38,6 +49,16 @@ class LiteStyle
     const BG_WHITE        = 47;
     const BG_DEFAULT      = 49;
 
+    // extra Background color
+    const BG_DARK_GRAY     = 100;
+    const BG_LIGHT_RED     = 101;
+    const BG_LIGHT_GREEN   = 102;
+    const BG_LIGHT_YELLOW  = 103;
+    const BG_LIGHT_BLUE    = 104;
+    const BG_LIGHT_MAGENTA = 105;
+    const BG_LIGHT_CYAN    = 106;
+    const BG_WHITE         = 107;
+
     // color option
     const BOLD          = 1;      // 加粗
     const FUZZY         = 2;      // 模糊(不是所有的终端仿真器都支持)
@@ -45,9 +66,10 @@ class LiteStyle
     const UNDERSCORE    = 4;      // 下划线
     const BLINK         = 5;      // 闪烁
     const REVERSE       = 7;      // 颠倒的 交换背景色与前景色
+    const CONCEALED     = 8;      // 隐匿的
 
     /**
-     * some styles
+     * some defined styles
      * @var array
      */
     public static $styles = [
@@ -75,7 +97,7 @@ class LiteStyle
      * @param string|int|array $style
      * @return string
      */
-    public static function add($text, $style = self::NORMAL): string
+    public static function add($text, $style = self::NORMAL)
     {
         return self::render($text, $style);
     }
@@ -85,7 +107,7 @@ class LiteStyle
      * @param string|int|array $style
      * @return string
      */
-    public static function render($text, $style = self::NORMAL): string
+    public static function render($text, $style = self::NORMAL)
     {
         if (!Helper::isSupportColor()) {
             return $text;
