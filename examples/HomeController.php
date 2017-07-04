@@ -88,13 +88,26 @@ class HomeController extends Controller
 
     /**
      * a progress bar example show
+     *
+     * @options
+     * --done-char the done show char. default <info>=</info>
+     * --wait-char the waiting show char. default <info>-</info>
+     * --sign-char the sign char show. default <info>></info>
+     * @example
+     * {script} home/progress
+     * {script} home/progress --done-char '#' --wait-char ' '
      * @return int
      */
-    public function progressCommand()
+    public function progressCommand($input)
     {
         $i = 0;
         $total = 120;
-        $bar = $this->output->progressBar($total, 'Msg Text', '#');
+        $bar = $this->output->progressBar($total, [
+            'msg' => 'Msg Text',
+            'doneChar' => $input->getOpt('done-char', '='),
+            'waitChar' => $input->getOpt('wait-char', '-'),
+            'signChar' => $input->getOpt('sign-char', '>'),
+        ]);
 
         $this->write('Progress:');
 

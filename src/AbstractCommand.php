@@ -29,7 +29,7 @@ abstract class AbstractCommand
     const DESCRIPTION = '';
 
     // name -> {$name}
-    const ANNOTATION_VAR = '{$%s}';
+    const ANNOTATION_VAR = '{%s}'; // '{$%s}';
 
     /**
      * TODO ...
@@ -172,9 +172,30 @@ abstract class AbstractCommand
     {
         // e.g: `more info see {$name}/index`
         return [
+            'script' => $this->input->getScript(),
             'command' => $this->input->getCommand(),
-            'name' => static::$name,
+            'name' => self::getName(),
         ];
+    }
+
+    /**
+     * 为命令注解提供可解析解析变量. 可以在命令的注释中使用
+     * @return array
+     */
+    protected function replaceAnnotationVars($str)
+    {
+        $map = [];
+
+        foreach ($this->annotationVars() as $key => $value) {
+            $key = sprintf(self::ANNOTATION_VAR, $key);
+            $map[$key] = $value;
+        }
+
+        if ($map) {
+            return strtr($str, $map);
+        }
+
+        return $str;
     }
 
     /**
@@ -195,8 +216,8 @@ abstract class AbstractCommand
             return 0;
         }
 
-        $m = $ref->getMethod($method);
-        $tags = Annotation::tagList($m->getDocComment());
+        $doc = $ref->getMethod($method)->getDocComment();
+        $tags = Annotation::tagList($this->replaceAnnotationVars($doc));
 
         foreach ($tags as $tag => $msg) {
             if (!is_string($msg)) {

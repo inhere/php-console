@@ -653,7 +653,10 @@ class Show
      * ```php
      * $i = 0;
      * $total = 120;
-     * $bar = Show::progressBar($total, 'Msg Text', '#');
+     * $bar = Show::progressBar($total, [
+     *     'msg' => 'Msg Text',
+     *     'doneChar' => '#'
+     * ]);
      * echo "progress:\n";
      *
      * while ($i <= $total) {
@@ -669,9 +672,16 @@ class Show
      * @internal int $current
      * @return \Generator
      */
-    public static function progressBar($total, $msg, $char = '=')
+    public static function progressBar($total, array $opts = [])
     {
         $finished = false;
+        $opts = array_merge([
+            'doneChar' => '=',
+            'waitChar' => ' ',
+            'signChar' => '>',
+            'msg' => '',
+        ], $opts);
+        $waitChar = $opts['waitChar'];
 
         while (true) {
             if ($finished) {
@@ -679,18 +689,19 @@ class Show
             }
 
             $current = yield;
-            $progress = ceil(($current / $total) * 100);
+            $percent = ceil(($current / $total) * 100);
 
-            if ($progress >= 100) {
-                $progress = 100;
+            if ($percent >= 100) {
+                $percent = 100;
                 $finished = true;
             }
 
-            printf("\r[%-100s] %d%% %s",
-                str_repeat($char, $progress) . ($finished ? '' : '>'),
-                $progress,
-                $msg
-            );// ♥
+            // printf("\r[%'-100s] %d%% %s",
+            printf("\r[%'{$waitChar}-100s] %d%% %s",
+                str_repeat($opts['doneChar'], $percent) . ($finished ? '' : $opts['signChar']),
+                $percent,
+                $opts['msg']
+            );// ♥ ■ ☺ ☻ = #
 
             if ($finished) {
                 echo "\n";

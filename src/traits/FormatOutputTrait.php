@@ -115,9 +115,9 @@ trait FormatOutputTrait
      * @inheritdoc
      * @see Show::progressBar()
      */
-    public function progressBar($total, $msg, $char = '=')
+    public function progressBar($total, array $opts = [])
     {
-        return Show::progressBar($total, $msg, $char);
+        return Show::progressBar($total, $opts);
     }
 
     /**
