@@ -62,6 +62,10 @@ $app->command('demo', function (Input $in, Output $out) {
 $app->run();
 ```
 
+now, you can see:
+
+!['output-commands-info'](images/output-commands-info.png)
+
 ## input
 
 example(in terminal):

@@ -331,7 +331,7 @@ $bar = Show::progressBar($total, [
     'msg' => 'Msg Text',
     'doneChar' => '#'
 ]);
-echo "progress:\n";
+echo "Progress:\n";
 
 $i = 0;
 while ($i <= $total) {
@@ -340,6 +340,8 @@ while ($i <= $total) {
      $i++;
 }
 ```
+
+![show-progress](images/show-progress.png)
 
 ### 列表数据展示输出 
 

@@ -117,9 +117,12 @@ class Style
             ->add(self::QUESTION, ['fg' => 'black', 'bg' => 'cyan'])
             ->add(self::DANGER, ['fg' => 'red', ])       // 'bg' => 'magenta', 'options' => ['bold']
             ->add(self::ERROR, ['fg' => 'black', 'bg' => 'red'])
+
             ->add('underline', ['fg' => 'normal', 'options' => ['underscore'] ])
+            ->add('blue', ['fg' => 'blue'])
             ->add('cyan', ['fg' => 'cyan'])
             ->add('magenta', ['fg' => 'magenta'])
+            ->add('red', ['fg' => 'red'])
             ->add('yellow', ['fg' => 'yellow']);
     }
 

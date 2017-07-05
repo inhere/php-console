@@ -49,7 +49,7 @@ abstract class AbstractApp
     /**
      * @var array
      */
-    protected $internalCommands = [
+    protected static $internalCommands = [
         'version' => 'Show application version information',
         'help' => 'Show application help information',
         'list' => 'List all group and independent commands',
@@ -97,7 +97,6 @@ abstract class AbstractApp
     protected function prepareRun()
     {
         date_default_timezone_set($this->config('timeZone', 'UTC'));
-        // ...
     }
 
     /**
@@ -108,24 +107,36 @@ abstract class AbstractApp
     {
         $this->prepareRun();
 
+        $command = $this->input->getCommand();
+
+        // like show help info
+        $this->filterSpecialCommand($command);
+
         // call 'onBeforeRun' service, if it is registered.
         self::fire(self::ON_BEFORE_RUN, [$this]);
 
         // do run ...
-        $returnCode = $this->doRun();
+        try {
+            $returnCode = $this->dispatch($command);
+        } catch (\Exception $e) {
+            self::fire(self::ON_RUN_ERROR, [$e, $this]);
+            $returnCode = $e->getCode() === 0 ? __LINE__ : $e->getCode();
+            $this->dispatchExHandler($e);
+        }
 
         // call 'onAfterRun' service, if it is registered.
         self::fire(self::ON_AFTER_RUN, [$this]);
 
         if ($exit) {
-            $this->stop((int)$returnCode);
+            $this->stop((int) $returnCode);
         }
     }
 
     /**
-     * do run
+     * @param string $command A command name
+     * @return int|mixed
      */
-    abstract public function doRun();
+    abstract protected function dispatch($command);
 
     /**
      * @param int $code
@@ -135,7 +146,7 @@ abstract class AbstractApp
         // call 'onAppStop' service, if it is registered.
         self::fire(self::ON_STOP_RUN, [$this]);
 
-        exit((int)$code);
+        exit((int) $code);
     }
 
     /**********************************************************
@@ -236,12 +247,220 @@ abstract class AbstractApp
         }
     }
 
+    /**********************************************************
+     * helper method for the application
+     **********************************************************/
+
+    /**
+     * 运行异常处理
+     * @param \Exception $e
+     * @throws \Exception
+     */
+    protected function dispatchExHandler(\Exception $e)
+    {
+        // $this->logger->ex($e);
+
+        // open debug, throw exception
+        if ($this->isDebug()) {
+            throw $e;
+        }
+
+        // no output
+        $this->output->error('An error occurred! MESSAGE: ' . $e->getMessage());
+    }
+
+    /**
+     * @param $command
+     */
+    protected function filterSpecialCommand($command)
+    {
+        $command = $command ?: 'list';
+
+        switch ($command) {
+            case 'help':
+                $this->showHelpInfo();
+                break;
+            case 'list':
+                $this->showCommandList();
+                break;
+            case 'version':
+                $this->showVersionInfo();
+                break;
+        }
+    }
+
+    /**
+     * @param $name
+     * @param bool $isGroup
+     */
+    protected function validateName(string $name, $isGroup = false)
+    {
+        $pattern = $isGroup ? '/^[a-z][\w-]+$/' : '/^[a-z][\w-]*:?([a-z][\w-]+)?$/';
+
+        if (1 !== preg_match($pattern, $name)) {
+            throw new \InvalidArgumentException('The command name is must match: ' . $pattern);
+        }
+
+        if ($this->isInternalCommand($name)) {
+            throw new \InvalidArgumentException("The command name [$name] is not allowed. It is a built in command.");
+        }
+    }
+
+    /**********************************************************
+     * some information for the application
+     **********************************************************/
+
+    /**
+     * show the application help information
+     * @param bool $quit
+     */
+    public function showHelpInfo($quit = true)
+    {
+        $script = $this->input->getScript();
+
+        $this->output->helpPanel([
+            'usage' => "$script [route|command] [arg0 arg1=value1 arg2=value2 ...] [--opt -v -h ...]",
+            'example' => [
+                "$script test (run a independent command)",
+                "$script home/index (run a command of the group)"
+            ]
+        ], $quit);
+    }
+
+    /**
+     * show the application version information
+     * @param bool $quit
+     */
+    public function showVersionInfo($quit = true)
+    {
+        $date = date('Y-m-d');
+        $version = $this->config('version', 'Unknown');
+        $publishAt = $this->config['publishAt'];
+        $phpVersion = PHP_VERSION;
+        $os = PHP_OS;
+
+        $this->output->aList([
+            "Console Application <info>{$this->config['name']}</info> Version <comment>$version</comment>(publish at $publishAt)",
+            'System' => "PHP version <info>$phpVersion</info>, on OS <info>$os</info>, current Date $date",
+        ], null, [
+            'leftChar' => ''
+        ]);
+
+        $quit && $this->stop();
+    }
+
+    /**
+     * show the application command list information
+     * @param bool $quit
+     */
+    public function showCommandList($quit = true)
+    {
+        $desPlaceholder = 'No description of the command';
+        $script = $this->getScriptName();
+        $controllerArr = $commandArr = [];
+
+        // built in commands
+        $internalCommands = static::$internalCommands;
+        ksort($internalCommands);
+
+        // all console controllers
+        $controllers = $this->controllers;
+        ksort($controllers);
+        foreach ($controllers as $name => $controller) {
+            /** @var AbstractCommand $controller */
+            $controllerArr[$name] = $controller::getDescription() ?: $desPlaceholder;
+        }
+
+        // all independent commands
+        $commands = $this->commands;
+        ksort($commands);
+        foreach ($commands as $name => $command) {
+            $desc = $desPlaceholder;
+
+            /** @var AbstractCommand $command */
+            if (is_subclass_of($command, Command::class)) {
+                $desc = $command::getDescription() ?: $desPlaceholder;
+            } else if (is_string($command)) {
+                $desc = 'A handler: ' . $command;
+            } else if (is_object($command)) {
+                $desc = 'A handler by ' . get_class($command);
+            }
+
+            $commandArr[$name] = $desc;
+        }
+
+        $this->output->write('There are all console controllers and independent commands.');
+        $this->output->mList([
+            //'There are all console controllers and independent commands.',
+            'Group Commands:(by controller)' => $controllerArr ?: '... No register any group command(controller)',
+            'Independent Commands:' => $commandArr ?: '... No register any independent command',
+            'Internal Commands:' => $internalCommands
+        ]);
+
+        $this->output->write("More please see: <cyan>$script [controller|command] -h</cyan>");
+        $quit && $this->stop();
+    }
+
+    /**********************************************************
+     * getter/setter methods
+     **********************************************************/
+
+    /**
+     * @param array $controllers
+     */
+    public function setControllers(array $controllers)
+    {
+        $this->controllers($controllers);
+    }
+
     /**
      * @return array
      */
-    public function getInternalCommands(): array
+    public function getControllers(): array
     {
-        return $this->internalCommands;
+        return $this->controllers;
+    }
+
+    /**
+     * @param $name
+     * @return bool
+     */
+    public function isController($name)
+    {
+        return isset($this->controllers[$name]);
+    }
+
+    /**
+     * @param array $commands
+     */
+    public function setCommands(array $commands)
+    {
+        $this->commands($commands);
+    }
+
+    /**
+     * @return array
+     */
+    public function getCommands(): array
+    {
+        return $this->commands;
+    }
+
+    /**
+     * @param $name
+     * @return bool
+     */
+    public function isCommand($name)
+    {
+        return isset($this->commands[$name]);
+    }
+
+    /**
+     * @return array
+     */
+    public static function getInternalCommands(): array
+    {
+        return static::$internalCommands;
     }
 
     /**
@@ -250,7 +469,7 @@ abstract class AbstractApp
      */
     public function isInternalCommand(string $name): bool
     {
-        return isset($this->internalCommands[$name]);
+        return isset(static::$internalCommands[$name]);
     }
 
     /**
@@ -263,7 +482,7 @@ abstract class AbstractApp
     {
         // `$name` is array, set config.
         if (is_array($name)) {
-            foreach ((array)$name as $key => $value) {
+            foreach ((array) $name as $key => $value) {
                 $this->config[$key] = $value;
             }
 
@@ -313,31 +532,6 @@ abstract class AbstractApp
      */
     public function isDebug(): bool
     {
-        return (bool)$this->config['debug'];
-    }
-
-    /**
-     * @param $name
-     * @param bool $isGroup
-     */
-    protected function validateName(string $name, $isGroup = false)
-    {
-        $pattern = $isGroup ? '/^[a-z][\w-]+$/' : '/^[a-z][\w-]*:?([a-z][\w-]+)?$/';
-
-        if (1 !== preg_match($pattern, $name)) {
-            throw new \InvalidArgumentException('The command name is must match: ' . $pattern);
-        }
-
-        if ($this->isInternalCommand($name)) {
-            throw new \InvalidArgumentException("The command name [$name] is not allowed. It is a built in command.");
-        }
-    }
-
-    /**
-     * @return string
-     */
-    public function getCommandName(): string
-    {
-        return $this->commandName;
+        return (bool) $this->config['debug'];
     }
 }

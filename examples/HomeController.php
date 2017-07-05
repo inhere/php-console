@@ -112,7 +112,7 @@ class HomeController extends Controller
                 'signChar' => $input->getOpt('sign-char', '>'),
             ]);
         } else {
-            $bar = $this->output->progressTxt($total, 'Doing df df', 'Done');
+            $bar = $this->output->progressTxt($total, 'Doing oo oo', 'Done');
         }
 
         $this->write('Progress:');
@@ -148,7 +148,7 @@ class HomeController extends Controller
             'application version' => '1.2.0',
             'system version' => '5.2.3',
             'see help' => 'please use php bin/app -h',
-            'a only value message',
+            'a only value message text',
         ];
         Show::panel($data, 'panel show', '#');
 
@@ -172,8 +172,9 @@ class HomeController extends Controller
             'version' => 'Show application version information',
             'help' => 'Show application help information',
             'list' => 'List all group and independent commands',
+            'a only value message text'
         ];
-        Show::aList($commands, 'aList show');
+        Show::aList($commands, 'a List show');
 
         Show::table([
             [
@@ -217,7 +218,7 @@ class HomeController extends Controller
     }
 
     /**
-     * use Interact::confirm method
+     * use <red>Interact::confirm</red> method
      *
      */
     public function confirmCommand()
@@ -228,7 +229,7 @@ class HomeController extends Controller
     }
 
     /**
-     * use <normal>Interact::select</normal> method
+     * example for use <magenta>Interact::select</magenta> method
      *
      */
     public function selectCommand()
@@ -246,11 +247,13 @@ class HomeController extends Controller
     {
         $info = [
             'phpVersion' => PHP_VERSION,
-            'env' => 'test',
+            'env'   => 'test',
             'debug' => true,
         ];
 
         Interact::panel($info);
+
+        echo Helper::printR($_SERVER);
     }
 
     /**

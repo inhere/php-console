@@ -176,7 +176,7 @@ abstract class Controller extends AbstractCommand
             }
         }
 
-        $commands[] = "\nFor more information please use: <info>$sName/help [command]</info>";
+        $commands[] = "\nMore information please use: <info>$sName/[command] -h</info> OR <info>$sName/help [command]</info>";
 
         $this->output->mList([
             'Description:' => $classDes,

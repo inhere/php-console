@@ -15,48 +15,19 @@ namespace inhere\console;
 class App extends AbstractApp
 {
     /**********************************************************
-     * app run
-     **********************************************************/
-
-    protected function prepareRun()
-    {
-        parent::prepareRun();
-
-        // like show help info
-        $this->filterSpecialCommand($this->getCommandName());
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function doRun()
-    {
-        try {
-            $status = $this->dispatch();
-        } catch (\Exception $e) {
-            self::fire(self::ON_RUN_ERROR, [$e, $this]);
-            $status = $e->getCode() === 0 ? __LINE__ : $e->getCode();
-            $this->dispatchExHandler($e);
-        }
-
-        return $status;
-    }
-
-    /**********************************************************
      * dispatch and run console controller/command
      **********************************************************/
 
     /**
-     * @return int|mixed
+     * @inheritdoc
      */
-    public function dispatch()
+    protected function dispatch($name)
     {
         $sep = '/';
-        $command = $name = $this->getCommandName();
 
         //// is a command name
 
-        if (isset($this->commands[$name])) {
+        if ($this->isCommand($name)) {
             return $this->runCommand($name, true);
         }
 
@@ -70,12 +41,12 @@ class App extends AbstractApp
             list($name, $action) = count($input) > 2 ? array_splice($input, 2) : $input;
         }
 
-        if (isset($this->controllers[$name])) {
+        if ($this->isController($name)) {
             return $this->runAction($name, $action, true);
         }
 
         if (true !== self::fire(self::ON_NOT_FOUND, [$this])) {
-            $this->output->error("Console controller or command [$command] not exists!");
+            $this->output->error("Console controller or command [$name] not exists!");
             $this->showCommandList(false);
         }
 
@@ -91,14 +62,14 @@ class App extends AbstractApp
     public function runCommand($name, $believable = false)
     {
         // if $believable = true, will skip check.
-        if (!$believable && !isset($this->commands[$name])) {
+        if (!$believable && $this->isCommand($name)) {
             throw new \InvalidArgumentException("The console independent-command [$name] not exists!");
         }
 
-        // Command class
+        /** @var \Closure|string $handler Command class */
         $handler = $this->commands[$name];
 
-        if (is_object($handler) && ($handler instanceof \Closure)) {
+        if (is_object($handler) && method_exists($handler, '__invoke')) {
             $status = $handler($this->input, $this->output);
         } else {
             if (!class_exists($handler)) {
@@ -128,7 +99,7 @@ class App extends AbstractApp
     public function runAction($name, $action, $believable = false)
     {
         // if $believable = true, will skip check.
-        if (!$believable && !isset($this->controllers[$name])) {
+        if (!$believable && $this->isController($name)) {
             throw new \InvalidArgumentException("The console controller-command [$name] not exists!");
         }
 
@@ -151,133 +122,4 @@ class App extends AbstractApp
         return $object->setAction($action)->run();
     }
 
-    /**
-     * 运行异常处理
-     * @param \Exception $e
-     * @throws \Exception
-     */
-    public function dispatchExHandler(\Exception $e)
-    {
-        // $this->logger->ex($e);
-
-        // open debug, throw exception
-        if ($this->isDebug()) {
-            throw $e;
-        }
-
-        // no output
-        $this->output->error('An error occurred! MESSAGE: ' . $e->getMessage());
-    }
-
-    /**
-     * @param $command
-     */
-    protected function filterSpecialCommand($command)
-    {
-        // show help `./bin/app` OR `./bin/app help`
-        if (!$command || $command === 'help') {
-            $this->showHelpInfo(false);
-            $this->showCommandList();
-        }
-
-        switch ($command) {
-            case 'list':
-                $this->showCommandList();
-                break;
-            case 'version':
-                $this->showVersionInfo();
-                break;
-        }
-    }
-
-    /**
-     * show the application help information
-     * @param bool $quit
-     */
-    public function showHelpInfo($quit = true)
-    {
-        $script = $this->input->getScript();
-
-        $this->output->helpPanel([
-            'usage' => "$script [route|command] [arg1=value1 arg2=value ...] [-v|-h ...]",
-            'example' => [
-                "$script test",
-                "$script home/index"
-            ]
-        ], $quit);
-    }
-
-    /**
-     * show the application version information
-     * @param bool $quit
-     */
-    public function showVersionInfo($quit = true)
-    {
-        $date = date('Y-m-d');
-        $version = $this->config('version', 'Unknown');
-        $publishAt = $this->config['publishAt'];
-        $phpVersion = PHP_VERSION;
-        $os = PHP_OS;
-
-        $this->output->aList([
-            "Console Application <info>{$this->config['name']}</info> Version <comment>$version</comment>(publish at $publishAt)",
-            'System' => "PHP version <info>$phpVersion</info>, on OS <info>$os</info>, current Date $date",
-        ], null, [
-            'leftChar' => ''
-        ]);
-
-        $quit && $this->stop();
-    }
-
-    /**
-     * show the application command list information
-     * @param bool $quit
-     */
-    public function showCommandList($quit = true)
-    {
-        $desPlaceholder = 'No description of the command';
-        $script = $this->getScriptName();
-        $controllerArr = $commandArr = [];
-
-        // built in commands
-        $internalCommands = $this->internalCommands;
-        ksort($internalCommands);
-
-        // all console controllers
-        $controllers = $this->controllers;
-        ksort($controllers);
-        foreach ($controllers as $name => $controller) {
-            /** @var AbstractCommand $controller */
-            $controllerArr[$name] = $controller::getDescription() ?: $desPlaceholder;
-        }
-
-        // all independent commands
-        $commands = $this->commands;
-        ksort($commands);
-        foreach ($commands as $name => $command) {
-            $desc = $desPlaceholder;
-
-            /** @var AbstractCommand $command */
-            if (is_subclass_of($command, Command::class)) {
-                $desc = $command::getDescription() ?: $desPlaceholder;
-            } else if (is_string($command)) {
-                $desc = 'A handler: ' . $command;
-            } else if (is_object($command)) {
-                $desc = $command instanceof \Closure ? 'A Closure' : 'A Object';
-            }
-
-            $commandArr[$name] = $desc;
-        }
-
-        $this->output->write('There are all console controllers and independent commands.');
-        $this->output->mList([
-            //'There are all console controllers and independent commands.',
-            'Group Commands:(by controller)' => $controllerArr ?: '... No register any group command(controller)',
-            'Independent Commands:' => $commandArr ?: '... No register any independent command',
-            'Internal Commands:' => $internalCommands
-        ]);
-
-        $this->output->write("more please see: <info>$script [controller|command]</info>");
-        $quit && $this->stop();
-    }
 }
