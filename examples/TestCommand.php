@@ -18,7 +18,7 @@ class TestCommand extends Command
 {
     /**
      * test text
-     * @usage {$name} test message
+     * @usage {name} test message
      */
     public function execute($input, $output)
     {

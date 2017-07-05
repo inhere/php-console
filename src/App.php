@@ -14,6 +14,26 @@ namespace inhere\console;
  */
 class App extends AbstractApp
 {
+    /**
+     * addCommand
+     * @param string  $name
+     * @param mixed   $controller
+     */
+    public function addCommand(string $name, $handler = null)
+    {
+        return $this->command($name, $handler);
+    }
+
+    /**
+     * addGroup
+     * @param string      $name
+     * @param string|null $controller
+     */
+    public function addGroup(string $name, string $controller = null)
+    {
+        return $this->controller($name, $controller);
+    }
+
     /**********************************************************
      * dispatch and run console controller/command
      **********************************************************/

@@ -433,10 +433,11 @@ class Input implements InputInterface
 
     /**
      * @param array $args
+     * @param bool $replace
      */
-    public function setArgs(array $args)
+    public function setArgs(array $args, $replace = false)
     {
-        $this->args = $args;
+        $this->args = $replace ? $args : array_merge($this->args, $args);
     }
 
     /**
@@ -457,10 +458,11 @@ class Input implements InputInterface
 
     /**
      * @param array $sOpts
+     * @param bool $replace
      */
-    public function setSOpts(array $sOpts)
+    public function setSOpts(array $sOpts, $replace = false)
     {
-        $this->sOpts = $sOpts;
+        $this->sOpts = $replace ? $sOpts : array_merge($this->sOpts, $sOpts);
     }
 
     /**
@@ -481,10 +483,11 @@ class Input implements InputInterface
 
     /**
      * @param array $lOpts
+     * @param bool $replace
      */
-    public function setLOpts(array $lOpts)
+    public function setLOpts(array $lOpts, $replace = false)
     {
-        $this->lOpts = $lOpts;
+        $this->lOpts = $replace ? $lOpts : array_merge($this->lOpts, $lOpts);
     }
 
     /**

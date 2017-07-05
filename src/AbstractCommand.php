@@ -99,15 +99,39 @@ abstract class AbstractCommand
             return true;
         }
 
-        $givenArgs = $this->input->getArgs();
+        $givenArgs = $errArgs = [];
 
-        $missingArgs = array_filter(array_keys($definition->getArguments()), function ($name) use ($definition, $givenArgs) {
+        foreach ($this->input->getArgs() as $key => $value) {
+            if (is_int($key)) {
+                $givenArgs[$key] = $value;
+            } else {
+                $errArgs[] = $key;
+            }
+        }
+
+        if (count($errArgs) > 0) {
+            throw new \RuntimeException(sprintf('Unknown arguments (error: "%s").', implode(', ', $errArgs)));
+        }
+
+        $defArgs = $definition->getArguments();
+
+        $missingArgs = array_filter(array_keys($defArgs), function ($name) use ($definition, $givenArgs) {
             return !array_key_exists($name, $givenArgs) && $definition->argumentIsRequired($name);
         });
 
         if (count($missingArgs) > 0) {
             throw new \RuntimeException(sprintf('Not enough arguments (missing: "%s").', implode(', ', $missingArgs)));
         }
+
+        $index = 0;
+        $args = [];
+
+        foreach ($defArgs as $name => $conf) {
+            $args[$name] = $givenArgs[$index];
+            $index++;
+        }
+
+        $this->input->setArgs($args);
 
         return true;
     }

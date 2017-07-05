@@ -510,10 +510,10 @@ abstract class AbstractApp
      * set config
      * @param array $config
      */
-    public function setConfig(array $config)
+    public function setConfig($config)
     {
         if ($config) {
-            $this->config = array_merge($this->config, $config);
+            $this->config = array_merge($this->config, (array)$config);
         }
     }
 
@@ -532,6 +532,6 @@ abstract class AbstractApp
      */
     public function isDebug(): bool
     {
-        return (bool) $this->config['debug'];
+        return (bool) $this->config('debug');
     }
 }
