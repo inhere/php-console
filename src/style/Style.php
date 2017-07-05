@@ -181,9 +181,11 @@ class Style
     protected function replaceColor($text, $tag, $match, Color $color): string
     {
         $style = $color->toStyle();
-        $replace = $this->noColor ? $match : "\033[{$style}m{$match}\033[0m";
+        $replace = $this->noColor ? $match : sprintf("\033[%sm%s\033[0m", $style, $match);
+        // $replace = $this->noColor ? $match : sprintf("\033[%sm%s\033[39m", $style, $match);
 
         return str_replace("<$tag>$match</$tag>", $replace, $text);
+        // return sprintf("\033[%sm%s\033[%sm", implode(';', $setCodes), $text, implode(';', $unsetCodes));
     }
 
     /**

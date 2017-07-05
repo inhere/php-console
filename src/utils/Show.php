@@ -782,7 +782,7 @@ class Show
 
         fwrite($stream, $messages . ($nl ? PHP_EOL : ''));
 
-        if (isset($opts['flush']) && $opts['flush']) {
+        if (!isset($opts['flush']) || $opts['flush']) {
             fflush($stream);
         }
 

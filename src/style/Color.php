@@ -7,6 +7,8 @@ namespace inhere\console\style;
 
 /**
  * Class Color
+ * - fg unset 39
+ * - bg unset 49
  * @package inhere\console\style
  */
 final class Color
@@ -61,13 +63,13 @@ final class Color
      * @var array
      */
     private static $knownOptions = [
-        'bold' => 1,      // 加粗
+        'bold' => 1,       // 22 加粗
         'fuzzy' => 2,      // 模糊(不是所有的终端仿真器都支持)
         'italic' => 3,      // 斜体(不是所有的终端仿真器都支持)
-        'underscore' => 4,      // 下划线
-        'blink' => 5,      // 闪烁
-        'reverse' => 7,      // 颠倒的 交换背景色与前景色
-        'concealed' => 8,      // 隐匿的
+        'underscore' => 4, // 24 下划线
+        'blink' => 5,      // 25 闪烁
+        'reverse' => 7,    // 27 颠倒的 交换背景色与前景色
+        'concealed' => 8,  // 28 隐匿的
     ];
 
     /**

@@ -107,8 +107,8 @@ class HomeController extends Controller
         if ($input->getOpt('type') === 'bar') {
             $bar = $this->output->progressBar($total, [
                 'msg' => 'Msg Text',
-                'doneChar' => $input->getOpt('done-char', '='),
-                'waitChar' => $input->getOpt('wait-char', '-'),
+                'doneChar' => $input->getOpt('done-char', '='), // ▓
+                'waitChar' => $input->getOpt('wait-char', '-'), // ░
                 'signChar' => $input->getOpt('sign-char', '>'),
             ]);
         } else {
