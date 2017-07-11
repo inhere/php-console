@@ -134,81 +134,90 @@ trait FormatOutputTrait
      * @param string|null $type
      * @param string $style
      * @param int|boolean $quit If is int, setting it is exit code.
+     * @return int
      */
     public function block($messages, $type = 'MESSAGE', $style = Style::NORMAL, $quit = false)
     {
-        Show::block($messages, $type, $style, $quit);
+        return Show::block($messages, $type, $style, $quit);
     }
 
     /**
      * @param mixed $messages
      * @param bool $quit
+     * @return int
      */
     public function primary($messages, $quit = false)
     {
-        $this->block($messages, 'IMPORTANT', Style::PRIMARY, $quit);
+        return $this->block($messages, 'IMPORTANT', Style::PRIMARY, $quit);
     }
 
     /**
      * @param mixed $messages
      * @param bool $quit
+     * @return int
      */
     public function success($messages, $quit = false)
     {
-        $this->block($messages, 'SUCCESS', Style::SUCCESS, $quit);
+        return $this->block($messages, 'SUCCESS', Style::SUCCESS, $quit);
     }
 
     /**
      * @param mixed $messages
      * @param bool $quit
+     * @return int
      */
     public function info($messages, $quit = false)
     {
-        $this->block($messages, 'INFO', Style::INFO, $quit);
+        return $this->block($messages, 'INFO', Style::INFO, $quit);
     }
 
     /**
      * @param mixed $messages
      * @param bool $quit
+     * @return int
      */
     public function note($messages, $quit = false)
     {
-        $this->block($messages, 'NOTE', Style::INFO, $quit);
+        return $this->block($messages, 'NOTE', Style::INFO, $quit);
     }
 
     /**
      * @param mixed $messages
      * @param bool $quit
+     * @return int
      */
     public function notice($messages, $quit = false)
     {
-        $this->block($messages, 'NOTICE', Style::COMMENT, $quit);
+        return $this->block($messages, 'NOTICE', Style::COMMENT, $quit);
     }
 
     /**
      * @param mixed $messages
      * @param bool $quit
+     * @return int
      */
     public function warning($messages, $quit = false)
     {
-        $this->block($messages, 'WARNING', Style::WARNING, $quit);
+        return $this->block($messages, 'WARNING', Style::WARNING, $quit);
     }
 
     /**
      * @param mixed $messages
      * @param bool $quit
+     * @return int
      */
     public function danger($messages, $quit = false)
     {
-        $this->block($messages, 'DANGER', Style::DANGER, $quit);
+        return $this->block($messages, 'DANGER', Style::DANGER, $quit);
     }
 
     /**
      * @param mixed $messages
      * @param bool $quit
+     * @return int
      */
     public function error($messages, $quit = false)
     {
-        $this->block($messages, 'ERROR', Style::ERROR, $quit);
+        return $this->block($messages, 'ERROR', Style::ERROR, $quit);
     }
 }

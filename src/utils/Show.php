@@ -56,6 +56,7 @@ class Show
      * @param string|null $type
      * @param string $style
      * @param int|boolean $quit If is int, setting it is exit code.
+     * @return int
      */
     public static function block($messages, $type = 'MESSAGE', $style = Style::NORMAL, $quit = false)
     {
@@ -74,47 +75,47 @@ class Show
         }
 
         // $this->write($text);
-        self::write($text, true, $quit);
+        return self::write($text, true, $quit);
     }
 
     public static function primary($messages, $quit = false)
     {
-        static::block($messages, 'IMPORTANT', Style::PRIMARY, $quit);
+        return static::block($messages, 'IMPORTANT', Style::PRIMARY, $quit);
     }
 
     public static function success($messages, $quit = false)
     {
-        static::block($messages, 'SUCCESS', Style::SUCCESS, $quit);
+        return static::block($messages, 'SUCCESS', Style::SUCCESS, $quit);
     }
 
     public static function info($messages, $quit = false)
     {
-        static::block($messages, 'INFO', Style::INFO, $quit);
+        return static::block($messages, 'INFO', Style::INFO, $quit);
     }
 
     public static function note($messages, $quit = false)
     {
-        static::block($messages, 'NOTE', Style::INFO, $quit);
+        return static::block($messages, 'NOTE', Style::INFO, $quit);
     }
 
     public static function notice($messages, $quit = false)
     {
-        static::block($messages, 'NOTICE', Style::COMMENT, $quit);
+        return static::block($messages, 'NOTICE', Style::COMMENT, $quit);
     }
 
     public static function warning($messages, $quit = false)
     {
-        static::block($messages, 'WARNING', Style::WARNING, $quit);
+        return static::block($messages, 'WARNING', Style::WARNING, $quit);
     }
 
     public static function danger($messages, $quit = false)
     {
-        static::block($messages, 'DANGER', Style::DANGER, $quit);
+        return static::block($messages, 'DANGER', Style::DANGER, $quit);
     }
 
     public static function error($messages, $quit = false)
     {
-        static::block($messages, 'ERROR', Style::ERROR, $quit);
+        return static::block($messages, 'ERROR', Style::ERROR, $quit);
     }
 
 /////////////////////////////////////////////////////////////////

@@ -181,7 +181,7 @@ class Input implements InputInterface
      */
     public function getRequiredArg($name)
     {
-        if (isset($this->args[$name])) {
+        if ('' !== $this->get($name, '')) {
             return $this->args[$name];
         }
 
