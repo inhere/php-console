@@ -175,6 +175,20 @@ class Input implements InputInterface
     }
 
     /**
+     * get a required argument
+     * @param int|string $name
+     * @return mixed
+     */
+    public function getRequiredArg($name)
+    {
+        if (isset($this->args[$name])) {
+            return $this->args[$name];
+        }
+
+        throw new \InvalidArgumentException("The argument '{$name}' is required");
+    }
+
+    /**
      * get first argument
      * @param string $default
      * @return string
@@ -236,6 +250,20 @@ class Input implements InputInterface
     public function getOption(string $name, $default = null)
     {
         return $this->getOpt($name, $default);
+    }
+
+    /**
+     * get a required argument
+     * @param int|string $name
+     * @return mixed
+     */
+    public function getRequiredOpt($name)
+    {
+        if (null === ($val = $this->getOpt($name))) {
+            throw new \InvalidArgumentException("The option '{$name}' is required");
+        }
+
+        return $val;
     }
 
     /**

@@ -15,9 +15,15 @@ namespace inhere\console;
 class App extends AbstractApp
 {
     /**
+     * @var string
+     */
+    private $delimiter = '/';
+
+    /**
      * addCommand
-     * @param string  $name
-     * @param mixed   $controller
+     * @param string $name
+     * @param mixed $handler
+     * @return $this
      */
     public function addCommand(string $name, $handler = null)
     {
@@ -26,8 +32,9 @@ class App extends AbstractApp
 
     /**
      * addGroup
-     * @param string      $name
+     * @param string $name
      * @param string|null $controller
+     * @return static
      */
     public function addGroup(string $name, string $controller = null)
     {
@@ -43,7 +50,7 @@ class App extends AbstractApp
      */
     protected function dispatch($name)
     {
-        $sep = '/';
+        $sep = $this->delimiter ?: '/';
 
         //// is a command name
 

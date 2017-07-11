@@ -38,7 +38,7 @@ abstract class AbstractApp
      */
     protected $config = [
         'env' => 'pdt', // dev test pdt
-        'debug' => false,
+        'debug' => true,
         'name' => 'My Console',
         'version' => '0.5.1',
         'publishAt' => '2017.03.24',
@@ -118,7 +118,7 @@ abstract class AbstractApp
         // do run ...
         try {
             $returnCode = $this->dispatch($command);
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             self::fire(self::ON_RUN_ERROR, [$e, $this]);
             $returnCode = $e->getCode() === 0 ? __LINE__ : $e->getCode();
             $this->dispatchExHandler($e);
@@ -243,7 +243,11 @@ abstract class AbstractApp
     public function commands(array $commands)
     {
         foreach ($commands as $name => $handler) {
-            $this->command($name, $handler);
+            if (is_int($name)) {
+                $this->command($handler);
+            } else {
+                $this->command($name, $handler);
+            }
         }
     }
 
@@ -253,20 +257,30 @@ abstract class AbstractApp
 
     /**
      * 运行异常处理
-     * @param \Exception $e
+     * @param \Exception|\Throwable $e
      * @throws \Exception
      */
-    protected function dispatchExHandler(\Exception $e)
+    protected function dispatchExHandler($e)
     {
         // $this->logger->ex($e);
 
         // open debug, throw exception
         if ($this->isDebug()) {
-            throw $e;
-        }
+            $message = sprintf(
+                "<bold>Exception(%d)</bold>: <red>%s</red>\nCalled At %s, Line: <cyan>%d</cyan>\nCatch the exception by: %s\nCode Trace:\n%s\n",
+                $e->getCode(),
+                $e->getMessage(),
+                $e->getFile(),
+                $e->getLine(),
+                get_class($e),
+                $e->getTraceAsString()
+            );
 
-        // no output
-        $this->output->error('An error occurred! MESSAGE: ' . $e->getMessage());
+            $this->output->write($message, false);
+        } else {
+            // simple output
+            $this->output->error('An error occurred! MESSAGE: ' . $e->getMessage());
+        }
     }
 
     /**

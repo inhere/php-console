@@ -411,7 +411,7 @@ class Helper
      * @param array ...$args
      * @return string
      */
-    public static function dumpVar(...$args)
+    public static function dumpVars(...$args)
     {
         ob_start();
         var_dump(...$args);
@@ -425,7 +425,7 @@ class Helper
      * @param array ...$args
      * @return string
      */
-    public static function printR(...$args)
+    public static function printVars(...$args)
     {
         ob_start();
 
