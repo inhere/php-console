@@ -23,8 +23,8 @@ abstract class Command extends AbstractCommand
      */
     public function run()
     {
-        // load input definition
-//        $this->configure();
+        // load input definition configure
+        $this->configure();
 
         if ($this->input->sameOpt(['h','help'])) {
             return $this->showHelp();
@@ -40,7 +40,6 @@ abstract class Command extends AbstractCommand
             $this->afterRun();
 
             App::fire(App::ON_AFTER_EXEC, [$this]);
-
         } catch (\Throwable $e) {
             App::fire(App::ON_EXEC_ERROR, [$e, $this]);
             $this->handleRuntimeException($e);
@@ -62,17 +61,21 @@ abstract class Command extends AbstractCommand
      */
     protected function configure()
     {
-        $this
-            ->createDefinition()
-            ->addArgument('test')
-            ->addOption('test');
+        // $this
+        //     ->createDefinition()
+        //     ->addArgument('test')
+        //     ->addOption('test');
     }
 
     /**
      * @return int
      */
-    public function showHelp()
+    protected function showHelp()
     {
+        if ($def = $this->getDefinition()) {
+            return $this->write($def->getSynopsis());
+        }
+
         return $this->showHelpByMethodAnnotation('execute');
     }
 }

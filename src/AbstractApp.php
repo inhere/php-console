@@ -12,6 +12,7 @@ use inhere\console\io\Input;
 use inhere\console\io\Output;
 use inhere\console\traits\InputOutputTrait;
 use inhere\console\traits\SimpleEventStaticTrait;
+use inhere\console\utils\Helper;
 
 /**
  * Class AbstractApp
@@ -36,12 +37,14 @@ abstract class AbstractApp
      * app config
      * @var array
      */
-    protected $config = [
+    private $config = [
         'env' => 'pdt', // dev test pdt
-        'debug' => true,
+        'debug' => false,
         'name' => 'My Console',
         'version' => '0.5.1',
         'publishAt' => '2017.03.24',
+        'rootPath' => '',
+        'hideRootPath' => true,
         'charset' => 'UTF-8',
         'timeZone' => 'Asia/Shanghai',
     ];
@@ -71,6 +74,11 @@ abstract class AbstractApp
     private $commandName;
 
     /**
+     * @var bool
+     */
+    private $hideRootPath = true;
+
+    /**
      * App constructor.
      * @param array $config
      * @param Input $input
@@ -78,11 +86,24 @@ abstract class AbstractApp
      */
     public function __construct(array $config = [], Input $input = null, Output $output = null)
     {
+        $this->runtimeCheck();
+        $this->setConfig($config);
+
         $this->input = $input ?: new Input();
         $this->output = $output ?: new Output();
 
-        $this->setConfig($config);
         $this->init();
+    }
+
+    protected function runtimeCheck()
+    {
+        // check env
+        if (!in_array(PHP_SAPI, ['cli', 'cli-server'], true)) {
+            header('HTTP/1.1 403 Forbidden');
+            exit("  403 Forbidden \n\n"
+            . " current environment is CLI. \n"
+            . " :( Sorry! Run this script is only allowed in the terminal environment!\n,You are not allowed to access this file.\n");
+        }
     }
 
     protected function init()
@@ -267,14 +288,18 @@ abstract class AbstractApp
         // open debug, throw exception
         if ($this->isDebug()) {
             $message = sprintf(
-                "<bold>Exception(%d)</bold>: <red>%s</red>\nCalled At %s, Line: <cyan>%d</cyan>\nCatch the exception by: %s\nCode Trace:\n%s\n",
-                $e->getCode(),
+                "<red>Exception</red>: %s\nCalled At %s, Line: <cyan>%d</cyan>\nCatch the exception by: %s\nCode Trace:\n%s\n",
+                // $e->getCode(),
                 $e->getMessage(),
                 $e->getFile(),
                 $e->getLine(),
                 get_class($e),
                 $e->getTraceAsString()
             );
+
+            if ($this->config('hideRootPath') && $rootPath = $this->config('rootPath')) {
+                $message = str_replace($rootPath, '{ROOT}', $message);
+            }
 
             $this->output->write($message, false);
         } else {
@@ -348,13 +373,14 @@ abstract class AbstractApp
     public function showVersionInfo($quit = true)
     {
         $date = date('Y-m-d');
+        $name = $this->config('name', 'Console Application');
         $version = $this->config('version', 'Unknown');
-        $publishAt = $this->config['publishAt'];
+        $publishAt = $this->config('publishAt', 'Unknown');
         $phpVersion = PHP_VERSION;
         $os = PHP_OS;
 
         $this->output->aList([
-            "Console Application <info>{$this->config['name']}</info> Version <comment>$version</comment>(publish at $publishAt)",
+            "Console Application <info>{$name}</info> Version <comment>$version</comment>(publish at $publishAt)",
             'System' => "PHP version <info>$phpVersion</info>, on OS <info>$os</info>, current Date $date",
         ], null, [
             'leftChar' => ''
@@ -510,11 +536,9 @@ abstract class AbstractApp
 
         // allow get $config['top']['sub'] by 'top.sub'
         if (strpos($name, '.') > 1) {
-            list($topKey, $subKey) = explode('.', $name, 2);
+            $nodes = array_filter(explode('.', $name));
 
-            if (isset($this->config[$topKey], $this->config[$topKey][$subKey])) {
-                return $this->config[$topKey][$subKey];
-            }
+            return Helper::findValueByNodes($this->config, $nodes, $default);
         }
 
         return $this->config[$name] ?? $default;

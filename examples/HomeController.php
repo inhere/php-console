@@ -44,9 +44,10 @@ class HomeController extends Controller
     protected function colorConfigure()
     {
         $this->createDefinition()
-            ->setDescription('command description')
-            ->addArgument('name', Input::ARG_REQUIRED)
-            ->addOption('yes', 'y', Input::OPT_BOOLEAN);
+            ->setDescription('the color command description')
+            ->addArgument('name', Input::ARG_REQUIRED, 'description for the argument [name]')
+            ->addOption('yes', 'y', Input::OPT_BOOLEAN, 'description for the option [yes]')
+            ->addOption('opt1', null, Input::OPT_REQUIRED, 'description for the option [opt1]');
     }
 
     /**
@@ -60,7 +61,7 @@ class HomeController extends Controller
 
             return 0;
         }
-
+$this->output->dumpVars($this->input->getArgs(), $this->input->getBoolOpt('y'));
         $this->write('color text output:');
         $styles = $this->output->getStyle()->getStyleNames();
 
@@ -253,7 +254,7 @@ class HomeController extends Controller
 
         Interact::panel($info);
 
-        echo Helper::printR($_SERVER);
+        echo Helper::printVars($_SERVER);
     }
 
     /**

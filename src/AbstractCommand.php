@@ -44,7 +44,7 @@ abstract class AbstractCommand
      * Allow display message tags in the command annotation
      * @var array
      */
-    protected static $allowTags = [
+    protected static $annotationTags = [
         // tag name => multi line align
         'description' => false,
         'usage' => false,
@@ -93,7 +93,7 @@ abstract class AbstractCommand
      * validate input arguments and options
      * @return bool
      */
-    public function validate()
+    public function validateInput()
     {
         if (!$definition = $this->definition) {
             return true;
@@ -114,10 +114,9 @@ abstract class AbstractCommand
         }
 
         $defArgs = $definition->getArguments();
-
-        $missingArgs = array_filter(array_keys($defArgs), function ($name) use ($definition, $givenArgs) {
-            return !array_key_exists($name, $givenArgs) && $definition->argumentIsRequired($name);
-        });
+        $missingArgs = array_filter(array_keys($defArgs), function ($name, $key) use ($definition, $givenArgs) {
+            return !array_key_exists($key, $givenArgs) && $definition->argumentIsRequired($name);
+        }, ARRAY_FILTER_USE_BOTH);
 
         if (count($missingArgs) > 0) {
             throw new \RuntimeException(sprintf('Not enough arguments (missing: "%s").', implode(', ', $missingArgs)));
@@ -173,7 +172,8 @@ abstract class AbstractCommand
             }
         }
 
-        $this->validate();
+        // do validate input arg and opt
+        $this->validateInput();
     }
 
     /**
@@ -240,9 +240,9 @@ abstract class AbstractCommand
                 continue;
             }
 
-            if (isset(self::$allowTags[$tag])) {
+            if (isset(self::$annotationTags[$tag])) {
                 // need multi align
-                if (self::$allowTags[$tag]) {
+                if (self::$annotationTags[$tag]) {
                     $lines = array_map(function ($line) {
                         return trim($line);
                     }, explode("\n", $msg));
@@ -304,18 +304,18 @@ abstract class AbstractCommand
     /**
      * @return array
      */
-    public static function getAllowTags(): array
+    public static function getAnnotationTags(): array
     {
-        return self::$allowTags;
+        return self::$annotationTags;
     }
 
     /**
-     * @param array $allowTags
+     * @param array $annotationTags
      * @param bool $replace
      */
-    public static function setAllowTags(array $allowTags, $replace = false)
+    public static function setAnnotationTags(array $annotationTags, $replace = false)
     {
-        self::$allowTags = $replace ? $allowTags : array_merge(self::$allowTags, $allowTags);
+        self::$annotationTags = $replace ? $annotationTags : array_merge(self::$annotationTags, $annotationTags);
     }
 
     /**

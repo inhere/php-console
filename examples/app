@@ -1,17 +1,15 @@
 #!/usr/bin/env php
 <?php
-// define STDIN, STDOUT and STDERR if the PHP SAPI did not define them (e.g. creating console application in web env)
-// http://php.net/manual/en/features.commandline.io-streams.php
-defined('STDIN') or define('STDIN', fopen('php://stdin', 'rb'));
-defined('STDOUT') or define('STDOUT', fopen('php://stdout', 'wb'));
-defined('STDERR') or define('STDERR', fopen('php://stderr', 'wb'));
 
 define('PROJECT_PATH', dirname(__DIR__));
 
 require __DIR__ . '/s-autoload.php';
 
 // create app instance
-$app = new \inhere\console\App();
+$app = new \inhere\console\App([
+    'debug' => true,
+    'rootPath' => PROJECT_PATH,
+]);
 
 // require dirname(__DIR__) . '/boot/cli-services.php';
 

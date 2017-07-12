@@ -58,8 +58,8 @@ abstract class Controller extends AbstractCommand
      */
     public function run()
     {
+        $this->configure();
         $action = $this->action;
-//        $this->configure();
 
         if ($action && $this->input->sameOpt(['h','help'])) {
             return $this->helpCommand();
@@ -124,7 +124,7 @@ abstract class Controller extends AbstractCommand
 
         $action = Helper::transName($action);
 
-        if ($def = $this->getDefinition()) {
+        if ($def = $this->getDefinition()) { var_dump($def);
             return $this->write($def->getSynopsis());
         }
 

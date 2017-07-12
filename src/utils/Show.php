@@ -770,6 +770,11 @@ class Show
      * @param boolean $nl True 会添加换行符, False 原样输出，不添加换行符
      * @param int|boolean $quit If is int, setting it is exit code. 'True' translate as code 0 and exit, 'False' will not exit.
      * @param array $opts
+     * [
+     *     'color' => bool, // whether render color, default is: True.
+     *     'stream' => resource, // the stream resource, default is: STDOUT
+     *     'flush' => flush, // flush the stream data, default is: True
+     * ]
      * @return int
      */
     public static function write($messages, $nl = true, $quit = false, array $opts = []): int
@@ -778,7 +783,10 @@ class Show
             $messages = implode($nl ? PHP_EOL : '', $messages);
         }
 
-        $messages = static::getStyle()->render($messages);
+        if (!isset($opts['color']) || $opts['color']) {
+            $messages = static::getStyle()->render($messages);
+        }
+
         $stream = $opts['stream'] ?? STDOUT;
 
         fwrite($stream, $messages . ($nl ? PHP_EOL : ''));

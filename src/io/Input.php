@@ -273,6 +273,10 @@ class Input implements InputInterface
      * @param bool $default
      * @return bool
      */
+    public function getBoolOpt(string $name, $default = false): bool
+    {
+        return (bool)$this->getOpt($name, $default);
+    }
     public function boolOpt(string $name, $default = false): bool
     {
         return (bool)$this->getOpt($name, $default);
@@ -300,6 +304,10 @@ class Input implements InputInterface
      * @param mixed $default
      * @return bool|mixed|null
      */
+    public function getSameOpt(array $names, $default = null)
+    {
+        return $this->sameOpt($names, $default);
+    }
     public function sameOpt(array $names, $default = null)
     {
         foreach ($names as $name) {
@@ -320,6 +328,10 @@ class Input implements InputInterface
      * @return mixed|null
      */
     public function sOpt($name, $default = null)
+    {
+        return $this->sOpts[$name] ?? $default;
+    }
+    public function getShortOpt($name, $default = null)
     {
         return $this->sOpts[$name] ?? $default;
     }
@@ -356,6 +368,10 @@ class Input implements InputInterface
      * @return mixed|null
      */
     public function lOpt($name, $default = null)
+    {
+        return $this->lOpts[$name] ?? $default;
+    }
+    public function getLongOpt($name, $default = null)
     {
         return $this->lOpts[$name] ?? $default;
     }

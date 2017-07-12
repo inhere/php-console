@@ -122,6 +122,29 @@ class Helper
     }
 
     /**
+     * findValueByNodes
+     * @param  array  $data
+     * @param  array  $nodes
+     * @param  mixed  $default
+     * @return mixed
+     */
+    public static function findValueByNodes(array $data, array $nodes, $default = null)
+    {
+        $temp = $data;
+
+        foreach ($nodes as $name) {
+            if (isset($temp[$name])) {
+                $temp = $temp[$name];
+            } else {
+                $temp = $default;
+                break;
+            }
+        }
+
+        return $temp;
+    }
+
+    /**
      * @param $string
      * @param $width
      * @return array

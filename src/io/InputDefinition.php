@@ -236,7 +236,7 @@ class InputDefinition
      * @param string|array $shortcut The shortcut (can be null)
      * @param int $mode The option mode: One of the Input::OPT_* constants
      * @param string $description A description text
-     * @param mixed $default The default value (must be null for InputOption::VALUE_NONE)
+     * @param mixed $default The default value (must be null for InputOption::OPT_BOOL)
      *
      * @return $this
      */
