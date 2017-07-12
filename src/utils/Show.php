@@ -15,6 +15,24 @@ use inhere\console\style\Style;
  *  show formatted message text
  *
  * @package inhere\console\utils
+ *
+ * @method static int info($messages, $quit = false)
+ * @method static int note($messages, $quit = false)
+ * @method static int notice($messages, $quit = false)
+ * @method static int success($messages, $quit = false)
+ * @method static int primary($messages, $quit = false)
+ * @method static int warning($messages, $quit = false)
+ * @method static int danger($messages, $quit = false)
+ * @method static int error($messages, $quit = false)
+ *
+ * @method static int liteInfo($messages, $quit = false)
+ * @method static int liteNote($messages, $quit = false)
+ * @method static int liteNotice($messages, $quit = false)
+ * @method static int liteSuccess($messages, $quit = false)
+ * @method static int litePrimary($messages, $quit = false)
+ * @method static int liteWarning($messages, $quit = false)
+ * @method static int liteDanger($messages, $quit = false)
+ * @method static int liteError($messages, $quit = false)
  */
 class Show
 {
@@ -74,48 +92,80 @@ class Show
             $text = sprintf('<%s>%s</%s>', $style, $text, $style);
         }
 
-        // $this->write($text);
         return self::write($text, true, $quit);
     }
 
-    public static function primary($messages, $quit = false)
+    /**
+     * @param mixed $messages
+     * @param string|null $type
+     * @param string $style
+     * @param int|boolean $quit If is int, setting it is exit code.
+     * @return int
+     */
+    public static function liteBlock($messages, $type = 'MESSAGE', $style = Style::NORMAL, $quit = false)
     {
-        return static::block($messages, 'IMPORTANT', Style::PRIMARY, $quit);
+        $messages = is_array($messages) ? array_values($messages) : array($messages);
+
+        // add type
+        if (null !== $type) {
+            $type = sprintf('[%s]', strtoupper($type));
+        }
+
+        $text = implode(PHP_EOL, $messages);
+        $color = static::getStyle();
+
+        if (is_string($style) && $color->hasStyle($style)) {
+            $type = sprintf('<%s>%s</%s> ', $style, $type, $style);
+        }
+
+        return self::write($type . $text, true, $quit);
     }
 
-    public static function success($messages, $quit = false)
-    {
-        return static::block($messages, 'SUCCESS', Style::SUCCESS, $quit);
-    }
+    /**
+     * @var array
+     */
+    private static $blockMethods = [
+        // method => style
+        'info' => 'info',
+        'note' => 'note',
+        'notice' => 'notice',
+        'success' => 'success',
+        'primary' => 'primary',
+        'warning' => 'warning',
+        'danger' => 'danger',
+        'error' => 'error',
 
-    public static function info($messages, $quit = false)
-    {
-        return static::block($messages, 'INFO', Style::INFO, $quit);
-    }
+        // lite style
+        'liteInfo' => 'info',
+        'liteNote' => 'note',
+        'liteNotice' => 'notice',
+        'liteSuccess' => 'success',
+        'litePrimary' => 'primary',
+        'liteWarning' => 'yellow',
+        'liteDanger' => 'danger',
+        'liteError' => 'red',
+    ];
 
-    public static function note($messages, $quit = false)
+    /**
+     * @param string $method
+     * @param array $args
+     * @return int
+     */
+    public static function __callStatic($method, array $args = [])
     {
-        return static::block($messages, 'NOTE', Style::INFO, $quit);
-    }
+        if (isset(self::$blockMethods[$method])) {
+            $msg = $args[0];
+            $quit = $args[1] ?? false;
+            $style = self::$blockMethods[$method];
 
-    public static function notice($messages, $quit = false)
-    {
-        return static::block($messages, 'NOTICE', Style::COMMENT, $quit);
-    }
+            if (0 === strpos($method, 'lite')) {
+                return self::liteBlock($msg, $style === 'primary' ? 'IMPORTANT' : $style, $style, $quit);
+            }
 
-    public static function warning($messages, $quit = false)
-    {
-        return static::block($messages, 'WARNING', Style::WARNING, $quit);
-    }
+            return self::block($msg, $style === 'primary' ? 'IMPORTANT' : $style, $style, $quit);
+        }
 
-    public static function danger($messages, $quit = false)
-    {
-        return static::block($messages, 'DANGER', Style::DANGER, $quit);
-    }
-
-    public static function error($messages, $quit = false)
-    {
-        return static::block($messages, 'ERROR', Style::ERROR, $quit);
+        throw new \LogicException("Call a not exists method: $method");
     }
 
 /////////////////////////////////////////////////////////////////
@@ -839,4 +889,12 @@ class Show
         ]);
     }
 
+    /**
+     * @param bool $onlyKey
+     * @return array
+     */
+    public static function getBlockMethods($onlyKey = true): array
+    {
+        return $onlyKey ? array_keys(self::$blockMethods) : self::$blockMethods;
+    }
 }

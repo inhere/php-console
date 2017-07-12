@@ -358,11 +358,15 @@ class InputDefinition
      * @param string $shortcut the Shortcut name
      * @return array
      */
-    public function getOptionForShortcut($shortcut)
+    public function getOptionByShortcut($shortcut)
     {
         return $this->getOption($this->shortcutToName($shortcut));
     }
 
+    /**
+     * @param string $shortcut
+     * @return mixed
+     */
     private function shortcutToName($shortcut)
     {
         if (!isset($this->shortcuts[$shortcut])) {

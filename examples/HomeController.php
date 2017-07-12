@@ -80,8 +80,8 @@ $this->output->dumpVars($this->input->getArgs(), $this->input->getBoolOpt('y'));
     {
         $this->write('block message:');
 
-        foreach (Interact::$defaultBlocks as $type) {
-            $this->output->$type('message text');
+        foreach (Interact::getBlockMethods() as $type) {
+            $this->output->$type("$type style message text");
         }
 
         return 0;
@@ -209,10 +209,10 @@ $this->output->dumpVars($this->input->getArgs(), $this->input->getBoolOpt('y'));
     public function useArgCommand()
     {
         $this->write('input arguments:');
-        echo Helper::dumpVar($this->input->getArgs());
+        echo Helper::dumpVars($this->input->getArgs());
 
         $this->write('input options:');
-        echo Helper::dumpVar($this->input->getOpts());
+        echo Helper::dumpVars($this->input->getOpts());
 
         // $this->write('the Input object:');
         // var_dump($this->input);
@@ -288,7 +288,7 @@ $this->output->dumpVars($this->input->getArgs(), $this->input->getBoolOpt('y'));
 
         $d = Download::down($url, $saveAs, $type);
 
-        echo Helper::dumpVar($d);
+        echo Helper::dumpVars($d);
 
         return 0;
     }

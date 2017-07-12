@@ -14,6 +14,24 @@ use inhere\console\utils\Show;
 /**
  * Class FormatOutputTrait
  * @package inhere\console\traits
+ *
+ * @method int info($messages, $quit = false)
+ * @method int note($messages, $quit = false)
+ * @method int notice($messages, $quit = false)
+ * @method int success($messages, $quit = false)
+ * @method int primary($messages, $quit = false)
+ * @method int warning($messages, $quit = false)
+ * @method int danger($messages, $quit = false)
+ * @method int error($messages, $quit = false)
+ *
+ * @method int liteInfo($messages, $quit = false)
+ * @method int liteNote($messages, $quit = false)
+ * @method int liteNotice($messages, $quit = false)
+ * @method int liteSuccess($messages, $quit = false)
+ * @method int litePrimary($messages, $quit = false)
+ * @method int liteWarning($messages, $quit = false)
+ * @method int liteDanger($messages, $quit = false)
+ * @method int liteError($messages, $quit = false)
  */
 trait FormatOutputTrait
 {
@@ -36,6 +54,24 @@ trait FormatOutputTrait
     public function writeln($text, $quit = false, array $opts = [])
     {
         return Show::writeln($text, $quit, $opts);
+    }
+
+    /**
+     * @inheritdoc
+     * @see Show::block()
+     */
+    public function block($messages, $type = 'MESSAGE', $style = Style::NORMAL, $quit = false)
+    {
+        return Show::block($messages, $type, $style, $quit);
+    }
+
+    /**
+     * @inheritdoc
+     * @see Show::liteBlock()
+     */
+    public function liteBlock($messages, $type = 'MESSAGE', $style = Style::NORMAL, $quit = false)
+    {
+        return Show::liteBlock($messages, $type, $style, $quit);
     }
 
     /**
@@ -130,94 +166,27 @@ trait FormatOutputTrait
     }
 
     /**
-     * @param mixed $messages
-     * @param string|null $type
-     * @param string $style
-     * @param int|boolean $quit If is int, setting it is exit code.
+     * @param string $method
+     * @param array $args
      * @return int
      */
-    public function block($messages, $type = 'MESSAGE', $style = Style::NORMAL, $quit = false)
+    public function __call($method, array $args = [])
     {
-        return Show::block($messages, $type, $style, $quit);
-    }
+        $map = Show::getBlockMethods(false);
 
-    /**
-     * @param mixed $messages
-     * @param bool $quit
-     * @return int
-     */
-    public function primary($messages, $quit = false)
-    {
-        return $this->block($messages, 'IMPORTANT', Style::PRIMARY, $quit);
-    }
+        if (isset($map[$method])) {
+            $msg = $args[0];
+            $quit = $args[1] ?? false;
+            $style = $map[$method];
 
-    /**
-     * @param mixed $messages
-     * @param bool $quit
-     * @return int
-     */
-    public function success($messages, $quit = false)
-    {
-        return $this->block($messages, 'SUCCESS', Style::SUCCESS, $quit);
-    }
+            if (0 === strpos($method, 'lite')) {
+                $type = substr($method, 4);
+                return Show::liteBlock($msg, $type === 'Primary' ? 'IMPORTANT' : $type, $style, $quit);
+            }
 
-    /**
-     * @param mixed $messages
-     * @param bool $quit
-     * @return int
-     */
-    public function info($messages, $quit = false)
-    {
-        return $this->block($messages, 'INFO', Style::INFO, $quit);
-    }
+            return Show::block($msg, $style === 'primary' ? 'IMPORTANT' : $style, $style, $quit);
+        }
 
-    /**
-     * @param mixed $messages
-     * @param bool $quit
-     * @return int
-     */
-    public function note($messages, $quit = false)
-    {
-        return $this->block($messages, 'NOTE', Style::INFO, $quit);
-    }
-
-    /**
-     * @param mixed $messages
-     * @param bool $quit
-     * @return int
-     */
-    public function notice($messages, $quit = false)
-    {
-        return $this->block($messages, 'NOTICE', Style::COMMENT, $quit);
-    }
-
-    /**
-     * @param mixed $messages
-     * @param bool $quit
-     * @return int
-     */
-    public function warning($messages, $quit = false)
-    {
-        return $this->block($messages, 'WARNING', Style::WARNING, $quit);
-    }
-
-    /**
-     * @param mixed $messages
-     * @param bool $quit
-     * @return int
-     */
-    public function danger($messages, $quit = false)
-    {
-        return $this->block($messages, 'DANGER', Style::DANGER, $quit);
-    }
-
-    /**
-     * @param mixed $messages
-     * @param bool $quit
-     * @return int
-     */
-    public function error($messages, $quit = false)
-    {
-        return $this->block($messages, 'ERROR', Style::ERROR, $quit);
+        throw new \LogicException("Call a not exists method: $method");
     }
 }

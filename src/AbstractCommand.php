@@ -132,6 +132,10 @@ abstract class AbstractCommand
 
         $this->input->setArgs($args);
 
+        // check options
+//        $givenOpts = $this->input->getOpts();
+//        $defOpts = $definition->getOptions();
+
         return true;
     }
 
