@@ -99,7 +99,7 @@ class Interact extends Show
         $question = ucfirst(trim($question, '?'));
         $default = (bool)$default;
         $defaultText = $default ? 'yes' : 'no';
-        $message = " <comment>$question ?</comment>\n Please confirm (yes|no) [default:<info>$defaultText</info>]: ";
+        $message = "<comment>$question ?</comment>\nPlease confirm (yes|no)[default:<info>$defaultText</info>]: ";
 
         while (true) {
             $answer = self::read($message);
