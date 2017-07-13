@@ -15,6 +15,7 @@ namespace inhere\console\io;
  */
 class InputDefinition
 {
+    private $example;
     private $description;
 
     /**
@@ -270,7 +271,7 @@ class InputDefinition
 
         // set default value
         if (Input::OPT_BOOLEAN === (Input::OPT_BOOLEAN & $mode) && null !== $default) {
-            throw new \LogicException('Cannot set a default value when using InputOption::VALUE_NONE mode.');
+            throw new \LogicException('Cannot set a default value when using Input::OPT_BOOLEAN mode.');
         }
 
         if ($isArray) {
@@ -303,7 +304,8 @@ class InputDefinition
 
         $this->options[$name] = [
             'mode' => $mode,
-            'shortcut' => $shortcut,
+            'shortcut' => $shortcut, // 允许数组
+            'required' => $mode === Input::OPT_REQUIRED,
             'optional' => $mode === Input::OPT_OPTIONAL,
             'description' => $description,
             'default' => $default,
@@ -376,7 +378,6 @@ class InputDefinition
         return $this->shortcuts[$shortcut];
     }
 
-
     /**
      * Gets the synopsis.
      * @param bool $short 简化版显示
@@ -384,7 +385,7 @@ class InputDefinition
      */
     public function getSynopsis($short = false)
     {
-        $elements = array();
+        $elements = $args = $opts = [];
 
         if ($short && $this->options) {
             $elements[] = '[options]';
@@ -403,6 +404,9 @@ class InputDefinition
 
                 $shortcut = $option['shortcut'] ? sprintf('-%s|', $option['shortcut']) : '';
                 $elements[] = sprintf('[%s--%s%s]', $shortcut, $name, $value);
+
+                $key = "{$shortcut}--{$name}";
+                $opts[$key] = ($option['required'] ? '<red>*</red>' : '') .$option['description'];
             }
         }
 
@@ -411,6 +415,8 @@ class InputDefinition
         }
 
         foreach ($this->arguments as $name => $argument) {
+            $des = $argument['required'] ? '<red>*</red>' . $argument['description'] : $argument['description'];
+
             $element = '<' . $name . '>';
             if (!$argument['required']) {
                 $element = '[' . $element . ']';
@@ -423,9 +429,18 @@ class InputDefinition
             }
 
             $elements[] = $element;
+            $args[$name] = $des;
         }
 
-        return implode(' ', $elements);
+        $opts['-h|--help'] = 'Show help information for the command';
+
+        return [
+            'description' => $this->description,
+            'usage' => implode(' ', $elements),
+            'arguments' => $args,
+            'options' => $opts,
+            'example' => $this->example,
+        ];
     }
 
     /**
@@ -457,6 +472,25 @@ class InputDefinition
     protected function optionIsAcceptValue($mode)
     {
         return $mode === Input::OPT_REQUIRED || $mode === Input::OPT_OPTIONAL;
+    }
+
+    /**
+     * @return string|array
+     */
+    public function getExample()
+    {
+        return $this->example;
+    }
+
+    /**
+     * @param string|array $example
+     * @return $this
+     */
+    public function setExample($example)
+    {
+        $this->example = $example;
+
+        return $this;
     }
 
     /**

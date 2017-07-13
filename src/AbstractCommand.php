@@ -90,56 +90,6 @@ abstract class AbstractCommand
     }
 
     /**
-     * validate input arguments and options
-     * @return bool
-     */
-    public function validateInput()
-    {
-        if (!$definition = $this->definition) {
-            return true;
-        }
-
-        $givenArgs = $errArgs = [];
-
-        foreach ($this->input->getArgs() as $key => $value) {
-            if (is_int($key)) {
-                $givenArgs[$key] = $value;
-            } else {
-                $errArgs[] = $key;
-            }
-        }
-
-        if (count($errArgs) > 0) {
-            throw new \RuntimeException(sprintf('Unknown arguments (error: "%s").', implode(', ', $errArgs)));
-        }
-
-        $defArgs = $definition->getArguments();
-        $missingArgs = array_filter(array_keys($defArgs), function ($name, $key) use ($definition, $givenArgs) {
-            return !array_key_exists($key, $givenArgs) && $definition->argumentIsRequired($name);
-        }, ARRAY_FILTER_USE_BOTH);
-
-        if (count($missingArgs) > 0) {
-            throw new \RuntimeException(sprintf('Not enough arguments (missing: "%s").', implode(', ', $missingArgs)));
-        }
-
-        $index = 0;
-        $args = [];
-
-        foreach ($defArgs as $name => $conf) {
-            $args[$name] = $givenArgs[$index];
-            $index++;
-        }
-
-        $this->input->setArgs($args);
-
-        // check options
-//        $givenOpts = $this->input->getOpts();
-//        $defOpts = $definition->getOptions();
-
-        return true;
-    }
-
-    /**
      * @return InputDefinition
      */
     protected function createDefinition()
@@ -150,9 +100,57 @@ abstract class AbstractCommand
     }
 
     /**
-     * run
+     * run command
+     * @return int
      */
-    abstract public function run();
+    public function run()
+    {
+        // load input definition configure
+        $this->configure();
+
+        if ($this->input->sameOpt(['h','help'])) {
+            return $this->showHelp();
+        }
+
+        $status = 0;
+
+        try {
+            App::fire(App::ON_BEFORE_EXEC, [$this]);
+
+            if (true !== $this->beforeRun()) {
+                return -1;
+            }
+
+            $status = $this->execute($this->input, $this->output);
+            $this->afterRun();
+
+            App::fire(App::ON_AFTER_EXEC, [$this]);
+        } catch (\Throwable $e) {
+            App::fire(App::ON_EXEC_ERROR, [$e, $this]);
+            $this->handleRuntimeException($e);
+        }
+
+        return $status;
+    }
+
+    /**
+     * do execute
+     * @param  Input $input
+     * @param  Output $output
+     * @return int
+     */
+    abstract protected function execute($input, $output);
+
+    protected function showHelp()
+    {
+        // 创建了 InputDefinition , 则使用它的信息。
+        // 不会再解析和使用命令的注释。
+        if ($def = $this->getDefinition()) {
+            $this->output->mList($def->getSynopsis());
+
+            return true;
+        }
+    }
 
     /**
      * beforeRun
@@ -177,7 +175,78 @@ abstract class AbstractCommand
         }
 
         // do validate input arg and opt
-        $this->validateInput();
+        return $this->validateInput();
+    }
+
+    /**
+     * validate input arguments and options
+     * @return bool
+     */
+    public function validateInput()
+    {
+        if (!$def = $this->definition) {
+            return true;
+        }
+
+        $in = $this->input;
+        $givenArgs = $errArgs = [];
+
+        foreach ($in->getArgs() as $key => $value) {
+            if (is_int($key)) {
+                $givenArgs[$key] = $value;
+            } else {
+                $errArgs[] = $key;
+            }
+        }
+
+        if (count($errArgs) > 0) {
+            $this->output->liteError(sprintf('Unknown arguments (error: "%s").', implode(', ', $errArgs)));
+
+            return false;
+        }
+
+        $defArgs = $def->getArguments();
+        $missingArgs = array_filter(array_keys($defArgs), function ($name, $key) use ($def, $givenArgs) {
+            return !array_key_exists($key, $givenArgs) && $def->argumentIsRequired($name);
+        }, ARRAY_FILTER_USE_BOTH);
+
+        if (count($missingArgs) > 0) {
+            $this->output->liteError(sprintf('Not enough arguments (missing: "%s").', implode(', ', $missingArgs)));
+            return false;
+        }
+
+        $index = 0;
+        $args = [];
+
+        foreach ($defArgs as $name => $conf) {
+            $args[$name] = $givenArgs[$index] ?? $conf['default'];
+            $index++;
+        }
+
+        $in->setArgs($args);
+
+        // check options
+        $opts = $missingOpts = [];
+        $givenLOpts = $in->getLongOpts();
+        $defOpts = $def->getOptions();
+
+        foreach ($defOpts as $name => $conf) {
+            if (!$in->hasLOpt($name)) {
+                if (($srt = $conf['shortcut']) && $in->hasSOpt($srt)) {
+                    $opts[$name] = $in->sOpt($srt);
+                } elseif ($conf['required']) {
+                    $missingOpts[] = "--{$name}" . ($srt ? "|-{$srt}" : '');
+                }
+            }
+        }
+
+        if (count($missingOpts) > 0) {
+            $this->output->liteError(sprintf('Not enough options parameters (missing: "%s").', implode(', ', $missingOpts)));
+
+            return false;
+        }
+
+        return true;
     }
 
     /**

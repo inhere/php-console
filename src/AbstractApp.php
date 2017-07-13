@@ -109,6 +109,7 @@ abstract class AbstractApp
     protected function init()
     {
         $this->commandName = $this->input->getCommand();
+        set_exception_handler([$this, 'exceptionHandler']);
     }
 
     /**********************************************************
@@ -142,7 +143,7 @@ abstract class AbstractApp
         } catch (\Throwable $e) {
             self::fire(self::ON_RUN_ERROR, [$e, $this]);
             $returnCode = $e->getCode() === 0 ? __LINE__ : $e->getCode();
-            $this->dispatchExHandler($e);
+            $this->exceptionHandler($e);
         }
 
         // call 'onAfterRun' service, if it is registered.
@@ -237,6 +238,10 @@ abstract class AbstractApp
 
         $this->validateName($name);
 
+        if (isset($this->commands[$name])) {
+            throw new \InvalidArgumentException("Command '$name' have been registered!");
+        }
+
         if (is_string($handler)) {
             if (!class_exists($handler)) {
                 throw new \InvalidArgumentException("The console command class [$handler] not exists!");
@@ -281,7 +286,7 @@ abstract class AbstractApp
      * @param \Exception|\Throwable $e
      * @throws \Exception
      */
-    protected function dispatchExHandler($e)
+    public function exceptionHandler($e)
     {
         // $this->logger->ex($e);
 

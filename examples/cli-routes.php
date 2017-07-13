@@ -13,11 +13,12 @@ use inhere\console\examples\TestCommand;
 use inhere\console\io\Input;
 use inhere\console\io\Output;
 
-$app->command('demo', function (Input $in, Output $out) {
+$app->command('exam', function (Input $in, Output $out) {
     $cmd = $in->getCommand();
 
     $out->info('hello, this is a test command: ' . $cmd);
 });
 
 $app->command('test', TestCommand::class);
+$app->command(\inhere\console\examples\DemoCommand::class);
 $app->controller('home', HomeController::class);

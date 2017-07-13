@@ -53,63 +53,56 @@ abstract class Controller extends AbstractCommand
 
     /**
      * 运行控制器的 action
+     * @param  Input $input
+     * @param  Output $output
      * @return mixed
-     * @throws \HttpException
      */
-    public function run()
+    protected function execute($input, $output)
     {
-        $this->configure();
-        $action = $this->action;
-
-        if ($action && $this->input->sameOpt(['h','help'])) {
-            return $this->helpCommand();
-        }
-
-        $result = '';
-        $action = $action ?: $this->defaultAction;
+        $status = 0;
+        $action = $this->action ?: $this->defaultAction;
         $action = Helper::transName(trim($action, '/'));
 
         $method = $this->actionSuffix ? $action . ucfirst($this->actionSuffix) : $action;
 
         // the action method exists and only allow access public method.
-        if (
-            method_exists($this, $method) &&
-            (($refMethod = new \ReflectionMethod($this, $method)) && $refMethod->isPublic())
-        ) {
+        if (method_exists($this, $method) && (($rfm = new \ReflectionMethod($this, $method)) && $rfm->isPublic())) {
             // run action
-            try {
-                App::fire(App::ON_BEFORE_EXEC, [$this]);
-
-                $this->beforeRun();
-                $result = $this->$method($this->input, $this->output);
-                $this->afterRun();
-
-                App::fire(App::ON_AFTER_EXEC, [$this]);
-
-            } catch (\Throwable $e) {
-                App::fire(App::ON_EXEC_ERROR, [$e, $this]);
-                $this->handleRuntimeException($e);
-            }
+            $status = $this->$method($input, $output);
 
             // if you defined the method '$this->notFoundCallback' , will call it
         } elseif (($notFoundCallback = $this->notFoundCallback) && method_exists($this, $notFoundCallback)) {
-            $result = $this->{$notFoundCallback}($action);
+            $status = $this->{$notFoundCallback}($action);
         } else {
-            // throw new \RuntimeException('Sorry, the page you want to visit already does not exist!');
-            $this->output->error("Sorry, the controller command [$action] not exist!");
+            $status = -1;
+            $this->output->liteError("Sorry, the console controller command [$action] not exist!");
             $this->showCommandList();
         }
 
-        return $result;
+        return $status;
+    }
+
+    /**
+     * @return int
+     */
+    protected function showHelp()
+    {
+        if (true === parent::showHelp()) {
+            return 0;
+        }
+
+        return $this->helpCommand();
     }
 
     /**
      * Show help of the controller command group or specified command action
-     * @usage <info>{name}/[action] -h</info> OR <info>{name}/help [action]</info> OR <info>{name} [action]</info>
-     * @example home/help
-     *    home/help index
-     *    home/index -h
-     *    home index
+     * @usage <info>{name}/[command] -h</info> OR <info>{name}/help [command]</info> OR <info>{name} [command]</info>
+     * @example
+     * {script} {name} -h
+     * {script} {name}/help
+     * {script} {name}/help index
+     * {script} {name}/index -h
+     * {script} {name} index
      *
      * @return int
      */
@@ -123,11 +116,6 @@ abstract class Controller extends AbstractCommand
         }
 
         $action = Helper::transName($action);
-
-        if ($def = $this->getDefinition()) { var_dump($def);
-            return $this->write($def->getSynopsis());
-        }
-
         $method = $this->actionSuffix ? $action . ucfirst($this->actionSuffix) : $action;
 
         return $this->showHelpByMethodAnnotation($method, $action);
@@ -176,13 +164,15 @@ abstract class Controller extends AbstractCommand
             }
         }
 
-        $commands[] = "\nMore information please use: <info>$sName/[command] -h</info> OR <info>$sName/help [command]</info>";
-
         $this->output->mList([
             'Description:' => $classDes,
             'Usage:' => "$sName/[command] [arguments] [options]",
             'Group Name:' => "<info>$sName</info>",
             'Commands:' => $commands,
+            'Options:' => [
+                '--help,-h' => 'Show help of the command group or specified command action',
+                "\nMore information please use: <cyan>$sName/[command] -h</cyan> OR <cyan>$sName/help [command]</cyan>"
+            ],
         ]);
     }
 

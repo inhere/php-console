@@ -16,9 +16,17 @@ use inhere\console\Command;
  */
 class TestCommand extends Command
 {
+    protected static $description = 'this is a test independent command';
+
     /**
      * test text
      * @usage {name} test message
+     * @arguments
+     * arg1  argument description 1
+     * arg2  argument description 2
+     * @options
+     * --long,-s option description 1
+     * --opt    option description 2
      */
     public function execute($input, $output)
     {
