@@ -151,7 +151,9 @@ $this->output->dumpVars($this->input->getArgs(), $this->input->getBoolOpt('y'));
             'see help' => 'please use php bin/app -h',
             'a only value message text',
         ];
-        Show::panel($data, 'panel show', '#');
+        Show::panel($data, 'panel show', [
+            'borderChar' => '#'
+        ]);
 
         echo "\n";
         Show::helpPanel([

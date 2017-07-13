@@ -451,10 +451,10 @@ class Show
      * Show information data panel
      * @param  mixed $data
      * @param  string $title
-     * @param  string $borderChar
+     * @param  array $opts
      * @return int
      */
-    public static function panel($data, $title = 'Information Panel', $borderChar = '*'): int
+    public static function panel($data, $title = 'Information Panel', array $opts = []): int
     {
         if (!$data) {
             self::write('<info>No data to display!</info>');
@@ -462,6 +462,12 @@ class Show
             return -404;
         }
 
+        $opts = array_merge([
+            'borderChar' => '*',
+            'ucfirst' => true,
+        ], $opts);
+
+        $borderChar = $opts['borderChar'];
         $data = is_array($data) ? array_filter($data) : [trim($data)];
         $title = trim($title);
 
@@ -529,6 +535,7 @@ class Show
             'leftChar' => "  $borderChar ",
             'sepChar' => ' | ',
             'keyMaxWidth' => $labelMaxWidth,
+            'ucfirst' => $opts['ucfirst'],
         ]);
 
         // already exists "\n"

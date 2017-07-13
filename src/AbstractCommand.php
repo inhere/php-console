@@ -79,7 +79,12 @@ abstract class AbstractCommand
         if ($definition) {
             $this->definition = $definition;
         }
+
+        $this->init();
     }
+
+    protected function init()
+    {}
 
     /**
      * configure input definition
@@ -318,6 +323,7 @@ abstract class AbstractCommand
                 if (self::$annotationTags[$tag]) {
                     $lines = array_map(function ($line) {
                         return trim($line);
+                        // return $line;
                     }, explode("\n", $msg));
 
                     $msg = implode("\n  ", array_filter($lines, 'trim'));

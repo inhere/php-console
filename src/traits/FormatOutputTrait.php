@@ -133,16 +133,16 @@ trait FormatOutputTrait
      * @inheritdoc
      * @see Show::panel()
      */
-    public function panel(array $data, $title = 'Info panel', $borderChar = '*')
+    public function panel(array $data, $title = 'Information panel', array $opts = [])
     {
-        Show::panel($data, $title, $borderChar);
+        Show::panel($data, $title, $opts);
     }
 
     /**
      * @inheritdoc
      * @see Show::table()
      */
-    public function table(array $data, $title = 'Info List', $showBorder = true)
+    public function table(array $data, $title = 'Data Table', $showBorder = true)
     {
         Show::table($data, $title, $showBorder);
     }

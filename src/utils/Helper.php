@@ -284,6 +284,7 @@ class Helper
             'sepChar' => ' ',  // e.g ' | ' => OUT: key | value
             'keyStyle' => '',   // e.g 'info','comment'
             'keyMaxWidth' => null, // if not set, will automatic calculation
+            'ucfirst' => true, // if not set, will automatic calculation
         ], $opts);
 
         if (!is_numeric($opts['keyMaxWidth'])) {
@@ -323,7 +324,7 @@ class Helper
                 $value = (string)$value;
             }
 
-            $value = $hasKey ? ucfirst($value) : $value;
+            $value = $hasKey && $opts['ucfirst'] ? ucfirst($value) : $value;
             $text .= "$value\n";
         }
 
