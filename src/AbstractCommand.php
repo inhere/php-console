@@ -99,7 +99,9 @@ abstract class AbstractCommand
      */
     protected function createDefinition()
     {
-        $this->definition = new InputDefinition();
+        if (!$this->definition) {
+            $this->definition = new InputDefinition();
+        }
 
         return $this->definition;
     }
@@ -314,23 +316,25 @@ abstract class AbstractCommand
         $tags = Annotation::tagList($this->replaceAnnotationVars($doc));
 
         foreach ($tags as $tag => $msg) {
-            if (!is_string($msg)) {
+            if (!$msg || !is_string($msg)) {
                 continue;
             }
 
             if (isset(self::$annotationTags[$tag])) {
+                $msg = trim($msg);
+
                 // need multi align
                 if (self::$annotationTags[$tag]) {
-                    $lines = array_map(function ($line) {
-                        return trim($line);
-                        // return $line;
-                    }, explode("\n", $msg));
+                    // $lines = array_map(function ($line) {
+                    //     // return trim($line);
+                    //     return $line;
+                    // }, explode("\n", $msg));
 
-                    $msg = implode("\n  ", array_filter($lines, 'trim'));
+                    // $msg = implode("\n", array_filter($lines, 'trim'));
                 }
 
                 $tag = ucfirst($tag);
-                $this->write("<comment>$tag:</comment>\n  $msg\n");
+                $this->write("<comment>$tag:</comment>\n $msg\n");
             }
         }
 

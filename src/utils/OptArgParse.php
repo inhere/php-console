@@ -9,10 +9,10 @@
 namespace inhere\console\utils;
 
 /**
- * Class OptArg - console argument and option parse
+ * Class OptArgParse - console argument and option parse
  * @package inhere\console\utils
  */
-class OptArg
+final class OptArgParse
 {
     /**
      * These words will be as a Boolean value
@@ -30,7 +30,7 @@ class OptArg
      * ```
      *
      * ```php
-     * $result = OptArg::parseArgv($_SERVER['argv']);
+     * $result = OptArgParse::byArgv($_SERVER['argv']);
      * ```
      *
      * Supports args:
@@ -51,7 +51,7 @@ class OptArg
      * @param bool $mergeOpts Whether merge short-opts and long-opts
      * @return array
      */
-    public static function parseArgv(array $params, array $noValues = [], $mergeOpts = false): array
+    public static function byArgv(array $params, array $noValues = [], $mergeOpts = false): array
     {
         $args = $sOpts = $lOpts = [];
 
@@ -80,7 +80,8 @@ class OptArg
                 // check if next parameter is a descriptor or a value
                 $nxp = current($params);
 
-                if ($value === true && $nxp !== false && $nxp{0} !== '-' && !in_array($opt, $noValues, true)) {
+                // fix: allow empty string ''
+                if ($value === true && $nxp !== false && (!$nxp || $nxp{0} !== '-') && !in_array($opt, $noValues, true)) {
                     list(,$value) = each($params);
 
                     // short-opt: bool opts. like -e -abc
@@ -117,16 +118,11 @@ class OptArg
         return [$args, $sOpts, $lOpts];
     }
 
-    public static function findSpecial(array $params)
-    {
-        //
-    }
-
     /**
      * parse custom array params
      *
      * ```php
-     * $result = OptArg::parseArray([
+     * $result = OptArgParse::byArray([
      *  'arg' => 'val',
      *  '--lp' => 'val2',
      *  '--s' => 'val3',
@@ -136,7 +132,7 @@ class OptArg
      * @param array $params
      * @return array
      */
-    public static function parseArray(array $params)
+    public static function byArray(array $params)
     {
         $args = $sOpts = $lOpts = [];
 
@@ -160,12 +156,12 @@ class OptArg
     /**
      *
      * ```php
-     * $result = OptArg::parseString('foo --bar="foobar"');
+     * $result = OptArgParse::byString('foo --bar="foobar"');
      * ```
-     *
+     * @todo ...
      * @param string $string
      */
-    public static function parseString(string $string)
+    public static function byString(string $string)
     {
 
     }
@@ -201,7 +197,6 @@ class OptArg
      * Escapes a token through escapeshellarg if it contains unsafe chars.
      *
      * @param string $token
-     *
      * @return string
      */
     public static function escapeToken($token)

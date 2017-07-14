@@ -8,7 +8,7 @@
 
 namespace inhere\console\io;
 
-use inhere\console\utils\OptArg;
+use inhere\console\utils\OptArgParse;
 
 /**
  * Class Input
@@ -85,11 +85,7 @@ class Input implements InputInterface
         $this->script = array_shift($argv);
         $this->tokens = $argv;
 
-        list(
-            $this->args,
-            $this->sOpts,
-            $this->lOpts
-            ) = OptArg::parseArgv($argv);
+        list($this->args, $this->sOpts, $this->lOpts) = OptArgParse::byArgv($argv);
 
         // collect command `server`
         $this->command = isset($this->args[0]) ? array_shift($this->args) : '';
@@ -102,11 +98,11 @@ class Input implements InputInterface
     {
         $tokens = array_map(function ($token) {
             if (preg_match('{^(-[^=]+=)(.+)}', $token, $match)) {
-                return $match[1] . OptArg::escapeToken($match[2]);
+                return $match[1] . OptArgParse::escapeToken($match[2]);
             }
 
             if ($token && $token[0] !== '-') {
-                return OptArg::escapeToken($token);
+                return OptArgParse::escapeToken($token);
             }
 
             return $token;
