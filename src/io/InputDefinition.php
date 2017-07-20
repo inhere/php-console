@@ -381,7 +381,7 @@ class InputDefinition
     /**
      * Gets the synopsis.
      * @param bool $short 简化版显示
-     * @return string
+     * @return array
      */
     public function getSynopsis($short = false)
     {

@@ -157,6 +157,8 @@ abstract class AbstractCommand
 
             return true;
         }
+
+        return false;
     }
 
     /**
@@ -234,7 +236,7 @@ abstract class AbstractCommand
 
         // check options
         $opts = $missingOpts = [];
-        $givenLOpts = $in->getLongOpts();
+        //$givenLOpts = $in->getLongOpts();
         $defOpts = $def->getOptions();
 
         foreach ($defOpts as $name => $conf) {
@@ -251,6 +253,10 @@ abstract class AbstractCommand
             $this->output->liteError(sprintf('Not enough options parameters (missing: "%s").', implode(', ', $missingOpts)));
 
             return false;
+        }
+
+        if ($opts) {
+            $in->setLOpts($opts);
         }
 
         return true;
@@ -324,14 +330,14 @@ abstract class AbstractCommand
                 $msg = trim($msg);
 
                 // need multi align
-                if (self::$annotationTags[$tag]) {
+                // if (self::$annotationTags[$tag]) {
                     // $lines = array_map(function ($line) {
                     //     // return trim($line);
                     //     return $line;
                     // }, explode("\n", $msg));
 
                     // $msg = implode("\n", array_filter($lines, 'trim'));
-                }
+                // }
 
                 $tag = ucfirst($tag);
                 $this->write("<comment>$tag:</comment>\n $msg\n");

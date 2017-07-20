@@ -8,6 +8,8 @@
 
 namespace inhere\console;
 
+use inhere\console\io\Input;
+use inhere\console\io\Output;
 use inhere\console\utils\Helper;
 use inhere\console\utils\Annotation;
 
@@ -59,7 +61,6 @@ abstract class Controller extends AbstractCommand
      */
     protected function execute($input, $output)
     {
-        $status = 0;
         $action = $this->action ?: $this->defaultAction;
         $action = Helper::transName(trim($action, '/'));
 

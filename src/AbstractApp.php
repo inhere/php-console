@@ -76,7 +76,7 @@ abstract class AbstractApp
     /**
      * @var bool
      */
-    private $hideRootPath = true;
+    //private $hideRootPath = true;
 
     /**
      * App constructor.
