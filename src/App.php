@@ -17,7 +17,7 @@ class App extends AbstractApp
     /**
      * @var string
      */
-    private $delimiter = '/';
+    public $delimiter = ':'; // '/' ':'
 
     /**
      * addCommand
@@ -145,6 +145,7 @@ class App extends AbstractApp
         }
 
         $object::setName($name);
+        $object->delimiter = $this->delimiter;
 
         return $object->setAction($action)->run();
     }

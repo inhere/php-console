@@ -40,6 +40,13 @@ abstract class Controller extends AbstractCommand
     protected $notFoundCallback = 'notFound';
 
     /**
+     * @var string
+     */
+    public $delimiter = '/'; // '/' ':'
+
+    protected $showMore = true;
+
+    /**
      * load command configure
      */
     protected function configure()
@@ -62,7 +69,7 @@ abstract class Controller extends AbstractCommand
     protected function execute($input, $output)
     {
         $action = $this->action ?: $this->defaultAction;
-        $action = Helper::transName(trim($action, '/'));
+        $action = Helper::transName(trim($action, $this->delimiter));
 
         $method = $this->actionSuffix ? $action . ucfirst($this->actionSuffix) : $action;
 
@@ -165,14 +172,16 @@ abstract class Controller extends AbstractCommand
             }
         }
 
+        $sep = $this->delimiter;
+        $name = $sName . $sep;
         $this->output->mList([
             'Description:' => $classDes,
-            'Usage:' => "$sName/[command] [arguments] [options]",
+            'Usage:' => "{$name}[command] [arguments] [options]",
             'Group Name:' => "<info>$sName</info>",
             'Commands:' => $commands,
             'Options:' => [
                 '--help,-h' => 'Show help of the command group or specified command action',
-                "\nMore information please use: <cyan>$sName/[command] -h</cyan> OR <cyan>$sName/help [command]</cyan>"
+                $this->showMore ? "\nMore information please use <cyan>{$name}[command] -h</cyan> OR <cyan>{$name}help [command]</cyan>" : ''
             ],
         ]);
     }
