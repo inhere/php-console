@@ -46,10 +46,13 @@ use inhere\console\io\Input;
 use inhere\console\io\Output;
 use inhere\console\App;
 
-$config = [];
+$meta = [
+    'name' => 'My Console App',
+    'version' => '1.0.2',
+];
 $input = new Input;
 $output = new Output;
-$app = new App($config, $input, $output);
+$app = new App($meta, $input, $output);
 
 // add command routes
 $app->command('demo', function (Input $in, Output $out) {

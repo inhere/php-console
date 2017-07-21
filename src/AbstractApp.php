@@ -34,19 +34,19 @@ abstract class AbstractApp
     const ON_NOT_FOUND = 'notFound';
 
     /**
-     * app config
+     * app meta config
      * @var array
      */
-    private $config = [
-        'env' => 'pdt', // dev test pdt
-        'debug' => false,
+    private $meta = [
         'name' => 'My Console',
         'version' => '0.5.1',
         'publishAt' => '2017.03.24',
         'rootPath' => '',
         'hideRootPath' => true,
-        'charset' => 'UTF-8',
-        'timeZone' => 'Asia/Shanghai',
+        // 'env' => 'pdt', // dev test pdt
+        // 'debug' => false,
+        // 'charset' => 'UTF-8',
+        // 'timeZone' => 'Asia/Shanghai',
     ];
 
     /**
@@ -56,6 +56,14 @@ abstract class AbstractApp
         'version' => 'Show application version information',
         'help' => 'Show application help information',
         'list' => 'List all group and independent commands',
+    ];
+
+    /**
+     * @var array
+     */
+    protected static $internalOptions = [
+        '--debug' => 'setting the application runtime debug level',
+        '--no-color' => 'setting no color for message output',
     ];
 
     /**
@@ -80,14 +88,14 @@ abstract class AbstractApp
 
     /**
      * App constructor.
-     * @param array $config
+     * @param array $meta
      * @param Input $input
      * @param Output $output
      */
-    public function __construct(array $config = [], Input $input = null, Output $output = null)
+    public function __construct(array $meta = [], Input $input = null, Output $output = null)
     {
         $this->runtimeCheck();
-        $this->setConfig($config);
+        $this->setMeta($meta);
 
         $this->input = $input ?: new Input();
         $this->output = $output ?: new Output();
@@ -118,7 +126,7 @@ abstract class AbstractApp
 
     protected function prepareRun()
     {
-        date_default_timezone_set($this->config('timeZone', 'UTC'));
+        // date_default_timezone_set($this->config('timeZone', 'UTC'));
     }
 
     /**
@@ -127,11 +135,9 @@ abstract class AbstractApp
      */
     public function run($exit = true)
     {
-        $this->prepareRun();
-
         $command = $this->input->getCommand();
 
-        // like show help info
+        $this->prepareRun();
         $this->filterSpecialCommand($command);
 
         // call 'onBeforeRun' service, if it is registered.
@@ -302,7 +308,7 @@ abstract class AbstractApp
                 $e->getTraceAsString()
             );
 
-            if ($this->config('hideRootPath') && $rootPath = $this->config('rootPath')) {
+            if ($this->meta['hideRootPath'] && $rootPath = $this->meta['rootPath']) {
                 $message = str_replace($rootPath, '{ROOT}', $message);
             }
 
@@ -439,7 +445,8 @@ abstract class AbstractApp
             //'There are all console controllers and independent commands.',
             'Group Commands:(by controller)' => $controllerArr ?: '... No register any group command(controller)',
             'Independent Commands:' => $commandArr ?: '... No register any independent command',
-            'Internal Commands:' => $internalCommands
+            'Internal Commands:' => $internalCommands,
+            'Internal Options:' => self::$internalOptions
         ]);
 
         $this->output->write("More please see: <cyan>$script [controller|command] -h</cyan>");
@@ -518,63 +525,31 @@ abstract class AbstractApp
     }
 
     /**
-     * get/set config
-     * @param  array|string $name
-     * @param  mixed $default
-     * @return mixed
+     * set meta info
+     * @param array $meta
      */
-    public function config($name, $default = null)
+    public function setMeta(array $meta)
     {
-        // `$name` is array, set config.
-        if (is_array($name)) {
-            foreach ((array) $name as $key => $value) {
-                $this->config[$key] = $value;
-            }
-
-            return true;
-        }
-
-        // is string, get config
-        if (!is_string($name)) {
-            return $default;
-        }
-
-        // allow get $config['top']['sub'] by 'top.sub'
-        if (strpos($name, '.') > 1) {
-            $nodes = array_filter(explode('.', $name));
-
-            return Helper::findValueByNodes($this->config, $nodes, $default);
-        }
-
-        return $this->config[$name] ?? $default;
-    }
-
-    /**
-     * set config
-     * @param array $config
-     */
-    public function setConfig($config)
-    {
-        if ($config) {
-            $this->config = array_merge($this->config, (array)$config);
+        if ($meta) {
+            $this->meta = array_merge($this->meta, (array)$meta);
         }
     }
 
     /**
-     * get config
+     * get meta
      * @return array
      */
-    public function getConfig()
+    public function getMeta()
     {
-        return $this->config;
+        return $this->meta;
     }
 
     /**
      * is Debug
-     * @return boolean
+     * @return boolean|int
      */
-    public function isDebug(): bool
+    public function isDebug()
     {
-        return (bool) $this->config('debug');
+        return $this->input->getOpt('debug');
     }
 }
