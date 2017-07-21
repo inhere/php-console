@@ -194,14 +194,15 @@ abstract class AbstractApp
      */
     public function controller(string $name, string $controller = null)
     {
-        if (class_exists($name, false)) {
+        if (!$controller && class_exists($name)) {
             /** @var Controller $controller */
             $controller = $name;
             $name = $controller::getName();
         }
 
         if (!$name || !$controller) {
-            throw new \InvalidArgumentException('Group-command "name" and "controller" not allowed to is empty!');
+            throw new \InvalidArgumentException('Group-command "name" and "controller" not allowed to is empty! name: '
+             . $name . ', controller: ' .$controller);
         }
 
         $this->validateName($name, true);
@@ -225,7 +226,11 @@ abstract class AbstractApp
     public function controllers(array $controllers)
     {
         foreach ($controllers as $name => $controller) {
-            $this->controller($name, $controller);
+            if (is_int($name)) {
+                $this->controller($controller);
+            } else {
+                $this->controller($name, $controller);
+            }
         }
     }
 
@@ -237,7 +242,7 @@ abstract class AbstractApp
      */
     public function command(string $name, $handler = null)
     {
-        if (class_exists($name)) {
+        if (!$handler && class_exists($name)) {
             /** @var Command $handler */
             $handler = $name;
             $name = $handler::getName();
