@@ -126,7 +126,7 @@ class App extends AbstractApp
     public function runAction($name, $action, $believable = false)
     {
         // if $believable = true, will skip check.
-        if (!$believable && $this->isController($name)) {
+        if (!$believable && !$this->isController($name)) {
             throw new \InvalidArgumentException("The console controller-command [$name] not exists!");
         }
 
