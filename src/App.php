@@ -15,11 +15,6 @@ namespace inhere\console;
 class App extends AbstractApp
 {
     /**
-     * @var string
-     */
-    public $delimiter = ':'; // '/' ':'
-
-    /**
      * addCommand
      * @param string $name
      * @param mixed $handler

@@ -34,6 +34,11 @@ abstract class AbstractApp
     const ON_NOT_FOUND = 'notFound';
 
     /**
+     * @var string
+     */
+    public $delimiter = ':'; // '/' ':'
+
+    /**
      * app meta config
      * @var array
      */
@@ -367,12 +372,13 @@ abstract class AbstractApp
     public function showHelpInfo($quit = true)
     {
         $script = $this->input->getScript();
+        $sep = $this->delimiter;
 
         $this->output->helpPanel([
             'usage' => "$script [route|command] [arg0 arg1=value1 arg2=value2 ...] [--opt -v -h ...]",
             'example' => [
                 "$script test (run a independent command)",
-                "$script home/index (run a command of the group)"
+                "$script home{$sep}index (run a command of the group)"
             ]
         ], $quit);
     }
@@ -384,9 +390,9 @@ abstract class AbstractApp
     public function showVersionInfo($quit = true)
     {
         $date = date('Y-m-d');
-        $name = $this->config('name', 'Console Application');
-        $version = $this->config('version', 'Unknown');
-        $publishAt = $this->config('publishAt', 'Unknown');
+        $name = $this->getMeta('name', 'Console Application');
+        $version = $this->getMeta('version', 'Unknown');
+        $publishAt = $this->getMeta('publishAt', 'Unknown');
         $phpVersion = PHP_VERSION;
         $os = PHP_OS;
 
@@ -440,9 +446,10 @@ abstract class AbstractApp
             $commandArr[$name] = $desc;
         }
 
-        $this->output->write('There are all console controllers and independent commands.');
+        // $this->output->write('There are all console controllers and independent commands.');
         $this->output->mList([
             //'There are all console controllers and independent commands.',
+            'Usage:' => "$script [route|command] [arg0 arg1=value1 arg2=value2 ...] [--opt -v -h ...]",
             'Group Commands:(by controller)' => $controllerArr ?: '... No register any group command(controller)',
             'Independent Commands:' => $commandArr ?: '... No register any independent command',
             'Internal Commands:' => $internalCommands,
@@ -536,12 +543,16 @@ abstract class AbstractApp
     }
 
     /**
-     * get meta
+     * get meta info
      * @return array
      */
-    public function getMeta()
+    public function getMeta($name = null, $default = null)
     {
-        return $this->meta;
+        if (!$name) {
+            return $this->meta;
+        }
+
+        return $this->meta[$name] ?? $default;
     }
 
     /**
