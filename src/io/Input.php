@@ -216,6 +216,33 @@ class Input implements InputInterface
         return $value === null ? (int)$default : (int)$value;
     }
 
+    /**
+     * get same args value
+     * eg: des description
+     *
+     * ```php
+     * $input->sameArg(['des', 'description']);
+     * ```
+     *
+     * @param array $names
+     * @param mixed $default
+     * @return bool|mixed|null
+     */
+    public function getSameArg(array $names, $default = null)
+    {
+        return $this->sameArg($names, $default);
+    }
+    public function sameArg(array $names, $default = null)
+    {
+        foreach ($names as $name) {
+            if ($this->hasArg($name)) {
+                return $this->get($name);
+            }
+        }
+
+        return $default;
+    }
+
     /////////////////////////////////////////////////////////////////////////////////////////
     /// long/short options (eg: -d --help)
     /////////////////////////////////////////////////////////////////////////////////////////

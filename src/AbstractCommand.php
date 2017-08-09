@@ -309,12 +309,17 @@ abstract class AbstractCommand
     protected function showHelpByMethodAnnotation($method, $action = null)
     {
         $ref = new \ReflectionClass($this);
-        $cName = lcfirst(self::getName() ?: $ref->getShortName());
+        $name = $this->input->getCommand();
 
-        if (!$ref->hasMethod($method) || !$ref->getMethod($method)->isPublic()) {
-            $name = $action ? "$cName/$action" : $cName;
-            $this->write("Command [<info>$name</info>] don't exist or don't allow access in the class.");
+        if (!$ref->hasMethod($method)) {
+            $this->write("The command [<info>$name</info>] don't exist in the class.");
 
+            return 0;
+        }
+
+        // is a console controller command
+        if ($action && !$ref->getMethod($method)->isPublic()) {
+            $this->write("The command [<info>$name</info>] don't allow access in the class.");
             return 0;
         }
 
