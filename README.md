@@ -23,14 +23,14 @@ a php console application library.
 
 - by composer
 
-编辑 `composer.json`，在 `require` 添加
+edit `composer.json`，at `require` add
 
 ```
 "inhere/console": "dev-master",
 // "inhere/console": "dev-php5", // for php5
 ```
 
-然后执行: `composer update`
+run: `composer update`
 
 - Direct fetch
 

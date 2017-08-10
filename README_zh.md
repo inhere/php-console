@@ -8,7 +8,8 @@
 - 颜色风格输出支持
 - 特殊格式信息显示
 - 用户信息交互支持
-- 其他功能
+- 命令方法注释自动提取为参数 `arguments` 和 选项 `options`
+- 类似 symfony/console 的预定义参数定义支持
 
 ## 项目地址
 
@@ -625,3 +626,21 @@ $answer = Interact::limitedAsk('please input you age?', null, function($age)
 ## License
 
 MIT
+
+## 我的其他项目
+
+### `inhere/redis` [github](https://github.com/inhere/php-redis) [git@osc](https://git.oschina.net/inhere/php-redis)
+
+简单的redis操作客户端包装库
+
+### `inhere/sroute` [github](https://github.com/inhere/php-srouter)  [git@osc](https://git.oschina.net/inhere/php-srouter)
+ 
+ 轻量且功能丰富快速的路由库
+
+### `inhere/php-validate` [github](https://github.com/inhere/php-validate)  [git@osc](https://git.oschina.net/inhere/php-validate)
+ 
+ 一个简洁小巧且功能完善的php验证库。仅有几个文件，无依赖。
+ 
+### `inhere/http` [github](https://github.com/inhere/php-http) [git@osc](https://git.oschina.net/inhere/php-http)
+
+http 工具库(`request` 请求 `response` 响应 `curl` curl请求库，有简洁、完整和并发请求三个版本的类)
