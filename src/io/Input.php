@@ -88,7 +88,7 @@ class Input implements InputInterface
         list($this->args, $this->sOpts, $this->lOpts) = OptArgParse::byArgv($argv);
 
         // collect command `server`
-        $this->command = isset($this->args[0]) ? array_shift($this->args) : '';
+        $this->command = isset($this->args[0]) ? array_shift($this->args) : null;
     }
 
     /**
@@ -124,9 +124,34 @@ class Input implements InputInterface
         return trim(fgets($this->inputStream));
     }
 
-    /////////////////////////////////////////////////////////////////////////////////////////
-    /// arguments (eg: name=john city=chengdu)
-    /////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////
+/// arguments (eg: name=john city=chengdu)
+/////////////////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * @return array
+     */
+    public function getArguments(): array
+    {
+        return $this->args;
+    }
+
+    /**
+     * @return array
+     */
+    public function getArgs(): array
+    {
+        return $this->args;
+    }
+
+    /**
+     * @param array $args
+     * @param bool $replace
+     */
+    public function setArgs(array $args, $replace = false)
+    {
+        $this->args = $replace ? $args : array_merge($this->args, $args);
+    }
 
     /**
      * @param string|int $name
@@ -243,9 +268,9 @@ class Input implements InputInterface
         return $default;
     }
 
-    /////////////////////////////////////////////////////////////////////////////////////////
-    /// long/short options (eg: -d --help)
-    /////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////
+/// long/short options (eg: -d --help)
+/////////////////////////////////////////////////////////////////////////////////////////
 
     /**
      * get (long/short)opt value
@@ -382,6 +407,31 @@ class Input implements InputInterface
         return is_bool($val) ? $val : (bool)$default;
     }
 
+    /**
+     * @return array
+     */
+    public function getShortOpts(): array
+    {
+        return $this->sOpts;
+    }
+
+    /**
+     * @return array
+     */
+    public function getSOpts(): array
+    {
+        return $this->sOpts;
+    }
+
+    /**
+     * @param array $sOpts
+     * @param bool $replace
+     */
+    public function setSOpts(array $sOpts, $replace = false)
+    {
+        $this->sOpts = $replace ? $sOpts : array_merge($this->sOpts, $sOpts);
+    }
+
     /////////////////// long-opts /////////////////////
 
     /**
@@ -425,14 +475,39 @@ class Input implements InputInterface
     /**
      * @return array
      */
+    public function getLongOpts(): array
+    {
+        return $this->lOpts;
+    }
+
+    /**
+     * @return array
+     */
+    public function getLOpts(): array
+    {
+        return $this->lOpts;
+    }
+
+    /**
+     * @param array $lOpts
+     * @param bool $replace
+     */
+    public function setLOpts(array $lOpts, $replace = false)
+    {
+        $this->lOpts = $replace ? $lOpts : array_merge($this->lOpts, $lOpts);
+    }
+
+    /**
+     * @return array
+     */
     public function getOpts(): array
     {
         return array_merge($this->sOpts, $this->lOpts);
     }
 
-    /////////////////////////////////////////////////////////////////////////////////////////
-    /// getter/setter
-    /////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////
+/// getter/setter
+/////////////////////////////////////////////////////////////////////////////////////////
 
     /**
      * @return string
@@ -467,11 +542,12 @@ class Input implements InputInterface
     }
 
     /**
+     * @param null|string $default
      * @return string
      */
-    public function getCommand(): string
+    public function getCommand($default = null): string
     {
-        return $this->command;
+        return $this->command ?: $default;
     }
 
     /**
@@ -480,81 +556,6 @@ class Input implements InputInterface
     public function setCommand(string $command)
     {
         $this->command = $command;
-    }
-
-    /**
-     * @return array
-     */
-    public function getArguments(): array
-    {
-        return $this->args;
-    }
-
-    /**
-     * @return array
-     */
-    public function getArgs(): array
-    {
-        return $this->args;
-    }
-
-    /**
-     * @param array $args
-     * @param bool $replace
-     */
-    public function setArgs(array $args, $replace = false)
-    {
-        $this->args = $replace ? $args : array_merge($this->args, $args);
-    }
-
-    /**
-     * @return array
-     */
-    public function getShortOpts(): array
-    {
-        return $this->sOpts;
-    }
-
-    /**
-     * @return array
-     */
-    public function getSOpts(): array
-    {
-        return $this->sOpts;
-    }
-
-    /**
-     * @param array $sOpts
-     * @param bool $replace
-     */
-    public function setSOpts(array $sOpts, $replace = false)
-    {
-        $this->sOpts = $replace ? $sOpts : array_merge($this->sOpts, $sOpts);
-    }
-
-    /**
-     * @return array
-     */
-    public function getLongOpts(): array
-    {
-        return $this->lOpts;
-    }
-
-    /**
-     * @return array
-     */
-    public function getLOpts(): array
-    {
-        return $this->lOpts;
-    }
-
-    /**
-     * @param array $lOpts
-     * @param bool $replace
-     */
-    public function setLOpts(array $lOpts, $replace = false)
-    {
-        $this->lOpts = $replace ? $lOpts : array_merge($this->lOpts, $lOpts);
     }
 
     /**

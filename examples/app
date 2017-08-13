@@ -13,7 +13,7 @@ $app = new \inhere\console\App([
 
 // require dirname(__DIR__) . '/boot/cli-services.php';
 
-require __DIR__ . '/cli-routes.php';
+require __DIR__ . '/routes.php';
 
 // run
 $app->run();

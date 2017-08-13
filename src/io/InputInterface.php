@@ -14,7 +14,7 @@ namespace inhere\console\io;
  */
 interface InputInterface
 {
-    // for fixed arg and opt command/controller
+    // fixed args and opts for a command/controller-command
     const ARG_REQUIRED = 1;
     const ARG_OPTIONAL = 2;
     const ARG_IS_ARRAY = 4;
@@ -32,9 +32,21 @@ interface InputInterface
      */
     public function read($question = null, $nl = false): string;
 
+    /**
+     * @return string
+     */
     public function getScript(): string;
 
-    public function getCommand(): string;
+    /**
+     * @param null|string $default
+     * @return string
+     */
+    public function getCommand($default = null): string;
+
+    /**
+     * @return array
+     */
+    public function getArgs(): array;
 
     /**
      * get Argument
@@ -43,6 +55,11 @@ interface InputInterface
      * @return mixed
      */
     public function getArg($name, $default = null);
+
+    /**
+     * @return array
+     */
+    public function getOpts(): array;
 
     /**
      * @param string $name
