@@ -17,7 +17,7 @@ use inhere\console\traits\SimpleEventStaticTrait;
  * Class AbstractApp
  * @package inhere\console
  */
-abstract class AbstractApp
+abstract class AbstractApp implements AppInterface
 {
     use InputOutputTrait;
     use SimpleEventStaticTrait;
@@ -85,6 +85,11 @@ abstract class AbstractApp
     protected $commands = [];
 
     /**
+     * @var array
+     */
+    private $commandMessages = [];
+
+    /**
      * @var string
      */
     private $commandName;
@@ -135,6 +140,7 @@ abstract class AbstractApp
     protected function prepareRun()
     {
         // date_default_timezone_set($this->config('timeZone', 'UTC'));
+        //new AutoCompletion(array_merge($this->getCommandNames(), $this->getControllerNames()));
     }
 
     /**
@@ -241,9 +247,10 @@ abstract class AbstractApp
      * Register a app independent console command
      * @param string $name
      * @param string|\Closure $handler
+     * @param null|string $description
      * @return $this
      */
-    public function command(string $name, $handler = null)
+    public function command(string $name, $handler = null, $description = null)
     {
         if (!$handler && class_exists($name)) {
             /** @var Command $handler */
@@ -278,6 +285,10 @@ abstract class AbstractApp
 
         // is an class name string
         $this->commands[$name] = $handler;
+
+        if ($description) {
+            $this->addCommandMessage($name, $description);
+        }
 
         return $this;
     }
@@ -455,6 +466,8 @@ abstract class AbstractApp
             /** @var AbstractCommand $command */
             if (is_subclass_of($command, Command::class)) {
                 $desc = $command::getDescription() ?: $desPlaceholder;
+            } else if ($msg = $this->getCommandMessage($name)) {
+                $desc = $msg;
             } else if (is_string($command)) {
                 $desc = 'A handler: ' . $command;
             } else if (is_object($command)) {
@@ -478,6 +491,26 @@ abstract class AbstractApp
         $quit && $this->stop();
     }
 
+    /**
+     * @param string $name
+     * @param string $default
+     * @return string
+     */
+    public function getCommandMessage($name, $default = null)
+    {
+        return $this->commandMessages[$name] ?? $default;
+    }
+
+    /**
+     * @param string $name The command name
+     * @param string $message
+     * @return string
+     */
+    public function addCommandMessage($name, $message)
+    {
+        return $this->commandMessages[$name] = $message;
+    }
+
     /**********************************************************
      * getter/setter methods
      **********************************************************/
@@ -488,6 +521,22 @@ abstract class AbstractApp
     public static function isNoColor(): bool
     {
         return self::$noColor;
+    }
+
+    /**
+     * @return array
+     */
+    public function getControllerNames()
+    {
+        return array_keys($this->controllers);
+    }
+
+    /**
+     * @return array
+     */
+    public function getCommandNames()
+    {
+        return array_keys($this->commands);
     }
 
     /**
@@ -590,5 +639,21 @@ abstract class AbstractApp
     public function isDebug()
     {
         return $this->input->getOpt('debug');
+    }
+
+    /**
+     * @return array
+     */
+    public function getCommandMessages(): array
+    {
+        return $this->commandMessages;
+    }
+
+    /**
+     * @param array $commandMessages
+     */
+    public function setCommandMessages(array $commandMessages)
+    {
+        $this->commandMessages = $commandMessages;
     }
 }

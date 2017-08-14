@@ -79,14 +79,14 @@ class ProgressBar
     private $messages = [];
 
     /**
-     * section formatters
+     * section parsers 
      * @var \Closure[]
      */
-    private static $formatters = [
+    private static $parsers = [
         // 'precent' => function () { ... },
     ];
 
-    const DEFAULT_FORMAT = '[{@bar}] {@percent}({@current}/{@max}) {@memory}';
+    const DEFAULT_FORMAT = '[{@bar}] {@percent:3s}%({@current}/{@max}) {@elapsed:6s}/{@estimated:-6s} {@memory:6s}';
 
     /**
      * @param OutputInterface $output
@@ -107,7 +107,6 @@ class ProgressBar
         $this->output = $output ?: new Output;
 
         $this->setMaxSteps($maxSteps);
-
         // Helper::loadAttrs($this, $config);
     }
 
@@ -188,6 +187,8 @@ class ProgressBar
 
         $this->finishTime = time();
         $this->advanceTo($this->maxSteps);
+
+        $this->output->write('');
     }
 
     /**
@@ -237,7 +238,6 @@ class ProgressBar
         }
 
         $this->firstRun = false;
-        $this->output->write($text, false);
     }
 
     /**
@@ -246,13 +246,13 @@ class ProgressBar
     protected function buildLine()
     {
 //        $regex = "{%([a-z\-_]+)(?:\:([^%]+))?%}i";
-        return preg_replace_callback('/({[\w_]+})/i', function ($matches) {
-            if ($formatter = $this->getFormatter($matches[1])) {
-                $text = call_user_func($formatter, $this, $this->output);
+        return preg_replace_callback('/{@([\w]+)(?:\:([\w-]+))?}/i', function ($matches) {
+            if ($formatter = $this->getParser($matches[1])) {
+                $text = $formatter($this, $this->output);
             } elseif (isset($this->messages[$matches[1]])) {
                 $text = $this->messages[$matches[1]];
             } else {
-                return $matches[0];
+                return $matches[1];
             }
 
             if (isset($matches[2])) {
@@ -264,29 +264,29 @@ class ProgressBar
     }
 
     /**
-     * set section Formatter
+     * set section Parser
      * @param string   $section
      * @param callable $handler
      */
-    public function setFormatter(string $section, callable $handler)
+    public function setParser(string $section, callable $handler)
     {
-        self::$formatters[$section] = $handler;
+        self::$parsers[$section] = $handler;
     }
 
     /**
-     * get section Formatter
+     * get section Parser
      * @param  string       $section
      * @param  bool|boolean $throwException
      * @return mixed
      */
-    public function getFormatter(string $section, bool $throwException = false)
+    public function getParser(string $section, bool $throwException = false)
     {
-        if (!self::$formatters) {
-            self::$formatters = self::loadDefaultFormatters();
+        if (!self::$parsers) {
+            self::$parsers = self::loadDefaultParsers();
         }
 
-        if (isset(self::$formatters[$section])) {
-            return self::$formatters[$section];
+        if (isset(self::$parsers[$section])) {
+            return self::$parsers[$section];
         }
 
         if ($throwException) {
@@ -506,7 +506,7 @@ class ProgressBar
     /**
      * @return array
      */
-    private static function loadDefaultFormatters()
+    private static function loadDefaultParsers()
     {
         return [
             'bar' => function (ProgressBar $bar) {
@@ -567,20 +567,20 @@ class ProgressBar
     /**
      * @return array
      */
-    private static function defaultFormats()
-    {
-        return [
-            'normal' => ' %current%/%max% [%bar%] %percent:3s%%',
-            'normal_nomax' => ' %current% [%bar%]',
-
-            'verbose' => ' %current%/%max% [%bar%] %percent:3s%% %elapsed:6s%',
-            'verbose_nomax' => ' %current% [%bar%] %elapsed:6s%',
-
-            'very_verbose' => ' %current%/%max% [%bar%] %percent:3s%% %elapsed:6s%/%estimated:-6s%',
-            'very_verbose_nomax' => ' %current% [%bar%] %elapsed:6s%',
-
-            'debug' => ' %current%/%max% [%bar%] %percent:3s%% %elapsed:6s%/%estimated:-6s% %memory:6s%',
-            'debug_nomax' => ' %current% [%bar%] %elapsed:6s% %memory:6s%',
-        ];
-    }
+//    private static function defaultFormats()
+//    {
+//        return [
+//            'normal' => ' %current%/%max% [%bar%] %percent:3s%%',
+//            'normal_nomax' => ' %current% [%bar%]',
+//
+//            'verbose' => ' %current%/%max% [%bar%] %percent:3s%% %elapsed:6s%',
+//            'verbose_nomax' => ' %current% [%bar%] %elapsed:6s%',
+//
+//            'very_verbose' => ' %current%/%max% [%bar%] %percent:3s%% %elapsed:6s%/%estimated:-6s%',
+//            'very_verbose_nomax' => ' %current% [%bar%] %elapsed:6s%',
+//
+//            'debug' => ' %current%/%max% [%bar%] %percent:3s%% %elapsed:6s%/%estimated:-6s% %memory:6s%',
+//            'debug_nomax' => ' %current% [%bar%] %elapsed:6s% %memory:6s%',
+//        ];
+//    }
 }

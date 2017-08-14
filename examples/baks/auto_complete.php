@@ -10,12 +10,13 @@ readline_completion_function('your_callback');
 
 function your_callback($input, $index) {
     // Get info about the current buffer
-    $rl_info = readline_info();
-
+    $info = readline_info();
     // Figure out what the entire input is
-//    $full_input = substr($rl_info['line_buffer'], 0, $rl_info['end']);
+    $line = substr($info['line_buffer'], 0, $info['end']);
+    $tokens = token_get_all('<?php ' . $line);
 
-    //var_dump($input, $index, $rl_info);die;
+    var_dump($input, $index, $info, $line, $tokens);
+
     $matches = array();
 
     // Get all matches based on the entire input buffer
