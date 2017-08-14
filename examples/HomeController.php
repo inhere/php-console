@@ -39,18 +39,6 @@ class HomeController extends Controller
     }
 
     /**
-     * command config
-     */
-    protected function colorConfigure()
-    {
-        $this->createDefinition()
-            ->setDescription('the color command description')
-            ->addArgument('name', Input::ARG_REQUIRED, 'description for the argument [name]')
-            ->addOption('yes', 'y', Input::OPT_BOOLEAN, 'description for the option [yes]')
-            ->addOption('opt1', null, Input::OPT_REQUIRED, 'description for the option [opt1]');
-    }
-
-    /**
      * a example for use color text output on command
      * @usage ./bin/app home/color
      */
@@ -61,7 +49,7 @@ class HomeController extends Controller
 
             return 0;
         }
-$this->output->dumpVars($this->input->getArgs(), $this->input->getBoolOpt('y'));
+
         $this->write('color text output:');
         $styles = $this->output->getStyle()->getStyleNames();
 
@@ -218,6 +206,26 @@ $this->output->dumpVars($this->input->getArgs(), $this->input->getBoolOpt('y'));
 
         // $this->write('the Input object:');
         // var_dump($this->input);
+    }
+
+    /**
+     * command `defArgCommand` config
+     */
+    protected function defArgConfigure()
+    {
+        $this->createDefinition()
+            ->setDescription('the command arg/opt config use defined configure, it like symfony console: argument define by position')
+            ->addArgument('name', Input::ARG_REQUIRED, 'description for the argument [name]')
+            ->addOption('yes', 'y', Input::OPT_BOOLEAN, 'description for the option [yes]')
+            ->addOption('opt1', null, Input::OPT_REQUIRED, 'description for the option [opt1]');
+    }
+
+    /**
+     * the command arg/opt config use defined configure, it like symfony console: argument define by position
+     */
+    public function defArgCommand()
+    {
+        $this->output->dumpVars($this->input->getArgs(), $this->input->getOpts(), $this->input->getBoolOpt('y'));
     }
 
     /**

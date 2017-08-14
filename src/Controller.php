@@ -44,7 +44,15 @@ abstract class Controller extends AbstractCommand
      */
     public $delimiter = '/'; // '/' ':'
 
+    /**
+     * @var bool
+     */
     protected $showMore = true;
+
+    /**
+     * @var bool
+     */
+    private $standAlone = false;
 
     /**
      * load command configure
@@ -104,13 +112,13 @@ abstract class Controller extends AbstractCommand
 
     /**
      * Show help of the controller command group or specified command action
-     * @usage <info>{name}/[command] -h</info> OR <info>{name}/help [command]</info> OR <info>{name} [command]</info>
+     * @usage <info>{name}/[command] -h</info> OR <info>{command} [command]</info> OR <info>{name} [command] -h</info>
      * @example
-     * {script} {name} -h
-     * {script} {name}/help
-     * {script} {name}/help index
-     * {script} {name}/index -h
-     * {script} {name} index
+     *  {script} {name} -h
+     *  {script} {name}/help
+     *  {script} {name}/help index
+     *  {script} {name}/index -h
+     *  {script} {name} index
      *
      * @return int
      */
@@ -135,13 +143,12 @@ abstract class Controller extends AbstractCommand
     final protected function showCommandList()
     {
         $ref = new \ReflectionClass($this);
-
-        $class = $ref->getName();
         $sName = lcfirst(self::getName() ?: $ref->getShortName());
-        $this->write("This is in the console controller [<bold>$class</bold>]\n");
+
+        // $this->write(sprintf("This is in the console controller [<bold>%s</bold>]\n", $class = $ref->getName();));
 
         if (!($classDes = self::getDescription())) {
-            $classDes = Annotation::description($ref->getDocComment()) ?: 'No Description';
+            $classDes = Annotation::description($ref->getDocComment()) ?: 'No Description for the console controller';
         }
 
         $suffix = $this->actionSuffix;
@@ -172,16 +179,22 @@ abstract class Controller extends AbstractCommand
             }
         }
 
-        $sep = $this->delimiter;
-        $name = $sName . $sep;
+        if ($this->standAlone) {
+            $name = $sName . ' ';
+            $usage = '<info>{command}</info> [arguments] [options]';
+        } else {
+            $name = $sName . $this->delimiter;
+            $usage = "<info>{$name}</info>{command} [arguments] [options]";
+        }
+
         $this->output->mList([
             'Description:' => $classDes,
-            'Usage:' => "{$name}[command] [arguments] [options]",
-            'Group Name:' => "<info>$sName</info>",
+            'Usage:' => $usage,
+            //'Group Name:' => "<info>$sName</info>",
             'Commands:' => $commands,
             'Options:' => [
-                '--help,-h' => 'Show help of the command group or specified command action',
-                $this->showMore ? "\nMore information please use <cyan>{$name}[command] -h</cyan> OR <cyan>{$name}help [command]</cyan>" : ''
+                '-h,--help' => 'Show help of the command group or specified command action',
+                $this->showMore ? "\nMore information please use <cyan>{$name}[command] -h</cyan>" : ''
             ],
         ]);
     }
@@ -254,4 +267,21 @@ abstract class Controller extends AbstractCommand
     {
         $this->notFoundCallback = $notFoundCallback;
     }
+
+    /**
+     * @return bool
+     */
+    public function isStandAlone(): bool
+    {
+        return $this->standAlone;
+    }
+
+    /**
+     * @param bool $standAlone
+     */
+    public function setStandAlone($standAlone = true)
+    {
+        $this->standAlone = (bool)$standAlone;
+    }
+
 }

@@ -545,7 +545,7 @@ class Input implements InputInterface
      * @param null|string $default
      * @return string
      */
-    public function getCommand($default = null): string
+    public function getCommand($default = ''): string
     {
         return $this->command ?: $default;
     }

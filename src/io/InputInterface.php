@@ -38,10 +38,10 @@ interface InputInterface
     public function getScript(): string;
 
     /**
-     * @param null|string $default
+     * @param string $default
      * @return string
      */
-    public function getCommand($default = null): string;
+    public function getCommand($default = ''): string;
 
     /**
      * @return array

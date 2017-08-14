@@ -116,9 +116,10 @@ class App extends AbstractApp
      * @param string $name Controller name
      * @param string $action
      * @param bool $believable The `$name` is believable
+     * @param bool $standAlone
      * @return mixed
      */
-    public function runAction($name, $action, $believable = false)
+    public function runAction($name, $action, $believable = false, $standAlone = false)
     {
         // if $believable = true, will skip check.
         if (!$believable && !$this->isController($name)) {
@@ -141,6 +142,7 @@ class App extends AbstractApp
 
         $object::setName($name);
         $object->delimiter = $this->delimiter;
+        $object->setStandAlone($standAlone);
 
         return $object->setAction($action)->run();
     }

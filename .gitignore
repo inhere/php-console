@@ -12,3 +12,4 @@ composer.lock
 *.swo
 *.zip
 .DS_Store
+.interactive_history

@@ -12,7 +12,6 @@ use inhere\console\io\Input;
 use inhere\console\io\Output;
 use inhere\console\traits\InputOutputTrait;
 use inhere\console\traits\SimpleEventStaticTrait;
-use inhere\console\utils\Helper;
 
 /**
  * Class AbstractApp
@@ -32,6 +31,9 @@ abstract class AbstractApp
     const ON_EXEC_ERROR = 'execError';
     const ON_STOP_RUN = 'stopRun';
     const ON_NOT_FOUND = 'notFound';
+
+    /** @var bool render no color */
+    private static $noColor = false;
 
     /**
      * @var string
@@ -69,6 +71,7 @@ abstract class AbstractApp
     protected static $internalOptions = [
         '--debug' => 'setting the application runtime debug level',
         '--no-color' => 'setting no color for message output',
+        '--version' => 'Show application version information',
     ];
 
     /**
@@ -334,6 +337,16 @@ abstract class AbstractApp
      */
     protected function filterSpecialCommand($command)
     {
+        if (!$command) {
+            if ($this->input->getSameOpt(['V', 'version'])) {
+                $this->showVersionInfo();
+            }
+        }
+
+        if ($this->input->getSameOpt(['no-color'])) {
+            self::$noColor = true;
+        }
+
         $command = $command ?: 'list';
 
         switch ($command) {
@@ -470,6 +483,14 @@ abstract class AbstractApp
      **********************************************************/
 
     /**
+     * @return bool
+     */
+    public static function isNoColor(): bool
+    {
+        return self::$noColor;
+    }
+
+    /**
      * @param array $controllers
      */
     public function setControllers(array $controllers)
@@ -543,12 +564,14 @@ abstract class AbstractApp
     public function setMeta(array $meta)
     {
         if ($meta) {
-            $this->meta = array_merge($this->meta, (array)$meta);
+            $this->meta = array_merge($this->meta, $meta);
         }
     }
 
     /**
      * get meta info
+     * @param null $name
+     * @param null $default
      * @return array
      */
     public function getMeta($name = null, $default = null)
