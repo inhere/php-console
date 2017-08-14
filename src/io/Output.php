@@ -11,6 +11,7 @@ namespace inhere\console\io;
 use inhere\console\style\Style;
 use inhere\console\traits\FormatOutputTrait;
 use inhere\console\utils\Helper;
+use inhere\console\utils\Show;
 
 /**
  * Class Output
@@ -99,7 +100,7 @@ class Output implements OutputInterface
     public function getStyle(): Style
     {
         if (!$this->style) {
-            $this->style = new Style;
+            $this->style = Show::getStyle();
         }
 
         return $this->style;

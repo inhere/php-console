@@ -187,6 +187,10 @@ trait FormatOutputTrait
             return Show::block($msg, $style === 'primary' ? 'IMPORTANT' : $style, $style, $quit);
         }
 
-        throw new \LogicException("Call a not exists method: $method");
+        if (method_exists(Show::class, $method)) {
+            return Show::$method(...$args);
+        }
+
+        throw new \LogicException("Call a not exists method: $method of the " . static::class);
     }
 }

@@ -49,7 +49,10 @@ trait SimpleEventStaticTrait
     {
         if (self::isSupportedEvent($event)) {
             self::$eventHandlers[$event][] = $handler;
-            self::$events[$event] = (bool)$once;
+
+            if (!isset(self::$events[$event])) {
+                self::$events[$event] = (bool)$once;
+            }
         }
     }
 
