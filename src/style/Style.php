@@ -142,7 +142,7 @@ class Style
      */
     public function format($text)
     {
-        if (!$text) {
+        if (!$text || false === strpos($text, '<')) {
             return $text;
         }
 
@@ -159,11 +159,11 @@ class Style
 
         foreach ((array)$matches[0] as $i => $m) {
             if (array_key_exists($matches[1][$i], $this->styles)) {
-                $text = $this->replaceColor($text, $matches[1][$i], $matches[2][$i], $this->styles[$matches[1][$i]]);
+                $text = $this->replaceColor($text, $matches[1][$i], $matches[2][$i], (string)$this->styles[$matches[1][$i]]);
 
                 // Custom style format @see Style::makeByString()
             } elseif (strpos($matches[1][$i], '=')) {
-                $text = $this->replaceColor($text, $matches[1][$i], $matches[2][$i], Color::makeByString($matches[1][$i]));
+                $text = $this->replaceColor($text, $matches[1][$i], $matches[2][$i], (string)Color::makeByString($matches[1][$i]));
             }
         }
 
@@ -175,14 +175,12 @@ class Style
      * @param string $text
      * @param   string $tag The matched tag.
      * @param   string $match The match.
-     * @param   Color $color The color style to apply.
+     * @param   string $style The color style to apply.
      * @return  string
      */
-    protected function replaceColor($text, $tag, $match, Color $color): string
+    protected function replaceColor($text, $tag, $match, $style): string
     {
-        $style = $color->toStyle();
         $replace = $this->noColor ? $match : sprintf("\033[%sm%s\033[0m", $style, $match);
-        // $replace = $this->noColor ? $match : sprintf("\033[%sm%s\033[39m", $style, $match);
 
         return str_replace("<$tag>$match</$tag>", $replace, $text);
         // return sprintf("\033[%sm%s\033[%sm", implode(';', $setCodes), $text, implode(';', $unsetCodes));

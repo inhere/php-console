@@ -8,8 +8,7 @@
 
 namespace inhere\console;
 
-use inhere\console\io\Input;
-use inhere\console\io\Output;
+use inhere\console\base\AbstractCommand;
 
 /**
  * Class Command
@@ -19,8 +18,8 @@ abstract class Command extends AbstractCommand
 {
     /*
      * do execute
-     * @param  Input $input
-     * @param  Output $output
+     * @param  \inhere\console\io\Input $input
+     * @param  \inhere\console\io\Output $output
      * @return int
      */
     // protected function execute($input, $output)

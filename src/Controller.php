@@ -8,6 +8,8 @@
 
 namespace inhere\console;
 
+use inhere\console\base\AbstractCommand;
+use inhere\console\base\ControllerInterface;
 use inhere\console\io\Input;
 use inhere\console\io\Output;
 use inhere\console\utils\Helper;
@@ -17,7 +19,7 @@ use inhere\console\utils\Annotation;
  * Class Command
  * @package inhere\console
  */
-abstract class Controller extends AbstractCommand
+abstract class Controller extends AbstractCommand implements ControllerInterface
 {
     /**
      * @var string

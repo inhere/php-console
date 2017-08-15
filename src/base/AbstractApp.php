@@ -6,7 +6,7 @@
  * Time: 18:37
  */
 
-namespace inhere\console;
+namespace inhere\console\base;
 
 use inhere\console\io\Input;
 use inhere\console\io\Output;
@@ -21,16 +21,6 @@ abstract class AbstractApp implements AppInterface
 {
     use InputOutputTrait;
     use SimpleEventStaticTrait;
-
-    // event name list
-    const ON_BEFORE_RUN = 'beforeRun';
-    const ON_AFTER_RUN = 'afterRun';
-    const ON_RUN_ERROR = 'runError';
-    const ON_BEFORE_EXEC = 'beforeExec';
-    const ON_AFTER_EXEC = 'afterExec';
-    const ON_EXEC_ERROR = 'execError';
-    const ON_STOP_RUN = 'stopRun';
-    const ON_NOT_FOUND = 'notFound';
 
     /** @var bool render no color */
     private static $noColor = false;
@@ -191,121 +181,6 @@ abstract class AbstractApp implements AppInterface
         exit((int) $code);
     }
 
-    /**********************************************************
-     * register console controller/command
-     **********************************************************/
-
-    /**
-     * Register a app group command(by controller)
-     * @param string $name The controller name
-     * @param string $controller The controller class
-     * @return static
-     */
-    public function controller(string $name, string $controller = null)
-    {
-        if (!$controller && class_exists($name)) {
-            /** @var Controller $controller */
-            $controller = $name;
-            $name = $controller::getName();
-        }
-
-        if (!$name || !$controller) {
-            throw new \InvalidArgumentException('Group-command "name" and "controller" not allowed to is empty! name: '
-             . $name . ', controller: ' .$controller);
-        }
-
-        $this->validateName($name, true);
-
-        if (!class_exists($controller)) {
-            throw new \InvalidArgumentException("The console controller class [$controller] not exists!");
-        }
-
-        if (!is_subclass_of($controller, Controller::class)) {
-            throw new \InvalidArgumentException('The console controller class must is subclass of the: ' . Controller::class);
-        }
-
-        $this->controllers[$name] = $controller;
-
-        return $this;
-    }
-
-    /**
-     * @param array $controllers
-     */
-    public function controllers(array $controllers)
-    {
-        foreach ($controllers as $name => $controller) {
-            if (is_int($name)) {
-                $this->controller($controller);
-            } else {
-                $this->controller($name, $controller);
-            }
-        }
-    }
-
-    /**
-     * Register a app independent console command
-     * @param string $name
-     * @param string|\Closure $handler
-     * @param null|string $description
-     * @return $this
-     */
-    public function command(string $name, $handler = null, $description = null)
-    {
-        if (!$handler && class_exists($name)) {
-            /** @var Command $handler */
-            $handler = $name;
-            $name = $handler::getName();
-        }
-
-        if (!$name || !$handler) {
-            throw new \InvalidArgumentException('Command "name" and "handler" not allowed to is empty!');
-        }
-
-        $this->validateName($name);
-
-        if (isset($this->commands[$name])) {
-            throw new \InvalidArgumentException("Command '$name' have been registered!");
-        }
-
-        if (is_string($handler)) {
-            if (!class_exists($handler)) {
-                throw new \InvalidArgumentException("The console command class [$handler] not exists!");
-            }
-
-            if (!is_subclass_of($handler, Command::class)) {
-                throw new \InvalidArgumentException('The console command class must is subclass of the: ' . Command::class);
-            }
-        } elseif (!is_object($handler) || !method_exists($handler, '__invoke')) {
-            throw new \InvalidArgumentException(sprintf(
-                'The console command handler must is an subclass of %s OR a Closure OR a object have method __invoke()',
-                Command::class
-            ));
-        }
-
-        // is an class name string
-        $this->commands[$name] = $handler;
-
-        if ($description) {
-            $this->addCommandMessage($name, $description);
-        }
-
-        return $this;
-    }
-
-    /**
-     * @param array $commands
-     */
-    public function commands(array $commands)
-    {
-        foreach ($commands as $name => $handler) {
-            if (is_int($name)) {
-                $this->command($handler);
-            } else {
-                $this->command($name, $handler);
-            }
-        }
-    }
 
     /**********************************************************
      * helper method for the application

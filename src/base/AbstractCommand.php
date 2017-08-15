@@ -6,8 +6,9 @@
  * Time: 11:40
  */
 
-namespace inhere\console;
+namespace inhere\console\base;
 
+use inhere\console\App;
 use inhere\console\io\Input;
 use inhere\console\io\InputDefinition;
 use inhere\console\io\Output;
@@ -19,7 +20,7 @@ use inhere\console\utils\Annotation;
  * Class AbstractCommand
  * @package inhere\console
  */
-abstract class AbstractCommand
+abstract class AbstractCommand implements CommandInterface
 {
     use InputOutputTrait;
     use UserInteractTrait;
@@ -52,6 +53,11 @@ abstract class AbstractCommand
         'options' => true,
         'example' => true,
     ];
+
+    /**
+     * @var AppInterface
+     */
+    private $app;
 
     /**
      * @var InputDefinition
@@ -122,7 +128,7 @@ abstract class AbstractCommand
         $status = 0;
 
         try {
-            App::fire(App::ON_BEFORE_EXEC, [$this]);
+            App::fire(AppInterface::ON_BEFORE_EXEC, [$this]);
 
             if (true !== $this->beforeRun()) {
                 return -1;
@@ -131,9 +137,9 @@ abstract class AbstractCommand
             $status = $this->execute($this->input, $this->output);
             $this->afterRun();
 
-            App::fire(App::ON_AFTER_EXEC, [$this]);
+            App::fire(AppInterface::ON_AFTER_EXEC, [$this]);
         } catch (\Throwable $e) {
-            App::fire(App::ON_EXEC_ERROR, [$e, $this]);
+            App::fire(AppInterface::ON_EXEC_ERROR, [$e, $this]);
             $this->handleRuntimeException($e);
         }
 
@@ -426,5 +432,37 @@ abstract class AbstractCommand
     public function setDefinition(InputDefinition $definition)
     {
         $this->definition = $definition;
+    }
+
+    /**
+     * @return AppInterface
+     */
+    public function getApp(): AppInterface
+    {
+        return $this->app;
+    }
+
+    /**
+     * @param AppInterface $app
+     */
+    public function setApp(AppInterface $app)
+    {
+        $this->app = $app;
+    }
+
+    /**
+     * @return string
+     */
+    public function getProcessTitle(): string
+    {
+        return $this->processTitle;
+    }
+
+    /**
+     * @param string $processTitle
+     */
+    public function setProcessTitle(string $processTitle)
+    {
+        $this->processTitle = $processTitle;
     }
 }
