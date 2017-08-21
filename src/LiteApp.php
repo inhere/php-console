@@ -18,18 +18,40 @@ class LiteApp
 /// simple cli support
 ///////////////////////////////////////////////////////////////////
 
+    /**
+     * parse from `name=val var2=val2`
+     * @var array
+     */
     private $args = [];
+
+    /**
+     * parse from `--name=val --var2=val2 -d`
+     * @var array
+     */
     private $opts = [];
+
+    /** @var string  */
     private $script = '';
+
+    /** @var string  */
     private $command = '';
 
+    /**
+     * user add commands
+     * @var array
+     */
     private $commands = [];
+
+    /**
+     * description message for the command
+     * @var array
+     */
     private $messages = [];
 
     /**
      * @param bool $exit
      */
-    public function dispatchCli($exit = true)
+    public function dispatch($exit = true)
     {
         $this->parseCliArgv();
 
@@ -167,6 +189,107 @@ class LiteApp
 
         echo $help . PHP_EOL;
         exit(0);
+    }
+
+///////////////////////////////////////////////////////////////////////////////////
+///  helper methods
+///////////////////////////////////////////////////////////////////////////////////
+
+
+    /**
+     * @return array
+     */
+    public function getArgs(): array
+    {
+        return $this->args;
+    }
+
+    /**
+     * @param array $args
+     */
+    public function setArgs(array $args)
+    {
+        $this->args = $args;
+    }
+
+    /**
+     * @return array
+     */
+    public function getOpts(): array
+    {
+        return $this->opts;
+    }
+
+    /**
+     * @param array $opts
+     */
+    public function setOpts(array $opts)
+    {
+        $this->opts = $opts;
+    }
+
+    /**
+     * @return string
+     */
+    public function getScript(): string
+    {
+        return $this->script;
+    }
+
+    /**
+     * @param string $script
+     */
+    public function setScript(string $script)
+    {
+        $this->script = $script;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCommand(): string
+    {
+        return $this->command;
+    }
+
+    /**
+     * @param string $command
+     */
+    public function setCommand(string $command)
+    {
+        $this->command = $command;
+    }
+
+    /**
+     * @return array
+     */
+    public function getCommands(): array
+    {
+        return $this->commands;
+    }
+
+    /**
+     * @param array $commands
+     */
+    public function setCommands(array $commands)
+    {
+        $this->commands = $commands;
+    }
+
+    /**
+     * @return array
+     */
+    public function getMessages(): array
+    {
+        return $this->messages;
+    }
+
+    /**
+     * @param array $messages
+     */
+    public function setMessages(array $messages)
+    {
+        $this->messages = $messages;
     }
 
 }
