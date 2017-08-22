@@ -51,7 +51,7 @@ class LiteApp
     /**
      * @param bool $exit
      */
-    public function dispatch($exit = true)
+    public function run($exit = true)
     {
         $this->parseCliArgv();
 
@@ -60,6 +60,14 @@ class LiteApp
             unset($this->args[0]);
         }
 
+        $this->dispatch($exit);
+    }
+
+    /**
+     * @param bool $exit
+     */
+    public function dispatch($exit = true)
+    {
         if (!$command = $this->command) {
             $this->showCommands();
         }
@@ -73,20 +81,20 @@ class LiteApp
                 $this->showCommands("The command {$command} not exists!");
             }
         } catch (\Throwable $e) {
-            $text = sprintf(
-                "Exception(%d): %s\nFile: %s(Line %d)\nTrace:\n%s\n",
-                $e->getCode(),
-                $e->getMessage(),
-                $e->getFile(),
-                $e->getLine(),
-                $e->getTraceAsString()
-            );
-            exit($text);
+            $status = $this->handleException($e);
         }
 
         if ($exit) {
-            exit((int)$status);
+            $this->stop($status);
         }
+    }
+
+    /**
+     * @param int $code
+     */
+    public function stop($code = 0)
+    {
+        exit((int)$code);
     }
 
     /**
@@ -118,6 +126,26 @@ class LiteApp
         }
 
         throw new \InvalidArgumentException("Invalid handler of the command: $command");
+    }
+
+    /**
+     * @param \Throwable $e
+     * @return int
+     */
+    protected function handleException(\Throwable $e)
+    {
+        $code = $e->getCode() !== 0 ? $e->getCode() : 133;
+
+        printf(
+            "Exception(%d): %s\nFile: %s(Line %d)\nTrace:\n%s\n",
+            $code,
+            $e->getMessage(),
+            $e->getFile(),
+            $e->getLine(),
+            $e->getTraceAsString()
+        );
+
+        return $code;
     }
 
     /**
@@ -158,17 +186,39 @@ class LiteApp
     /**
      * @param string $command
      * @param string|\Closure $handler
-     * @param string $desc
+     * @param string $description
      */
-    public function addCommand($command, $handler, $desc = '')
+    public function addCommand($command, $handler, $description = '')
     {
         if (!$command || !$handler) {
             throw new \InvalidArgumentException('Invalid arguments');
         }
 
         $this->commands[$command] = $handler;
-        $this->messages[$command] = trim($desc);
+        $this->messages[$command] = trim($description);
     }
+
+    /**
+     * @param array $commands
+     */
+    public function commands(array $commands)
+    {
+        foreach ($commands as $command => $handler) {
+            $des = '';
+
+            if (is_array($handler)) {
+                $conf = array_values($handler);
+                $handler = $conf[0];
+                $des = $conf[1] ?? '';
+            }
+
+            $this->addCommand($command, $handler, $des);
+        }
+    }
+
+///////////////////////////////////////////////////////////////////////////////////
+///  helper methods
+///////////////////////////////////////////////////////////////////////////////////
 
     /**
      * @param string $err
@@ -179,10 +229,11 @@ class LiteApp
             echo "ERROR: $err\n\n";
         }
 
-        $help = "Available Commands:\n";
+        $commandWidth = 12;
+        $help = "Welcome to the Lite Console Application.\n\nAvailable Commands:\n";
 
         foreach ($this->messages as $command => $desc) {
-            $command = str_pad($command, 18, ' ');
+            $command = str_pad($command, $commandWidth, ' ');
             $desc = $desc ?: 'No description for the command';
             $help .= "  $command   $desc\n";
         }
@@ -191,10 +242,29 @@ class LiteApp
         exit(0);
     }
 
-///////////////////////////////////////////////////////////////////////////////////
-///  helper methods
-///////////////////////////////////////////////////////////////////////////////////
+    /**
+     * @param string $name
+     * @param mixed $default
+     * @return mixed|null
+     */
+    public function getArg($name, $default = null)
+    {
+        return $this->args[$name] ?? $default;
+    }
 
+    /**
+     * @param string $name
+     * @param mixed $default
+     * @return mixed|null
+     */
+    public function getOpt($name, $default = null)
+    {
+        return $this->opts[$name] ?? $default;
+    }
+
+///////////////////////////////////////////////////////////////////////////////////
+///  getter/setter methods
+///////////////////////////////////////////////////////////////////////////////////
 
     /**
      * @return array
