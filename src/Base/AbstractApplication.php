@@ -11,7 +11,7 @@ namespace Inhere\Console\Base;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
 use Inhere\Console\Traits\InputOutputTrait;
-use Inhere\Console\Traits\SimpleEventStaticTrait;
+use Inhere\Console\Traits\SimpleEventTrait;
 
 /**
  * Class AbstractApplication
@@ -20,7 +20,7 @@ use Inhere\Console\Traits\SimpleEventStaticTrait;
 abstract class AbstractApplication implements ApplicationInterface
 {
     use InputOutputTrait;
-    use SimpleEventStaticTrait;
+    use SimpleEventTrait;
 
     /** @var bool render no color */
     private static $noColor = false;

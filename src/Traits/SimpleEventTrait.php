@@ -12,7 +12,7 @@ namespace Inhere\Console\Traits;
  * Class SimpleEventStaticTrait
  * @package Inhere\Console\Traits
  */
-trait SimpleEventStaticTrait
+trait SimpleEventTrait
 {
     /**
      * set the supported events, if you need.
