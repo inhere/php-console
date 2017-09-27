@@ -10,6 +10,7 @@ namespace Inhere\Console\Examples;
 
 use Inhere\Console\Command;
 use Inhere\Console\IO\Input;
+use Inhere\Console\IO\Output;
 
 /**
  * Class DemoCommand
@@ -36,6 +37,9 @@ class DemoCommand extends Command
 
     /**
      * description text by annotation. it is invalid when configure() is exists
+     * @param  Input $input
+     * @param  Output $output
+     * @return int|void
      */
     public function execute($input, $output)
     {

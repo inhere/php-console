@@ -49,7 +49,7 @@ git clone https://github.com/inhere/php-console.git // github
 // file: examples/app
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
-use Inhere\Console\App;
+use Inhere\Console\Application;
 
 $meta = [
     'name' => 'My Console App',
@@ -57,7 +57,7 @@ $meta = [
 ];
 $input = new Input;
 $output = new Output;
-$app = new App($meta, $input, $output);
+$app = new Application($meta, $input, $output);
 
 // add command routes
 $app->command('demo', function (Input $in, Output $out) {
