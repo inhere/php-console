@@ -1,20 +1,20 @@
 <?php
 
-namespace inhere\console\examples;
+namespace Inhere\Console\Examples;
 
-use inhere\console\Controller;
-use inhere\console\io\Input;
-use inhere\console\utils\AnsiCode;
-use inhere\console\utils\Download;
-use inhere\console\utils\Helper;
-use inhere\console\utils\Show;
-use inhere\console\utils\Interact;
+use Inhere\Console\Controller;
+use Inhere\Console\IO\Input;
+use Inhere\Console\Utils\AnsiCode;
+use Inhere\Console\Utils\Download;
+use Inhere\Console\Utils\Helper;
+use Inhere\Console\Utils\Show;
+use Inhere\Console\Utils\Interact;
 
 /**
  * default command controller. there are some command usage examples(1)
  *
  * Class HomeController
- * @package inhere\console\examples
+ * @package Inhere\Console\examples
  */
 class HomeController extends Controller
 {

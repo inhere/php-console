@@ -1,13 +1,13 @@
 #!/usr/env/php
 <?php
 
-use inhere\console\examples\HomeController;
+use Inhere\Console\Examples\HomeController;
 
 define('PROJECT_PATH', dirname(__DIR__));
 
 require __DIR__ . '/s-autoload.php';
 
-$app = new \inhere\console\App([
+$app = new \Inhere\Console\Application([
     'debug' => true,
     'rootPath' => PROJECT_PATH,
 ]);

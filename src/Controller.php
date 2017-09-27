@@ -6,18 +6,18 @@
  * Time: 13:23
  */
 
-namespace inhere\console;
+namespace Inhere\Console;
 
-use inhere\console\base\AbstractCommand;
-use inhere\console\base\ControllerInterface;
-use inhere\console\io\Input;
-use inhere\console\io\Output;
-use inhere\console\utils\Helper;
-use inhere\console\utils\Annotation;
+use Inhere\Console\Base\AbstractCommand;
+use Inhere\Console\Base\ControllerInterface;
+use Inhere\Console\IO\Input;
+use Inhere\Console\IO\Output;
+use Inhere\Console\Utils\Helper;
+use Inhere\Console\Utils\Annotation;
 
 /**
  * Class Command
- * @package inhere\console
+ * @package Inhere\Console
  */
 abstract class Controller extends AbstractCommand implements ControllerInterface
 {

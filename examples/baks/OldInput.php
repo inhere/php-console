@@ -1,6 +1,6 @@
 <?php
 
-namespace inhere\console\examples\baks;
+namespace Inhere\Console\examples\baks;
 
 /**
  * Created by PhpStorm.

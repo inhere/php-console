@@ -47,9 +47,9 @@ git clone https://github.com/inhere/php-console.git // github
 
 ```php
 // file: examples/app
-use inhere\console\io\Input;
-use inhere\console\io\Output;
-use inhere\console\App;
+use Inhere\Console\IO\Input;
+use Inhere\Console\IO\Output;
+use Inhere\Console\App;
 
 $meta = [
     'name' => 'My Console App',
@@ -83,10 +83,10 @@ $app->run();
 添加命令的方式有三种
 
 - 如上所示，使用闭包可以快速的添加一个简单的命令
-- 通过继承 `inhere\console\Command` 添加独立命令
+- 通过继承 `Inhere\Console\Command` 添加独立命令
 
 ```php
-use inhere\console\utils\AnsiCode;
+use Inhere\Console\Utils\AnsiCode;
 
 /**
  * Class Test
@@ -96,8 +96,8 @@ class TestCommand extends Command
 {
     /**
      * execute
-     * @param  inhere\console\io\Input $input
-     * @param  inhere\console\io\Output $output
+     * @param  Inhere\Console\IO\Input $input
+     * @param  Inhere\Console\IO\Output $output
      * @return int
      */
     public function execute($input, $output)
@@ -109,10 +109,10 @@ class TestCommand extends Command
 
 注册命令，在 `$app->run()` 之前通过 `$app->command('test', TestCommand::class)` 注册独立命令。
 
-- 通过继承 `inhere\console\Controller` 添加一组命令(命令行的控制器类)
+- 通过继承 `Inhere\Console\Controller` 添加一组命令(命令行的控制器类)
 
 ```php
-use inhere\console\Controller;
+use Inhere\Console\Controller;
 
 /**
  * default command controller. there are some command usage examples
@@ -150,7 +150,7 @@ class HomeController extends Controller
 
 ## 输入
 
-> 输入对象是 `inhere\console\io\Input` 的实例
+> 输入对象是 `Inhere\Console\IO\Input` 的实例
 
 在终端中执行如下命令，用于演示参数选项等信息的解析:
 
@@ -268,7 +268,7 @@ echo $name; // 'simon'
 
 ## 输出
 
-> 输出对象是 `inhere\console\io\Output` 的实例
+> 输出对象是 `Inhere\Console\IO\Output` 的实例
 
 基本输出:
 
@@ -299,9 +299,9 @@ $output->write('hello <info>world<info>');
 
 ![alt text](images/output-color-text.png "Title")
 
-来自于类 `inhere\console\utils\Show`。
+来自于类 `Inhere\Console\Utils\Show`。
 
-> output 实例拥有 `inhere\console\utils\Show` 的所有格式化输出方法。不过都是通过对象式访问的。
+> output 实例拥有 `Inhere\Console\Utils\Show` 的所有格式化输出方法。不过都是通过对象式访问的。
 
 ### 标题文本输出
 
@@ -491,7 +491,7 @@ Show::helpPanel([
 
 ## 用户交互方法
 
-需引入类 `inhere\console\utils\Interact`
+需引入类 `Inhere\Console\Utils\Interact`
 
 ### 从给出的列表中选择一项
 

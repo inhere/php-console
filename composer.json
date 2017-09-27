@@ -17,7 +17,7 @@
   },
   "autoload": {
     "psr-4": {
-      "inhere\\console\\" : "src/"
+      "Inhere\\Console\\" : "src/"
     }
   },
   "suggest": {

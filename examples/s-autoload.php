@@ -11,16 +11,16 @@ date_default_timezone_set('Asia/Shanghai');
 
 spl_autoload_register(function($class)
 {
-    if (0 === strpos($class,'inhere\console\examples\\')) {
-        $path = str_replace('\\', '/', substr($class, strlen('inhere\console\examples\\')));
+    if (0 === strpos($class,'Inhere\Console\Examples\\')) {
+        $path = str_replace('\\', '/', substr($class, strlen('Inhere\Console\examples\\')));
         $file =__DIR__ . "/{$path}.php";
 
         if (is_file($file)) {
             include $file;
         }
 
-    } elseif (0 === strpos($class,'inhere\console\\')) {
-        $path = str_replace('\\', '/', substr($class, strlen('inhere\console\\')));
+    } elseif (0 === strpos($class,'Inhere\Console\\')) {
+        $path = str_replace('\\', '/', substr($class, strlen('Inhere\Console\\')));
         $file = dirname(__DIR__) . "/src/{$path}.php";
 
         if (is_file($file)) {

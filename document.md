@@ -21,7 +21,7 @@
 
 ```
 $ php examples/app demo john male 43 --opt1 value1 -y
-hello, this in inhere\console\examples\DemoCommand::execute
+hello, this in Inhere\Console\examples\DemoCommand::execute
 this is argument and option example:
                                         the opt1's value
                                 option: opt1 |

@@ -6,20 +6,20 @@
  * Time: 13:23
  */
 
-namespace inhere\console;
+namespace Inhere\Console;
 
-use inhere\console\base\AbstractCommand;
+use Inhere\Console\Base\AbstractCommand;
 
 /**
  * Class Command
- * @package inhere\console
+ * @package Inhere\Console
  */
 abstract class Command extends AbstractCommand
 {
     /*
      * do execute
-     * @param  \inhere\console\io\Input $input
-     * @param  \inhere\console\io\Output $output
+     * @param  \Inhere\Console\IO\Input $input
+     * @param  \Inhere\Console\IO\Output $output
      * @return int
      */
     // protected function execute($input, $output)

@@ -42,9 +42,9 @@ git clone https://github.com/inhere/php-console.git // github
 ## usage
 
 ```php
-use inhere\console\io\Input;
-use inhere\console\io\Output;
-use inhere\console\App;
+use Inhere\Console\IO\Input;
+use Inhere\Console\IO\Output;
+use Inhere\Console\App;
 
 $meta = [
     'name' => 'My Console App',
@@ -183,7 +183,7 @@ $output->write('hello');
 
 ## more interactive
 
-in the class `inhere\console\utils\Interact`
+in the class `Inhere\Console\Utils\Interact`
 
 interactive method:
 

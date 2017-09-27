@@ -5,16 +5,16 @@
  * Date: 2016/12/7
  * Time: 12:46
  *
- * @var inhere\console\App $app
+ * @var Inhere\Console\Application $app
  */
 
-use inhere\console\examples\HomeController;
-use inhere\console\examples\TestCommand;
-use inhere\console\io\Input;
-use inhere\console\io\Output;
-use inhere\console\utils\ProgressBar;
+use Inhere\Console\Examples\HomeController;
+use Inhere\Console\Examples\TestCommand;
+use Inhere\Console\IO\Input;
+use Inhere\Console\IO\Output;
+use Inhere\Console\Utils\ProgressBar;
 
-$app->command(\inhere\console\examples\DemoCommand::class);
+$app->command(\Inhere\Console\Examples\DemoCommand::class);
 $app->command('exam', function (Input $in, Output $out) {
     $cmd = $in->getCommand();
 

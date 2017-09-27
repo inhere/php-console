@@ -6,13 +6,12 @@
  * Time: 18:58
  */
 
-namespace inhere\console\examples;
+namespace Inhere\Console\Examples;
 
-use inhere\console\Command;
+use Inhere\Console\Command;
 
 /**
  * Class Test
- * @package app\console\commands
  */
 class TestCommand extends Command
 {

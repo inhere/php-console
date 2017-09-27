@@ -6,10 +6,10 @@
  * Time: 18:58
  */
 
-namespace inhere\console\examples;
+namespace Inhere\Console\Examples;
 
-use inhere\console\Command;
-use inhere\console\io\Input;
+use Inhere\Console\Command;
+use Inhere\Console\IO\Input;
 
 /**
  * Class DemoCommand

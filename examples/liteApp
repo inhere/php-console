@@ -6,7 +6,7 @@ define('PROJECT_PATH', dirname(__DIR__));
 require __DIR__ . '/s-autoload.php';
 
 // create app instance
-$app = new \inhere\console\LiteApp;
+$app = new \Inhere\Console\LiteApplication;
 
 // register commands
 $app->addCommand('test', function () {
