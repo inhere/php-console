@@ -13,9 +13,7 @@ use Inhere\Console\Style\Style;
 /**
  * Class Show
  *  show formatted message text
- *
  * @package Inhere\Console\Utils
- *
  * @method static int info($messages, $quit = false)
  * @method static int note($messages, $quit = false)
  * @method static int notice($messages, $quit = false)
@@ -24,7 +22,6 @@ use Inhere\Console\Style\Style;
  * @method static int warning($messages, $quit = false)
  * @method static int danger($messages, $quit = false)
  * @method static int error($messages, $quit = false)
- *
  * @method static int liteInfo($messages, $quit = false)
  * @method static int liteNote($messages, $quit = false)
  * @method static int liteNotice($messages, $quit = false)
@@ -277,7 +274,6 @@ class Show
 
     /**
      * Show a list
-     *
      * ```
      * $title = 'list title';
      * $data = [
@@ -316,7 +312,6 @@ class Show
 
     /**
      * Show multi list
-     *
      * ```
      * [
      *   'list1 title' => [
@@ -330,7 +325,6 @@ class Show
      *   ... ...
      * ]
      * ```
-     *
      * @param array $data
      * @param array $opts
      */
@@ -353,15 +347,11 @@ class Show
 
     /**
      * Show console help message
-     *
      * @param  array $config The config data
-     *
      * There are config structure. you can setting some or ignore some. will only render it when value is not empty.
-     *
      * [
      *  description string         The description text. e.g 'Composer version 1.3.2'
      *  usage       string         The usage message text. e.g 'command [options] [arguments]'
-     *
      *  commands    array|string   The command list. e.g:
      *      [
      *          // command => description
@@ -382,7 +372,6 @@ class Show
      *          '-h, --help' => 'Display this help message'
      *          ... ...
      *      ]
-     *
      *  examples    array|string  The command usage example. e.g 'php server.php {start|reload|restart|stop} [-d]'
      * ]
      * @param  bool $showAfterQuit Show help after quit
@@ -548,6 +537,7 @@ class Show
         }
 
         unset($panelData);
+
         return 0;
     }
 
@@ -557,7 +547,6 @@ class Show
      * @param  string $title
      * @param  array $opts
      * @example
-     *
      * ```
      * // like from database query's data.
      * $data = [
@@ -566,14 +555,12 @@ class Show
      *  ... ...
      * ];
      * Show::table($data, 'a table');
-     *
      * // use custom head
      * $data = [
      *  [ value1, value2, value3, ... ], // first row
      *  [ value4, value5, value6, ... ], // second row
      *  ... ...
      * ];
-     *
      * $opts = [
      *   'showBorder' => true,
      *   'tHead' => [col1, col2, col3, ...]
@@ -751,7 +738,6 @@ class Show
 
     /**
      * a simple progress bar by 'yield'
-     *
      * ```php
      * $i = 0;
      * $total = 120;
@@ -760,14 +746,12 @@ class Show
      *     'doneChar' => '#'
      * ]);
      * echo "progress:\n";
-     *
      * while ($i <= $total) {
      *      $bar->send($i);
      *      usleep(50000);
      *      $i++;
      * }
      * ```
-     *
      * @param int $total
      * @param array $opts
      * @internal int $current
@@ -812,6 +796,35 @@ class Show
         }
 
         yield false;
+    }
+
+    /**
+     * create ProgressBar
+     *
+     * ```php
+     * $max = 200;
+     * $bar = Show::createProgressBar($max);
+     * while ($i <= $total) {
+     *   $bar->advance();
+     *   usleep(50000);
+     *   $i++;
+     * }
+     * $bar->finish();
+     * ```
+     *
+     * @param int $max
+     * @param bool $start
+     * @return ProgressBar
+     */
+    public static function createProgressBar($max = 0, $start = true)
+    {
+        $bar = new ProgressBar(null, $max);
+
+        if ($start) {
+            $bar->start();
+        }
+
+        return $bar;
     }
 
 /////////////////////////////////////////////////////////////////

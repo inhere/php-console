@@ -509,7 +509,7 @@ class ProgressBar
     private static function loadDefaultParsers()
     {
         return [
-            'bar' => function (ProgressBar $bar) {
+            'bar' => function (self $bar) {
                 $completeBars = floor($bar->getMaxSteps() > 0 ? $bar->getPercent() * $bar->getBarWidth() : $bar->getProgress() % $bar->getBarWidth());
                 $display = str_repeat($bar->getCompleteChar(), $completeBars);
 
@@ -520,10 +520,10 @@ class ProgressBar
 
                 return $display;
             },
-            'elapsed' => function (ProgressBar $bar) {
+            'elapsed' => function (self $bar) {
                 return Helper::formatTime(time() - $bar->getStartTime());
             },
-            'remaining' => function (ProgressBar $bar) {
+            'remaining' => function (self $bar) {
                 if (!$bar->getMaxSteps()) {
                     throw new \LogicException('Unable to display the remaining time if the maximum number of steps is not set.');
                 }
@@ -536,7 +536,7 @@ class ProgressBar
 
                 return Helper::formatTime($remaining);
             },
-            'estimated' => function (ProgressBar $bar) {
+            'estimated' => function (self $bar) {
                 if (!$bar->getMaxSteps()) {
                     throw new \LogicException('Unable to display the estimated time if the maximum number of steps is not set.');
                 }
@@ -552,13 +552,13 @@ class ProgressBar
             'memory' => function () {
                 return Helper::formatMemory(memory_get_usage(true));
             },
-            'current' => function (ProgressBar $bar) {
+            'current' => function (self $bar) {
                 return str_pad($bar->getProgress(), $bar->getStepWidth(), ' ', STR_PAD_LEFT);
             },
-            'max' => function (ProgressBar $bar) {
+            'max' => function (self $bar) {
                 return $bar->getMaxSteps();
             },
-            'percent' => function (ProgressBar $bar) {
+            'percent' => function (self $bar) {
                 return floor($bar->getPercent() * 100);
             },
         ];
