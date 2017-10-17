@@ -94,6 +94,7 @@ abstract class AbstractCommand implements CommandInterface
 
     /**
      * configure input definition
+     * @return InputDefinition|null
      */
     protected function configure()
     {
