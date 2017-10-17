@@ -139,7 +139,7 @@ abstract class AbstractApplication implements ApplicationInterface
      */
     public function run($exit = true)
     {
-        $command = $this->input->getCommand();
+        $command = trim($this->input->getCommand(), $this->delimiter);
 
         $this->prepareRun();
         $this->filterSpecialCommand($command);

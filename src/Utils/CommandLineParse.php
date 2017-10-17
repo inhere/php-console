@@ -57,7 +57,7 @@ final class CommandLineParse
 
         // each() will deprecated at 7.2 so,there use current and next instead it.
 //        while (list(,$p) = each($params)) {
-        while ($p = current($params)) {
+        while (false !== ($p = current($params))) {
             next($params);
 
             // is options

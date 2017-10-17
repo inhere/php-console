@@ -114,7 +114,7 @@ class InputDefinition
             throw new \LogicException('Cannot add a required argument after an optional one.');
         }
 
-        if ($isArray = $mode === Input::ARG_IS_ARRAY) {
+        if ($isArray = ($mode === Input::ARG_IS_ARRAY)) {
             if (!$this->argumentIsAcceptValue($mode)) {
                 throw new \InvalidArgumentException('Impossible to have an option mode VALUE_IS_ARRAY if the option does not accept a value.');
             }

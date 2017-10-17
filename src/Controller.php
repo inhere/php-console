@@ -128,6 +128,7 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
     {
         $action = $this->action;
 
+        // show all commands of the controller
         if (!$action && !($action = $this->input->getFirstArg())) {
             $this->showCommandList();
             return 0;
@@ -189,6 +190,7 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
             $usage = "<info>{$name}</info>{command} [arguments] [options]";
         }
 
+        $script = $this->getScriptName();
         $this->output->mList([
             'Description:' => $classDes,
             'Usage:' => $usage,
@@ -196,7 +198,7 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
             'Commands:' => $commands,
             'Options:' => [
                 '-h,--help' => 'Show help of the command group or specified command action',
-                $this->showMore ? "\nMore information please use <cyan>{$name}[command] -h</cyan>" : ''
+                $this->showMore ? "\nMore information please use: <cyan>$script {$name}{command} -h</cyan>" : ''
             ],
         ]);
     }

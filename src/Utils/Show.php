@@ -505,6 +505,7 @@ class Show
             }
 
             // get value width
+            /** @var string $value */
             $value = trim($value);
             $width = mb_strlen(strip_tags($value), 'UTF-8'); // must clear style tag
             $valueMaxWidth = $width > $valueMaxWidth ? $width : $valueMaxWidth;
@@ -744,6 +745,8 @@ class Show
                 break;
             }
         }
+
+        yield false;
     }
 
     /**
@@ -807,6 +810,8 @@ class Show
                 break;
             }
         }
+
+        yield false;
     }
 
 /////////////////////////////////////////////////////////////////

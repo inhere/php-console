@@ -79,13 +79,13 @@ class HomeController extends Controller
      * a progress bar example show
      *
      * @options
-     * --type      the progress type, allow: bar,txt. default <cyan>txt</cyan>
-     * --done-char the done show char. default <info>=</info>
-     * --wait-char the waiting show char. default <info>-</info>
-     * --sign-char the sign char show. default <info>></info>
+     *  --type      the progress type, allow: bar,txt. <cyan>txt</cyan>
+     *  --done-char the done show char. <info>=</info>
+     *  --wait-char the waiting show char. <info>-</info>
+     *  --sign-char the sign char show. <info>></info>
      * @example
-     * {script} home/progress
-     * {script} home/progress --done-char '#' --wait-char ' '
+     *  {script} home/progress
+     *  {script} home/progress --done-char '#' --wait-char ' '
      * @param Input $input
      * @return int
      */
