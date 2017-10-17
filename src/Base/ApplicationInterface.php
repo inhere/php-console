@@ -28,4 +28,6 @@ interface ApplicationInterface
     public function stop($code = 0);
 
     public function controller(string $name, string $controller = null);
+
+    public function command(string $name, $handler = null, $description = null);
 }

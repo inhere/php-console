@@ -388,7 +388,7 @@ abstract class AbstractCommand implements CommandInterface
     /**
      * @return string
      */
-    final public static function getDescription(): string
+    final public static function getDescription(): ?string
     {
         return static::$description;
     }

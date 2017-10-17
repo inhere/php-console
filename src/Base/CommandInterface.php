@@ -31,4 +31,9 @@ interface CommandInterface
      * @return ApplicationInterface
      */
     public function getApp(): ApplicationInterface;
+
+    /**
+     * @return string
+     */
+    public static function getDescription(): ?string;
 }

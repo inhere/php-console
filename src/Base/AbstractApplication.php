@@ -339,7 +339,7 @@ abstract class AbstractApplication implements ApplicationInterface
             $desc = $desPlaceholder;
 
             /** @var AbstractCommand $command */
-            if (is_subclass_of($command, Command::class)) {
+            if (is_subclass_of($command, CommandInterface::class)) {
                 $desc = $command::getDescription() ?: $desPlaceholder;
             } else if ($msg = $this->getCommandMessage($name)) {
                 $desc = $msg;
@@ -419,7 +419,13 @@ abstract class AbstractApplication implements ApplicationInterface
      */
     public function setControllers(array $controllers)
     {
-        $this->controllers($controllers);
+        foreach ($controllers as $name => $controller) {
+            if (is_int($name)) {
+                $this->controller($controller);
+            } else {
+                $this->controller($name, $controller);
+            }
+        }
     }
 
     /**
@@ -444,7 +450,13 @@ abstract class AbstractApplication implements ApplicationInterface
      */
     public function setCommands(array $commands)
     {
-        $this->commands($commands);
+        foreach ($commands as $name => $handler) {
+            if (is_int($name)) {
+                $this->command($handler);
+            } else {
+                $this->command($name, $handler);
+            }
+        }
     }
 
     /**

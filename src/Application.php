@@ -36,8 +36,9 @@ class Application extends AbstractApplication
         }
 
         if (!$name || !$controller) {
-            throw new \InvalidArgumentException('Group-command "name" and "controller" not allowed to is empty! name: '
-                . $name . ', controller: ' .$controller);
+            throw new \InvalidArgumentException(
+                'Group-command "name" and "controller" not allowed to is empty! name: ' . $name . ', controller: ' . $controller
+            );
         }
 
         $this->validateName($name, true);
@@ -60,32 +61,26 @@ class Application extends AbstractApplication
      */
     public function controllers(array $controllers)
     {
-        foreach ($controllers as $name => $controller) {
-            if (is_int($name)) {
-                $this->controller($controller);
-            } else {
-                $this->controller($name, $controller);
-            }
-        }
+        $this->setControllers($controllers);
     }
 
     /**
      * Register a app independent console command
-     * @param string $name
-     * @param string|\Closure $handler
+     * @param string|Command $name
+     * @param string|\Closure|Command $handler
      * @param null|string $description
      * @return $this
      */
     public function command(string $name, $handler = null, $description = null)
     {
         if (!$handler && class_exists($name)) {
-            /** @var Command $handler */
+            /** @var Command $name */
             $handler = $name;
-            $name = $handler::getName();
+            $name = $name::getName();
         }
 
         if (!$name || !$handler) {
-            throw new \InvalidArgumentException('Command "name" and "handler" not allowed to is empty!');
+            throw new \InvalidArgumentException("Command 'name' and 'handler' not allowed to is empty! name: $name");
         }
 
         $this->validateName($name);
@@ -124,13 +119,7 @@ class Application extends AbstractApplication
      */
     public function commands(array $commands)
     {
-        foreach ($commands as $name => $handler) {
-            if (is_int($name)) {
-                $this->command($handler);
-            } else {
-                $this->command($name, $handler);
-            }
-        }
+        $this->setCommands($commands);
     }
 
     /**

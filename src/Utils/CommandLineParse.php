@@ -9,10 +9,10 @@
 namespace Inhere\Console\Utils;
 
 /**
- * Class OptArgParse - console argument and option parse
+ * Class CommandLineParse - console argument and option parse
  * @package Inhere\Console\Utils
  */
-final class OptArgParse
+final class CommandLineParse
 {
     /**
      * These words will be as a Boolean value
@@ -55,7 +55,11 @@ final class OptArgParse
     {
         $args = $sOpts = $lOpts = [];
 
-        while (list(,$p) = each($params)) {
+        // each() will deprecated at 7.2 so,there use current and next instead it.
+//        while (list(,$p) = each($params)) {
+        while ($p = current($params)) {
+            next($params);
+
             // is options
             if ($p{0} === '-') {
                 $isLong = false;
@@ -82,7 +86,8 @@ final class OptArgParse
 
                 // fix: allow empty string ''
                 if ($value === true && $nxp !== false && (!$nxp || $nxp{0} !== '-') && !in_array($opt, $noValues, true)) {
-                    list(,$value) = each($params);
+//                    list(,$value) = each($params);
+                    $value = current($params); next($params);
 
                     // short-opt: bool opts. like -e -abc
                 } elseif (!$isLong && $value === true) {
