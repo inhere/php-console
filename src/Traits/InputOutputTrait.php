@@ -36,6 +36,60 @@ trait InputOutputTrait
     }
 
     /**
+     * @see Input::getArg()
+     * {@inheritdoc}
+     */
+    public function getArg($name, $default = null)
+    {
+        return $this->input->getArg($name, $default);
+    }
+
+    /**
+     * @see Input::getRequiredArg()
+     * {@inheritdoc}
+     */
+    public function getRequiredArg($name)
+    {
+        return $this->input->getRequiredArg($name);
+    }
+
+    /**
+     * @see Input::getSameArg()
+     * {@inheritdoc}
+     */
+    public function getSameArg($name)
+    {
+        return $this->input->getSameArg($name);
+    }
+
+    /**
+     * @see Input::getOpt()
+     * {@inheritdoc}
+     */
+    public function getOpt($name, $default = null)
+    {
+        return $this->input->getOpt($name, $default);
+    }
+
+    /**
+     * @see Input::getSameOpt()
+     * {@inheritdoc}
+     */
+    public function getSameOpt($name)
+    {
+        return $this->input->getSameOpt($name);
+    }
+
+    /**
+     * @see Input::getRequiredOpt()
+     * {@inheritdoc}
+     */
+    public function getRequiredOpt($name)
+    {
+        return $this->input->getRequiredOpt($name);
+    }
+
+    /**
      * @param string $msg
      * @return string
      */
