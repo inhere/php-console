@@ -190,7 +190,6 @@ abstract class AbstractApplication implements ApplicationInterface
     /**
      * 运行异常处理
      * @param \Exception|\Throwable $e
-     * @throws \Exception
      */
     public function handleException($e)
     {
