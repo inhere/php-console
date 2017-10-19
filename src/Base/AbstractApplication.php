@@ -38,6 +38,7 @@ abstract class AbstractApplication implements ApplicationInterface
         'name' => 'My Console',
         'version' => '0.5.1',
         'publishAt' => '2017.03.24',
+        'updateAt' => '2017.03.24',
         'rootPath' => '',
         'hideRootPath' => true,
         // 'env' => 'pdt', // dev test pdt
@@ -120,7 +121,7 @@ abstract class AbstractApplication implements ApplicationInterface
     protected function init()
     {
         $this->commandName = $this->input->getCommand();
-        set_exception_handler([$this, 'exceptionHandler']);
+        set_exception_handler([$this, 'handleException']);
     }
 
     /**********************************************************
@@ -153,7 +154,7 @@ abstract class AbstractApplication implements ApplicationInterface
         } catch (\Throwable $e) {
             self::fire(self::ON_RUN_ERROR, [$e, $this]);
             $returnCode = $e->getCode() === 0 ? __LINE__ : $e->getCode();
-            $this->exceptionHandler($e);
+            $this->handleException($e);
         }
 
         // call 'onAfterRun' service, if it is registered.
@@ -191,7 +192,7 @@ abstract class AbstractApplication implements ApplicationInterface
      * @param \Exception|\Throwable $e
      * @throws \Exception
      */
-    public function exceptionHandler($e)
+    public function handleException($e)
     {
         // $this->logger->ex($e);
 
@@ -226,6 +227,10 @@ abstract class AbstractApplication implements ApplicationInterface
         if (!$command) {
             if ($this->input->getSameOpt(['V', 'version'])) {
                 $this->showVersionInfo();
+            }
+
+            if ($this->input->getSameOpt(['h', 'help'])) {
+                $this->showHelpInfo();
             }
         }
 
@@ -282,7 +287,8 @@ abstract class AbstractApplication implements ApplicationInterface
             'usage' => "$script [route|command] [arg0 arg1=value1 arg2=value2 ...] [--opt -v -h ...]",
             'example' => [
                 "$script test (run a independent command)",
-                "$script home{$sep}index (run a command of the group)"
+                "$script home{$sep}index (run a command of the group)",
+                "$script home{$sep}index -h (see a command help of the group)",
             ]
         ], $quit);
     }
@@ -297,12 +303,14 @@ abstract class AbstractApplication implements ApplicationInterface
         $name = $this->getMeta('name', 'Console Application');
         $version = $this->getMeta('version', 'Unknown');
         $publishAt = $this->getMeta('publishAt', 'Unknown');
+        $updateAt = $this->getMeta('updateAt', 'Unknown');
         $phpVersion = PHP_VERSION;
         $os = PHP_OS;
 
         $this->output->aList([
-            "Console Application <info>{$name}</info> Version <comment>$version</comment>(publish at $publishAt)",
-            'System' => "PHP version <info>$phpVersion</info>, on OS <info>$os</info>, current Date $date",
+            "\n  <info>{$name}</info>, Version <comment>$version</comment>\n",
+            'System Info' => "PHP version <info>$phpVersion</info>, on <info>$os</info> system",
+            'Application Info' => "Update at <info>$updateAt</info>, publish at <info>$publishAt</info>(current $date)",
         ], null, [
             'leftChar' => ''
         ]);
@@ -494,6 +502,14 @@ abstract class AbstractApplication implements ApplicationInterface
     }
 
     /**
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->meta['name'];
+    }
+
+    /**
      * set meta info
      * @param array $meta
      */
@@ -506,9 +522,9 @@ abstract class AbstractApplication implements ApplicationInterface
 
     /**
      * get meta info
-     * @param null $name
-     * @param null $default
-     * @return array
+     * @param null|string $name
+     * @param null|string $default
+     * @return array|string
      */
     public function getMeta($name = null, $default = null)
     {
