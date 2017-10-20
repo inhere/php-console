@@ -257,6 +257,7 @@ class Input implements InputInterface
     {
         return $this->sameArg($names, $default);
     }
+
     public function sameArg(array $names, $default = null)
     {
         foreach ($names as $name) {
@@ -325,6 +326,7 @@ class Input implements InputInterface
     {
         return (bool)$this->getOpt($name, $default);
     }
+
     public function boolOpt(string $name, $default = false): bool
     {
         return (bool)$this->getOpt($name, $default);
@@ -356,6 +358,7 @@ class Input implements InputInterface
     {
         return $this->sameOpt($names, $default);
     }
+
     public function sameOpt(array $names, $default = null)
     {
         foreach ($names as $name) {
@@ -379,6 +382,7 @@ class Input implements InputInterface
     {
         return $this->sOpts[$name] ?? $default;
     }
+
     public function getShortOpt($name, $default = null)
     {
         return $this->sOpts[$name] ?? $default;
@@ -444,6 +448,7 @@ class Input implements InputInterface
     {
         return $this->lOpts[$name] ?? $default;
     }
+
     public function getLongOpt($name, $default = null)
     {
         return $this->lOpts[$name] ?? $default;

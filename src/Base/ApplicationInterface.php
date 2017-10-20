@@ -25,6 +25,7 @@ interface ApplicationInterface
     const ON_NOT_FOUND = 'notFound';
 
     public function run($exit = true);
+
     public function stop($code = 0);
 
     public function controller(string $name, string $controller = null);

@@ -24,24 +24,24 @@ final class Color
     const BG_BASE = 40;
 
     // color
-    const BLACK        = 'black';
-    const RED          = 'red';
-    const GREEN        = 'green';
-    const YELLOW       = 'yellow'; // BROWN
-    const BLUE         = 'blue';
-    const MAGENTA      = 'magenta';
-    const CYAN         = 'cyan';
-    const WHITE        = 'white';
-    const NORMAL       = 'normal';
+    const BLACK = 'black';
+    const RED = 'red';
+    const GREEN = 'green';
+    const YELLOW = 'yellow'; // BROWN
+    const BLUE = 'blue';
+    const MAGENTA = 'magenta';
+    const CYAN = 'cyan';
+    const WHITE = 'white';
+    const NORMAL = 'normal';
 
     // color option
-    const BOLD          = 'bold';       // 加粗
-    const FUZZY         = 'fuzzy';      // 模糊(不是所有的终端仿真器都支持)
-    const ITALIC        = 'italic';     // 斜体(不是所有的终端仿真器都支持)
-    const UNDERSCORE    = 'underscore'; // 下划线
-    const BLINK         = 'blink';      // 闪烁
-    const REVERSE       = 'reverse';    // 颠倒的 交换背景色与前景色
-    const CONCEALED     = 'concealed';  // 隐匿的
+    const BOLD = 'bold';       // 加粗
+    const FUZZY = 'fuzzy';      // 模糊(不是所有的终端仿真器都支持)
+    const ITALIC = 'italic';     // 斜体(不是所有的终端仿真器都支持)
+    const UNDERSCORE = 'underscore'; // 下划线
+    const BLINK = 'blink';      // 闪烁
+    const REVERSE = 'reverse';    // 颠倒的 交换背景色与前景色
+    const CONCEALED = 'concealed';  // 隐匿的
 
     /**
      * Known color list
@@ -90,7 +90,7 @@ final class Color
     /**
      * @param string $fg
      * @param string $bg
-     * @param array  $options
+     * @param array $options
      * @return Color
      */
     public static function make($fg = '', $bg = '', array $options = [])

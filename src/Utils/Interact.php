@@ -146,6 +146,7 @@ class Interact extends Show
     {
         return self::question($question, $default, $validator);
     }
+
     public static function question($question, $default = null, \Closure $validator = null)
     {
         if (!$question = trim($question)) {
@@ -212,6 +213,7 @@ class Interact extends Show
     {
         return self::limitedAsk($question, $default, $validator, $times);
     }
+
     public static function limitedAsk($question, $default = null, \Closure $validator = null, $times = 3)
     {
         if (!$question = trim($question)) {

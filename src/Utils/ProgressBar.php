@@ -157,10 +157,10 @@ class ProgressBar
             $step = 0;
         }
 
-        $prevPeriod = (int) ($this->step / $this->redrawFreq);
-        $currPeriod = (int) ($step / $this->redrawFreq);
+        $prevPeriod = (int)($this->step / $this->redrawFreq);
+        $currPeriod = (int)($step / $this->redrawFreq);
         $this->step = $step;
-        $this->percent = $this->maxSteps ? (float) $this->step / $this->maxSteps : 0;
+        $this->percent = $this->maxSteps ? (float)$this->step / $this->maxSteps : 0;
 
         if ($prevPeriod !== $currPeriod || $this->maxSteps === $step) {
             $this->display();
@@ -256,7 +256,7 @@ class ProgressBar
             }
 
             if (isset($matches[2])) {
-                $text = sprintf('%'.$matches[2], $text);
+                $text = sprintf('%' . $matches[2], $text);
             }
 
             return $text;
@@ -265,7 +265,7 @@ class ProgressBar
 
     /**
      * set section Parser
-     * @param string   $section
+     * @param string $section
      * @param callable $handler
      */
     public function setParser(string $section, callable $handler)
@@ -275,7 +275,7 @@ class ProgressBar
 
     /**
      * get section Parser
-     * @param  string       $section
+     * @param  string $section
      * @param  bool|boolean $throwException
      * @return mixed
      */
@@ -315,7 +315,7 @@ class ProgressBar
     /**
      * set a named Message
      * @param string $message The text to associate with the placeholder
-     * @param string $name    The name of the placeholder
+     * @param string $name The name of the placeholder
      */
     public function setMessage($message, string $name = 'message')
     {
@@ -340,6 +340,7 @@ class ProgressBar
     {
         return $this->step;
     }
+
     public function getStep()
     {
         return $this->step;
@@ -352,7 +353,7 @@ class ProgressBar
      */
     public function setRedrawFreq($freq)
     {
-        $this->redrawFreq = max((int) $freq, 1);
+        $this->redrawFreq = max((int)$freq, 1);
     }
 
     public function setOverwrite(bool $overwrite)

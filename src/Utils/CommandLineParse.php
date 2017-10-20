@@ -87,7 +87,8 @@ final class CommandLineParse
                 // fix: allow empty string ''
                 if ($value === true && $nxp !== false && (!$nxp || $nxp{0} !== '-') && !in_array($opt, $noValues, true)) {
 //                    list(,$value) = each($params);
-                    $value = current($params); next($params);
+                    $value = current($params);
+                    next($params);
 
                     // short-opt: bool opts. like -e -abc
                 } elseif (!$isLong && $value === true) {

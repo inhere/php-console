@@ -32,10 +32,10 @@ abstract class Command extends AbstractCommand
      */
     // protected function configure()
     // {
-        // $this
-        //     ->createDefinition()
-        //     ->addArgument('test')
-        //     ->addOption('test');
+    // $this
+    //     ->createDefinition()
+    //     ->addArgument('test')
+    //     ->addOption('test');
     // }
 
     /**

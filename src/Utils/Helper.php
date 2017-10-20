@@ -123,9 +123,9 @@ class Helper
 
     /**
      * findValueByNodes
-     * @param  array  $data
-     * @param  array  $nodes
-     * @param  mixed  $default
+     * @param  array $data
+     * @param  array $nodes
+     * @param  mixed $default
      * @return mixed
      */
     public static function findValueByNodes(array $data, array $nodes, $default = null)
@@ -163,7 +163,7 @@ class Helper
         $line = '';
         foreach (preg_split('//u', $utf8String) as $char) {
             // test if $char could be appended to current line
-            if (mb_strwidth($line.$char, 'utf8') <= $width) {
+            if (mb_strwidth($line . $char, 'utf8') <= $width) {
                 $line .= $char;
                 continue;
             }
@@ -232,7 +232,7 @@ class Helper
                         return $format[1];
                     }
 
-                    return floor($secs / $format[2]).' '.$format[1];
+                    return floor($secs / $format[2]) . ' ' . $format[1];
                 }
             }
         }

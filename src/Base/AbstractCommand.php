@@ -90,7 +90,8 @@ abstract class AbstractCommand implements CommandInterface
     }
 
     protected function init()
-    {}
+    {
+    }
 
     /**
      * configure input definition
@@ -122,7 +123,7 @@ abstract class AbstractCommand implements CommandInterface
         // load input definition configure
         $this->configure();
 
-        if ($this->input->sameOpt(['h','help'])) {
+        if ($this->input->sameOpt(['h', 'help'])) {
             return $this->showHelp();
         }
 
@@ -309,7 +310,7 @@ abstract class AbstractCommand implements CommandInterface
 
     /**
      * show help by parse method annotation
-     * @param string    $method
+     * @param string $method
      * @param null|string $action
      * @return int
      */
@@ -343,12 +344,12 @@ abstract class AbstractCommand implements CommandInterface
 
                 // need multi align
                 // if (self::$annotationTags[$tag]) {
-                    // $lines = array_map(function ($line) {
-                    //     // return trim($line);
-                    //     return $line;
-                    // }, explode("\n", $msg));
+                // $lines = array_map(function ($line) {
+                //     // return trim($line);
+                //     return $line;
+                // }, explode("\n", $msg));
 
-                    // $msg = implode("\n", array_filter($lines, 'trim'));
+                // $msg = implode("\n", array_filter($lines, 'trim'));
                 // }
 
                 $tag = ucfirst($tag);

@@ -37,6 +37,17 @@ class Style
     const ERROR = 'error';
 
     /**
+     * Regex to match tags
+     * @var string
+     */
+    const COLOR_TAG = '/<([a-z=;]+)>(.*?)<\/\\1>/s';
+
+    /**
+     * Regex used for removing color codes
+     */
+    const STRIP_TAG = '/<[\/]?[a-z=;]+>/';
+
+    /**
      * @var self
      */
     private static $instance;
@@ -46,17 +57,6 @@ class Style
      * @var bool
      */
     public $noColor = false;
-
-    /**
-     * Regex to match tags
-     * @var string
-     */
-    protected $tagFilter = '/<([a-z=;]+)>(.*?)<\/\\1>/s';
-
-    /**
-     * Regex used for removing color codes
-     */
-    protected static $stripFilter = '/<[\/]?[a-z=;]+>/';
 
     /**
      * Array of Style objects
@@ -105,20 +105,19 @@ class Style
         $this
             ->add(self::NORMAL, ['fg' => 'normal'])
             // 不明显的 浅灰色的
-            ->add(self::FAINTLY, ['fg' => 'normal', 'options' => ['italic'] ])
-            ->add(self::BOLD, ['options' => ['bold'] ])
-            ->add(self::INFO, [ 'fg' => 'green', ])     //'options' => ['bold']
-            ->add(self::NOTE, [ 'fg' => 'green', 'options' => ['bold'] ])     //'options' => ['bold']
-            ->add(self::PRIMARY, [ 'fg' => 'blue', ])   //'options' => ['bold']
-            ->add(self::SUCCESS, ['fg' => 'green', 'options' => ['bold'] ])
-            ->add(self::NOTICE, ['options' => ['bold', 'underscore'], ])
-            ->add(self::WARNING, ['fg' => 'black', 'bg' => 'yellow', ]) //'options' => ['bold']
-            ->add(self::COMMENT, [ 'fg' => 'yellow', ])  //'options' => ['bold']
+            ->add(self::FAINTLY, ['fg' => 'normal', 'options' => ['italic']])
+            ->add(self::BOLD, ['options' => ['bold']])
+            ->add(self::INFO, ['fg' => 'green',])//'options' => ['bold']
+            ->add(self::NOTE, ['fg' => 'green', 'options' => ['bold']])//'options' => ['bold']
+            ->add(self::PRIMARY, ['fg' => 'blue',])//'options' => ['bold']
+            ->add(self::SUCCESS, ['fg' => 'green', 'options' => ['bold']])
+            ->add(self::NOTICE, ['options' => ['bold', 'underscore'],])
+            ->add(self::WARNING, ['fg' => 'black', 'bg' => 'yellow',])//'options' => ['bold']
+            ->add(self::COMMENT, ['fg' => 'yellow',])//'options' => ['bold']
             ->add(self::QUESTION, ['fg' => 'black', 'bg' => 'cyan'])
-            ->add(self::DANGER, ['fg' => 'red', ])       // 'bg' => 'magenta', 'options' => ['bold']
+            ->add(self::DANGER, ['fg' => 'red',])// 'bg' => 'magenta', 'options' => ['bold']
             ->add(self::ERROR, ['fg' => 'black', 'bg' => 'red'])
-
-            ->add('underline', ['fg' => 'normal', 'options' => ['underscore'] ])
+            ->add('underline', ['fg' => 'normal', 'options' => ['underscore']])
             ->add('blue', ['fg' => 'blue'])
             ->add('cyan', ['fg' => 'cyan'])
             ->add('magenta', ['fg' => 'magenta'])
@@ -151,9 +150,7 @@ class Style
             return static::stripColor($text);
         }
 
-        preg_match_all($this->tagFilter, $text, $matches);
-
-        if (!$matches) {
+        if (!preg_match_all(self::COLOR_TAG, $text, $matches)) {
             return $text;
         }
 
@@ -194,7 +191,7 @@ class Style
     public static function stripColor($string)
     {
         // $text = strip_tags($text);
-        return preg_replace(static::$stripFilter, '', $string);
+        return preg_replace(self::STRIP_TAG, '', $string);
     }
 
 ///////////////////////////////////////// Attr Color Style /////////////////////////////////////////

@@ -31,10 +31,10 @@ class LiteApplication
      */
     private $opts = [];
 
-    /** @var string  */
+    /** @var string */
     private $script = '';
 
-    /** @var string  */
+    /** @var string */
     private $command = '';
 
     /**

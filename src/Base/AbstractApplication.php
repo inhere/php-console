@@ -113,8 +113,8 @@ abstract class AbstractApplication implements ApplicationInterface
         if (!in_array(PHP_SAPI, ['cli', 'cli-server'], true)) {
             header('HTTP/1.1 403 Forbidden');
             exit("  403 Forbidden \n\n"
-            . " current environment is CLI. \n"
-            . " :( Sorry! Run this script is only allowed in the terminal environment!\n,You are not allowed to access this file.\n");
+                . " current environment is CLI. \n"
+                . " :( Sorry! Run this script is only allowed in the terminal environment!\n,You are not allowed to access this file.\n");
         }
     }
 
@@ -161,7 +161,7 @@ abstract class AbstractApplication implements ApplicationInterface
         self::fire(self::ON_AFTER_RUN, [$this]);
 
         if ($exit) {
-            $this->stop((int) $returnCode);
+            $this->stop((int)$returnCode);
         }
     }
 
@@ -179,7 +179,7 @@ abstract class AbstractApplication implements ApplicationInterface
         // call 'onAppStop' service, if it is registered.
         self::fire(self::ON_STOP_RUN, [$this]);
 
-        exit((int) $code);
+        exit((int)$code);
     }
 
 

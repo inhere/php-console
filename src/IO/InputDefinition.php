@@ -406,7 +406,7 @@ class InputDefinition
                 $elements[] = sprintf('[%s--%s%s]', $shortcut, $name, $value);
 
                 $key = "{$shortcut}--{$name}";
-                $opts[$key] = ($option['required'] ? '<red>*</red>' : '') .$option['description'];
+                $opts[$key] = ($option['required'] ? '<red>*</red>' : '') . $option['description'];
             }
         }
 
