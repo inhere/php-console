@@ -57,9 +57,9 @@ trait InputOutputTrait
      * @see Input::getSameArg()
      * {@inheritdoc}
      */
-    public function getSameArg($name)
+    public function getSameArg($name, $default = null)
     {
-        return $this->input->getSameArg($name);
+        return $this->input->getSameArg($name, $default);
     }
 
     /**
@@ -75,9 +75,9 @@ trait InputOutputTrait
      * @see Input::getSameOpt()
      * {@inheritdoc}
      */
-    public function getSameOpt($name)
+    public function getSameOpt($name, $default = null)
     {
-        return $this->input->getSameOpt($name);
+        return $this->input->getSameOpt($name, $default);
     }
 
     /**
