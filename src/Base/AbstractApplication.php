@@ -12,6 +12,8 @@ use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
 use Inhere\Console\Traits\InputOutputTrait;
 use Inhere\Console\Traits\SimpleEventTrait;
+use Inhere\Console\Utils\Helper;
+use Inhere\Library\Helpers\Php;
 
 /**
  * Class AbstractApplication
@@ -23,28 +25,6 @@ abstract class AbstractApplication implements ApplicationInterface
 
     /** @var bool render no color */
     private static $noColor = false;
-
-    /**
-     * @var string
-     */
-    public $delimiter = ':'; // '/' ':'
-
-    /**
-     * app meta config
-     * @var array
-     */
-    private $meta = [
-        'name' => 'My Console',
-        'version' => '0.5.1',
-        'publishAt' => '2017.03.24',
-        'updateAt' => '2017.03.24',
-        'rootPath' => '',
-        'hideRootPath' => true,
-        // 'env' => 'pdt', // dev test pdt
-        // 'debug' => false,
-        // 'charset' => 'UTF-8',
-        // 'timeZone' => 'Asia/Shanghai',
-    ];
 
     /**
      * @var array
@@ -65,29 +45,39 @@ abstract class AbstractApplication implements ApplicationInterface
     ];
 
     /**
+     * app meta config
      * @var array
      */
+    private $meta = [
+        'name' => 'My Console',
+        'debug' => false,
+        'version' => '0.5.1',
+        'publishAt' => '2017.03.24',
+        'updateAt' => '2017.03.24',
+        'rootPath' => '',
+        'hideRootPath' => true,
+        // 'timeZone' => 'Asia/Shanghai',
+        // 'env' => 'pdt', // dev test pdt
+        // 'charset' => 'UTF-8',
+
+        // runtime stats
+        '_stats' => [],
+    ];
+
+    /** @var string Command delimiter. e.g dev:serve */
+    public $delimiter = ':'; // '/' ':'
+
+    /** @var array The group commands */
     protected $controllers = [];
 
-    /**
-     * @var array
-     */
+    /** @var array The independent commands */
     protected $commands = [];
 
-    /**
-     * @var array
-     */
+    /** @var array  */
     private $commandMessages = [];
 
-    /**
-     * @var string
-     */
+    /** @var string */
     private $commandName;
-
-    /**
-     * @var bool
-     */
-    //private $hideRootPath = true;
 
     /**
      * App constructor.
@@ -106,19 +96,13 @@ abstract class AbstractApplication implements ApplicationInterface
         $this->init();
     }
 
-    protected function runtimeCheck()
-    {
-        // check env
-        if (!in_array(PHP_SAPI, ['cli', 'cli-server'], true)) {
-            header('HTTP/1.1 403 Forbidden');
-            exit("  403 Forbidden \n\n"
-                . " current environment is CLI. \n"
-                . " :( Sorry! Run this script is only allowed in the terminal environment!\n,You are not allowed to access this file.\n");
-        }
-    }
-
     protected function init()
     {
+        $this->meta['_stats'] = [
+            'startTime' => microtime(1),
+            'startMemory' => memory_get_usage(true),
+        ];
+
         $this->commandName = $this->input->getCommand();
         set_exception_handler([$this, 'handleException']);
     }
@@ -133,6 +117,9 @@ abstract class AbstractApplication implements ApplicationInterface
         //new AutoCompletion(array_merge($this->getCommandNames(), $this->getControllerNames()));
     }
 
+    protected function beforeRun()
+    {}
+
     /**
      * run app
      * @param bool $exit
@@ -146,6 +133,7 @@ abstract class AbstractApplication implements ApplicationInterface
 
         // call 'onBeforeRun' service, if it is registered.
         self::fire(self::ON_BEFORE_RUN, [$this]);
+        $this->beforeRun();
 
         // do run ...
         try {
@@ -156,8 +144,11 @@ abstract class AbstractApplication implements ApplicationInterface
             $this->handleException($e);
         }
 
+        $this->meta['_stats']['endTime'] = microtime(1);
+
         // call 'onAfterRun' service, if it is registered.
         self::fire(self::ON_AFTER_RUN, [$this]);
+        $this->afterRun();
 
         if ($exit) {
             $this->stop((int)$returnCode);
@@ -170,6 +161,18 @@ abstract class AbstractApplication implements ApplicationInterface
      */
     abstract protected function dispatch($command);
 
+    protected function afterRun()
+    {
+        // display runtime info
+        if ($this->isDebug()) {
+            $title = '------------ Runtime Stats ------------';
+            $stats = $this->meta['_stats'];
+            $this->meta['_stats'] = Helper::runtime($stats['startTime'], $stats['startMemory'], $stats);
+            $this->output->write('');
+            $this->output->aList($this->meta['_stats'], $title);
+        }
+    }
+
     /**
      * @param int $code
      */
@@ -181,10 +184,23 @@ abstract class AbstractApplication implements ApplicationInterface
         exit((int)$code);
     }
 
-
     /**********************************************************
      * helper method for the application
      **********************************************************/
+
+    /**
+     * runtime env check
+     */
+    protected function runtimeCheck()
+    {
+        // check env
+        if (!in_array(PHP_SAPI, ['cli', 'cli-server'], true)) {
+            header('HTTP/1.1 403 Forbidden');
+            exit("  403 Forbidden \n\n"
+                . " current environment is CLI. \n"
+                . " :( Sorry! Run this script is only allowed in the terminal environment!\n,You are not allowed to access this file.\n");
+        }
+    }
 
     /**
      * 运行异常处理
@@ -192,21 +208,31 @@ abstract class AbstractApplication implements ApplicationInterface
      */
     public function handleException($e)
     {
-        // $this->logger->ex($e);
+        $type = $e instanceof \Error ? 'Error' : 'Exception';
+        $title = ":( OO ... An $type Occurred!";
+        $this->logError($e);
 
         // open debug, throw exception
         if ($this->isDebug()) {
+            $tpl = <<<ERR
+    <danger>$title</danger> 
+
+Message   <magenta>%s</magenta>
+File      <cyan>%s</cyan> line <cyan>%d</cyan>
+Catch by  %s()\n
+Code Trace:\n%s\n
+ERR;
             $message = sprintf(
-                "<red>Exception</red>: %s\nCalled At %s, Line: <cyan>%d</cyan>\nCatch the exception by: %s\nCode Trace:\n%s\n",
+                $tpl,
                 // $e->getCode(),
                 $e->getMessage(),
                 $e->getFile(),
                 $e->getLine(),
-                get_class($e),
+                __METHOD__,
                 $e->getTraceAsString()
             );
 
-            if ($this->meta['hideRootPath'] && $rootPath = $this->meta['rootPath']) {
+            if ($this->meta['hideRootPath'] && ($rootPath = $this->meta['rootPath'])) {
                 $message = str_replace($rootPath, '{ROOT}', $message);
             }
 
@@ -215,6 +241,14 @@ abstract class AbstractApplication implements ApplicationInterface
             // simple output
             $this->output->error('An error occurred! MESSAGE: ' . $e->getMessage());
         }
+    }
+
+    /**
+     * @param \Throwable $e
+     */
+    protected function logError($e)
+    {
+        // you can log error ...
     }
 
     /**
@@ -539,7 +573,7 @@ abstract class AbstractApplication implements ApplicationInterface
      */
     public function isDebug()
     {
-        return $this->input->getOpt('debug');
+        return $this->input->getOpt('debug', $this->meta['debug']);
     }
 
     /**

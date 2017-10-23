@@ -8,7 +8,6 @@
 
 namespace Inhere\Console\Base;
 
-use Inhere\Console\Application;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\InputDefinition;
 use Inhere\Console\IO\Output;
@@ -22,8 +21,7 @@ use Inhere\Console\Utils\Annotation;
  */
 abstract class AbstractCommand implements CommandInterface
 {
-    use InputOutputTrait;
-    use UserInteractTrait;
+    use InputOutputTrait, UserInteractTrait;
 
     // name -> {$name}
     const ANNOTATION_VAR = '{%s}'; // '{$%s}';
@@ -54,22 +52,14 @@ abstract class AbstractCommand implements CommandInterface
         'example' => true,
     ];
 
-    /**
-     * @var ApplicationInterface
-     */
-    private $app;
+    /** @var ApplicationInterface */
+    protected $app;
 
-    /**
-     * @var InputDefinition
-     */
+    /** @var InputDefinition|null  */
     private $definition;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     private $processTitle;
-
-    ////// for strict mode //////
 
     /**
      * Command constructor.
@@ -94,7 +84,7 @@ abstract class AbstractCommand implements CommandInterface
     }
 
     /**
-     * configure input definition
+     * Configure input definition for command
      * @return InputDefinition|null
      */
     protected function configure()
@@ -114,6 +104,10 @@ abstract class AbstractCommand implements CommandInterface
         return $this->definition;
     }
 
+    /**************************************************************************
+     * running a command
+     **************************************************************************/
+
     /**
      * run command
      * @return int
@@ -127,25 +121,27 @@ abstract class AbstractCommand implements CommandInterface
             return $this->showHelp();
         }
 
-        $status = 0;
-
-        try {
-            Application::fire(ApplicationInterface::ON_BEFORE_EXEC, [$this]);
-
-            if (true !== $this->beforeRun()) {
-                return -1;
-            }
-
-            $status = $this->execute($this->input, $this->output);
-            $this->afterRun();
-
-            Application::fire(ApplicationInterface::ON_AFTER_EXEC, [$this]);
-        } catch (\Throwable $e) {
-            Application::fire(ApplicationInterface::ON_EXEC_ERROR, [$e, $this]);
-            $this->handleRuntimeException($e);
+        if (true !== $this->prepare()) {
+            return -1;
         }
 
+        if (true !== $this->beforeExecute()) {
+            return -1;
+        }
+
+        $status = $this->execute($this->input, $this->output);
+        $this->afterExecute();
+
         return $status;
+    }
+
+    /**
+     * before command execute
+     * @return boolean It MUST return TRUE to continue execute.
+     */
+    protected function beforeExecute()
+    {
+        return true;
     }
 
     /**
@@ -156,6 +152,17 @@ abstract class AbstractCommand implements CommandInterface
      */
     abstract protected function execute($input, $output);
 
+    /**
+     * after command execute
+     */
+    protected function afterExecute()
+    {
+    }
+
+    /**
+     * display help information
+     * @return bool
+     */
     protected function showHelp()
     {
         // 创建了 InputDefinition , 则使用它的信息。
@@ -170,9 +177,9 @@ abstract class AbstractCommand implements CommandInterface
     }
 
     /**
-     * beforeRun
+     * prepare run
      */
-    protected function beforeRun()
+    protected function prepare()
     {
         if ($this->processTitle) {
             if (function_exists('cli_set_process_title')) {
@@ -270,12 +277,9 @@ abstract class AbstractCommand implements CommandInterface
         return true;
     }
 
-    /**
-     * afterRun
-     */
-    protected function afterRun()
-    {
-    }
+    /**************************************************************************
+     * helper methods
+     **************************************************************************/
 
     /**
      * 为命令注解提供可解析解析变量. 可以在命令的注释中使用
@@ -360,16 +364,9 @@ abstract class AbstractCommand implements CommandInterface
         return 0;
     }
 
-    /**
-     * handle action/command runtime exception
-     *
-     * @param  \Throwable $e
-     * @throws \Throwable
-     */
-    protected function handleRuntimeException(\Throwable $e)
-    {
-        throw $e;
-    }
+    /**************************************************************************
+     * getter/setter methods
+     **************************************************************************/
 
     /**
      * @param string $name

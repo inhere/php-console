@@ -73,7 +73,7 @@ class Helper
      * @param $object
      * @param array $options
      */
-    public static function loadAttrs($object, array $options)
+    public static function init($object, array $options)
     {
         foreach ($options as $property => $value) {
             $object->$property = $value;
@@ -105,10 +105,11 @@ class Helper
     }
 
     /**
-     * @param $name
+     * to camel
+     * @param string $name
      * @return mixed|string
      */
-    public static function transName($name)
+    public static function camelCase($name)
     {
         $name = trim($name, '-_');
 
@@ -428,6 +429,35 @@ class Helper
         }
 
         return $pad . '  ' . implode("\n", $lines);
+    }
+
+    /**
+     * 获取资源消耗
+     * @param int $startTime
+     * @param int|float $startMem
+     * @param array $info
+     * @return array
+     */
+    public static function runtime($startTime, $startMem, array $info = [])
+    {
+        $info['startTime'] = $startTime;
+        $info['endTime'] = microtime(true);
+        $info['endMemory'] = memory_get_usage(true);
+
+        // 计算运行时间
+        $info['runtime'] = number_format(($info['endTime'] - $startTime) * 1000, 3)  . 'ms';
+
+        if ($startMem) {
+            $startMem = array_sum(explode(' ', $startMem));
+            $endMem = array_sum(explode(' ', $info['endMemory']));
+
+            $info['memory'] = number_format(($endMem - $startMem) / 1024, 3) . 'kb';
+        }
+
+        $peakMem = memory_get_peak_usage(true) / 1024 / 1024;
+        $info['peakMemory'] = number_format($peakMem, 3) . 'Mb';
+
+        return $info;
     }
 
     /**

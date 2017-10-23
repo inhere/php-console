@@ -97,7 +97,7 @@ class InputDefinition
     public function addArgument($name, $mode = null, $description = '', $default = null)
     {
         if (null === $mode) {
-            $mode = Input::OPT_OPTIONAL;
+            $mode = Input::ARG_OPTIONAL;
         } elseif (!is_int($mode) || $mode > 7 || $mode < 1) {
             throw new \InvalidArgumentException(sprintf('Argument mode "%s" is not valid.', $mode));
         }
@@ -116,7 +116,7 @@ class InputDefinition
 
         if ($isArray = ($mode === Input::ARG_IS_ARRAY)) {
             if (!$this->argumentIsAcceptValue($mode)) {
-                throw new \InvalidArgumentException('Impossible to have an option mode VALUE_IS_ARRAY if the option does not accept a value.');
+                throw new \InvalidArgumentException('Impossible to have an option mode ARG_IS_ARRAY if the option does not accept a value.');
             }
 
             $this->hasAnArrayArgument = true;

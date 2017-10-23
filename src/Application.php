@@ -16,7 +16,6 @@ use Inhere\Console\Base\AbstractApplication;
  */
 class Application extends AbstractApplication
 {
-
     /**********************************************************
      * register console controller/command
      **********************************************************/
@@ -214,6 +213,7 @@ class Application extends AbstractApplication
             }
 
             $object::setName($name);
+            $object->setApp($this);
             $status = $object->run();
         }
 
@@ -250,6 +250,7 @@ class Application extends AbstractApplication
 
         $object::setName($name);
         $object->delimiter = $this->delimiter;
+        $object->setApp($this);
         $object->setStandAlone($standAlone);
 
         return $object->setAction($action)->run();

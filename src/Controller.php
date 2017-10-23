@@ -21,39 +21,25 @@ use Inhere\Console\Utils\Annotation;
  */
 abstract class Controller extends AbstractCommand implements ControllerInterface
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     private $action;
 
-    /**
-     * @var string
-     */
+    /** @var string  */
     private $defaultAction = 'help';
 
-    /**
-     * @var string
-     */
+    /** @var string  */
     private $actionSuffix = 'Command';
 
-    /**
-     * @var string
-     */
+    /** @var string  */
     protected $notFoundCallback = 'notFound';
 
-    /**
-     * @var string
-     */
-    public $delimiter = '/'; // '/' ':'
+    /** @var string  */
+    public $delimiter = ':'; // '/' ':'
 
-    /**
-     * @var bool
-     */
+    /** @var bool  */
     protected $showMore = true;
 
-    /**
-     * @var bool
-     */
+    /** @var bool  */
     private $standAlone = false;
 
     /**
@@ -79,8 +65,7 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
     protected function execute($input, $output)
     {
         $action = $this->action ?: $this->defaultAction;
-        $action = Helper::transName(trim($action, $this->delimiter));
-
+        $action = Helper::camelCase(trim($action, $this->delimiter));
         $method = $this->actionSuffix ? $action . ucfirst($this->actionSuffix) : $action;
 
         // the action method exists and only allow access public method.
@@ -134,7 +119,7 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
             return 0;
         }
 
-        $action = Helper::transName($action);
+        $action = Helper::camelCase($action);
         $method = $this->actionSuffix ? $action . ucfirst($this->actionSuffix) : $action;
 
         return $this->showHelpByMethodAnnotation($method, $action);
@@ -213,6 +198,10 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
         $this->showMore && $this->write("More information please use: <cyan>$script {$name}{command} -h</cyan>");
     }
 
+    /**************************************************************************
+     * getter/setter methods
+     **************************************************************************/
+
     /**
      * @return string
      */
@@ -228,7 +217,7 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
     public function setAction(string $action)
     {
         if ($action) {
-            $this->action = Helper::transName($action);
+            $this->action = Helper::camelCase($action);
         }
 
         return $this;
