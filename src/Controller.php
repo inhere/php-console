@@ -148,8 +148,6 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
         $ref = new \ReflectionClass($this);
         $sName = lcfirst(self::getName() ?: $ref->getShortName());
 
-        // $this->write(sprintf("This is in the console controller [<bold>%s</bold>]\n", $class = $ref->getName();));
-
         if (!($classDes = self::getDescription())) {
             $classDes = Annotation::description($ref->getDocComment()) ?: 'No Description for the console controller';
         }
@@ -182,15 +180,25 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
             }
         }
 
-        if ($this->standAlone) {
-            $name = $sName . ' ';
-            $usage = '<info>{command}</info> [arguments] [options]';
-        } else {
-            $name = $sName . $this->delimiter;
-            $usage = "<info>{$name}</info>{command} [arguments] [options]";
+        // sort commands
+        ksort($commands);
+
+        // move 'help' to last.
+        if ($helpCmd = $commands['help'] ?? null) {
+            unset($commands['help']);
+            $commands['help'] = $helpCmd;
         }
 
         $script = $this->getScriptName();
+
+        if ($this->standAlone) {
+            $name = $sName . ' ';
+            $usage = "$script <info>{command}</info> [arguments] [options]";
+        } else {
+            $name = $sName . $this->delimiter;
+            $usage = "$script {$name}<info>{command}</info> [arguments] [options]";
+        }
+
         $this->output->mList([
             'Description:' => $classDes,
             'Usage:' => $usage,
@@ -198,9 +206,11 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
             'Commands:' => $commands,
             'Options:' => [
                 '-h,--help' => 'Show help of the command group or specified command action',
-                $this->showMore ? "\nMore information please use: <cyan>$script {$name}{command} -h</cyan>" : ''
+//                $this->showMore ? "\nMore information please use: <cyan>$script {$name}{command} -h</cyan>" : ''
             ],
         ]);
+
+        $this->showMore && $this->write("More information please use: <cyan>$script {$name}{command} -h</cyan>");
     }
 
     /**

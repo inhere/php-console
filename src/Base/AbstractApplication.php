@@ -19,8 +19,7 @@ use Inhere\Console\Traits\SimpleEventTrait;
  */
 abstract class AbstractApplication implements ApplicationInterface
 {
-    use InputOutputTrait;
-    use SimpleEventTrait;
+    use InputOutputTrait, SimpleEventTrait;
 
     /** @var bool render no color */
     private static $noColor = false;
@@ -363,7 +362,7 @@ abstract class AbstractApplication implements ApplicationInterface
         $this->output->mList([
             //'There are all console controllers and independent commands.',
             'Usage:' => "$script [route|command] [arg0 arg1=value1 arg2=value2 ...] [--opt -v -h ...]",
-            'Group Commands:(by controller)' => $controllerArr ?: '... No register any group command(controller)',
+            'Group Commands:' => $controllerArr ?: '... No register any group command(controller)',
             'Independent Commands:' => $commandArr ?: '... No register any independent command',
             'Internal Commands:' => $internalCommands,
             'Internal Options:' => self::$internalOptions
