@@ -13,7 +13,6 @@ use Inhere\Console\IO\Output;
 use Inhere\Console\Traits\InputOutputTrait;
 use Inhere\Console\Traits\SimpleEventTrait;
 use Inhere\Console\Utils\Helper;
-use Inhere\Library\Helpers\Php;
 
 /**
  * Class AbstractApplication
