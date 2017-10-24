@@ -74,22 +74,6 @@ class Output implements OutputInterface
         return $this;
     }
 
-    /**
-     * @param array ...$args
-     */
-    public function dumpVars(...$args)
-    {
-        echo Helper::dumpVars(...$args);
-    }
-
-    /**
-     * @param array ...$args
-     */
-    public function printVars(...$args)
-    {
-        echo Helper::printVars(...$args);
-    }
-
 /////////////////////////////////////////////////////////////////
 /// Getter/Setter
 /////////////////////////////////////////////////////////////////

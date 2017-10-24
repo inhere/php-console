@@ -7,12 +7,11 @@ use Inhere\Console\IO\Input;
 use Inhere\Console\Utils\AnsiCode;
 use Inhere\Console\Utils\Download;
 use Inhere\Console\Utils\Helper;
-use Inhere\Console\Utils\Show;
 use Inhere\Console\Utils\Interact;
+use Inhere\Console\Utils\Show;
 
 /**
  * default command controller. there are some command usage examples(1)
- *
  * Class HomeController
  * @package Inhere\Console\examples
  */
@@ -77,7 +76,6 @@ class HomeController extends Controller
 
     /**
      * a progress bar example show
-     *
      * @options
      *  --type      the progress type, allow: bar,txt. <cyan>txt</cyan>
      *  --done-char the done show char. <info>=</info>
@@ -190,6 +188,112 @@ class HomeController extends Controller
     }
 
     /**
+     * a example for display a table
+     */
+    public function tableCommand()
+    {
+        $data = [
+            [
+                'id' => 1,
+                'name' => 'john',
+                'status' => 2,
+                'email' => 'john@email.com',
+            ],
+            [
+                'id' => 2,
+                'name' => 'tom',
+                'status' => 0,
+                'email' => 'tom@email.com',
+            ],
+            [
+                'id' => 3,
+                'name' => 'jack',
+                'status' => 1,
+                'email' => 'jack-test@email.com',
+            ],
+        ];
+        Show::table($data, 'table show');
+
+        Show::table($data, 'No border table show', [
+            'showBorder' => 0
+        ]);
+
+        Show::table($data, 'change style table show', [
+            'bodyStyle' => 'info'
+        ]);
+
+        $data1 = [
+            [
+                'Walter White',
+                'Father',
+                'Teacher',
+            ],
+            [
+                'Skyler White',
+                'Mother',
+                'Accountant',
+            ],
+            [
+                'Walter White Jr.',
+                'Son',
+                'Student',
+            ],
+        ];
+
+        Show::table($data1, 'no head table show');
+    }
+
+    /**
+     * a example use padding() for show data
+     */
+    public function paddingCommand()
+    {
+        $data = [
+            'Eggs' => '$1.99',
+            'Oatmeal' => '$4.99',
+            'Bacon' => '$2.99',
+        ];
+
+        Show::padding($data, 'padding data show');
+    }
+
+    /**
+     * a example for dump, print, json data
+     */
+    public function jsonCommand()
+    {
+        $data = [
+            [
+                'id' => 1,
+                'name' => 'john',
+                'status' => 2,
+                'email' => 'john@email.com',
+            ],
+            [
+                'id' => 2,
+                'name' => 'tom',
+                'status' => 0,
+                'email' => 'tom@email.com',
+            ],
+            [
+                'id' => 3,
+                'name' => 'jack',
+                'status' => 1,
+                'email' => 'jack-test@email.com',
+            ],
+        ];
+
+        $this->output->write('use dump:');
+        $this->output->dump($data);
+
+        $this->output->write('use print:');
+        $this->output->print($data);
+
+        $this->output->write('use json:');
+        $this->output->json($data);
+    }
+
+    /**
      * a example for use arguments on command
      * @usage home:useArg [arg1=val1 arg2=arg2] [options]
      * @example
@@ -225,12 +329,11 @@ class HomeController extends Controller
      */
     public function defArgCommand()
     {
-        $this->output->dumpVars($this->input->getArgs(), $this->input->getOpts(), $this->input->getBoolOpt('y'));
+        $this->output->dump($this->input->getArgs(), $this->input->getOpts(), $this->input->getBoolOpt('y'));
     }
 
     /**
      * use <red>Interact::confirm</red> method
-     *
      */
     public function confirmCommand()
     {
@@ -241,7 +344,6 @@ class HomeController extends Controller
 
     /**
      * example for use <magenta>Interact::select</magenta> method
-     *
      */
     public function selectCommand()
     {
@@ -258,7 +360,7 @@ class HomeController extends Controller
     {
         $info = [
             'phpVersion' => PHP_VERSION,
-            'env'   => 'test',
+            'env' => 'test',
             'debug' => true,
         ];
 
@@ -269,7 +371,6 @@ class HomeController extends Controller
 
     /**
      * download a file to local
-     *
      * @usage {command} url=url saveTo=[saveAs] type=[bar|text]
      * @example {command} url=https://github.com/inhere/php-librarys/archive/v2.0.1.zip type=bar
      */

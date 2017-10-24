@@ -59,6 +59,14 @@ class Helper
     }
 
     /**
+     * @return bool
+     */
+    public static function isAnsiSupport()
+    {
+        return getenv('ANSICON') === true || getenv('ConEmuANSI') === 'ON';
+    }
+
+    /**
      * Returns if the file descriptor is an interactive terminal or not.
      * @param  int|resource $fileDescriptor
      * @return boolean
@@ -81,6 +89,25 @@ class Helper
     }
 
     /**
+     * wrap a style tag
+     * @param string $string
+     * @param string $tag
+     * @return string
+     */
+    public static function wrapTag($string, $tag)
+    {
+        if (!$string) {
+            return '';
+        }
+
+        if (!$tag) {
+            return $string;
+        }
+
+        return "<$tag>$string</$tag>";
+    }
+
+    /**
      * clear Ansi Code
      * @param $string
      * @return mixed
@@ -88,6 +115,15 @@ class Helper
     public static function stripAnsiCode($string)
     {
         return preg_replace('/\033\[[\d;?]*\w/', '', $string);
+    }
+
+    /**
+     * @param $string
+     * @return int
+     */
+    public static function strUtf8Len($string)
+    {
+        return mb_strlen($string, 'utf-8');
     }
 
     /**
@@ -252,7 +288,7 @@ class Helper
      * @param bool $expectInt
      * @return int
      */
-    public static function getKeyMaxWidth(array $data, $expectInt = true)
+    public static function getKeyMaxWidth(array $data, $expectInt = false)
     {
         $keyMaxWidth = 0;
 

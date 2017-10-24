@@ -9,6 +9,7 @@
 namespace Inhere\Console\Traits;
 
 use Inhere\Console\Style\Style;
+use Inhere\Console\Utils\Helper;
 use Inhere\Console\Utils\Show;
 
 /**
@@ -192,5 +193,37 @@ trait FormatOutputTrait
         }
 
         throw new \LogicException("Call a not exists method: $method of the " . static::class);
+    }
+
+    /**
+     * @param mixed $data
+     * @param bool $echo
+     * @return int|string
+     */
+    public function json($data, $echo = true)
+    {
+        $string = json_encode($data, JSON_PRETTY_PRINT);
+
+        if ($echo) {
+            return Show::write($string);
+        }
+
+        return $string;
+    }
+
+    /**
+     * @param array ...$vars
+     */
+    public function dump(...$vars)
+    {
+        Show::write(Helper::dumpVars(...$vars));
+    }
+
+    /**
+     * @param array ...$vars
+     */
+    public function print(...$vars)
+    {
+        Show::write(Helper::printVars(...$vars));
     }
 }

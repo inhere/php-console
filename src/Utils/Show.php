@@ -62,9 +62,9 @@ class Show
         'block', 'primary', 'info', 'notice', 'success', 'warning', 'danger', 'error'
     ];
 
-/////////////////////////////////////////////////////////////////
-/// Output block Message
-/////////////////////////////////////////////////////////////////
+    /**************************************************************************************************
+     * Output block Message
+     **************************************************************************************************/
 
     /**
      * @param mixed $messages
@@ -165,9 +165,9 @@ class Show
         throw new \LogicException("Call a not exists method: $method");
     }
 
-/////////////////////////////////////////////////////////////////
-/// Output Format Message(section/list/helpPanel/panel/table)
-/////////////////////////////////////////////////////////////////
+    /**************************************************************************************************
+     * Output Format Message(section/list/helpPanel/panel/table)
+     **************************************************************************************************/
 
     /**
      * @param string $title The title text
@@ -273,6 +273,43 @@ class Show
     }
 
     /**
+     * ```php
+     * $data = [
+     *  'Eggs' => '$1.99',
+     *  'Oatmeal' => '$4.99',
+     *  'Bacon' => '$2.99',
+     * ];
+     * ```
+     * @param array $data
+     * @param string|null $title
+     * @param array $opts
+     */
+    public static function padding(array $data, string $title = null, array $opts = [])
+    {
+        if (!$data) {
+            return;
+        }
+
+        $string = $title ? Helper::wrapTag(ucfirst($title), 'comment') . ":\n" : '';
+        $opts = array_merge([
+            'char' => '.',
+            'indent' => '  ',
+            'padding' => 10,
+            'valueStyle' => 'info',
+        ], $opts);
+
+        $keyMaxLen = Helper::getKeyMaxWidth($data);
+        $paddingLen = $keyMaxLen > $opts['padding'] ? $keyMaxLen : $opts['padding'];
+
+        foreach ($data as $label => $value) {
+            $value = Helper::wrapTag((string)$value, $opts['valueStyle']);
+            $string .= $opts['indent'] . str_pad($label, $paddingLen, $opts['char']) . " $value\n";
+        }
+
+        self::write(trim($string));
+    }
+
+    /**
      * Show a list
      * ```
      * $title = 'list title';
@@ -287,6 +324,7 @@ class Show
      */
     public static function aList($data, $title = null, array $opts = [])
     {
+        $string = '';
         $opts = array_merge([
             'leftChar' => '  ',
             'keyStyle' => 'info',
@@ -301,13 +339,13 @@ class Show
                 $title = "<$style>$title</$style>";
             }
 
-            self::write($title);
+            $string .= $title . PHP_EOL;
         }
 
         // item list
-        $items = Helper::spliceKeyValue((array)$data, $opts);
+        $string .= Helper::spliceKeyValue((array)$data, $opts);
 
-        self::write($items);
+        self::write($string);
     }
 
     /**
@@ -563,7 +601,7 @@ class Show
      * ];
      * $opts = [
      *   'showBorder' => true,
-     *   'tHead' => [col1, col2, col3, ...]
+     *   'columns' => [col1, col2, col3, ...]
      * ];
      * Show::table($data, 'a table', $opts);
      * ```
@@ -572,24 +610,27 @@ class Show
     public static function table(array $data, $title = 'Data Table', array $opts = []): int
     {
         if (!$data) {
-            self::write('<info>No data to display!</info>');
-
             return -404;
         }
 
+        $buf = new StrBuffer();
         $opts = array_merge([
             'showBorder' => true,
             'leftIndent' => '  ',
             'titlePos' => self::POS_LEFT,
             'titleStyle' => 'bold',
+            'headStyle' => 'comment',
+            'headBorderChar' => self::CHAR_EQUAL,   // default is '='
+            'bodyStyle' => '',
             'rowBorderChar' => self::CHAR_HYPHEN,   // default is '-'
             'colBorderChar' => self::CHAR_VERTICAL, // default is '|'
-            'tHead' => [],                  // custom head data
+            'columns' => [],                  // custom column names
         ], $opts);
 
+        $hasHead = false;
         $rowIndex = 0;
         $head = $table = [];
-        $tableHead = $opts['tHead'];
+        $tableHead = $opts['columns'];
         $leftIndent = $opts['leftIndent'];
         $showBorder = $opts['showBorder'];
         $rowBorderChar = $opts['rowBorderChar'];
@@ -610,6 +651,10 @@ class Show
                 $info['columnCount'] = count($row);
 
                 foreach ($head as $index => $name) {
+                    if (is_string($name)) {// maybe no column name.
+                        $hasHead = true;
+                    }
+
                     $info['columnMaxWidth'][$index] = mb_strlen($name, 'UTF-8');
                 }
             }
@@ -644,30 +689,37 @@ class Show
             $title = ucwords(trim($title));
             $titleLength = mb_strlen($title, 'UTF-8');
             $indentSpace = str_pad(' ', ceil($tableWidth / 2) - ceil($titleLength / 2) + ($columnCount * 2), ' ');
-            self::write("  {$indentSpace}<$tStyle>{$title}</$tStyle>");
+            $buf->write("  {$indentSpace}<$tStyle>{$title}</$tStyle>\n");
         }
 
         $border = $leftIndent . str_pad($rowBorderChar, $tableWidth + ($columnCount * 3) + 2, $rowBorderChar);
 
         // output table top border
         if ($showBorder) {
-            self::write($border);
+            $buf->write($border . "\n");
         } else {
             $colBorderChar = '';// clear column border char
         }
 
         // output table head
-        $headStr = "{$leftIndent}{$colBorderChar} ";
-        foreach ($head as $index => $name) {
-            $colMaxWidth = $info['columnMaxWidth'][$index];
-            $name = str_pad($name, $colMaxWidth, ' ');
-            $headStr .= " {$name} {$colBorderChar}";
+        if ($hasHead) {
+            $headStr = "{$leftIndent}{$colBorderChar} ";
+
+            foreach ($head as $index => $name) {
+                $colMaxWidth = $info['columnMaxWidth'][$index];
+                $name = str_pad($name, $colMaxWidth, ' ');
+                $name = Helper::wrapTag($name, $opts['headStyle']);
+                $headStr .= " {$name} {$colBorderChar}";
+            }
+
+            $buf->write($headStr . "\n");
+
+            // head border: split head and body
+            if ($headBorderChar = $opts['headBorderChar']) {
+                $headBorder = $leftIndent . str_pad($headBorderChar, $tableWidth + ($columnCount * 3) + 2, $headBorderChar);
+                $buf->write($headBorder . "\n");
+            }
         }
-
-        self::write($headStr);
-
-        // border: split head and body
-        self::write($border);
 
         $rowIndex = 0;
 
@@ -679,21 +731,22 @@ class Show
             foreach ((array)$row as $value) {
                 $colMaxWidth = $info['columnMaxWidth'][$colIndex];
                 $value = str_pad($value, $colMaxWidth, ' ');
-                $rowStr .= " <info>{$value}</info> {$colBorderChar}";
+                $value = Helper::wrapTag($value, $opts['bodyStyle']);
+                $rowStr .= " {$value} {$colBorderChar}";
                 $colIndex++;
             }
 
-            self::write($rowStr);
+            $buf->write($rowStr . "\n");
 
             $rowIndex++;
         }
 
         // output table bottom border
         if ($showBorder) {
-            self::write($border);
+            $buf->write($border . "\n");
         }
 
-        self::write('');
+        self::write($buf);
 
         return 0;
     }
@@ -857,6 +910,8 @@ class Show
         if (is_array($messages)) {
             $messages = implode($nl ? PHP_EOL : '', $messages);
         }
+
+        $messages = (string)$messages;
 
         if (!isset($opts['color']) || $opts['color']) {
             $messages = static::getStyle()->render($messages);
