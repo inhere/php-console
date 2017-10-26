@@ -187,7 +187,7 @@ in the class `Inhere\Console\Utils\Interact`
 
 interactive method:
 
-### `Interact::select()` (alias `Interact::chioce()`)
+### `Interact::select()` (alias `Interact::choice()`)
 
 Select one of the options
 
