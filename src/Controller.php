@@ -40,6 +40,19 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
     private $standAlone = false;
 
     /**
+     * @param string $command
+     * @return int
+     */
+    public function run($command = '')
+    {
+        if (!$this->action = trim($command)) {
+            return $this->showHelp();
+        }
+
+        return parent::run($command);
+    }
+
+    /**
      * load command configure
      */
     protected function configure()
@@ -76,7 +89,23 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
         } else {
             $status = -1;
             $this->output->liteError("Sorry, the console controller command [$action] not exist!");
-            $this->showCommandList();
+
+            // find similar command names by similar_text()
+            $similares = [];
+
+            foreach ($this->getAllCommandMethods() as $cmd => $refM) {
+                similar_text($action, $cmd, $percent);
+
+                if (45 <= (int)$percent) {
+                    $similares[] = $cmd;
+                }
+            }
+
+            if ($similares) {
+                $this->write(sprintf('Maybe what you mean is: <info>%s</info>', implode(', ', $similares)));
+            } else {
+                $this->showCommandList();
+            }
         }
 
         return $status;
@@ -119,6 +148,7 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
         $action = Helper::camelCase($action);
         $method = $this->actionSuffix ? $action . ucfirst($this->actionSuffix) : $action;
 
+        // show help info for a command.
         return $this->showHelpByMethodAnnotation($method, $action);
     }
 
@@ -134,31 +164,12 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
             $classDes = Annotation::description($ref->getDocComment()) ?: 'No Description for the console controller';
         }
 
-        $suffix = $this->actionSuffix;
-        $suffixLen = Helper::strLen($suffix);
-
         $commands = [];
-        foreach ($ref->getMethods() as $m) {
-            $mName = $m->getName();
+        foreach ($this->getAllCommandMethods($ref) as $cmd => $m) {
+            $desc = Annotation::firstLine($m->getDocComment());
 
-            if ($m->isPublic() && substr($mName, -$suffixLen) === $suffix) {
-                $desc = Annotation::firstLine($m->getDocComment());
-                $length = strlen($this->actionSuffix);
-                $cmd = '';
-
-                if ($length) {
-                    if (substr($mName, -$length) === $this->actionSuffix) {
-                        $cmd = substr($mName, 0, -$length);
-                    }
-
-                } else {
-                    $cmd = $mName;
-                }
-
-                if ($cmd) {
-                    //$this->write("  <info>$cmd</info>  $desc");
-                    $commands[$cmd] = $desc;
-                }
+            if ($cmd) {
+                $commands[$cmd] = $desc;
             }
         }
 
@@ -196,6 +207,29 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
             "To see more information about a command, please use: <cyan>$script {command} -h</cyan>",
             $this->standAlone ? ' ' . $name : ''
         ));
+    }
+
+    /**
+     * @param \ReflectionClass|null $ref
+     * @return \Generator
+     */
+    protected function getAllCommandMethods(\ReflectionClass $ref = null)
+    {
+        $ref = $ref ?: new \ReflectionObject($this);
+
+        $suffix = $this->actionSuffix;
+        $suffixLen = Helper::strLen($suffix);
+
+        foreach ($ref->getMethods() as $m) {
+            $mName = $m->getName();
+
+            if ($m->isPublic() && substr($mName, - $suffixLen) === $suffix) {
+                // suffix is empty ?
+                $cmd = $suffix ? substr($mName, 0, -$suffixLen) : $mName;
+
+                yield $cmd => $m;
+            }
+        }
     }
 
     /**************************************************************************

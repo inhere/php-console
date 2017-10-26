@@ -8,6 +8,7 @@
 
 namespace Inhere\Console\Base;
 
+use Inhere\Console\Application;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\InputDefinition;
 use Inhere\Console\IO\Output;
@@ -52,7 +53,7 @@ abstract class AbstractCommand implements CommandInterface
         'example' => true,
     ];
 
-    /** @var ApplicationInterface */
+    /** @var Application */
     protected $app;
 
     /** @var InputDefinition|null  */
@@ -110,9 +111,10 @@ abstract class AbstractCommand implements CommandInterface
 
     /**
      * run command
+     * @param string $command
      * @return int
      */
-    public function run()
+    public function run($command = '')
     {
         // load input definition configure
         $this->configure();
@@ -313,6 +315,16 @@ abstract class AbstractCommand implements CommandInterface
     }
 
     /**
+     * get All Command Methods for a group(controller)
+     * @param \ReflectionClass|null $ref
+     * @return \Generator
+     */
+    protected function getAllCommandMethods(\ReflectionClass $ref = null)
+    {
+        // ...
+    }
+
+    /**
      * show help by parse method annotation
      * @param string $method
      * @param null|string $action
@@ -324,7 +336,7 @@ abstract class AbstractCommand implements CommandInterface
         $name = $this->input->getCommand();
 
         if (!$ref->hasMethod($method)) {
-            $this->write("The command [<info>$name</info>] don't exist in the class.");
+            $this->write("The command [<info>$name</info>] don't exist in the group: " . static::getName());
 
             return 0;
         }

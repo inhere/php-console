@@ -18,9 +18,10 @@ interface CommandInterface
 {
     /**
      * run command
+     * @param string $command
      * @return int
      */
-    public function run();
+    public function run($command = '');
 
     /**
      * @return InputDefinition

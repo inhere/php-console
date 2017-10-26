@@ -222,7 +222,7 @@ class Application extends AbstractApplication
 
     /**
      * @param string $name Controller name
-     * @param string $action
+     * @param string $action Command
      * @param bool $believable The `$name` is believable
      * @param bool $standAlone
      * @return mixed
@@ -253,7 +253,7 @@ class Application extends AbstractApplication
         $object->setDelimiter($this->delimiter);
         $object->setStandAlone($standAlone);
 
-        return $object->setAction($action)->run();
+        return $object->run($action);
     }
 
 }
