@@ -21,5 +21,5 @@ interface OutputInterface
      * @param  int|boolean $quit If is int, setting it is exit code.
      * @return static
      */
-    public function write($messages = '', $nl = true, $quit = false);
+    public function write($messages, $nl = true, $quit = false);
 }

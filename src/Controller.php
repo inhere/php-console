@@ -74,8 +74,7 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
      */
     protected function execute($input, $output)
     {
-        $action = $this->action ?: $this->defaultAction;
-        $action = Helper::camelCase(trim($action, $this->delimiter));
+        $action = Helper::camelCase(trim($this->action ?: $this->defaultAction, $this->delimiter));
         $method = $this->actionSuffix ? $action . ucfirst($this->actionSuffix) : $action;
 
         // the action method exists and only allow access public method.
@@ -87,22 +86,23 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
         } elseif (($notFoundCallback = $this->notFoundCallback) && method_exists($this, $notFoundCallback)) {
             $status = $this->{$notFoundCallback}($action);
         } else {
+            $group = static::getName();
             $status = -1;
-            $this->output->liteError("Sorry, the console controller command [$action] not exist!");
+            $this->output->liteError("Sorry, The command '$action' not exist of the group '{$group}'!");
 
             // find similar command names by similar_text()
-            $similares = [];
+            $similar = [];
 
             foreach ($this->getAllCommandMethods() as $cmd => $refM) {
                 similar_text($action, $cmd, $percent);
 
                 if (45 <= (int)$percent) {
-                    $similares[] = $cmd;
+                    $similar[] = $cmd;
                 }
             }
 
-            if ($similares) {
-                $this->write(sprintf('Maybe what you mean is: <info>%s</info>', implode(', ', $similares)));
+            if ($similar) {
+                $this->write(sprintf('Maybe what you mean is: <info>%s</info>', implode(', ', $similar)));
             } else {
                 $this->showCommandList();
             }
@@ -155,7 +155,7 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
     /**
      * show command list of the controller class
      */
-    final protected function showCommandList()
+    final public function showCommandList()
     {
         $ref = new \ReflectionClass($this);
         $sName = lcfirst(self::getName() ?: $ref->getShortName());
@@ -199,7 +199,6 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
             'Commands:' => $commands,
             'Options:' => [
                 '-h,--help' => 'Show help of the command group or specified command action',
-//                $this->showMore ? "\nMore information please use: <cyan>$script {$name}{command} -h</cyan>" : ''
             ],
         ]);
 

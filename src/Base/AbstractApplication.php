@@ -155,16 +155,29 @@ abstract class AbstractApplication implements ApplicationInterface
     }
 
     /**
+     * dispatch command
      * @param string $command A command name
      * @return int|mixed
      */
     abstract protected function dispatch($command);
 
+    /**
+     * run a independent command
+     * {@inheritdoc}
+     */
+    abstract public function runCommand($name, $believable = false);
+
+    /**
+     * run a controller's action
+     * {@inheritdoc}
+     */
+    abstract public function runAction($name, $action, $believable = false, $standAlone = false);
+
     protected function afterRun()
     {
         // display runtime info
         if ($this->isDebug()) {
-            $title = '------------ Runtime Stats ------------';
+            $title = '---------- Runtime Stats(debug=true) ----------';
             $stats = $this->meta['_stats'];
             $this->meta['_stats'] = Helper::runtime($stats['startTime'], $stats['startMemory'], $stats);
             $this->output->write('');
@@ -315,7 +328,7 @@ ERR;
         $sep = $this->delimiter;
 
         $this->output->helpPanel([
-            'usage' => "$script [route|command] [arg0 arg1=value1 arg2=value2 ...] [--opt -v -h ...]",
+            'usage' => "$script {route|command} [arg0 arg1=value1 arg2=value2 ...] [--opt -v -h ...]",
             'example' => [
                 "$script test (run a independent command)",
                 "$script home{$sep}index (run a command of the group)",
@@ -366,6 +379,7 @@ ERR;
         // all console controllers
         $controllers = $this->controllers;
         ksort($controllers);
+
         foreach ($controllers as $name => $controller) {
             /** @var AbstractCommand $controller */
             $controllerArr[$name] = $controller::getDescription() ?: $desPlaceholder;
@@ -383,7 +397,7 @@ ERR;
             } else if ($msg = $this->getCommandMessage($name)) {
                 $desc = $msg;
             } else if (is_string($command)) {
-                $desc = 'A handler: ' . $command;
+                $desc = 'A handler : ' . $command;
             } else if (is_object($command)) {
                 $desc = 'A handler by ' . get_class($command);
             }
@@ -394,14 +408,14 @@ ERR;
         // $this->output->write('There are all console controllers and independent commands.');
         $this->output->mList([
             //'There are all console controllers and independent commands.',
-            'Usage:' => "$script [route|command] [arg0 arg1=value1 arg2=value2 ...] [--opt -v -h ...]",
+            'Usage:' => "$script {route|command} [arg0 arg1=value1 arg2=value2 ...] [--opt -v -h ...]",
             'Group Commands:' => $controllerArr ?: '... No register any group command(controller)',
             'Independent Commands:' => $commandArr ?: '... No register any independent command',
             'Internal Commands:' => $internalCommands,
             'Internal Options:' => self::$internalOptions
         ]);
 
-        $this->output->write("More please see: <cyan>$script [controller|command] -h</cyan>");
+        $this->output->write("More command information, please use: <cyan>$script {command} -h</cyan>");
         $quit && $this->stop();
     }
 

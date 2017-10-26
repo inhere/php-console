@@ -40,7 +40,7 @@ trait FormatOutputTrait
      * @inheritdoc
      * @see Show::write()
      */
-    public function write($messages = '', $nl = true, $quit = false): int
+    public function write($messages, $nl = true, $quit = false): int
     {
         return Show::write($messages, $nl, $quit, [
             'flush' => true,

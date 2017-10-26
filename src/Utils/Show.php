@@ -321,6 +321,7 @@ class Show
      * @param array $data
      * @param string $title
      * @param array $opts More @see Helper::spliceKeyValue()
+     * @return int|string
      */
     public static function aList($data, $title = null, array $opts = [])
     {
@@ -329,6 +330,7 @@ class Show
             'leftChar' => '  ',
             'keyStyle' => 'info',
             'titleStyle' => 'comment',
+            'returned' => false,
         ], $opts);
 
         // title
@@ -342,10 +344,14 @@ class Show
             $string .= $title . PHP_EOL;
         }
 
-        // item list
+        // handle item list
         $string .= Helper::spliceKeyValue((array)$data, $opts);
 
-        self::write($string);
+        if ($opts['returned']) {
+            return $string;
+        }
+
+        return self::write($string);
     }
 
     /**
@@ -378,9 +384,14 @@ class Show
      */
     public static function mList(array $data, array $opts = [])
     {
+        $buffer = [];
+        $opts['returned'] = true;
+
         foreach ($data as $title => $list) {
-            self::aList($list, $title, $opts);
+            $buffer[] = self::aList($list, $title, $opts);
         }
+
+        self::write($buffer);
     }
 
     /**
@@ -491,7 +502,7 @@ class Show
 
         $opts = array_merge([
             'borderChar' => '*',
-            'ucfirst' => true,
+            'ucFirst' => true,
         ], $opts);
 
         $borderChar = $opts['borderChar'];
@@ -563,7 +574,7 @@ class Show
             'leftChar' => "  $borderChar ",
             'sepChar' => ' | ',
             'keyMaxWidth' => $labelMaxWidth,
-            'ucfirst' => $opts['ucfirst'],
+            'ucFirst' => $opts['ucFirst'],
         ]);
 
         // already exists "\n"

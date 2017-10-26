@@ -21,11 +21,14 @@ class DemoCommand extends Command
     protected static $name = 'demo';
     protected static $description = 'this is a demo independent command. but config use configure(), it like symfony console: argument define by position';
 
+    /**
+     * {@inheritDoc}
+     */
     protected function configure()
     {
         $this->createDefinition()
             ->setDescription(self::getDescription())
-            ->setExample($this->replaceAnnotationVars('{script} {command} john male 43 --opt1 value1'))
+            ->setExample($this->handleAnnotationVars('{script} {command} john male 43 --opt1 value1'))
             ->addArgument('name', Input::ARG_REQUIRED, 'description for the argument [name], is required')
             ->addArgument('sex', Input::ARG_OPTIONAL, 'description for the argument [sex], is optional')
             ->addArgument('age', Input::ARG_OPTIONAL, 'description for the argument [age], is optional')

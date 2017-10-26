@@ -19,6 +19,8 @@ interface ControllerInterface
      */
     public function helpCommand();
 
+    public function showCommandList();
+
     /**
      * @return string
      */
@@ -28,4 +30,9 @@ interface ControllerInterface
      * @return string
      */
     public function getDefaultAction(): string;
+
+    /**
+     * @param string $delimiter
+     */
+    public function setDelimiter(string $delimiter);
 }

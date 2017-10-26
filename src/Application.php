@@ -9,6 +9,7 @@
 namespace Inhere\Console;
 
 use Inhere\Console\Base\AbstractApplication;
+use LightCms\Web\App;
 
 /**
  * Class App
@@ -23,36 +24,45 @@ class Application extends AbstractApplication
     /**
      * Register a app group command(by controller)
      * @param string $name The controller name
-     * @param string $controller The controller class
+     * @param string $class The controller class
      * @return static
      */
-    public function controller(string $name, string $controller = null)
+    public function controller(string $name, string $class = null)
     {
-        if (!$controller && class_exists($name)) {
-            /** @var Controller $controller */
-            $controller = $name;
-            $name = $controller::getName();
+        if (!$class && class_exists($name)) {
+            /** @var Controller $class */
+            $class = $name;
+            $name = $class::getName();
         }
 
-        if (!$name || !$controller) {
+        if (!$name || !$class) {
             throw new \InvalidArgumentException(
-                'Group-command "name" and "controller" not allowed to is empty! name: ' . $name . ', controller: ' . $controller
+                'Group-command "name" and "controller" not allowed to is empty! name: ' . $name . ', controller: ' . $class
             );
         }
 
         $this->validateName($name, true);
 
-        if (!class_exists($controller)) {
-            throw new \InvalidArgumentException("The console controller class [$controller] not exists!");
+        if (!class_exists($class)) {
+            throw new \InvalidArgumentException("The console controller class [$class] not exists!");
         }
 
-        if (!is_subclass_of($controller, Controller::class)) {
+        if (!is_subclass_of($class, Controller::class)) {
             throw new \InvalidArgumentException('The console controller class must is subclass of the: ' . Controller::class);
         }
 
-        $this->controllers[$name] = $controller;
+        $this->controllers[$name] = $class;
 
         return $this;
+    }
+
+    /**
+     * @see Application::controller()
+     * {@inheritdoc}
+     */
+    public function addController(string $name, string $class = null)
+    {
+        return $this->controller($name, $class);
     }
 
     /**

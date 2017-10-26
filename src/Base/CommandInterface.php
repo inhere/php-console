@@ -36,5 +36,10 @@ interface CommandInterface
     /**
      * @return string
      */
+    public static function getName(): string;
+
+    /**
+     * @return string
+     */
     public static function getDescription(): ?string;
 }

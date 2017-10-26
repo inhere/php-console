@@ -318,10 +318,11 @@ class Helper
         $text = '';
         $opts = array_merge([
             'leftChar' => '',   // e.g '  ', ' * '
-            'sepChar' => ' ',  // e.g ' | ' => OUT: key | value
+            'sepChar' => ' ',  // e.g ' | ' OUT: key | value
             'keyStyle' => '',   // e.g 'info','comment'
+            'valStyle' => '',   // e.g 'info','comment'
             'keyMaxWidth' => null, // if not set, will automatic calculation
-            'ucfirst' => true, // if not set, will automatic calculation
+            'ucFirst' => true,  // upper first char
         ], $opts);
 
         if (!is_numeric($opts['keyMaxWidth'])) {
@@ -336,7 +337,8 @@ class Helper
 
             if ($hasKey && $opts['keyMaxWidth']) {
                 $key = str_pad($key, $opts['keyMaxWidth'], ' ');
-                $text .= ($keyStyle ? "<{$keyStyle}>$key</{$keyStyle}> " : $key) . $opts['sepChar'];
+                // $text .= ($keyStyle ? "<{$keyStyle}>$key</{$keyStyle}> " : $key) . $opts['sepChar'];
+                $text .= self::wrapTag($key, $keyStyle) . $opts['sepChar'];
             }
 
             // if value is array, translate array to string
@@ -351,7 +353,7 @@ class Helper
                         $val = is_scalar($val) ? (string)$val : gettype($val);
                     }
 
-                    $temp .= (!is_numeric($k) ? "$k: " : '') . "<info>$val</info>, ";
+                    $temp .= (!is_numeric($k) ? "$k: " : '') . "$val, ";
                 }
 
                 $value = rtrim($temp, ' ,');
@@ -361,8 +363,8 @@ class Helper
                 $value = (string)$value;
             }
 
-            $value = $hasKey && $opts['ucfirst'] ? ucfirst($value) : $value;
-            $text .= "$value\n";
+            $value = $hasKey && $opts['ucFirst'] ? ucfirst($value) : $value;
+            $text .= self::wrapTag($value, $opts['valStyle']) . "\n";
         }
 
         return $text;
@@ -481,7 +483,7 @@ class Helper
         $info['endMemory'] = memory_get_usage(true);
 
         // 计算运行时间
-        $info['runtime'] = number_format(($info['endTime'] - $startTime) * 1000, 3)  . 'ms';
+        $info['runtime'] = number_format(($info['endTime'] - $startTime) * 1000, 3) . 'ms';
 
         if ($startMem) {
             $startMem = array_sum(explode(' ', $startMem));

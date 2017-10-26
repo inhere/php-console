@@ -302,7 +302,7 @@ abstract class AbstractCommand implements CommandInterface
      * @param string $str
      * @return string
      */
-    protected function replaceAnnotationVars($str)
+    protected function handleAnnotationVars($str)
     {
         $map = [];
 
@@ -312,16 +312,6 @@ abstract class AbstractCommand implements CommandInterface
         }
 
         return $map ? strtr($str, $map) : $str;
-    }
-
-    /**
-     * get All Command Methods for a group(controller)
-     * @param \ReflectionClass|null $ref
-     * @return \Generator
-     */
-    protected function getAllCommandMethods(\ReflectionClass $ref = null)
-    {
-        // ...
     }
 
     /**
@@ -348,7 +338,7 @@ abstract class AbstractCommand implements CommandInterface
         }
 
         $doc = $ref->getMethod($method)->getDocComment();
-        $tags = Annotation::tagList($this->replaceAnnotationVars($doc));
+        $tags = Annotation::tagList($this->handleAnnotationVars($doc));
 
         foreach ($tags as $tag => $msg) {
             if (!$msg || !is_string($msg)) {
