@@ -34,10 +34,7 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
     protected $notFoundCallback = 'notFound';
 
     /** @var string  */
-    public $delimiter = ':'; // '/' ':'
-
-    /** @var bool  */
-    protected $showMore = true;
+    protected $delimiter = ':'; // '/' ':'
 
     /** @var bool  */
     private $standAlone = false;
@@ -195,7 +192,10 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
             ],
         ]);
 
-        $this->showMore && $this->write("More information please use: <cyan>$script {$name}{command} -h</cyan>");
+        $this->write(sprintf(
+            "To see more information about a command, please use: <cyan>$script {command} -h</cyan>",
+            $this->standAlone ? ' ' . $name : ''
+        ));
     }
 
     /**************************************************************************
@@ -287,4 +287,19 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
         $this->standAlone = (bool)$standAlone;
     }
 
+    /**
+     * @return string
+     */
+    public function getDelimiter(): string
+    {
+        return $this->delimiter;
+    }
+
+    /**
+     * @param string $delimiter
+     */
+    public function setDelimiter(string $delimiter)
+    {
+        $this->delimiter = $delimiter;
+    }
 }

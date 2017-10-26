@@ -249,8 +249,8 @@ class Application extends AbstractApplication
         }
 
         $object::setName($name);
-        $object->delimiter = $this->delimiter;
         $object->setApp($this);
+        $object->setDelimiter($this->delimiter);
         $object->setStandAlone($standAlone);
 
         return $object->setAction($action)->run();
