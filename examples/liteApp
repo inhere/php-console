@@ -1,7 +1,7 @@
 #!/usr/bin/env php
 <?php
 
-define('PROJECT_PATH', dirname(__DIR__));
+define('BASE_PATH', dirname(__DIR__));
 
 require __DIR__ . '/s-autoload.php';
 

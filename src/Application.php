@@ -9,7 +9,6 @@
 namespace Inhere\Console;
 
 use Inhere\Console\Base\AbstractApplication;
-use LightCms\Web\App;
 
 /**
  * Class App
@@ -17,6 +16,16 @@ use LightCms\Web\App;
  */
 class Application extends AbstractApplication
 {
+    /**
+     * @var string|null
+     */
+    protected $commandsNamespace;
+
+    /**
+     * @var string|null
+     */
+    protected $controllersNamespace;
+
     /**********************************************************
      * register console controller/command
      **********************************************************/
@@ -264,6 +273,38 @@ class Application extends AbstractApplication
         $object->setStandAlone($standAlone);
 
         return $object->run($action);
+    }
+
+    /**
+     * @return null|string
+     */
+    public function getCommandsNamespace()
+    {
+        return $this->commandsNamespace;
+    }
+
+    /**
+     * @param null|string $commandsNamespace
+     */
+    public function setCommandsNamespace($commandsNamespace)
+    {
+        $this->commandsNamespace = $commandsNamespace;
+    }
+
+    /**
+     * @return null|string
+     */
+    public function getControllersNamespace()
+    {
+        return $this->controllersNamespace;
+    }
+
+    /**
+     * @param null|string $controllersNamespace
+     */
+    public function setControllersNamespace($controllersNamespace)
+    {
+        $this->controllersNamespace = $controllersNamespace;
     }
 
 }

@@ -8,6 +8,7 @@
  * @var Inhere\Console\Application $app
  */
 
+use Inhere\Console\BuiltIn\PharController;
 use Inhere\Console\Examples\HomeController;
 use Inhere\Console\Examples\TestCommand;
 use Inhere\Console\IO\Input;
@@ -39,3 +40,4 @@ $app->command('prg', function () {
 }, 'a description message');
 
 $app->controller('home', HomeController::class);
+$app->controller(PharController::class);

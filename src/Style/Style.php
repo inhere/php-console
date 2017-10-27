@@ -10,6 +10,7 @@
 
 namespace Inhere\Console\Style;
 
+use Inhere\Console\Application;
 use Inhere\Console\Utils\Helper;
 
 /**
@@ -146,7 +147,7 @@ class Style
         }
 
         // if don't support output color text, clear color tag.
-        if (!Helper::isSupportColor()) {
+        if (!Helper::isSupportColor() || Application::isNoColor()) {
             return static::stripColor($text);
         }
 

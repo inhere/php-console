@@ -8,6 +8,8 @@
 
 namespace Inhere\Console;
 
+use Inhere\Console\Style\LiteStyle;
+
 /**
  * Class LiteApplication
  * @package Inhere\Console
@@ -227,11 +229,11 @@ class LiteApplication
     public function showCommands($err = '')
     {
         if ($err) {
-            echo "ERROR: $err\n\n";
+            echo LiteStyle::color("<red>ERROR</red>: $err\n\n");
         }
 
         $commandWidth = 12;
-        $help = "Welcome to the Lite Console Application.\n\nAvailable Commands:\n";
+        $help = "Welcome to the Lite Console Application.\n\n<comment>Available Commands:</comment>\n";
 
         foreach ($this->messages as $command => $desc) {
             $command = str_pad($command, $commandWidth, ' ');
@@ -239,7 +241,7 @@ class LiteApplication
             $help .= "  $command   $desc\n";
         }
 
-        echo $help . PHP_EOL;
+        echo LiteStyle::color($help) . PHP_EOL;
         exit(0);
     }
 

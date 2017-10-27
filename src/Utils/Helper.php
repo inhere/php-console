@@ -89,6 +89,23 @@ class Helper
     }
 
     /**
+     * @param string $srcDir
+     * @param callable $filter
+     * @return \RecursiveIteratorIterator
+     */
+    public static function recursiveDirectoryIterator(string $srcDir, callable $filter)
+    {
+        if (!$srcDir || !file_exists($srcDir)) {
+            throw new \LogicException('Please provide a exists source directory.');
+        }
+
+        $directory = new \RecursiveDirectoryIterator($srcDir);
+        $filterIterator = new \RecursiveCallbackFilterIterator($directory, $filter);
+
+        return new \RecursiveIteratorIterator($filterIterator);
+    }
+
+    /**
      * wrap a style tag
      * @param string $string
      * @param string $tag
