@@ -330,6 +330,7 @@ class Show
         $opts = array_merge([
             'leftChar' => '  ',
             'keyStyle' => 'info',
+            'keyMinWidth' => 8,
             'titleStyle' => 'comment',
             'returned' => false,
         ], $opts);

@@ -338,12 +338,18 @@ class Helper
             'sepChar' => ' ',  // e.g ' | ' OUT: key | value
             'keyStyle' => '',   // e.g 'info','comment'
             'valStyle' => '',   // e.g 'info','comment'
+            'keyMinWidth' => 8,
             'keyMaxWidth' => null, // if not set, will automatic calculation
             'ucFirst' => true,  // upper first char
         ], $opts);
 
         if (!is_numeric($opts['keyMaxWidth'])) {
             $opts['keyMaxWidth'] = self::getKeyMaxWidth($data);
+        }
+
+        // compare
+        if ((int)$opts['keyMinWidth'] > $opts['keyMaxWidth']) {
+            $opts['keyMaxWidth'] = $opts['keyMinWidth'];
         }
 
         $keyStyle = trim($opts['keyStyle']);
