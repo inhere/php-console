@@ -3,8 +3,9 @@
 a php console application library.
 
 - console application, run command/controller
-- console input/output
-- console color support
+- console command-line params parse
+- console `input`, `output`
+- console color support, format message output
 - console interactive
 
 [中文README](./README.md)

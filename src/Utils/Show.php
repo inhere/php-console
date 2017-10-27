@@ -8,7 +8,6 @@
 
 namespace Inhere\Console\Utils;
 
-use Inhere\Console\Application;
 use Inhere\Console\Style\Style;
 
 /**
@@ -311,7 +310,7 @@ class Show
     }
 
     /**
-     * Show a list
+     * Show a single list
      * ```
      * $title = 'list title';
      * $data = [
@@ -354,6 +353,15 @@ class Show
         }
 
         return self::write($string);
+    }
+
+    /**
+     * @see Show::aList()
+     * {@inheritdoc}
+     */
+    public static function sList($data, $title = null, array $opts = [])
+    {
+        return self::aList($data, $title, $opts);
     }
 
     /**

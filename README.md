@@ -2,12 +2,12 @@
 
 简洁功能全面的php命令行应用库。提供控制台参数解析, 颜色风格输出, 用户信息交互, 特殊格式信息显示
 
-- 命令行应用, 命令行的controller，command 解析运行
+- 命令行应用, 命令行的 `controller`, `command` 解析运行
 - 功能全面的命令行的选项参数解析
-- 命令行中功能强大的 input/output 管理、使用
+- 命令行中功能强大的 `input`, `output` 管理、使用
 - 消息文本的多种颜色风格输出支持
-- 常用的特殊格式信息显示(panel,help-panel,table,title,list,progressBar)
-- 常用的用户信息交互支持(select,confirm,ask)
+- 常用的特殊格式信息显示(`section`, `panel`, `padding`, `help-panel`, `table`, `title`, `list`, `progressBar`)
+- 常用的用户信息交互支持(`select`, `confirm`, `ask/question`)
 - 命令方法注释自动解析（提取为参数 `arguments` 和 选项 `options` 等信息）
 - 类似 `symfony/console` 的预定义参数定义支持(按位置赋予参数值)
 
@@ -85,6 +85,15 @@ $app->run();
 添加命令的方式有三种
 
 - 如上所示，使用闭包可以快速的添加一个简单的命令
+
+```php
+$app->command('demo', function (Input $in, Output $out) {
+    $cmd = $in->getCommand();
+
+    $out->info('hello, this is a test command: ' . $cmd);
+});
+```
+
 - 通过继承 `Inhere\Console\Command` 添加独立命令
 
 ```php
@@ -121,7 +130,7 @@ use Inhere\Console\Controller;
  */
 class HomeController extends Controller
 {
-    const DESCRIPTION = 'default command controller. there are some command usage examples';
+    protected static $description = 'default command controller. there are some command usage examples';
 
     /**
      * this is a command's description message
@@ -143,7 +152,7 @@ class HomeController extends Controller
 
 命令组(eg `HomeController`) 中的命令(eg: `indexCommand`)上注释是可被解析的。
 
-- 当你使用 `php examples/app home -h` 时，可以查看到 `HomeController::indexCommand` 的描述注释文本
+- 当你使用 `php examples/app home -h` 时，可以查看到 `HomeController` 的所有命令信息
 - 当使用 `php examples/app home/index -h` 时，可以查看到关于 `HomeController::indexCommand` 更详细的信息。包括描述注释文本、`@usage` 、`@example`
 
 > 小提示：注释里面同样支持带颜色的文本输出 `eg: this is a command's description <info>message</info>`
