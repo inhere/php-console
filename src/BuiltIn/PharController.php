@@ -22,14 +22,20 @@ class PharController extends Controller
 
     /**
      * pack directory(s) to a phar file.
+     * @usage
+     *  {command} phar=[FILE] src-dir=[DIR] [-c --format ...]
+     *
      * @arguments
-     *  src-dir   The source directory for pack<red>*</red>
-     *  phar      The output phar file path
+     *  phar       The output phar file path.<red>*</red>
+     *  src-dirs   The source directory for pack, multi use ',' split.<red>*</red>
      *
      * @options
-     *  -c,--compress   Want compress php file.
-     *  --file-include  Append file include
+     *  -c, --compress      Compress the phar file to 'gz','bz','zip'.
+     *      --format        Format php source file content(will remove all annotations).
+     *      --file-include  Append file include
      *
+     * @example
+     *  {command} phar=my.phar src-dir=./ -c --format
      */
     public function packCommand()
     {

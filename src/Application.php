@@ -16,16 +16,6 @@ use Inhere\Console\Base\AbstractApplication;
  */
 class Application extends AbstractApplication
 {
-    /**
-     * @var string|null
-     */
-    protected $commandsNamespace;
-
-    /**
-     * @var string|null
-     */
-    protected $controllersNamespace;
-
     /**********************************************************
      * register console controller/command
      **********************************************************/
@@ -193,9 +183,27 @@ class Application extends AbstractApplication
             return $this->runAction($name, $action, true);
         }
 
+        // command not found
         if (true !== self::fire(self::ON_NOT_FOUND, [$this])) {
-            $this->output->error("Console controller or command [$name] not exists!");
-            $this->showCommandList(false);
+            $this->output->liteError("The console command '{$name}' not exists!");
+
+            // find similar command names by similar_text()
+            $similar = [];
+            $commands = array_merge($this->getControllerNames(), $this->getCommandNames());
+
+            foreach ($commands as $command) {
+                similar_text($name, $command, $percent);
+
+                if (45 <= (int)$percent) {
+                    $similar[] = $command;
+                }
+            }
+
+            if ($similar) {
+                $this->write(sprintf('Maybe what you mean is: <info>%s</info>', implode(', ', $similar)));
+            } else {
+                $this->showCommandList(false);
+            }
         }
 
         return 404;
@@ -274,37 +282,4 @@ class Application extends AbstractApplication
 
         return $object->run($action);
     }
-
-    /**
-     * @return null|string
-     */
-    public function getCommandsNamespace()
-    {
-        return $this->commandsNamespace;
-    }
-
-    /**
-     * @param null|string $commandsNamespace
-     */
-    public function setCommandsNamespace($commandsNamespace)
-    {
-        $this->commandsNamespace = $commandsNamespace;
-    }
-
-    /**
-     * @return null|string
-     */
-    public function getControllersNamespace()
-    {
-        return $this->controllersNamespace;
-    }
-
-    /**
-     * @param null|string $controllersNamespace
-     */
-    public function setControllersNamespace($controllersNamespace)
-    {
-        $this->controllersNamespace = $controllersNamespace;
-    }
-
 }
