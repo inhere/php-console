@@ -414,7 +414,7 @@ class Helper
             $output = [];
             exec('mode con', $output);
 
-            if (isset($output, $output[1]) && strpos($output[1], 'CON') !== false) {
+            if (isset($output[1]) && strpos($output[1], 'CON') !== false) {
                 return ($size = [
                     (int)preg_replace('~\D~', '', $output[3]),
                     (int)preg_replace('~\D~', '', $output[4])
@@ -542,13 +542,11 @@ class Helper
      */
     public static function printVars(...$args)
     {
-        ob_start();
+        $string = '';
 
         foreach ($args as $arg) {
-            print_r($arg);
+            $string .= print_r($arg, 1) . PHP_EOL;
         }
-
-        $string = ob_get_clean();
 
         return preg_replace("/Array\n\s+\(/", 'Array (', $string);
     }
