@@ -38,9 +38,11 @@ abstract class AbstractApplication implements ApplicationInterface
      * @var array
      */
     protected static $internalOptions = [
-        '--debug' => 'setting the application runtime debug level',
-        '--no-color' => 'setting no color for message output',
-        '--version' => 'Show application version information',
+        '--debug' => 'Setting the application runtime debug level',
+        '--profile' => 'Display timing and memory usage information',
+        '--no-color' => 'Disable color/ANSI for message output',
+        '-h, --help' => 'Display this help message',
+        '-V, --version' => 'Show application version information',
     ];
 
     /**
@@ -50,6 +52,7 @@ abstract class AbstractApplication implements ApplicationInterface
     private $meta = [
         'name' => 'My Console',
         'debug' => false,
+        'profile' => false,
         'version' => '0.5.1',
         'publishAt' => '2017.03.24',
         'updateAt' => '2017.03.24',
@@ -176,8 +179,8 @@ abstract class AbstractApplication implements ApplicationInterface
     protected function afterRun()
     {
         // display runtime info
-        if ($this->isDebug()) {
-            $title = '---------- Runtime Stats(debug=true) ----------';
+        if ($this->isProfile()) {
+            $title = '---------- Runtime Stats(profile=true) ----------';
             $stats = $this->meta['_stats'];
             $this->meta['_stats'] = Helper::runtime($stats['startTime'], $stats['startMemory'], $stats);
             $this->output->write('');
@@ -251,7 +254,7 @@ ERR;
             $this->output->write($message, false);
         } else {
             // simple output
-            $this->output->error('An error occurred! MESSAGE: ' . $e->getMessage());
+            $this->output->error('An error occurred! MESSAGE: ' . $e->getMessage() . '. you can use --debug to see error details.');
         }
     }
 
@@ -328,7 +331,7 @@ ERR;
         $sep = $this->delimiter;
 
         $this->output->helpPanel([
-            'usage' => "$script {route|command} [arg0 arg1=value1 arg2=value2 ...] [--opt -v -h ...]",
+            'usage' => "$script {command} [arg0 arg1=value1 arg2=value2 ...] [--opt -v -h ...]",
             'example' => [
                 "$script test (run a independent command)",
                 "$script home{$sep}index (run a command of the group)",
@@ -343,7 +346,7 @@ ERR;
      */
     public function showVersionInfo($quit = true)
     {
-        $date = date('Y-m-d');
+        $date = date('Y.m.d');
         $name = $this->getMeta('name', 'Console Application');
         $version = $this->getMeta('version', 'Unknown');
         $publishAt = $this->getMeta('publishAt', 'Unknown');
@@ -356,7 +359,8 @@ ERR;
             'System Info' => "PHP version <info>$phpVersion</info>, on <info>$os</info> system",
             'Application Info' => "Update at <info>$updateAt</info>, publish at <info>$publishAt</info>(current $date)",
         ], null, [
-            'leftChar' => ''
+            'leftChar' => '',
+            'sepChar' => ' :  '
         ]);
 
         $quit && $this->stop();
@@ -368,28 +372,33 @@ ERR;
      */
     public function showCommandList($quit = true)
     {
-        $desPlaceholder = 'No description of the command';
         $script = $this->getScriptName();
+        $hasGroup = $hasCommand = false;
         $controllerArr = $commandArr = [];
-
-        // built in commands
-        $internalCommands = static::$internalCommands;
-        ksort($internalCommands);
+        $desPlaceholder = 'No description of the command';
 
         // all console controllers
+        $controllerArr[] = PHP_EOL . '- <cyan>Group Commands</cyan>';
         $controllers = $this->controllers;
         ksort($controllers);
 
         foreach ($controllers as $name => $controller) {
+            $hasGroup = true;
             /** @var AbstractCommand $controller */
             $controllerArr[$name] = $controller::getDescription() ?: $desPlaceholder;
         }
 
+        if (!$hasGroup) {
+            $controllerArr[] = '... No register any group command(controller)';
+        }
+
         // all independent commands
         $commands = $this->commands;
+        $commandArr[] = PHP_EOL . '- <cyan>Independent Commands</cyan>';
         ksort($commands);
         foreach ($commands as $name => $command) {
             $desc = $desPlaceholder;
+            $hasCommand = true;
 
             /** @var AbstractCommand $command */
             if (is_subclass_of($command, CommandInterface::class)) {
@@ -405,17 +414,36 @@ ERR;
             $commandArr[$name] = $desc;
         }
 
-        // $this->output->write('There are all console controllers and independent commands.');
+        if (!$hasCommand) {
+            $commandArr[] = '... No register any group command(controller)';
+        }
+
+        // built in commands
+        $internalCommands = static::$internalCommands;
+        ksort($internalCommands);
+        array_unshift($internalCommands, "\n- <cyan>Internal Commands</cyan>");
+        
         $this->output->mList([
             //'There are all console controllers and independent commands.',
             'Usage:' => "$script {route|command} [arg0 arg1=value1 arg2=value2 ...] [--opt -v -h ...]",
-            'Group Commands:' => $controllerArr ?: '... No register any group command(controller)',
-            'Independent Commands:' => $commandArr ?: '... No register any independent command',
-            'Internal Commands:' => $internalCommands,
-            'Internal Options:' => self::$internalOptions
+            'Options:' => self::$internalOptions,
+            'Available Commands:' => array_merge($controllerArr, $commandArr, $internalCommands),
+            //'Independent Commands:' => $commandArr ?: '... No register any independent command',
+            // 'Internal Commands:' => $internalCommands,
         ]);
 
+        // $this->output->mList([
+        //     //'There are all console controllers and independent commands.',
+        //     'Usage:' => "$script {route|command} [arg0 arg1=value1 arg2=value2 ...] [--opt -v -h ...]",
+        //     'Options:' => self::$internalOptions,
+        //     'Group Commands:' => $controllerArr ?: '... No register any group command(controller)',
+        //     'Independent Commands:' => $commandArr ?: '... No register any independent command',
+        //     'Internal Commands:' => $internalCommands,
+        // ]);
+
+        unset($controllerArr, $commandArr, $internalCommands);
         $this->output->write("More command information, please use: <cyan>$script {command} -h</cyan>");
+        
         $quit && $this->stop();
     }
 
@@ -587,6 +615,15 @@ ERR;
     public function isDebug()
     {
         return $this->input->getOpt('debug', $this->meta['debug']);
+    }
+
+    /**
+     * is profile
+     * @return boolean
+     */
+    public function isProfile()
+    {
+        return (bool)$this->input->getOpt('profile', $this->getMeta('profile'));
     }
 
     /**
