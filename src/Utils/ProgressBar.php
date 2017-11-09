@@ -539,7 +539,8 @@ class ProgressBar
             },
             'estimated' => function (self $bar) {
                 if (!$bar->getMaxSteps()) {
-                    throw new \LogicException('Unable to display the estimated time if the maximum number of steps is not set.');
+                    return 0;
+                    // throw new \LogicException('Unable to display the estimated time if the maximum number of steps is not set.');
                 }
 
                 if (!$bar->getProgress()) {

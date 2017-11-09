@@ -5,13 +5,13 @@
 - 命令行应用, 命令行的 `controller`, `command` 解析运行
 - 功能全面的命令行的选项参数解析
 - 命令行中功能强大的 `input`, `output` 管理、使用
-- 消息文本的多种颜色风格输出支持
+- 消息文本的多种颜色风格输出支持(`info`, `comment`, `success`, `danger`, `error` ... ...)
 - 常用的特殊格式信息显示(`section`, `panel`, `padding`, `help-panel`, `table`, `title`, `list`, `progressBar`)
 - 常用的用户信息交互支持(`select`, `confirm`, `ask/question`)
 - 命令方法注释自动解析（提取为参数 `arguments` 和 选项 `options` 等信息）
 - 类似 `symfony/console` 的预定义参数定义支持(按位置赋予参数值)
 
-> [EN README](./README_en.md)
+## [EN README](./README_en.md)
 
 ## 项目地址
 
@@ -75,7 +75,7 @@ $app->run();
 
 然后在命令行里执行 `php examples/app`, 立即就可以看到如下输出了:
 
-!['output-commands-info'](images/output-commands-info.png)
+!['output-commands-info'](images/output-commands-info.jpg)
 
 > `Independent Commands` 中的 demo 就是我们上面添加的命令
 
@@ -386,6 +386,8 @@ $data = [
 Show::aList($data, $title);
 ```
 
+> 渲染效果请看下面的预览
+
 ### 多列表数据展示输出
 
 ```php
@@ -413,6 +415,8 @@ $data = [
 Show::mList($data);
 ```
 
+> 渲染效果请看下面的预览
+
 ### 面板展示信息输出
 
 ```php
@@ -432,6 +436,8 @@ $data = [
 ];
 Show::panel($data, 'panel show', '#');
 ```
+
+> 渲染效果请看下面的预览
 
 ### 数据表格信息输出
 
@@ -470,6 +476,8 @@ $opts = [
 ];
 Show::table($data, 'a table', $opts);
 ```
+
+> 渲染效果请看下面的预览
 
 ### 快速的渲染一个帮助信息面板 
 
@@ -640,10 +648,6 @@ MIT
 
 ## 我的其他项目
 
-### `inhere/redis` [github](https://github.com/inhere/php-redis) [git@osc](https://git.oschina.net/inhere/php-redis)
-
-简单的redis操作客户端包装库
-
 ### `inhere/sroute` [github](https://github.com/inhere/php-srouter)  [git@osc](https://git.oschina.net/inhere/php-srouter)
  
  轻量且功能丰富快速的路由库
@@ -654,4 +658,8 @@ MIT
  
 ### `inhere/http` [github](https://github.com/inhere/php-http) [git@osc](https://git.oschina.net/inhere/php-http)
 
-http 工具库(`request` 请求 `response` 响应 `curl` curl请求库，有简洁、完整和并发请求三个版本的类)
+http message 工具库(PSR 7 实现)
+
+### `inhere/http-client` [github](https://github.com/inhere/php-http) [git@osc](https://git.oschina.net/inhere/php-http)
+
+http client 工具库(`request` 请求 `response` 响应 `curl` curl请求库，有简洁、完整和并发请求三个版本的类)
