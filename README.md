@@ -1,15 +1,18 @@
 # php 命令行应用库
 
-简洁功能全面的php命令行应用库。提供控制台参数解析, 颜色风格输出, 用户信息交互, 特殊格式信息显示
+简洁、功能全面的php命令行应用库。提供控制台参数解析, 颜色风格输出, 用户信息交互, 特殊格式信息显示
 
+- 功能全面的命令行的选项参数解析(命名参数，短选项，长选项 ...)
 - 命令行应用, 命令行的 `controller`, `command` 解析运行
-- 功能全面的命令行的选项参数解析
 - 命令行中功能强大的 `input`, `output` 管理、使用
 - 消息文本的多种颜色风格输出支持(`info`, `comment`, `success`, `danger`, `error` ... ...)
-- 常用的特殊格式信息显示(`section`, `panel`, `padding`, `help-panel`, `table`, `title`, `list`, `progressBar`)
+- 丰富的特殊格式信息显示(`section`, `panel`, `padding`, `help-panel`, `table`, `title`, `list`, `progressBar`)
 - 常用的用户信息交互支持(`select`, `confirm`, `ask/question`)
 - 命令方法注释自动解析（提取为参数 `arguments` 和 选项 `options` 等信息）
 - 类似 `symfony/console` 的预定义参数定义支持(按位置赋予参数值)
+- 输出是 windows,linux 兼容的，不支持颜色的环境会自动去除相关CODE
+
+> 下面所有的特性，效果都是运行 `examples/` 中的示例代码 `php examples/app` 展示出来的。下载后可以直接测试体验
 
 ## [EN README](./README_en.md)
 
@@ -97,7 +100,7 @@ $app->command('demo', function (Input $in, Output $out) {
 - 通过继承 `Inhere\Console\Command` 添加独立命令
 
 ```php
-use Inhere\Console\Utils\AnsiCode;
+use Inhere\Console\Command;
 
 /**
  * Class Test
@@ -105,6 +108,9 @@ use Inhere\Console\Utils\AnsiCode;
  */
 class TestCommand extends Command
 {
+    protected static $name = 'test';
+    protected static $description = 'this is a test independent command';
+
     /**
      * execute
      * @param  Inhere\Console\IO\Input $input
@@ -153,11 +159,15 @@ class HomeController extends Controller
 命令组(eg `HomeController`) 中的命令(eg: `indexCommand`)上注释是可被解析的。
 
 - 当你使用 `php examples/app home -h` 时，可以查看到 `HomeController` 的所有命令信息
-- 当使用 `php examples/app home/index -h` 时，可以查看到关于 `HomeController::indexCommand` 更详细的信息。包括描述注释文本、`@usage` 、`@example`
+- 当使用 `php examples/app home:index -h` 时，可以查看到关于 `HomeController::indexCommand` 更详细的信息。包括描述注释文本、`@usage` 、`@example`
 
 > 小提示：注释里面同样支持带颜色的文本输出 `eg: this is a command's description <info>message</info>`
 
-更多请查看 [examples](./examples) 中的示例代码
+- 运行效果(by `php examples/app home`):
+
+![command-group-example](./images/command-group-example.jpg)
+
+更多请查看 [examples](./examples) 中的示例代码和在目录下运行示例 `php examples/app` 来查看效果
 
 ## 输入
 
@@ -166,7 +176,7 @@ class HomeController extends Controller
 在终端中执行如下命令，用于演示参数选项等信息的解析:
 
 ```bash
-$ php examples/app home/useArg status=2 name=john arg0 -s=test --page=23 --id=154 -e dev -v vvv -d -rf --debug --test=false
+$ php examples/app home:useArg status=2 name=john arg0 -s=test --page=23 --id=154 -e dev -v vvv -d -rf --debug --test=false
 ```
 
 **一点说明：**
@@ -187,7 +197,7 @@ $ php examples/app home/useArg status=2 name=john arg0 -s=test --page=23 --id=15
 
 ```php
 echo $input->getScript();   // 'examples/app' 执行的入口脚本文件
-echo $input->getCommand(); // 'home/useArg' 解析到的第一个参数将会被认为是命令名称，并且不会再存入到 参数列表中
+echo $input->getCommand(); // 'home:useArg' 解析到的第一个参数将会被认为是命令名称，并且不会再存入到 参数列表中
 echo $input->getFullScript(); // 命令行输入的原样字符串
 ```
 
@@ -345,7 +355,7 @@ public static function progressBar(int $total, array $opts = [])
 $total = 120;
 $bar = Show::progressBar($total, [
     'msg' => 'Msg Text',
-    'doneChar' => '#'
+    'doneChar' => '#'//  ♥ ■ ☺ ☻ = # Windows 环境下不要使用特殊字符，否则会乱码
 ]);
 echo "Progress:\n";
 
@@ -472,7 +482,7 @@ $data = [
 
 $opts = [
   'showBorder' => true,
-  'tHead' => [col1, col2, col3, ...]
+  'columns' => [col1, col2, col3, ...]
 ];
 Show::table($data, 'a table', $opts);
 ```

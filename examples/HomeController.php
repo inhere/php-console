@@ -99,7 +99,7 @@ class HomeController extends Controller
                 'signChar' => $input->getOpt('sign-char', '>'),
             ]);
         } else {
-            $bar = $this->output->progressTxt($total, 'Doing oo oo', 'Done');
+            $bar = $this->output->progressTxt($total, 'Doing gggg ...', 'Done');
         }
 
         $this->write('Progress:');

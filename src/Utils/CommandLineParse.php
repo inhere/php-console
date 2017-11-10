@@ -30,7 +30,7 @@ final class CommandLineParse
      * ```
      *
      * ```php
-     * $result = OptArgParse::byArgv($_SERVER['argv']);
+     * $result = CommandLineParse::byArgv($_SERVER['argv']);
      * ```
      *
      * Supports args:
@@ -55,8 +55,8 @@ final class CommandLineParse
     {
         $args = $sOpts = $lOpts = [];
 
-        // each() will deprecated at 7.2 so,there use current and next instead it.
-//        while (list(,$p) = each($params)) {
+        // each() will deprecated at 7.2. so,there use current and next instead it.
+        // while (list(,$p) = each($params)) {
         while (false !== ($p = current($params))) {
             next($params);
 
@@ -86,7 +86,7 @@ final class CommandLineParse
 
                 // fix: allow empty string ''
                 if ($value === true && $nxp !== false && (!$nxp || $nxp{0} !== '-') && !in_array($opt, $noValues, true)) {
-//                    list(,$value) = each($params);
+                    // list(,$value) = each($params);
                     $value = current($params);
                     next($params);
 
@@ -128,7 +128,7 @@ final class CommandLineParse
      * parse custom array params
      *
      * ```php
-     * $result = OptArgParse::byArray([
+     * $result = CommandLineParse::byArray([
      *  'arg' => 'val',
      *  '--lp' => 'val2',
      *  '--s' => 'val3',
@@ -162,7 +162,7 @@ final class CommandLineParse
     /**
      *
      * ```php
-     * $result = OptArgParse::byString('foo --bar="foobar"');
+     * $result = CommandLineParse::byString('foo --bar="foobar"');
      * ```
      * @todo ...
      * @param string $string

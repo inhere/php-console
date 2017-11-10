@@ -798,8 +798,9 @@ class Show
                 $msg = $doneMsg ?: $msg;
             }
 
-//            printf("\r%d%% %s", $percent, $msg);
-            printf("\x0D\x1B[2K%d%% %s", $percent, $msg);
+            // printf("\r%d%% %s", $percent, $msg);
+            // printf("\x0D\x1B[2K%d%% %s", $percent, $msg);
+            printf("\x0D\r%d%% %s", $percent, $msg);
 
             if ($finished) {
                 echo "\n";
@@ -856,8 +857,13 @@ class Show
                 $finished = true;
             }
 
+            /**
+             * \x0D 调到行首
+             * \r, \x1B[2K 都是清除本行
+             */
             // printf("\r[%'--100s] %d%% %s",
-            printf("\x0D\x1B[2K[%'{$waitChar}-100s] %d%% %s",
+            // printf("\x0D\x1B[2K[%'{$waitChar}-100s] %d%% %s",
+            printf("\x0D\r[%'{$waitChar}-100s] %d%% %s",
                 str_repeat($opts['doneChar'], $percent) . ($finished ? '' : $opts['signChar']),
                 $percent,
                 $msg

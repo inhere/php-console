@@ -12,7 +12,8 @@ namespace Inhere\Console\Utils;
  * Class AnsiCode terminal
  * @package Inhere\Console\Utils
  *
- * \r = \x0D -> 13 回到行首
+ * \r, \x1B[2K 都是清除本行
+ * \x0D -> 13 回到行首
  * ESC = \x1B -> 27
  */
 final class AnsiCode
