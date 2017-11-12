@@ -10,7 +10,6 @@
 
 namespace Inhere\Console\Style;
 
-use Inhere\Console\Application;
 use Inhere\Console\Utils\Helper;
 
 /**
@@ -57,7 +56,7 @@ class Style
      * Flag to remove color codes from the output
      * @var bool
      */
-    public $noColor = false;
+    protected static $noColor = false;
 
     /**
      * Array of Style objects
@@ -147,7 +146,7 @@ class Style
         }
 
         // if don't support output color text, clear color tag.
-        if (!Helper::isSupportColor() || Application::isNoColor()) {
+        if (!Helper::isSupportColor() || self::isNoColor()) {
             return static::stripColor($text);
         }
 
@@ -178,7 +177,7 @@ class Style
      */
     protected function replaceColor($text, $tag, $match, $style): string
     {
-        $replace = $this->noColor ? $match : sprintf("\033[%sm%s\033[0m", $style, $match);
+        $replace = self::$noColor ? $match : sprintf("\033[%sm%s\033[0m", $style, $match);
 
         return str_replace("<$tag>$match</$tag>", $replace, $text);
         // return sprintf("\033[%sm%s\033[%sm", implode(';', $setCodes), $text, implode(';', $unsetCodes));
@@ -297,9 +296,9 @@ class Style
     /**
      * Method to get property NoColor
      */
-    public function isNoColor(): bool
+    public static function isNoColor(): bool
     {
-        return (bool)$this->noColor;
+        return (bool)self::$noColor;
     }
 
     /**
@@ -307,10 +306,8 @@ class Style
      * @param $noColor
      * @return $this
      */
-    public function setNoColor($noColor)
+    public static function setNoColor($noColor = true)
     {
-        $this->noColor = (bool)$noColor;
-
-        return $this;
+        self::$noColor = (bool)$noColor;
     }
 }

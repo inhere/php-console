@@ -33,6 +33,8 @@ use Inhere\Console\Style\Style;
  */
 class Show
 {
+    const FINISHED = -1;
+
     const CHAR_SPACE = ' ';
     const CHAR_HYPHEN = '-';
     const CHAR_UNDERLINE = '_';
@@ -773,23 +775,76 @@ class Show
     }
 
     /**
-     * @param int $total
+     * 与文本进度条相比，没有 total
      * @param string $msg
-     * @param string $doneMsg
+     * @param string|null $doneMsg
      * @return \Generator
      */
-    public static function progressTxt($total, $msg, $doneMsg = '')
+    public static function counterTxt($msg, $doneMsg = null)
     {
+        $counter = 0;
         $finished = false;
+        $tpl = (Helper::isSupportColor() ? "\x0D\x1B[2K" : "\x0D\r") . "%d %s";
         $msg = self::getStyle()->render($msg);
+        $doneMsg = $doneMsg ? self::getStyle()->render($doneMsg) : null;
 
         while (true) {
-            $current = yield;
-
             if ($finished) {
                 return;
             }
 
+            $step = yield;
+
+            if ((int)$step === self::FINISHED) {
+                $counter++;
+                $finished = true;
+                $msg = $doneMsg ?: $msg;
+            } else {
+                if ((int)$step <= 0) {
+                    $step = 1;
+                }
+
+                $counter += $step;
+            }
+
+            // printf("\r%d%% %s", $percent, $msg);
+            // printf("\x0D\x2K %d%% %s", $percent, $msg);
+            // printf("\x0D\r%'2d%% %s", $percent, $msg);
+            printf($tpl, $counter, $msg);
+
+            if ($finished) {
+                echo "\n";
+                break;
+            }
+        }
+    }
+
+    /**
+     * @param int $total
+     * @param string $msg
+     * @param string|null $doneMsg
+     * @return \Generator
+     */
+    public static function progressTxt($total, $msg, $doneMsg = null)
+    {
+        $current = 0;
+        $finished = false;
+        $tpl = (Helper::isSupportColor() ? "\x0D\x1B[2K" : "\x0D\r") . "%' 3d%% %s";
+        $msg = self::getStyle()->render($msg);
+        $doneMsg = $doneMsg ? self::getStyle()->render($doneMsg) : null;
+
+        while (true) {
+            if ($finished) {
+                return;
+            }
+
+            $step = yield;
+
+            if ((int)$step <= 0) {
+                $step = 1;
+            }
+
+            $current += $step;
             $percent = ceil(($current / $total) * 100);
 
             if ($percent >= 100) {
@@ -799,8 +854,9 @@ class Show
             }
 
             // printf("\r%d%% %s", $percent, $msg);
-            // printf("\x0D\x1B[2K%d%% %s", $percent, $msg);
-            printf("\x0D\r%d%% %s", $percent, $msg);
+            // printf("\x0D\x2K %d%% %s", $percent, $msg);
+            // printf("\x0D\r%'2d%% %s", $percent, $msg);
+            printf($tpl, $percent, $msg);
 
             if ($finished) {
                 echo "\n";
@@ -822,7 +878,7 @@ class Show
      * ]);
      * echo "progress:\n";
      * while ($i <= $total) {
-     *      $bar->send($i);
+     *      $bar->send(1); // 发送步进长度，通常是 1
      *      usleep(50000);
      *      $i++;
      * }
@@ -834,14 +890,19 @@ class Show
      */
     public static function progressBar($total, array $opts = [])
     {
+        $current = 0;
         $finished = false;
+        $tplPrefix = Helper::isSupportColor() ? "\x0D\x1B[2K" : "\x0D\r";
         $opts = array_merge([
             'doneChar' => '=',
             'waitChar' => ' ',
             'signChar' => '>',
             'msg' => '',
+            'doneMsg' => '',
         ], $opts);
+
         $msg = self::getStyle()->render($opts['msg']);
+        $doneMsg = self::getStyle()->render($opts['doneMsg']);
         $waitChar = $opts['waitChar'];
 
         while (true) {
@@ -849,21 +910,29 @@ class Show
                 return;
             }
 
-            $current = yield;
+            $step = yield;
+
+            if ((int)$step <= 0) {
+                $step = 1;
+            }
+
+            $current += $step;
             $percent = ceil(($current / $total) * 100);
 
             if ($percent >= 100) {
+                $msg = $doneMsg ?: $msg;
                 $percent = 100;
                 $finished = true;
             }
 
             /**
-             * \x0D 调到行首
-             * \r, \x1B[2K 都是清除本行
+             * \r, \x0D 回车，到行首
+             * \x1B ESC
+             * 2K 清除本行
              */
             // printf("\r[%'--100s] %d%% %s",
             // printf("\x0D\x1B[2K[%'{$waitChar}-100s] %d%% %s",
-            printf("\x0D\r[%'{$waitChar}-100s] %d%% %s",
+            printf("{$tplPrefix}[%'{$waitChar}-100s] %' 3d%% %s",
                 str_repeat($opts['doneChar'], $percent) . ($finished ? '' : $opts['signChar']),
                 $percent,
                 $msg

@@ -12,6 +12,7 @@ use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
 use Inhere\Console\Traits\InputOutputTrait;
 use Inhere\Console\Traits\SimpleEventTrait;
+use Inhere\Console\Style\Style;
 use Inhere\Console\Utils\Helper;
 
 /**
@@ -21,9 +22,6 @@ use Inhere\Console\Utils\Helper;
 abstract class AbstractApplication implements ApplicationInterface
 {
     use InputOutputTrait, SimpleEventTrait;
-
-    /** @var bool render no color */
-    private static $noColor = false;
 
     /**
      * @var array
@@ -230,10 +228,10 @@ abstract class AbstractApplication implements ApplicationInterface
         // open debug, throw exception
         if ($this->isDebug()) {
             $tpl = <<<ERR
-    <danger>$title</danger> 
+    <danger>$title</danger>
 
 Message   <magenta>%s</magenta>
-File      <cyan>%s</cyan> line <cyan>%d</cyan>
+At File      <cyan>%s</cyan> line <cyan>%d</cyan>
 Catch by  %s()\n
 Code Trace:\n%s\n
 ERR;
@@ -263,7 +261,7 @@ ERR;
      */
     protected function logError($e)
     {
-        // you can log error ...
+        // you can log error on sub class ...
     }
 
     /**
@@ -282,7 +280,7 @@ ERR;
         }
 
         if ($this->input->getSameOpt(['no-color'])) {
-            self::$noColor = true;
+            Style::setNoColor();
         }
 
         $command = $command ?: 'list';
@@ -422,7 +420,7 @@ ERR;
         $internalCommands = static::$internalCommands;
         ksort($internalCommands);
         array_unshift($internalCommands, "\n- <cyan>Internal Commands</cyan>");
-        
+
         $this->output->mList([
             //'There are all console controllers and independent commands.',
             'Usage:' => "$script {route|command} [arg0 arg1=value1 arg2=value2 ...] [--opt -v -h ...]",
@@ -443,7 +441,7 @@ ERR;
 
         unset($controllerArr, $commandArr, $internalCommands);
         $this->output->write("More command information, please use: <cyan>$script {command} -h</cyan>");
-        
+
         $quit && $this->stop();
     }
 
@@ -470,14 +468,6 @@ ERR;
     /**********************************************************
      * getter/setter methods
      **********************************************************/
-
-    /**
-     * @return bool
-     */
-    public static function isNoColor(): bool
-    {
-        return self::$noColor;
-    }
 
     /**
      * @return array

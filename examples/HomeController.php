@@ -75,6 +75,30 @@ class HomeController extends Controller
     }
 
     /**
+     * a counter example show. It is like progress txt, but no max value.
+     * @example
+     *  {script} {command}
+     * @return int
+     */
+    public function counterCommand()
+    {
+        $total = 120;
+        $ctr = Show::counterTxt('handling ...', 'handled.');
+        $this->write('Counter:');
+
+        while ($total - 1) {
+            $ctr->send(1);
+            usleep(30000);
+            $total--;
+        }
+
+        // end of the counter.
+        $ctr->send(-1);
+
+        return 0;
+    }
+
+    /**
      * a progress bar example show
      * @options
      *  --type      the progress type, allow: bar,txt. <cyan>txt</cyan>
@@ -82,8 +106,8 @@ class HomeController extends Controller
      *  --wait-char the waiting show char. <info>-</info>
      *  --sign-char the sign char show. <info>></info>
      * @example
-     *  {script} home/progress
-     *  {script} home/progress --done-char '#' --wait-char ' '
+     *  {script} {command}
+     *  {script} {command} --done-char '#' --wait-char ' '
      * @param Input $input
      * @return int
      */
@@ -94,6 +118,7 @@ class HomeController extends Controller
         if ($input->getOpt('type') === 'bar') {
             $bar = $this->output->progressBar($total, [
                 'msg' => 'Msg Text',
+                'doneMsg' => 'Done Msg Text',
                 'doneChar' => $input->getOpt('done-char', '='), // ▓
                 'waitChar' => $input->getOpt('wait-char', '-'), // ░
                 'signChar' => $input->getOpt('sign-char', '>'),
@@ -105,7 +130,7 @@ class HomeController extends Controller
         $this->write('Progress:');
 
         while ($i <= $total) {
-            $bar->send($i);
+            $bar->send(1);
             usleep(50000);
             $i++;
         }
