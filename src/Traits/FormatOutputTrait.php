@@ -146,7 +146,7 @@ trait FormatOutputTrait
      */
     public function table(array $data, $title = 'Data Table', $showBorder = true)
     {
-        Show::table($data, $title, $showBorder);
+        Show::table($data, $title, ['showBorder' => $showBorder]);
     }
 
     /**
