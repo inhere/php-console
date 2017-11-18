@@ -207,7 +207,7 @@ abstract class AbstractApplication implements ApplicationInterface
     protected function runtimeCheck()
     {
         // check env
-        if (!in_array(PHP_SAPI, ['cli', 'cli-server'], true)) {
+        if (!\in_array(PHP_SAPI, ['cli', 'cli-server'], true)) {
             header('HTTP/1.1 403 Forbidden');
             exit("  403 Forbidden \n\n"
                 . " current environment is CLI. \n"
@@ -301,6 +301,7 @@ ERR;
     /**
      * @param $name
      * @param bool $isGroup
+     * @throws \InvalidArgumentException
      */
     protected function validateName(string $name, $isGroup = false)
     {
@@ -403,10 +404,10 @@ ERR;
                 $desc = $command::getDescription() ?: $desPlaceholder;
             } else if ($msg = $this->getCommandMessage($name)) {
                 $desc = $msg;
-            } else if (is_string($command)) {
+            } else if (\is_string($command)) {
                 $desc = 'A handler : ' . $command;
-            } else if (is_object($command)) {
-                $desc = 'A handler by ' . get_class($command);
+            } else if (\is_object($command)) {
+                $desc = 'A handler by ' . \get_class($command);
             }
 
             $commandArr[$name] = $desc;
@@ -423,7 +424,7 @@ ERR;
 
         $this->output->mList([
             //'There are all console controllers and independent commands.',
-            'Usage:' => "$script {route|command} [arg0 arg1=value1 arg2=value2 ...] [--opt -v -h ...]",
+            'Usage:' => "$script {command} [arg0 arg1=value1 arg2=value2 ...] [--opt -v -h ...]",
             'Options:' => self::$internalOptions,
             'Available Commands:' => array_merge($controllerArr, $commandArr, $internalCommands),
             //'Independent Commands:' => $commandArr ?: '... No register any independent command',
@@ -432,7 +433,7 @@ ERR;
 
         // $this->output->mList([
         //     //'There are all console controllers and independent commands.',
-        //     'Usage:' => "$script {route|command} [arg0 arg1=value1 arg2=value2 ...] [--opt -v -h ...]",
+        //     'Usage:' => "$script {command} [arg0 arg1=value1 arg2=value2 ...] [--opt -v -h ...]",
         //     'Options:' => self::$internalOptions,
         //     'Group Commands:' => $controllerArr ?: '... No register any group command(controller)',
         //     'Independent Commands:' => $commandArr ?: '... No register any independent command',
@@ -491,7 +492,7 @@ ERR;
     public function setControllers(array $controllers)
     {
         foreach ($controllers as $name => $controller) {
-            if (is_int($name)) {
+            if (\is_int($name)) {
                 $this->controller($controller);
             } else {
                 $this->controller($name, $controller);
@@ -522,7 +523,7 @@ ERR;
     public function setCommands(array $commands)
     {
         foreach ($commands as $name => $handler) {
-            if (is_int($name)) {
+            if (\is_int($name)) {
                 $this->command($handler);
             } else {
                 $this->command($name, $handler);

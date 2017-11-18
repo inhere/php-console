@@ -43,7 +43,7 @@ class Helper
                 ;
         }
 
-        if (!defined('STDOUT')) {
+        if (!\defined('STDOUT')) {
             return false;
         }
 
@@ -73,7 +73,7 @@ class Helper
      */
     public static function isInteractive($fileDescriptor)
     {
-        return function_exists('posix_isatty') && @posix_isatty($fileDescriptor);
+        return \function_exists('posix_isatty') && @posix_isatty($fileDescriptor);
     }
 
     /**
@@ -92,6 +92,7 @@ class Helper
      * @param string $srcDir
      * @param callable $filter
      * @return \RecursiveIteratorIterator
+     * @throws \LogicException
      */
     public static function recursiveDirectoryIterator(string $srcDir, callable $filter)
     {
@@ -151,7 +152,7 @@ class Helper
     public static function strLen($string)
     {
         if (false === $encoding = mb_detect_encoding($string, null, true)) {
-            return strlen($string);
+            return \strlen($string);
         }
 
         return mb_strwidth($string, $encoding);
@@ -226,7 +227,7 @@ class Helper
             $line = $char;
         }
         if ('' !== $line) {
-            $lines[] = count($lines) ? str_pad($line, $width) : $line;
+            $lines[] = \count($lines) ? str_pad($line, $width) : $line;
         }
 
         mb_convert_variables($encoding, 'utf8', $lines);
@@ -280,9 +281,9 @@ class Helper
         foreach ($timeFormats as $index => $format) {
             if ($secs >= $format[0]) {
                 if ((isset($timeFormats[$index + 1]) && $secs < $timeFormats[$index + 1][0])
-                    || $index === count($timeFormats) - 1
+                    || $index === \count($timeFormats) - 1
                 ) {
-                    if (2 === count($format)) {
+                    if (2 === \count($format)) {
                         return $format[1];
                     }
 
@@ -355,7 +356,7 @@ class Helper
         $keyStyle = trim($opts['keyStyle']);
 
         foreach ($data as $key => $value) {
-            $hasKey = !is_int($key);
+            $hasKey = !\is_int($key);
             $text .= $opts['leftChar'];
 
             if ($hasKey && $opts['keyMaxWidth']) {
@@ -365,22 +366,22 @@ class Helper
             }
 
             // if value is array, translate array to string
-            if (is_array($value)) {
+            if (\is_array($value)) {
                 $temp = '';
 
                 /** @var array $value */
                 foreach ($value as $k => $val) {
-                    if (is_bool($val)) {
+                    if (\is_bool($val)) {
                         $val = $val ? 'True' : 'False';
                     } else {
-                        $val = is_scalar($val) ? (string)$val : gettype($val);
+                        $val = is_scalar($val) ? (string)$val : \gettype($val);
                     }
 
                     $temp .= (!is_numeric($k) ? "$k: " : '') . "$val, ";
                 }
 
                 $value = rtrim($temp, ' ,');
-            } else if (is_bool($value)) {
+            } else if (\is_bool($value)) {
                 $value = $value ? 'True' : 'False';
             } else {
                 $value = (string)$value;

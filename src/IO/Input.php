@@ -199,6 +199,7 @@ class Input implements InputInterface
      * get a required argument
      * @param int|string $name
      * @return mixed
+     * @throws \InvalidArgumentException
      */
     public function getRequiredArg($name)
     {
@@ -305,6 +306,7 @@ class Input implements InputInterface
      * get a required argument
      * @param int|string $name
      * @return mixed
+     * @throws \InvalidArgumentException
      */
     public function getRequiredOpt($name)
     {
@@ -408,7 +410,7 @@ class Input implements InputInterface
     {
         $val = $this->sOpt($name);
 
-        return is_bool($val) ? $val : (bool)$default;
+        return \is_bool($val) ? $val : (bool)$default;
     }
 
     /**
@@ -474,7 +476,7 @@ class Input implements InputInterface
     {
         $val = $this->lOpt($name);
 
-        return is_bool($val) ? $val : (bool)$default;
+        return \is_bool($val) ? $val : (bool)$default;
     }
 
     /**

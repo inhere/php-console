@@ -144,7 +144,7 @@ trait SimpleEventTrait
         }
 
         if ($ets = self::$supportedEvents) {
-            return in_array($event, $ets, true);
+            return \in_array($event, $ets, true);
         }
 
         return true;
@@ -179,6 +179,6 @@ trait SimpleEventTrait
      */
     public static function countEvents()
     {
-        return count(self::$events);
+        return \count(self::$events);
     }
 }

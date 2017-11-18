@@ -67,6 +67,7 @@ class InputDefinition
     /**
      * @param array $arguments
      * @return $this
+     * @throws \LogicException
      */
     public function addArguments(array $arguments)
     {
@@ -98,7 +99,7 @@ class InputDefinition
     {
         if (null === $mode) {
             $mode = Input::ARG_OPTIONAL;
-        } elseif (!is_int($mode) || $mode > 7 || $mode < 1) {
+        } elseif (!\is_int($mode) || $mode > 7 || $mode < 1) {
             throw new \InvalidArgumentException(sprintf('Argument mode "%s" is not valid.', $mode));
         }
 
@@ -123,7 +124,7 @@ class InputDefinition
 
             if (null === $default) {
                 $default = [];
-            } elseif (!is_array($default)) {
+            } elseif (!\is_array($default)) {
                 throw new \LogicException('A default value for an array argument must be an array.');
             }
         }
@@ -152,6 +153,7 @@ class InputDefinition
     /**
      * @param int|string $name
      * @return array
+     * @throws \InvalidArgumentException
      */
     public function getArgument($name)
     {
@@ -159,7 +161,7 @@ class InputDefinition
             throw new \InvalidArgumentException(sprintf('The "%s" argument does not exist.', $name));
         }
 
-        $arguments = is_int($name) ? array_values($this->arguments) : $this->arguments;
+        $arguments = \is_int($name) ? array_values($this->arguments) : $this->arguments;
 
         return $arguments[$name];
     }
@@ -170,7 +172,7 @@ class InputDefinition
      */
     public function hasArgument($name)
     {
-        $arguments = is_int($name) ? array_values($this->arguments) : $this->arguments;
+        $arguments = \is_int($name) ? array_values($this->arguments) : $this->arguments;
 
         return isset($arguments[$name]);
     }
@@ -189,7 +191,7 @@ class InputDefinition
      */
     public function getArgumentCount()
     {
-        return count($this->arguments);
+        return \count($this->arguments);
     }
 
     /**
@@ -204,6 +206,8 @@ class InputDefinition
      * Sets the options
      *
      * @param array[] $options An array of InputOption objects
+     * @throws \LogicException
+     * @throws \InvalidArgumentException
      */
     public function setOptions(array $options = [])
     {
@@ -215,6 +219,8 @@ class InputDefinition
      * Adds an array of option
      *
      * @param array
+     * @throws \LogicException
+     * @throws \InvalidArgumentException
      */
     public function addOptions(array $options = [])
     {
@@ -240,6 +246,8 @@ class InputDefinition
      * @param mixed $default The default value (must be null for InputOption::OPT_BOOL)
      *
      * @return $this
+     * @throws \InvalidArgumentException
+     * @throws \LogicException
      */
     public function addOption($name, $shortcut = null, $mode = null, $description = '', $default = null)
     {
@@ -257,7 +265,7 @@ class InputDefinition
 
         if (null === $mode) {
             $mode = Input::OPT_BOOLEAN;
-        } elseif (!is_int($mode) || $mode > 15 || $mode < 1) {
+        } elseif (!\is_int($mode) || $mode > 15 || $mode < 1) {
             throw new \InvalidArgumentException(sprintf('Option mode "%s" is not valid.', $mode));
         }
 
@@ -277,7 +285,7 @@ class InputDefinition
         if ($isArray) {
             if (null === $default) {
                 $default = array();
-            } elseif (!is_array($default)) {
+            } elseif (!\is_array($default)) {
                 throw new \LogicException('A default value for an array option must be an array.');
             }
         }
@@ -285,7 +293,7 @@ class InputDefinition
         $default = $this->optionIsAcceptValue($mode) ? $default : false;
 
         if ($shortcut) {
-            if (is_array($shortcut)) {
+            if (\is_array($shortcut)) {
                 $shortcut = implode('|', $shortcut);
             }
 
@@ -317,6 +325,7 @@ class InputDefinition
     /**
      * @param string $name
      * @return array
+     * @throws \InvalidArgumentException
      */
     public function getOption($name)
     {
@@ -368,6 +377,7 @@ class InputDefinition
     /**
      * @param string $shortcut
      * @return mixed
+     * @throws \InvalidArgumentException
      */
     private function shortcutToName($shortcut)
     {
@@ -410,7 +420,7 @@ class InputDefinition
             }
         }
 
-        if ($this->arguments && count($elements)) {
+        if ($this->arguments && \count($elements)) {
             $elements[] = '[--]';
         }
 

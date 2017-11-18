@@ -104,12 +104,13 @@ class LiteApplication
      * @param $command
      * @param $handler
      * @return mixed
+     * @throws \InvalidArgumentException
      */
     public function runHandler($command, $handler)
     {
-        if (is_string($handler)) {
+        if (\is_string($handler)) {
             // function name
-            if (function_exists($handler)) {
+            if (\function_exists($handler)) {
                 return $handler($this);
             }
 
@@ -190,6 +191,7 @@ class LiteApplication
      * @param string $command
      * @param string|\Closure $handler
      * @param string $description
+     * @throws \InvalidArgumentException
      */
     public function addCommand($command, $handler, $description = '')
     {
@@ -209,7 +211,7 @@ class LiteApplication
         foreach ($commands as $command => $handler) {
             $des = '';
 
-            if (is_array($handler)) {
+            if (\is_array($handler)) {
                 $conf = array_values($handler);
                 $handler = $conf[0];
                 $des = $conf[1] ?? '';

@@ -77,7 +77,7 @@ class Show
      */
     public static function block($messages, $type = 'MESSAGE', $style = Style::NORMAL, $quit = false)
     {
-        $messages = is_array($messages) ? array_values($messages) : array($messages);
+        $messages = \is_array($messages) ? array_values($messages) : array($messages);
 
         // add type
         if (null !== $type) {
@@ -87,7 +87,7 @@ class Show
         $text = implode(PHP_EOL, $messages);
         $color = static::getStyle();
 
-        if (is_string($style) && $color->hasStyle($style)) {
+        if (\is_string($style) && $color->hasStyle($style)) {
             $text = sprintf('<%s>%s</%s>', $style, $text, $style);
         }
 
@@ -103,7 +103,7 @@ class Show
      */
     public static function liteBlock($messages, $type = 'MESSAGE', $style = Style::NORMAL, $quit = false)
     {
-        $messages = is_array($messages) ? array_values($messages) : array($messages);
+        $messages = \is_array($messages) ? array_values($messages) : array($messages);
 
         // add type
         if (null !== $type) {
@@ -113,7 +113,7 @@ class Show
         $text = implode(PHP_EOL, $messages);
         $color = static::getStyle();
 
-        if (is_string($style) && $color->hasStyle($style)) {
+        if (\is_string($style) && $color->hasStyle($style)) {
             $type = sprintf('<%s>%s</%s> ', $style, $type, $style);
         }
 
@@ -149,6 +149,7 @@ class Show
      * @param string $method
      * @param array $args
      * @return int
+     * @throws \LogicException
      */
     public static function __callStatic($method, array $args = [])
     {
@@ -268,7 +269,7 @@ class Show
             }
         }
 
-        $body = is_array($body) ? implode(PHP_EOL, $body) : $body;
+        $body = \is_array($body) ? implode(PHP_EOL, $body) : $body;
         $body = Helper::wrapText($body, 4, $opts['width']);
 
         self::write(sprintf($tpl, $titleLine, $topBorder, $body, $bottomBorder));
@@ -467,7 +468,7 @@ class Show
             }
 
             // if $value is array, translate array to string
-            if (is_array($value)) {
+            if (\is_array($value)) {
                 // is natural key ['text1', 'text2'](like usage,examples)
                 if (isset($value[0])) {
                     $value = implode(PHP_EOL . '  ', $value);
@@ -481,7 +482,7 @@ class Show
                 }
             }
 
-            if (is_string($value)) {
+            if (\is_string($value)) {
                 $value = trim($value);
                 $section = ucfirst($section);
                 $help .= "<comment>$section</comment>:\n  {$value}\n\n";
@@ -518,7 +519,7 @@ class Show
         ], $opts);
 
         $borderChar = $opts['borderChar'];
-        $data = is_array($data) ? array_filter($data) : [trim($data)];
+        $data = \is_array($data) ? array_filter($data) : [trim($data)];
         $title = trim($title);
 
         $panelData = []; // [ 'label' => 'value' ]
@@ -533,12 +534,12 @@ class Show
             }
 
             // translate array to string
-            if (is_array($value)) {
+            if (\is_array($value)) {
                 $temp = '';
 
                 /** @var array $value */
                 foreach ($value as $key => $val) {
-                    if (is_bool($val)) {
+                    if (\is_bool($val)) {
                         $val = $val ? 'True' : 'False';
                     } else {
                         $val = (string)$val;
@@ -548,7 +549,7 @@ class Show
                 }
 
                 $value = rtrim($temp, ' ,');
-            } else if (is_bool($value)) {
+            } else if (\is_bool($value)) {
                 $value = $value ? 'True' : 'False';
             } else {
                 $value = trim((string)$value);
@@ -660,7 +661,7 @@ class Show
         $colBorderChar = $opts['colBorderChar'];
 
         $info = [
-            'rowCount' => count($data),
+            'rowCount' => \count($data),
             'columnCount' => 0,     // how many column in the table.
             'columnMaxWidth' => [], // table column max width
             'tableWidth' => 0,      // table width. equals to all max column width's sum.
@@ -671,10 +672,10 @@ class Show
             // collection all field name
             if ($rowIndex === 0) {
                 $head = $tableHead ?: array_keys($row);
-                $info['columnCount'] = count($row);
+                $info['columnCount'] = \count($row);
 
                 foreach ($head as $index => $name) {
-                    if (is_string($name)) {// maybe no column name.
+                    if (\is_string($name)) {// maybe no column name.
                         $hasHead = true;
                     }
 
@@ -784,7 +785,7 @@ class Show
     {
         $counter = 0;
         $finished = false;
-        $tpl = (Helper::isSupportColor() ? "\x0D\x1B[2K" : "\x0D\r") . "%d %s";
+        $tpl = (Helper::isSupportColor() ? "\x0D\x1B[2K" : "\x0D\r") . '%d %s';
         $msg = self::getStyle()->render($msg);
         $doneMsg = $doneMsg ? self::getStyle()->render($doneMsg) : null;
 
@@ -817,6 +818,8 @@ class Show
                 break;
             }
         }
+
+        yield false;
     }
 
     /**
@@ -964,6 +967,7 @@ class Show
      * @param int $max
      * @param bool $start
      * @return ProgressBar
+     * @throws \LogicException
      */
     public static function createProgressBar($max = 0, $start = true)
     {
@@ -1003,7 +1007,7 @@ class Show
      */
     public static function write($messages, $nl = true, $quit = false, array $opts = []): int
     {
-        if (is_array($messages)) {
+        if (\is_array($messages)) {
             $messages = implode($nl ? PHP_EOL : '', $messages);
         }
 

@@ -82,7 +82,7 @@ class Download
 
         $fp = fopen($this->url, 'rb', false, $ctx);
 
-        if (is_resource($fp) && file_put_contents($this->saveAs, $fp)) {
+        if (\is_resource($fp) && file_put_contents($this->saveAs, $fp)) {
             Show::write("\nDone!");
         } else {
             $err = error_get_last();

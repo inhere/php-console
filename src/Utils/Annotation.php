@@ -36,7 +36,7 @@ class Annotation
                 $name = $matches[1];
                 if (!isset($tags[$name])) {
                     $tags[$name] = trim($matches[2]);
-                } elseif (is_array($tags[$name])) {
+                } elseif (\is_array($tags[$name])) {
                     $tags[$name][] = trim($matches[2]);
                 } else {
                     $tags[$name] = [$tags[$name], trim($matches[2])];

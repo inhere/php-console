@@ -103,6 +103,7 @@ final class Color
      *
      * @param string $string e.g 'fg=white;bg=black;options=bold,underscore'
      * @return static
+     * @throws \RuntimeException
      */
     public static function makeByString($string)
     {
@@ -113,7 +114,7 @@ final class Color
         foreach ($parts as $part) {
             $subParts = explode('=', $part);
 
-            if (count($subParts) < 2) {
+            if (\count($subParts) < 2) {
                 continue;
             }
 
@@ -142,6 +143,7 @@ final class Color
      * @param string $fg Foreground color.  e.g 'white'
      * @param string $bg Background color.  e.g 'black'
      * @param array $options Style options. e.g ['bold', 'underscore']
+     * @throws \InvalidArgumentException
      */
     public function __construct($fg = '', $bg = '', array $options = [])
     {

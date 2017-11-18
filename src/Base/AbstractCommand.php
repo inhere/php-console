@@ -184,7 +184,7 @@ abstract class AbstractCommand implements CommandInterface
     protected function prepare()
     {
         if ($this->processTitle) {
-            if (function_exists('cli_set_process_title')) {
+            if (\function_exists('cli_set_process_title')) {
                 if (false === @cli_set_process_title($this->processTitle)) {
                     if ('Darwin' === PHP_OS) {
                         $this->output->writeln('<comment>Running "cli_get_process_title" as an unprivileged user is not supported on MacOS.</comment>');
@@ -193,7 +193,7 @@ abstract class AbstractCommand implements CommandInterface
                         trigger_error($error['message'], E_USER_WARNING);
                     }
                 }
-            } elseif (function_exists('setproctitle')) {
+            } elseif (\function_exists('setproctitle')) {
                 setproctitle($this->processTitle);
 //            } elseif (isDebug) {
 //                $output->writeln('<comment>Install the proctitle PECL to be able to change the process title.</comment>');
@@ -218,14 +218,14 @@ abstract class AbstractCommand implements CommandInterface
         $givenArgs = $errArgs = [];
 
         foreach ($in->getArgs() as $key => $value) {
-            if (is_int($key)) {
+            if (\is_int($key)) {
                 $givenArgs[$key] = $value;
             } else {
                 $errArgs[] = $key;
             }
         }
 
-        if (count($errArgs) > 0) {
+        if (\count($errArgs) > 0) {
             $this->output->liteError(sprintf('Unknown arguments (error: "%s").', implode(', ', $errArgs)));
 
             return false;
@@ -236,7 +236,7 @@ abstract class AbstractCommand implements CommandInterface
             return !array_key_exists($key, $givenArgs) && $def->argumentIsRequired($name);
         }, ARRAY_FILTER_USE_BOTH);
 
-        if (count($missingArgs) > 0) {
+        if (\count($missingArgs) > 0) {
             $this->output->liteError(sprintf('Not enough arguments (missing: "%s").', implode(', ', $missingArgs)));
             return false;
         }
@@ -266,7 +266,7 @@ abstract class AbstractCommand implements CommandInterface
             }
         }
 
-        if (count($missingOpts) > 0) {
+        if (\count($missingOpts) > 0) {
             $this->output->liteError(sprintf('Not enough options parameters (missing: "%s").', implode(', ', $missingOpts)));
 
             return false;
@@ -319,6 +319,7 @@ abstract class AbstractCommand implements CommandInterface
      * @param string $method
      * @param null|string $action
      * @return int
+     * @throws \ReflectionException
      */
     protected function showHelpByMethodAnnotation($method, $action = null)
     {
@@ -341,7 +342,7 @@ abstract class AbstractCommand implements CommandInterface
         $tags = Annotation::tagList($this->handleAnnotationVars($doc));
 
         foreach ($tags as $tag => $msg) {
-            if (!$msg || !is_string($msg)) {
+            if (!$msg || !\is_string($msg)) {
                 continue;
             }
 

@@ -71,6 +71,7 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
      * @param  Input $input
      * @param  Output $output
      * @return mixed
+     * @throws \ReflectionException
      */
     protected function execute($input, $output)
     {
@@ -102,7 +103,7 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
             }
 
             if ($similar) {
-                $output->liteWarning(sprintf("Maybe what you mean is:\n\t  <info>%s</info>", implode(', ', $similar)));
+                $output->write(sprintf("\nMaybe what you mean is:\n    <info>%s</info>", implode(', ', $similar)));
             } else {
                 $this->showCommandList();
             }
@@ -113,6 +114,7 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
 
     /**
      * @return int
+     * @throws \ReflectionException
      */
     protected function showHelp()
     {
@@ -134,6 +136,7 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
      *  {script} {name} index
      *
      * @return int
+     * @throws \ReflectionException
      */
     final public function helpCommand()
     {
@@ -154,6 +157,7 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
 
     /**
      * show command list of the controller class
+     * @throws \ReflectionException
      */
     final public function showCommandList()
     {

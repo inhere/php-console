@@ -77,7 +77,7 @@ final class CommandLineParse
                     }
 
                     // short-opt: value specified inline (-<opt>=<value>)
-                } elseif (strlen($opt) > 2 && $opt{1} === '=') {
+                } elseif (\strlen($opt) > 2 && $opt{1} === '=') {
                     list($opt, $value) = explode('=', $opt, 2);
                 }
 
@@ -85,7 +85,7 @@ final class CommandLineParse
                 $nxp = current($params);
 
                 // fix: allow empty string ''
-                if ($value === true && $nxp !== false && (!$nxp || $nxp{0} !== '-') && !in_array($opt, $noValues, true)) {
+                if ($value === true && $nxp !== false && (!$nxp || $nxp{0} !== '-') && !\in_array($opt, $noValues, true)) {
                     // list(,$value) = each($params);
                     $value = current($params);
                     next($params);
@@ -180,7 +180,7 @@ final class CommandLineParse
     public static function filterBool($val, $enable = true)
     {
         if ($enable) {
-            if (is_bool($val) || is_numeric($val)) {
+            if (\is_bool($val) || is_numeric($val)) {
                 return $val;
             }
 

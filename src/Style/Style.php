@@ -81,7 +81,6 @@ class Style
      * @param  string $fg 前景色(字体颜色)
      * @param  string $bg 背景色
      * @param  array $options 其它选项
-     * @throws  \InvalidArgumentException
      */
     public function __construct($fg = '', $bg = '', array $options = [])
     {
@@ -207,11 +206,11 @@ class Style
      */
     public function add($name, $fg = '', $bg = '', array $options = [])
     {
-        if (is_array($fg)) {
+        if (\is_array($fg)) {
             return $this->addByArray($name, $fg);
         }
 
-        if (is_object($fg) && $fg instanceof Color) {
+        if (\is_object($fg) && $fg instanceof Color) {
             $this->styles[$name] = $fg;
         } else {
             $this->styles[$name] = Color::make($fg, $bg, $options);
@@ -304,7 +303,6 @@ class Style
     /**
      * Method to set property noColor
      * @param $noColor
-     * @return $this
      */
     public static function setNoColor($noColor = true)
     {

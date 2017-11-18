@@ -8,7 +8,6 @@
 
 namespace Inhere\Console\Traits;
 
-use Inhere\Console\Application;
 use Inhere\Console\Style\Style;
 use Inhere\Console\Utils\Helper;
 use Inhere\Console\Utils\Show;
@@ -171,6 +170,7 @@ trait FormatOutputTrait
      * @param string $method
      * @param array $args
      * @return int
+     * @throws \LogicException
      */
     public function __call($method, array $args = [])
     {

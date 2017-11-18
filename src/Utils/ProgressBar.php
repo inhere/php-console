@@ -113,6 +113,7 @@ class ProgressBar
     /**
      * 开始
      * @param null $maxSteps
+     * @throws \LogicException
      */
     public function start($maxSteps = null)
     {
@@ -135,6 +136,7 @@ class ProgressBar
     /**
      * 前进，按步长前进几步
      * @param int $step 前进几步
+     * @throws \LogicException
      */
     public function advance(int $step = 1)
     {
@@ -169,6 +171,7 @@ class ProgressBar
 
     /**
      * Finishes the progress output.
+     * @throws \LogicException
      */
     public function finish()
     {
@@ -278,6 +281,7 @@ class ProgressBar
      * @param  string $section
      * @param  bool|boolean $throwException
      * @return mixed
+     * @throws \RuntimeException
      */
     public function getParser(string $section, bool $throwException = false)
     {
@@ -506,6 +510,7 @@ class ProgressBar
 
     /**
      * @return array
+     * @throws \LogicException
      */
     private static function loadDefaultParsers()
     {

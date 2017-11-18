@@ -46,7 +46,7 @@ class Interact extends Show
             self::error('Please provide a description text!', 1);
         }
 
-        $options = is_array($options) ? $options : explode(',', $options);
+        $options = \is_array($options) ? $options : explode(',', $options);
 
         // If default option is error
         if (null !== $default && !isset($options[$default])) {

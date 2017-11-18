@@ -25,6 +25,7 @@ class Application extends AbstractApplication
      * @param string $name The controller name
      * @param string $class The controller class
      * @return static
+     * @throws \InvalidArgumentException
      */
     public function controller(string $name, string $class = null)
     {
@@ -78,6 +79,7 @@ class Application extends AbstractApplication
      * @param string|\Closure|Command $handler
      * @param null|string $description
      * @return $this
+     * @throws \InvalidArgumentException
      */
     public function command(string $name, $handler = null, $description = null)
     {
@@ -97,7 +99,7 @@ class Application extends AbstractApplication
             throw new \InvalidArgumentException("Command '$name' have been registered!");
         }
 
-        if (is_string($handler)) {
+        if (\is_string($handler)) {
             if (!class_exists($handler)) {
                 throw new \InvalidArgumentException("The console command class [$handler] not exists!");
             }
@@ -105,7 +107,7 @@ class Application extends AbstractApplication
             if (!is_subclass_of($handler, Command::class)) {
                 throw new \InvalidArgumentException('The console command class must is subclass of the: ' . Command::class);
             }
-        } elseif (!is_object($handler) || !method_exists($handler, '__invoke')) {
+        } elseif (!\is_object($handler) || !method_exists($handler, '__invoke')) {
             throw new \InvalidArgumentException(sprintf(
                 'The console command handler must is an subclass of %s OR a Closure OR a object have method __invoke()',
                 Command::class
@@ -135,6 +137,7 @@ class Application extends AbstractApplication
      * @param string $name
      * @param mixed $handler
      * @return $this
+     * @throws \InvalidArgumentException
      */
     public function addCommand(string $name, $handler = null)
     {
@@ -146,6 +149,7 @@ class Application extends AbstractApplication
      * @param string $name
      * @param string|null $controller
      * @return static
+     * @throws \InvalidArgumentException
      */
     public function addGroup(string $name, string $controller = null)
     {
@@ -158,6 +162,7 @@ class Application extends AbstractApplication
 
     /**
      * @inheritdoc
+     * @throws \InvalidArgumentException
      */
     protected function dispatch($name)
     {
@@ -176,7 +181,7 @@ class Application extends AbstractApplication
         // like 'home/index'
         if (strpos($name, $sep) > 0) {
             $input = array_filter(explode($sep, $name));
-            list($name, $action) = count($input) > 2 ? array_splice($input, 2) : $input;
+            list($name, $action) = \count($input) > 2 ? array_splice($input, 2) : $input;
         }
 
         if ($this->isController($name)) {
@@ -200,7 +205,7 @@ class Application extends AbstractApplication
             }
 
             if ($similar) {
-                $this->write(sprintf('Maybe what you mean is: <info>%s</info>', implode(', ', $similar)));
+                $this->write(sprintf("\nMaybe what you mean is:\n    <info>%s</info>", implode(', ', $similar)));
             } else {
                 $this->showCommandList(false);
             }
@@ -214,6 +219,7 @@ class Application extends AbstractApplication
      * @param string $name Command name
      * @param bool $believable The `$name` is believable
      * @return mixed
+     * @throws \InvalidArgumentException
      */
     public function runCommand($name, $believable = false)
     {
@@ -225,7 +231,7 @@ class Application extends AbstractApplication
         /** @var \Closure|string $handler Command class */
         $handler = $this->commands[$name];
 
-        if (is_object($handler) && method_exists($handler, '__invoke')) {
+        if (\is_object($handler) && method_exists($handler, '__invoke')) {
             $status = $handler($this->input, $this->output);
         } else {
             if (!class_exists($handler)) {
@@ -253,6 +259,7 @@ class Application extends AbstractApplication
      * @param bool $believable The `$name` is believable
      * @param bool $standAlone
      * @return mixed
+     * @throws \InvalidArgumentException
      */
     public function runAction($name, $action, $believable = false, $standAlone = false)
     {

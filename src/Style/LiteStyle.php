@@ -121,13 +121,13 @@ class LiteStyle
             return self::clearColor($text);
         }
 
-        if (is_string($style)) {
+        if (\is_string($style)) {
             $color = self::STYLES[$style] ?? '0';
-        } elseif (is_int($style)) {
+        } elseif (\is_int($style)) {
             $color = $style;
 
             // array: [self::FG_GREEN, self::BG_WHITE, self::UNDERSCORE]
-        } elseif (is_array($style)) {
+        } elseif (\is_array($style)) {
             $color = implode(';', $style);
         } elseif (strpos($text, '<') !== false) {
             return self::renderColor($text);

@@ -64,6 +64,9 @@ class PharCompiler
      * @param string $pharFile The full path to the file to create
      * @param string $version
      * @return int
+     * @throws \LogicException
+     * @throws \UnexpectedValueException
+     * @throws \BadMethodCallException
      */
     public function pack($pharFile = 'your.phar', $version = '0.0.1')
     {
@@ -112,6 +115,7 @@ __HALT_COMPILER();
     /**
      * @param string $file
      * @param string|null $distDir
+     * @throws \LogicException
      */
     public function unpack(string $file, string $distDir = null)
     {
@@ -136,7 +140,7 @@ __HALT_COMPILER();
                 return preg_match($this->options['dirExclude'], $name);
             }
 
-            if (in_array($name, $this->options['fileInclude'], true)) {
+            if (\in_array($name, $this->options['fileInclude'], true)) {
                 return true;
             }
 
@@ -162,7 +166,7 @@ __HALT_COMPILER();
     {
         $isPhp = $file->getExtension() === 'php';
         // $path = str_replace($basePath . DIRECTORY_SEPARATOR, '', $file->getRealPath());
-        $path = substr($file->getRealPath(), strlen($basePath) + 1);
+        $path = substr($file->getRealPath(), \strlen($basePath) + 1);
 
         if ($isPhp && $this->options['compress']) {
             $content = php_strip_whitespace($file);
