@@ -16,7 +16,7 @@ use Inhere\Console\Utils\Helper;
 use Inhere\Console\Utils\Annotation;
 
 /**
- * Class Command
+ * Class Controller
  * @package Inhere\Console
  */
 abstract class Controller extends AbstractCommand implements ControllerInterface
@@ -88,7 +88,7 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
         } else {
             $group = static::getName();
             $status = -1;
-            $this->output->liteError("Sorry, The command '$action' not exist of the group '{$group}'!");
+            $output->liteError("Sorry, The command '$action' not exist of the group '{$group}'!");
 
             // find similar command names by similar_text()
             $similar = [];
@@ -102,7 +102,7 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
             }
 
             if ($similar) {
-                $this->write(sprintf('Maybe what you mean is: <info>%s</info>', implode(', ', $similar)));
+                $output->liteWarning(sprintf("Maybe what you mean is:\n\t  <info>%s</info>", implode(', ', $similar)));
             } else {
                 $this->showCommandList();
             }

@@ -40,6 +40,19 @@ class Output implements OutputInterface
      */
     protected $style;
 
+    /**
+     * Output constructor.
+     * @param null|resource $outputStream
+     */
+    public function __construct($outputStream = null)
+    {
+        if ($outputStream) {
+            $this->outputStream = $outputStream;
+        }
+
+        $this->getStyle();
+    }
+
 /////////////////////////////////////////////////////////////////
 /// Output Message
 /////////////////////////////////////////////////////////////////

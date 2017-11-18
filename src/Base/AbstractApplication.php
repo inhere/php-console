@@ -140,7 +140,7 @@ abstract class AbstractApplication implements ApplicationInterface
             $returnCode = $this->dispatch($command);
         } catch (\Throwable $e) {
             self::fire(self::ON_RUN_ERROR, [$e, $this]);
-            $returnCode = $e->getCode() === 0 ? __LINE__ : $e->getCode();
+            $returnCode = $e->getCode() === 0 ? $e->getLine() : $e->getCode();
             $this->handleException($e);
         }
 
@@ -231,7 +231,7 @@ abstract class AbstractApplication implements ApplicationInterface
     <danger>$title</danger>
 
 Message   <magenta>%s</magenta>
-At File      <cyan>%s</cyan> line <cyan>%d</cyan>
+At File   <cyan>%s</cyan> line <cyan>%d</cyan>
 Catch by  %s()\n
 Code Trace:\n%s\n
 ERR;
