@@ -198,6 +198,15 @@ class HomeController extends Controller
 
 更多请查看 [examples](./examples) 中的示例代码和在目录下运行示例 `php examples/app` 来查看效果
 
+### 自动扫描注册
+
+可以配置命名空间和对应的路径来，自动扫描并注册命令。
+
+```php
+$app->registerCommands('App\\Console\\Commands', get_path('app/Console/Commands'));
+$app->registerGroups('App\\Console\\Controllers', get_path('app/Console/Controllers'));
+```
+
 ## 输入
 
 > 输入对象是 `Inhere\Console\IO\Input` 的实例

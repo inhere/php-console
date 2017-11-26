@@ -92,12 +92,12 @@ class Helper
      * @param string $srcDir
      * @param callable $filter
      * @return \RecursiveIteratorIterator
-     * @throws \LogicException
+     * @throws \InvalidArgumentException
      */
     public static function recursiveDirectoryIterator(string $srcDir, callable $filter)
     {
         if (!$srcDir || !file_exists($srcDir)) {
-            throw new \LogicException('Please provide a exists source directory.');
+            throw new \InvalidArgumentException('Please provide a exists source directory.');
         }
 
         $directory = new \RecursiveDirectoryIterator($srcDir);

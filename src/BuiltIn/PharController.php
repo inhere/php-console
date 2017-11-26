@@ -9,7 +9,7 @@
 namespace Inhere\Console\BuiltIn;
 
 use Inhere\Console\Controller;
-use Inhere\Console\Utils\PharCompiler;
+use Inhere\Console\Components\PharCompiler;
 
 /**
  * Class PharController
@@ -49,7 +49,7 @@ class PharController extends Controller
             'dirExclude' => '#[\.git|tests]#',
 
             'fileInclude' => ['LICENSE', 'app', 'liteApp'],
-            'fileMatch' => '#\.php#',
+            'fileMatch' => '#\.php$#',
         ]);
 
         $pharFile = BASE_PATH . '/test.phar';

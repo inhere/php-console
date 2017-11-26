@@ -9,6 +9,7 @@
 namespace Inhere\Console;
 
 use Inhere\Console\Base\AbstractApplication;
+use Inhere\Console\Utils\Helper;
 
 /**
  * Class App
@@ -155,6 +156,69 @@ class Application extends AbstractApplication
     public function addGroup(string $name, string $controller = null)
     {
         return $this->controller($name, $controller);
+    }
+
+    /**
+     * auto register commands from a dir.
+     * @param string $namespace
+     * @param string $basePath
+     * @return $this
+     * @throws \InvalidArgumentException
+     */
+    public function registerCommands(string $namespace, string $basePath)
+    {
+        $length = \strlen($basePath) + 1;
+        $iterator = Helper::recursiveDirectoryIterator($basePath, $this->getFileFilter());
+
+        foreach ($iterator as $file) {
+            $class = $namespace . '\\' . \substr($file, $length, -4);
+            $this->addCommand($class);
+        }
+
+        return $this;
+    }
+
+    /**
+     * auto register controllers from a dir.
+     * @param string $namespace
+     * @param string $basePath
+     * @return $this
+     * @throws \InvalidArgumentException
+     */
+    public function registerGroups(string $namespace, string $basePath)
+    {
+        $length = \strlen($basePath) + 1;
+        $iterator = Helper::recursiveDirectoryIterator($basePath, $this->getFileFilter());
+
+        foreach ($iterator as $file) {
+            $class = $namespace . '\\' . \substr($file, $length, -4);
+            $this->addController($class);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return \Closure
+     */
+    protected function getFileFilter()
+    {
+        return function (\SplFileInfo $f) {
+            $name = $f->getFilename();
+
+            // Skip hidden files and directories.
+            if ($name[0] === '.') {
+                return false;
+            }
+
+            // go on read sub-dir
+            if ($f->isDir()) {
+                return true;
+            }
+
+            // php file
+            return $f->isFile() && \substr($name, -4) === '.php';
+        };
     }
 
     /****************************************************************************

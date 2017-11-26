@@ -6,13 +6,13 @@
  * Time: 17:56
  */
 
-namespace Inhere\Console\Utils;
+namespace Inhere\Console\Components;
 
 /**
  * Class AutoCompletion - a simple command auto-completion tool
  *
  * @todo not available
- * @package Inhere\Console\Utils
+ * @package Inhere\Console\Components
  */
 class AutoCompletion
 {
