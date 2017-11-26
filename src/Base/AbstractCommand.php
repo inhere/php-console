@@ -289,7 +289,7 @@ abstract class AbstractCommand implements CommandInterface
      */
     protected function annotationVars()
     {
-        // e.g: `more info see {$name}/index`
+        // e.g: `more info see {name}/index`
         return [
             'script' => $this->input->getScript(),
             'command' => $this->input->getCommand(),

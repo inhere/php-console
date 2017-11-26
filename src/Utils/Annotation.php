@@ -12,7 +12,7 @@ namespace Inhere\Console\Utils;
  * Class Annotation
  * @package Inhere\Console\Utils
  */
-class Annotation
+final class Annotation
 {
     /*
      * 以下三个方法来自 yii2 console/Controller.php
@@ -26,7 +26,8 @@ class Annotation
      */
     public static function tagList($comment)
     {
-        $comment = "@description \n" . strtr(trim(preg_replace('/^\s*\**( |\t)?/m', '', trim($comment, '/'))), "\r", '');
+        $comment = "@description \n" . str_replace("\r", '',
+                trim(preg_replace('/^\s*\**( |\t)?/m', '', trim($comment, '/'))));
 
         $parts = preg_split('/^\s*@/m', $comment, -1, PREG_SPLIT_NO_EMPTY);
         $tags = [];
@@ -73,7 +74,7 @@ class Annotation
      */
     public static function description($comment): string
     {
-        $comment = strtr(trim(preg_replace('/^\s*\**( |\t)?/m', '', trim($comment, '/'))), "\r", '');
+        $comment = str_replace("\r", '', trim(preg_replace('/^\s*\**( |\t)?/m', '', trim($comment, '/'))));
 
         if (preg_match('/^\s*@\w+/m', $comment, $matches, PREG_OFFSET_CAPTURE)) {
             $comment = trim(substr($comment, 0, $matches[0][1]));

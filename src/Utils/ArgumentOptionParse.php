@@ -9,10 +9,10 @@
 namespace Inhere\Console\Utils;
 
 /**
- * Class CommandLineParse - console argument and option parse
+ * Class ArgumentOptionParse - console argument and option parse
  * @package Inhere\Console\Utils
  */
-final class CommandLineParse
+final class ArgumentOptionParse
 {
     /**
      * These words will be as a Boolean value

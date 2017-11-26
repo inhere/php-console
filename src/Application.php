@@ -16,9 +16,9 @@ use Inhere\Console\Base\AbstractApplication;
  */
 class Application extends AbstractApplication
 {
-    /**********************************************************
+    /****************************************************************************
      * register console controller/command
-     **********************************************************/
+     ****************************************************************************/
 
     /**
      * Register a app group command(by controller)
@@ -57,8 +57,9 @@ class Application extends AbstractApplication
     }
 
     /**
-     * @see Application::controller()
      * {@inheritdoc}
+     * @see Application::controller()
+     * @throws \InvalidArgumentException
      */
     public function addController(string $name, string $class = null)
     {
@@ -156,9 +157,9 @@ class Application extends AbstractApplication
         return $this->controller($name, $controller);
     }
 
-    /**********************************************************
+    /****************************************************************************
      * dispatch and run console controller/command
-     **********************************************************/
+     ****************************************************************************/
 
     /**
      * @inheritdoc

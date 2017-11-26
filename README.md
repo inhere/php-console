@@ -84,37 +84,52 @@ $app->run();
 
 > `Independent Commands` 中的 demo 就是我们上面添加的命令
 
-
 ## 添加命令
 
 添加命令的方式有三种
 
-- 如上所示，使用闭包可以快速的添加一个简单的命令
+### 使用闭包
+
+如上所示，使用闭包可以快速的添加一个简单的命令
 
 ```php
 $app->command('demo', function (Input $in, Output $out) {
     $cmd = $in->getCommand();
 
     $out->info('hello, this is a test command: ' . $cmd);
-});
+}, 'this is message for the command');
 ```
 
-- 通过继承 `Inhere\Console\Command` 添加独立命令
+### 继承 `Inhere\Console\Command`
+
+通过继承 `Inhere\Console\Command` 添加独立命令
+
+> 独立命令 - 只有一个命令可执行，跟 `symfony/console` 的 command 一样
 
 ```php
 use Inhere\Console\Command;
 
 /**
- * Class Test
+ * Class TestCommand
  * @package app\console\commands
  */
 class TestCommand extends Command
 {
+    // 命令名称
     protected static $name = 'test';
+    // 命令描述
     protected static $description = 'this is a test independent command';
 
+    // 注释中的 @usage @arguments @options 在使用 帮助命令时，会被解析并显示出来
+
     /**
-     * execute
+     * @usage usage message
+     * @arguments 
+     * arg     some message ...
+     *  
+     * @options 
+     * -o, --opt     some message ...
+     *  
      * @param  Inhere\Console\IO\Input $input
      * @param  Inhere\Console\IO\Output $output
      * @return int
@@ -126,9 +141,19 @@ class TestCommand extends Command
 }
 ```
 
-注册命令，在 `$app->run()` 之前通过 `$app->command('test', TestCommand::class)` 注册独立命令。
+- 注册命令
 
-- 通过继承 `Inhere\Console\Controller` 添加一组命令(命令行的控制器类)
+ 在 `$app->run()` 之前通过 `$app->command('test', TestCommand::class)` 注册独立命令。
+
+```php
+$app->command(TestCommand::class);
+// OR 设置了命令名称，将会覆盖类里面设置的
+// $app->command('test1', TestCommand::class);
+```
+
+### 继承 `Inhere\Console\Controller`
+
+通过继承 `Inhere\Console\Controller` 添加一组命令. 即是命令行的控制器
 
 ```php
 use Inhere\Console\Controller;
@@ -138,10 +163,11 @@ use Inhere\Console\Controller;
  */
 class HomeController extends Controller
 {
+    protected static $name = 'home';
     protected static $description = 'default command controller. there are some command usage examples';
 
     /**
-     * this is a command's description message
+     * this is a command's description message <info>a color text</info>
      * the second line text
      * @usage usage message
      * @example example text one
@@ -154,13 +180,14 @@ class HomeController extends Controller
 }
 ```
 
-注册命令，在 `$app->run()` 之前通过 `$app->controller('home', HomeController::class)` 注册命令组。
+注册命令，在 `$app->run()` 之前通过 `$app->controller(HomeController::class)` 注册命令组。
 
-说明：
+**说明：**
 
 命令组(eg `HomeController`) 中的命令(eg: `indexCommand`)上注释是可被解析的。
 
-- 当你使用 `php examples/app home -h` 时，可以查看到 `HomeController` 的所有命令信息
+- 支持的tag有 `@usage` `@arguments` `@options` `@example`
+- 当你使用 `php examples/app home -h` 时，可以查看到 `HomeController` 的所有命令描述注释信息
 - 当使用 `php examples/app home:index -h` 时，可以查看到关于 `HomeController::indexCommand` 更详细的信息。包括描述注释文本、`@usage` 、`@example`
 
 > 小提示：注释里面同样支持带颜色的文本输出 `eg: this is a command's description <info>message</info>`

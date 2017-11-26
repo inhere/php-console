@@ -8,7 +8,7 @@
 
 namespace Inhere\Console\IO;
 
-use Inhere\Console\Utils\CommandLineParse;
+use Inhere\Console\Utils\ArgumentOptionParse;
 
 /**
  * Class Input
@@ -85,7 +85,7 @@ class Input implements InputInterface
         $this->script = array_shift($argv);
         $this->tokens = $argv;
 
-        list($this->args, $this->sOpts, $this->lOpts) = CommandLineParse::byArgv($argv);
+        list($this->args, $this->sOpts, $this->lOpts) = ArgumentOptionParse::byArgv($argv);
 
         // collect command `server`
         $this->command = isset($this->args[0]) ? array_shift($this->args) : null;
@@ -98,11 +98,11 @@ class Input implements InputInterface
     {
         $tokens = array_map(function ($token) {
             if (preg_match('{^(-[^=]+=)(.+)}', $token, $match)) {
-                return $match[1] . CommandLineParse::escapeToken($match[2]);
+                return $match[1] . ArgumentOptionParse::escapeToken($match[2]);
             }
 
             if ($token && $token[0] !== '-') {
-                return CommandLineParse::escapeToken($token);
+                return ArgumentOptionParse::escapeToken($token);
             }
 
             return $token;
