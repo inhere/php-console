@@ -259,6 +259,11 @@ class Input implements InputInterface
         return $this->sameArg($names, $default);
     }
 
+    /**
+     * @param array $names
+     * @param mixed $default
+     * @return mixed
+     */
     public function sameArg(array $names, $default = null)
     {
         foreach ($names as $name) {
@@ -270,9 +275,17 @@ class Input implements InputInterface
         return $default;
     }
 
-/////////////////////////////////////////////////////////////////////////////////////////
-/// long/short options (eg: -d --help)
-/////////////////////////////////////////////////////////////////////////////////////////
+    /**
+     * clear args
+     */
+    public function clearArgs()
+    {
+        $this->args = [];
+    }
+
+    /***************************************************************************
+     * long/short options (eg: -d --help)
+     ***************************************************************************/
 
     /**
      * get (long/short)opt value
@@ -372,7 +385,15 @@ class Input implements InputInterface
         return $default;
     }
 
-    /////////////////// short-opts /////////////////////
+    /**
+     * clear (l/s)opts
+     */
+    public function clearOpts()
+    {
+        $this->sOpts = $this->lOpts = [];
+    }
+
+    /************************** short-opts **********************/
 
     /**
      * get short-opt value
@@ -422,6 +443,15 @@ class Input implements InputInterface
     }
 
     /**
+     * @param string $name
+     * @param $value
+     */
+    public function setSOpt(string $name, $value)
+    {
+        $this->sOpts[$name] = $value;
+    }
+
+    /**
      * @return array
      */
     public function getSOpts(): array
@@ -438,7 +468,15 @@ class Input implements InputInterface
         $this->sOpts = $replace ? $sOpts : array_merge($this->sOpts, $sOpts);
     }
 
-    /////////////////// long-opts /////////////////////
+    /**
+     * clear s-opts
+     */
+    public function clearSOpts()
+    {
+        $this->sOpts = [];
+    }
+
+    /************************** long-opts **********************/
 
     /**
      * get long-opt value
@@ -496,6 +534,15 @@ class Input implements InputInterface
     }
 
     /**
+     * @param string $name
+     * @param $value
+     */
+    public function setLOpt(string $name, $value)
+    {
+        $this->lOpts[$name] = $value;
+    }
+
+    /**
      * @param array $lOpts
      * @param bool $replace
      */
@@ -510,6 +557,14 @@ class Input implements InputInterface
     public function getOpts(): array
     {
         return array_merge($this->sOpts, $this->lOpts);
+    }
+
+    /**
+     * clear l-opts
+     */
+    public function clearLOpts()
+    {
+        $this->lOpts = [];
     }
 
 /////////////////////////////////////////////////////////////////////////////////////////

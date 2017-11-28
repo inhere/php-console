@@ -287,7 +287,7 @@ ERR;
 
         switch ($command) {
             case 'help':
-                $this->showHelpInfo();
+                $this->showHelpInfo(true, $this->input->getFirstArg());
                 break;
             case 'list':
                 $this->showCommandList();
@@ -316,16 +316,26 @@ ERR;
         }
     }
 
-    /**********************************************************
+    /***************************************************************************
      * some information for the application
-     **********************************************************/
+     ***************************************************************************/
 
     /**
      * show the application help information
      * @param bool $quit
+     * @param string $command
      */
-    public function showHelpInfo($quit = true)
+    public function showHelpInfo($quit = true, string $command = null)
     {
+        // display help for a special command
+        if ($command) {
+            $this->input->setCommand($command);
+            $this->input->setSOpt('h', true);
+            $this->input->clearArgs();
+            $this->dispatch($command);
+            $this->stop();
+        }
+
         $script = $this->input->getScript();
         $sep = $this->delimiter;
 
@@ -334,6 +344,7 @@ ERR;
             'example' => [
                 "$script test (run a independent command)",
                 "$script home{$sep}index (run a command of the group)",
+                "$script help {command} (see a command help information)",
                 "$script home{$sep}index -h (see a command help of the group)",
             ]
         ], $quit);

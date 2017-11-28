@@ -690,6 +690,12 @@ $answer = Interact::limitedAsk('please input you age?', null, function($age)
 });
 ```
 
+## Unit testing
+
+```bash
+phpunit
+```
+
 ## License
 
 MIT
