@@ -8,6 +8,7 @@
 
 namespace Inhere\Console\BuiltIn;
 
+use Inhere\Console\Components\PharBuilder;
 use Inhere\Console\Controller;
 use Inhere\Console\Components\PharCompiler;
 
@@ -57,6 +58,32 @@ class PharController extends Controller
 
         $this->output->json([
             'count' => $count,
+            'size' => round(filesize($pharFile) / 1000, 2) . ' kb',
+        ]);
+    }
+
+    /**
+     * pack directory(s) to a phar file.
+     */
+    public function buildCommand()
+    {
+        $packer = new PharBuilder(BASE_PATH);
+
+        $packer->addDirectory(BASE_PATH);
+        $packer->setOptions([
+            'cliIndex' => 'examples/app',
+            'webIndex' => null,
+
+            // 'compress' => $this->getSameOpt(['c', 'compress'], false),
+
+            'dirExclude' => '#[\.git|tests]#',
+
+            'fileInclude' => ['LICENSE', 'app', 'liteApp'],
+            'fileMatch' => '#\.php$#',
+        ]);
+        $packer->build($pharFile = BASE_PATH . '/example.phar');
+
+        $this->output->json([
             'size' => round(filesize($pharFile) / 1000, 2) . ' kb',
         ]);
     }

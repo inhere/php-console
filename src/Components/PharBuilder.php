@@ -16,8 +16,6 @@ use Inhere\Console\Utils\Helper;
  */
 class PharBuilder
 {
-    private $scanner;
-
     /** @var int @see \Phar::GZ, \Phar::BZ2 */
     private $compressMode;
 
@@ -52,17 +50,17 @@ class PharBuilder
         'webIndex' => null,
 
         // compress php code
-        'compress' => false,
+        // 'compress' => false,
 
         'dirExclude' => '#[\.git|tests]#',
 
         'fileInclude' => [],
+        'fileExclude' => [],
         'fileMatch' => '#\.php#',
     ];
 
-    public function __construct(DirectoryScanner $scanner, $basedir)
+    public function __construct($basedir)
     {
-        $this->scanner = $scanner;
         $this->basedir = $basedir;
     }
 
@@ -89,25 +87,35 @@ class PharBuilder
         $this->signatureType = $type;
     }
 
+    /**
+     * @param $key
+     */
     public function setSignatureKey($key)
     {
         $this->key = $key;
     }
 
+    /**
+     * @param string $directory
+     */
     public function addDirectory($directory)
     {
         $this->directories[] = $directory;
     }
 
+    /**
+     * @param $name
+     */
     public function setAliasName($name)
     {
         $this->aliasName = $name;
     }
 
     /**
-     * @param $filename
-     * @param $stub
-     * @throws \LogicException
+     * @param string $filename
+     * @param string $stub
+     * @throws \RuntimeException
+     * @throws \InvalidArgumentException
      * @throws \UnexpectedValueException
      * @throws \BadMethodCallException
      */
@@ -115,6 +123,14 @@ class PharBuilder
     {
         if (file_exists($filename)) {
             unlink($filename);
+        }
+
+        if (ini_get('phar.readonly')) {
+            throw new \RuntimeException("The 'phar.readonly' is 'On', build phar must setting it 'Off'");
+        }
+
+        if (!$this->directories) {
+            throw new \RuntimeException("Please setting the 'directories' want building directories");
         }
 
         $aliasName = $this->aliasName ?: basename($filename);
@@ -140,7 +156,7 @@ class PharBuilder
             $phar->buildFromIterator($iterator, $basedir);
         }
 
-        if ($this->compressMode !== \Phar::NONE) {
+        if ($this->compressMode !== null) {
             $phar->compressFiles($this->compressMode);
         }
 
@@ -151,14 +167,14 @@ class PharBuilder
     {
         // Stubs
 //        $phar->setStub($this->getStub());
-        $stub = \Phar::createDefaultStub($this->options['cliIndex'], $this->options['webIndex']);
+        return \Phar::createDefaultStub($this->options['cliIndex'], $this->options['webIndex']);
 
         // 设置入口
-        return"<?php
-Phar::mapPhar('{$pharName}');
-require 'phar://{$pharName}/examples/app';
-__HALT_COMPILER();
-?>";
+//        return "<?php
+//Phar::mapPhar('{$pharName}');
+//require 'phar://{$pharName}/examples/app';
+//__HALT_COMPILER();
+/*?>";*/
     }
 
     /**
@@ -230,5 +246,21 @@ __HALT_COMPILER();
         $this->key = $key;
 
         return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getOptions(): array
+    {
+        return $this->options;
+    }
+
+    /**
+     * @param array $options
+     */
+    public function setOptions(array $options)
+    {
+        $this->options = $options;
     }
 }

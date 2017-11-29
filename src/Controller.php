@@ -207,7 +207,7 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
         ]);
 
         $this->write(sprintf(
-            "To see more information about a command, please use: <cyan>$script {command} -h</cyan>",
+            "More information about a command, please use: <cyan>$script $name{command} -h</cyan>",
             $this->standAlone ? ' ' . $name : ''
         ));
     }

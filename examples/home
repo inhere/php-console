@@ -3,13 +3,13 @@
 
 use Inhere\Console\Examples\HomeController;
 
-define('PROJECT_PATH', dirname(__DIR__));
+define('BASE_PATH', dirname(__DIR__));
 
 require __DIR__ . '/s-autoload.php';
 
 $app = new \Inhere\Console\Application([
     'debug' => true,
-    'rootPath' => PROJECT_PATH,
+    'rootPath' => BASE_PATH,
 ]);
 
 $app->controller('home', HomeController::class);
