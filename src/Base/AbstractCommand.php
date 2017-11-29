@@ -105,6 +105,21 @@ abstract class AbstractCommand implements CommandInterface
         return $this->definition;
     }
 
+    /**
+     * 为命令注解提供可解析解析变量. 可以在命令的注释中使用
+     * @return array
+     */
+    public function annotationVars()
+    {
+        // e.g: `more info see {name}/index`
+        return [
+            'script' => $this->input->getScript(),
+            'command' => $this->input->getCommand(),
+            'fullCommand' => $this->input->getScript() . ' ' . $this->input->getCommand(),
+            'name' => self::getName(),
+        ];
+    }
+
     /**************************************************************************
      * running a command
      **************************************************************************/
@@ -282,20 +297,6 @@ abstract class AbstractCommand implements CommandInterface
     /**************************************************************************
      * helper methods
      **************************************************************************/
-
-    /**
-     * 为命令注解提供可解析解析变量. 可以在命令的注释中使用
-     * @return array
-     */
-    protected function annotationVars()
-    {
-        // e.g: `more info see {name}/index`
-        return [
-            'script' => $this->input->getScript(),
-            'command' => $this->input->getCommand(),
-            'name' => self::getName(),
-        ];
-    }
 
     /**
      * 为命令注解提供可解析解析变量. 可以在命令的注释中使用

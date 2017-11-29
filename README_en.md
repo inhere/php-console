@@ -68,7 +68,7 @@ $app->run();
 
 now, you can see:
 
-!['output-commands-info'](images/output-commands-info.jpg)
+!['output-commands-info'](images/example-app.png)
 
 ## input
 

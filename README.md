@@ -80,7 +80,7 @@ $app->run();
 
 然后在命令行里执行 `php examples/app`, 立即就可以看到如下输出了:
 
-!['output-commands-info'](images/output-commands-info.jpg)
+!['output-commands-info'](images/example-app.png)
 
 > `Independent Commands` 中的 demo 就是我们上面添加的命令
 
@@ -194,7 +194,7 @@ class HomeController extends Controller
 
 - 运行效果(by `php examples/app home`):
 
-![command-group-example](./images/command-group-example.jpg)
+![command-group-example](./images/example-for-group.png)
 
 更多请查看 [examples](./examples) 中的示例代码和在目录下运行示例 `php examples/app` 来查看效果
 
@@ -527,6 +527,8 @@ Show::table($data, 'a table', $opts);
 
 > 渲染效果请看下面的预览
 
+![table-show](images/table-show.png)
+
 ### 快速的渲染一个帮助信息面板 
 
 ```php
@@ -558,7 +560,41 @@ Show::helpPanel([
 
 ## 用户交互方法
 
-需引入类 `Inhere\Console\Utils\Interact`
+> 要独立使用的话需引入类 `Inhere\Console\Utils\Interact`， `Controller` 和 `Command` 里可以直接调用相关方法
+
+### 读取用户输入
+
+```php
+public static function read($message = null, $nl = false, array $opts = []): string
+```
+
+- 使用
+
+```php
+$userInput = Interact::read();
+
+// 先输出消息，再读取
+$userInput = Interact::read('Your name:');
+
+// 在 Controller/Command 中
+$userInput = $this->read('Your name:');
+```
+
+### 读取密码输入(隐藏输入文字)
+
+```php
+public static function askHiddenInput(string $prompt = 'Enter Password:'): string
+public static function askPassword(string $prompt = 'Enter Password:'): string
+```
+
+- 使用
+
+```php
+$pwd = Interact::askPassword();
+
+// 在 Controller/Command 中
+$pwd = $this->askPassword();
+```
 
 ### 从给出的列表中选择一项
 

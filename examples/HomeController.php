@@ -38,8 +38,19 @@ class HomeController extends Controller
     }
 
     /**
+     * a example for input password on command line
+     * @usage {fullCommand}
+     */
+    public function passwdCommand()
+    {
+        $pwd = $this->askPassword();
+
+        $this->write('Your input is:' . $pwd);
+    }
+
+    /**
      * a example for use color text output on command
-     * @usage ./bin/app home/color
+     * @usage {fullCommand}
      */
     public function colorCommand()
     {
@@ -67,7 +78,7 @@ class HomeController extends Controller
     {
         $this->write('block message:');
 
-        foreach (Interact::getBlockMethods() as $type) {
+        foreach (Show::getBlockMethods() as $type) {
             $this->output->$type("$type style message text");
         }
 

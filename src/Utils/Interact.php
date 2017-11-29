@@ -16,10 +16,41 @@ namespace Inhere\Console\Utils;
  */
 class Interact extends Show
 {
+    /**
+     * 读取输入信息
+     * @param  mixed $message 若不为空，则先输出文本
+     * @param  bool $nl true 会添加换行符 false 原样输出，不添加换行符
+     * @return string
+     */
+    public static function readRow($message = null, $nl = false): string
+    {
+        return self::read($message, $nl);
+    }
 
-/////////////////////////////////////////////////////////////////
-/// Interactive method (select/confirm/question/loopAsk)
-/////////////////////////////////////////////////////////////////
+    /**
+     * read CLI input
+     * @param mixed $message
+     * @param bool $nl
+     * @param array $opts
+     * [
+     *   'stream' => \STDIN
+     * ]
+     * @return string
+     */
+    public static function read($message = null, $nl = false, array $opts = []): string
+    {
+        if ($message) {
+            self::write($message, $nl);
+        }
+
+        $stream = $opts['stream'] ?? \STDIN;
+
+        return trim(fgets($stream));
+    }
+
+    /**************************************************************************************************
+     * Interactive method (select/confirm/question/loopAsk)
+     **************************************************************************************************/
 
     /**
      * Select one of the options 在多个选项中选择一个
@@ -40,6 +71,14 @@ class Interact extends Show
         return self::choice($description, $options, $default, $allowExit);
     }
 
+    /**
+     * alias of the `select()`
+     * @param $description
+     * @param $options
+     * @param null $default
+     * @param bool $allowExit
+     * @return string
+     */
     public static function choice($description, $options, $default = null, $allowExit = true)
     {
         if (!$description = trim($description)) {
@@ -79,9 +118,14 @@ class Interact extends Show
         return $r;
     }
 
-    public static function mSelect($description, $options, $default = null, $allowExit = true)
+    public static function checkbox($description, $options, $default = null, $allowExit = true)
     {
+        return self::multiSelect($description, $options, $default, $allowExit);
+    }
 
+    public static function multiSelect($description, $options, $default = null, $allowExit = true)
+    {
+        return [];
     }
 
     /**
@@ -121,25 +165,21 @@ class Interact extends Show
     }
 
     /**
+     * alias of the `question()`
      * 询问，提出问题；返回 输入的结果
-     *
      * @param string $question 问题
      * @param null|string $default 默认值
      * @param \Closure $validator The validate callback. It must return bool.
      * @example This is an example
-     *
      * ```php
      *  $answer = Interact::ask('Please input your name?', null, function ($answer) {
      *      if (!preg_match('/\w+/', $answer)) {
      *          Interact::error('The name must match "/\w+/"');
-     *
      *          return false;
      *      }
-     *
      *      return true;
      *   });
      * ```
-     *
      * @return string
      */
     public static function ask($question, $default = null, \Closure $validator = null)
@@ -147,6 +187,13 @@ class Interact extends Show
         return self::question($question, $default, $validator);
     }
 
+    /**
+     * 询问，提出问题；返回 输入的结果
+     * @param string $question
+     * @param null $default
+     * @param \Closure|null $validator
+     * @return null|string
+     */
     public static function question($question, $default = null, \Closure $validator = null)
     {
         if (!$question = trim($question)) {
@@ -181,7 +228,6 @@ class Interact extends Show
      * @param null|string $default 默认值
      * @param \Closure $validator (默认验证输入是否为空)自定义回调验证输入是否符合要求; 验证成功返回true 否则 可返回错误消息
      * @example This is an example
-     *
      * ```
      * // no default value
      * Interact::limitedAsk('please entry you age?', null, function($age)
@@ -190,10 +236,8 @@ class Interact extends Show
      *         Interact::error('Allow the input range is 1-100');
      *         return false;
      *     }
-     *
      *     return true;
      * } );
-     *
      * // has default value
      * Interact::limitedAsk('please entry you age?', 89, function($age)
      * {
@@ -201,19 +245,12 @@ class Interact extends Show
      *         Interact::error('Allow the input range is 1-100');
      *         return false;
      *     }
-     *
      *     return true;
      * } );
      * ```
-     *
      * @param int $times Allow input times
      * @return string
      */
-    public static function loopAsk($question, $default = null, \Closure $validator = null, $times = 3)
-    {
-        return self::limitedAsk($question, $default, $validator, $times);
-    }
-
     public static function limitedAsk($question, $default = null, \Closure $validator = null, $times = 3)
     {
         if (!$question = trim($question)) {
@@ -265,29 +302,73 @@ class Interact extends Show
         return $answer;
     }
 
-    /**
-     * 读取输入信息
-     * @param  mixed $message 若不为空，则先输出文本
-     * @param  bool $nl true 会添加换行符 false 原样输出，不添加换行符
-     * @return string
-     */
-    public static function readRow($message = null, $nl = false): string
-    {
-        return self::read($message, $nl);
-    }
+    /**************************************************************************************************
+     * password ask
+     **************************************************************************************************/
 
     /**
-     * @param mixed $message
-     * @param bool $nl
+     * Interactively prompts for input without echoing to the terminal.
+     * Requires a bash shell or Windows and won't work with
+     * safe_mode settings (Uses `shell_exec`)
+     * @param string $prompt
      * @return string
+     * @link https://stackoverflow.com/questions/187736/command-line-password-prompt-in-php
+     * @link http://www.sitepoint.com/blogs/2009/05/01/interactive-cli-password-prompt-in-php
      */
-    public static function read($message = null, $nl = false): string
+    public static function promptSilent(string $prompt = 'Enter Password:')
     {
-        if ($message) {
-            self::write($message, $nl);
+        $prompt = $prompt ? addslashes($prompt) : 'Enter:';
+
+        // $checkCmd = "/usr/bin/env bash -c 'echo OK'";
+        // $shell = 'echo $0';
+        $checkCmd = "bash -c 'echo OK'";
+
+        // linux, unix, git-bash
+        if (Helper::runCommand($checkCmd, false) === 'OK') {
+            // COMMAND: bash -c 'read -p "Enter Password:" -s user_input && echo $user_input'
+            $command = sprintf('bash -c "read -p \'%s\' -s user_input && echo $user_input"', $prompt);
+            $password = Helper::runCommand($command, false);
+
+            echo "\n";
+            return $password;
         }
 
-        return trim(fgets(STDIN));
+        // at windows cmd.
+        if (Helper::isWindows()) {
+            $vbScript = sys_get_temp_dir() . 'prompt_password.vbs';
+
+            file_put_contents(
+                $vbScript,
+                'wscript.echo(InputBox("' . $prompt . '", "", "password here"))'
+            );
+
+            $command = 'cscript //nologo ' . escapeshellarg($vbScript);
+            $password = rtrim(shell_exec($command));
+            unlink($vbScript);
+
+            return $password;
+        }
+
+        throw new \RuntimeException('Can not invoke bash shell env');
     }
 
-} // end class
+    /**
+     * alias of the method `promptSilent()`
+     * @param string $prompt
+     * @return string
+     */
+    public static function askHiddenInput(string $prompt = 'Enter Password:')
+    {
+        return self::promptSilent($prompt);
+    }
+
+    /**
+     * alias of the method `promptSilent()`
+     * @param string $prompt
+     * @return string
+     */
+    public static function askPassword(string $prompt = 'Enter Password:')
+    {
+        return self::promptSilent($prompt);
+    }
+}
