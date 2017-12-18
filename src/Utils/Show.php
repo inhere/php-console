@@ -8,6 +8,7 @@
 
 namespace Inhere\Console\Utils;
 
+use Inhere\Console\Components\StrBuffer;
 use Inhere\Console\Style\Style;
 
 /**

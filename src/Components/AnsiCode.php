@@ -6,11 +6,13 @@
  * Time: 9:35
  */
 
-namespace Inhere\Console\Utils;
+namespace Inhere\Console\Components;
+
+use Inhere\Console\Utils\Show;
 
 /**
  * Class AnsiCode terminal
- * @package Inhere\Console\Utils
+ * @package Inhere\Console\Components
  *
  * 2K 清除本行
  * \x0D = \r = 13 回车，回到行首

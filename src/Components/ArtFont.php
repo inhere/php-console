@@ -6,11 +6,11 @@
  * Time: 9:23
  */
 
-namespace Inhere\Console\Utils;
+namespace Inhere\Console\Components;
 
 /**
  * Class ArtFont
- * @package Inhere\Console\Utils
+ * @package Inhere\Console\Components
  */
 class ArtFont
 {

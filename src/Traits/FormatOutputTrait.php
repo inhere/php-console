@@ -223,7 +223,7 @@ trait FormatOutputTrait
     /**
      * @param array ...$vars
      */
-    public function print(...$vars)
+    public function prints(...$vars)
     {
         Show::write(Helper::printVars(...$vars));
     }

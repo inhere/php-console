@@ -12,7 +12,7 @@ use Inhere\Console\Application;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\InputDefinition;
 use Inhere\Console\IO\Output;
-use Inhere\Console\Traits\InputOutputTrait;
+use Inhere\Console\Traits\InputOutputAwareTrait;
 use Inhere\Console\Traits\UserInteractTrait;
 use Inhere\Console\Utils\Annotation;
 
@@ -20,11 +20,12 @@ use Inhere\Console\Utils\Annotation;
  * Class AbstractCommand
  * @package Inhere\Console
  */
-abstract class AbstractCommand implements CommandInterface
+abstract class AbstractCommand implements BaseCommandInterface
 {
-    use InputOutputTrait, UserInteractTrait;
+    use InputOutputAwareTrait, UserInteractTrait;
 
-    // name -> {$name}
+    const OK = 0;
+    // name -> {name}
     const ANNOTATION_VAR = '{%s}'; // '{$%s}';
 
     /**

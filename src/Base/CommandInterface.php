@@ -8,38 +8,10 @@
 
 namespace Inhere\Console\Base;
 
-use Inhere\Console\IO\InputDefinition;
-
 /**
  * Interface CommandInterface
  * @package Inhere\Console\Base
  */
-interface CommandInterface
+interface CommandInterface extends BaseCommandInterface
 {
-    /**
-     * run command
-     * @param string $command
-     * @return int
-     */
-    public function run($command = '');
-
-    /**
-     * @return InputDefinition
-     */
-    public function getDefinition();
-
-    /**
-     * @return ApplicationInterface
-     */
-    public function getApp(): ApplicationInterface;
-
-    /**
-     * @return string
-     */
-    public static function getName(): string;
-
-    /**
-     * @return string
-     */
-    public static function getDescription();
 }

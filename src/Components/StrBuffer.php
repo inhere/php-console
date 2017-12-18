@@ -6,11 +6,11 @@
  * Time: 9:17
  */
 
-namespace Inhere\Console\Utils;
+namespace Inhere\Console\Components;
 
 /**
  * Class StrBuffer
- * @package Inhere\Console\Utils
+ * @package Inhere\Console\Components
  */
 class StrBuffer
 {

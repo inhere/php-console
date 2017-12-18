@@ -12,10 +12,10 @@ use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
 
 /**
- * Class InputOutputTrait
+ * Class InputOutputAwareTrait
  * @package Inhere\Console\Traits
  */
-trait InputOutputTrait
+trait InputOutputAwareTrait
 {
     /**
      * @var Input
@@ -45,8 +45,9 @@ trait InputOutputTrait
     }
 
     /**
-     * @see Input::getRequiredArg()
      * {@inheritdoc}
+     * @see Input::getRequiredArg()
+     * @throws \InvalidArgumentException
      */
     public function getRequiredArg($name)
     {
@@ -54,8 +55,8 @@ trait InputOutputTrait
     }
 
     /**
-     * @see Input::getSameArg()
      * {@inheritdoc}
+     * @see Input::getSameArg()
      */
     public function getSameArg(array $names, $default = null)
     {
@@ -63,8 +64,8 @@ trait InputOutputTrait
     }
 
     /**
-     * @see Input::getOpt()
      * {@inheritdoc}
+     * @see Input::getOpt()
      */
     public function getOpt($name, $default = null)
     {
@@ -72,8 +73,8 @@ trait InputOutputTrait
     }
 
     /**
-     * @see Input::getSameOpt()
      * {@inheritdoc}
+     * @see Input::getSameOpt()
      */
     public function getSameOpt(array $names, $default = null)
     {
@@ -81,8 +82,9 @@ trait InputOutputTrait
     }
 
     /**
-     * @see Input::getRequiredOpt()
      * {@inheritdoc}
+     * @see Input::getRequiredOpt()
+     * @throws \InvalidArgumentException
      */
     public function getRequiredOpt($name)
     {

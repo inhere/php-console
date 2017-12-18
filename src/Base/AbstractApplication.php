@@ -10,9 +10,10 @@ namespace Inhere\Console\Base;
 
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
-use Inhere\Console\Traits\InputOutputTrait;
+use Inhere\Console\Traits\InputOutputAwareTrait;
 use Inhere\Console\Traits\SimpleEventTrait;
 use Inhere\Console\Style\Style;
+use Inhere\Console\Utils\FormatUtil;
 use Inhere\Console\Utils\Helper;
 
 /**
@@ -21,7 +22,7 @@ use Inhere\Console\Utils\Helper;
  */
 abstract class AbstractApplication implements ApplicationInterface
 {
-    use InputOutputTrait, SimpleEventTrait;
+    use InputOutputAwareTrait, SimpleEventTrait;
 
     /**
      * @var array
@@ -183,7 +184,7 @@ abstract class AbstractApplication implements ApplicationInterface
         if ($this->isProfile()) {
             $title = '---------- Runtime Stats(profile=true) ----------';
             $stats = $this->meta['_stats'];
-            $this->meta['_stats'] = Helper::runtime($stats['startTime'], $stats['startMemory'], $stats);
+            $this->meta['_stats'] = FormatUtil::runtime($stats['startTime'], $stats['startMemory'], $stats);
             $this->output->write('');
             $this->output->aList($this->meta['_stats'], $title);
         }
@@ -409,6 +410,7 @@ ERR;
         $commands = $this->commands;
         $commandArr[] = PHP_EOL . '- <cyan>Independent Commands</cyan>';
         ksort($commands);
+
         foreach ($commands as $name => $command) {
             $desc = $desPlaceholder;
             $hasCommand = true;
@@ -434,25 +436,17 @@ ERR;
         // built in commands
         $internalCommands = static::$internalCommands;
         ksort($internalCommands);
-        array_unshift($internalCommands, "\n- <cyan>Internal Commands</cyan>");
+        // array_unshift($internalCommands, "\n- <cyan>Internal Commands</cyan>");
+
+        // built in options
+        $internalOptions = FormatUtil::commandOptions(self::$internalOptions);
 
         $this->output->mList([
-            //'There are all console controllers and independent commands.',
             'Usage:' => "$script {command} [arg0 arg1=value1 arg2=value2 ...] [--opt -v -h ...]",
-            'Options:' => self::$internalOptions,
-            'Available Commands:' => array_merge($controllerArr, $commandArr, $internalCommands),
-            //'Independent Commands:' => $commandArr ?: '... No register any independent command',
-            // 'Internal Commands:' => $internalCommands,
+            'Options:' => $internalOptions,
+            'Internal Commands:' => $internalCommands,
+            'Available Commands:' => array_merge($controllerArr, $commandArr),
         ]);
-
-        // $this->output->mList([
-        //     //'There are all console controllers and independent commands.',
-        //     'Usage:' => "$script {command} [arg0 arg1=value1 arg2=value2 ...] [--opt -v -h ...]",
-        //     'Options:' => self::$internalOptions,
-        //     'Group Commands:' => $controllerArr ?: '... No register any group command(controller)',
-        //     'Independent Commands:' => $commandArr ?: '... No register any independent command',
-        //     'Internal Commands:' => $internalCommands,
-        // ]);
 
         unset($controllerArr, $commandArr, $internalCommands);
         $this->output->write("More command information, please use: <cyan>$script {command} -h</cyan>");
@@ -535,6 +529,7 @@ ERR;
 
     /**
      * @param array $controllers
+     * @throws \InvalidArgumentException
      */
     public function setControllers(array $controllers)
     {
@@ -566,6 +561,7 @@ ERR;
 
     /**
      * @param array $commands
+     * @throws \InvalidArgumentException
      */
     public function setCommands(array $commands)
     {

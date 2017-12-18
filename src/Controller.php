@@ -12,6 +12,7 @@ use Inhere\Console\Base\AbstractCommand;
 use Inhere\Console\Base\ControllerInterface;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
+use Inhere\Console\Utils\FormatUtil;
 use Inhere\Console\Utils\Helper;
 use Inhere\Console\Utils\Annotation;
 
@@ -74,7 +75,7 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
      */
     protected function execute($input, $output)
     {
-        $action = Helper::camelCase(trim($this->action ?: $this->defaultAction, $this->delimiter));
+        $action = FormatUtil::camelCase(trim($this->action ?: $this->defaultAction, $this->delimiter));
         $method = $this->actionSuffix ? $action . ucfirst($this->actionSuffix) : $action;
 
         // the action method exists and only allow access public method.
@@ -145,7 +146,7 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
             return 0;
         }
 
-        $action = Helper::camelCase($action);
+        $action = FormatUtil::camelCase($action);
         $method = $this->actionSuffix ? $action . ucfirst($this->actionSuffix) : $action;
 
         // show help info for a command.
@@ -250,7 +251,7 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
     public function setAction(string $action)
     {
         if ($action) {
-            $this->action = Helper::camelCase($action);
+            $this->action = FormatUtil::camelCase($action);
         }
 
         return $this;

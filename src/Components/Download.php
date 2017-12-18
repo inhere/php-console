@@ -6,13 +6,15 @@
  * Time: 19:08
  */
 
-namespace Inhere\Console\Utils;
+namespace Inhere\Console\Components;
+
+use Inhere\Console\Utils\Show;
 
 /**
  * Class Download
- * @package Inhere\Console\Utils
+ * @package Inhere\Console\Components
  */
-class Download
+final class Download
 {
     const PROGRESS_TEXT = 'text';
     const PROGRESS_BAR = 'bar';
@@ -65,6 +67,10 @@ class Download
         $this->showType = $type === self::PROGRESS_BAR ? self::PROGRESS_BAR : self::PROGRESS_TEXT;
     }
 
+    /**
+     * start download
+     * @return $this
+     */
     public function start()
     {
         if (!$this->url || !$this->saveAs) {
@@ -113,7 +119,7 @@ class Download
      * @param int $transferredBytes Have been transferred bytes
      * @param int $maxBytes Target max length bytes
      */
-    protected function progressShow($notifyCode, $severity, $message, $messageCode, $transferredBytes, $maxBytes)
+    public function progressShow($notifyCode, $severity, $message, $messageCode, $transferredBytes, $maxBytes)
     {
         $msg = '';
 
@@ -160,7 +166,7 @@ class Download
      * @param $transferredBytes
      * @return string
      */
-    protected function showProgressByType($transferredBytes)
+    public function showProgressByType($transferredBytes)
     {
         if ($transferredBytes <= 0) {
             return '';

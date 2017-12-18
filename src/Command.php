@@ -9,12 +9,13 @@
 namespace Inhere\Console;
 
 use Inhere\Console\Base\AbstractCommand;
+use Inhere\Console\Base\CommandInterface;
 
 /**
  * Class Command
  * @package Inhere\Console
  */
-abstract class Command extends AbstractCommand
+abstract class Command extends AbstractCommand implements CommandInterface
 {
     /*
      * do execute
