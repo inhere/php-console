@@ -1,6 +1,6 @@
 # php 命令行应用库
 
-[![License](https://img.shields.io/packagist/l/inhere/console.svg?style=flat-square)](LICENSE-2.0.txt)
+[![License](https://img.shields.io/packagist/l/inhere/console.svg?style=flat-square)](LICENSE)
 [![Php Version](https://img.shields.io/badge/php-%3E=7.0-brightgreen.svg?maxAge=2592000)](https://packagist.org/packages/inhere/console)
 [![Latest Stable Version](http://img.shields.io/packagist/v/inhere/console.svg)](https://packagist.org/packages/inhere/console)
 
@@ -34,12 +34,20 @@
 
 ## 安装
 
-- 使用 composer
+- 使用 composer 命令
+
+```bash
+composer require inhere/console
+```
+
+- 使用 composer.json
 
 编辑 `composer.json`，在 `require` 添加
 
 ```
 "inhere/console": "dev-master",
+
+// "inhere/console": "^2.0", // 指定稳定版本
 // "inhere/console": "dev-php5", // for php5
 ```
 
