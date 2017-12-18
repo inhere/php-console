@@ -22,7 +22,10 @@ $app->command('exam', function (Input $in, Output $out) {
     $out->info('hello, this is a test command: ' . $cmd);
 });
 
-$app->command('test', TestCommand::class);
+$app->command('test', TestCommand::class, [
+    'aliases' => ['t']
+]);
+
 $app->command('prg', function () {
     $i = 0;
     $total = 120;
@@ -39,5 +42,8 @@ $app->command('prg', function () {
 
 }, 'a description message');
 
-$app->controller('home', HomeController::class);
+$app->controller('home', HomeController::class, [
+    'aliases' => ['h']
+]);
+
 $app->controller(PharController::class);

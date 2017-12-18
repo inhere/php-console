@@ -23,6 +23,7 @@ class DemoCommand extends Command
 
     /**
      * {@inheritDoc}
+     * @throws \LogicException
      */
     protected function configure()
     {

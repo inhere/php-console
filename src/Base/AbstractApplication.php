@@ -67,17 +67,20 @@ abstract class AbstractApplication implements ApplicationInterface
     /** @var string Command delimiter. e.g dev:serve */
     public $delimiter = ':'; // '/' ':'
 
-    /** @var array The group commands */
-    protected $controllers = [];
+    /** @var string Current command name */
+    private $commandName;
+
+    /** @var array Some message for command */
+    private $commandMessages = [];
+
+    /** @var array Save command aliases */
+    private $commandAliases = [];
 
     /** @var array The independent commands */
     protected $commands = [];
 
-    /** @var array  */
-    private $commandMessages = [];
-
-    /** @var string */
-    private $commandName;
+    /** @var array The group commands */
+    protected $controllers = [];
 
     /**
      * App constructor.
@@ -470,11 +473,44 @@ ERR;
     /**
      * @param string $name The command name
      * @param string $message
-     * @return string
+     * @return $this
      */
     public function addCommandMessage($name, $message)
     {
-        return $this->commandMessages[$name] = $message;
+        if (!$name || !$message) {
+            $this->commandMessages[$name] = $message;
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param string $name
+     * @param string|array $aliases
+     * @return $this
+     */
+    public function addCommandAliases(string $name, $aliases)
+    {
+        if (!$name || !$aliases) {
+            return $this;
+        }
+
+        foreach ((array)$aliases as $alias) {
+            if ($alias = trim($alias)) {
+                $this->commandAliases[$alias] = $name;
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param string $name
+     * @return string
+     */
+    protected function getRealCommandName(string $name)
+    {
+        return $this->commandAliases[$name] ?? $name;
     }
 
     /**********************************************************
@@ -642,5 +678,21 @@ ERR;
     public function setCommandMessages(array $commandMessages)
     {
         $this->commandMessages = $commandMessages;
+    }
+
+    /**
+     * @return array
+     */
+    public function getCommandAliases(): array
+    {
+        return $this->commandAliases;
+    }
+
+    /**
+     * @param array $commandAliases
+     */
+    public function setCommandAliases(array $commandAliases)
+    {
+        $this->commandAliases = $commandAliases;
     }
 }

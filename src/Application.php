@@ -25,10 +25,11 @@ class Application extends AbstractApplication
      * Register a app group command(by controller)
      * @param string $name The controller name
      * @param string $class The controller class
+     * @param null|array|string $option
      * @return static
      * @throws \InvalidArgumentException
      */
-    public function controller(string $name, string $class = null)
+    public function controller(string $name, string $class = null, $option = null)
     {
         if (!$class && class_exists($name)) {
             /** @var Controller $class */
@@ -53,6 +54,18 @@ class Application extends AbstractApplication
         }
 
         $this->controllers[$name] = $class;
+
+        if (!$option) {
+            return $this;
+        }
+
+        // have option information
+        if (\is_string($option)) {
+            $this->addCommandMessage($name, $option);
+        } elseif (\is_array($option)) {
+            $this->addCommandAliases($name, $option['aliases'] ?? null);
+            $this->addCommandMessage($name, $option['description'] ?? null);
+        }
 
         return $this;
     }
@@ -79,11 +92,11 @@ class Application extends AbstractApplication
      * Register a app independent console command
      * @param string|Command $name
      * @param string|\Closure|Command $handler
-     * @param null|string $description
+     * @param null|array|string $option
      * @return $this
      * @throws \InvalidArgumentException
      */
-    public function command(string $name, $handler = null, $description = null)
+    public function command(string $name, $handler = null, $option = null)
     {
         if (!$handler && class_exists($name)) {
             /** @var Command $name */
@@ -119,8 +132,16 @@ class Application extends AbstractApplication
         // is an class name string
         $this->commands[$name] = $handler;
 
-        if ($description) {
-            $this->addCommandMessage($name, $description);
+        if (!$option) {
+            return $this;
+        }
+
+        // have option information
+        if (\is_string($option)) {
+            $this->addCommandMessage($name, $option);
+        } elseif (\is_array($option)) {
+            $this->addCommandAliases($name, $option['aliases'] ?? null);
+            $this->addCommandMessage($name, $option['description'] ?? null);
         }
 
         return $this;
@@ -231,26 +252,30 @@ class Application extends AbstractApplication
      */
     protected function dispatch($name)
     {
-        $sep = $this->delimiter ?: '/';
+        $sep = $this->delimiter ?: ':';
 
         //// is a command name
 
-        if ($this->isCommand($name)) {
-            return $this->runCommand($name, true);
+        $realName = $this->getRealCommandName($name);
+
+        if ($this->isCommand($realName)) {
+            return $this->runCommand($realName, true);
         }
 
         //// is a controller name
 
         $action = '';
 
-        // like 'home/index'
+        // like 'home:index'
         if (strpos($name, $sep) > 0) {
             $input = array_filter(explode($sep, $name));
             list($name, $action) = \count($input) > 2 ? array_splice($input, 2) : $input;
         }
 
-        if ($this->isController($name)) {
-            return $this->runAction($name, $action, true);
+        $realName = $this->getRealCommandName($name);
+
+        if ($this->isController($realName)) {
+            return $this->runAction($realName, $action, true);
         }
 
         // command not found

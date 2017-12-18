@@ -320,7 +320,6 @@ abstract class AbstractCommand implements CommandInterface
      * @param string $method
      * @param null|string $action
      * @return int
-     * @throws \ReflectionException
      */
     protected function showHelpByMethodAnnotation($method, $action = null)
     {
@@ -391,7 +390,7 @@ abstract class AbstractCommand implements CommandInterface
     /**
      * @return string
      */
-    final public static function getDescription(): ?string
+    final public static function getDescription()
     {
         return static::$description;
     }
