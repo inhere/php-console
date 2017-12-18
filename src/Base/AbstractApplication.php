@@ -681,11 +681,16 @@ ERR;
     }
 
     /**
+     * @param null|string $name
      * @return array
      */
-    public function getCommandAliases(): array
+    public function getCommandAliases($name = null): array
     {
-        return $this->commandAliases;
+        if (!$name) {
+            return $this->commandAliases;
+        }
+
+        return array_keys($this->commandAliases, $name, true);
     }
 
     /**
