@@ -1,6 +1,6 @@
 <?php
 
-namespace Inhere\Console\Examples;
+namespace Inhere\Console\Examples\Controllers;
 
 use Inhere\Console\Controller;
 use Inhere\Console\IO\Input;
@@ -13,7 +13,7 @@ use Inhere\Console\Utils\Show;
 /**
  * default command controller. there are some command usage examples(1)
  * Class HomeController
- * @package Inhere\Console\examples
+ * @package Inhere\Console\Examples\Controllers
  */
 class HomeController extends Controller
 {

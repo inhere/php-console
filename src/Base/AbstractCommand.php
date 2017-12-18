@@ -13,7 +13,7 @@ use Inhere\Console\IO\Input;
 use Inhere\Console\IO\InputDefinition;
 use Inhere\Console\IO\Output;
 use Inhere\Console\Traits\InputOutputAwareTrait;
-use Inhere\Console\Traits\UserInteractTrait;
+use Inhere\Console\Traits\UserInteractAwareTrait;
 use Inhere\Console\Utils\Annotation;
 
 /**
@@ -22,7 +22,7 @@ use Inhere\Console\Utils\Annotation;
  */
 abstract class AbstractCommand implements BaseCommandInterface
 {
-    use InputOutputAwareTrait, UserInteractTrait;
+    use InputOutputAwareTrait, UserInteractAwareTrait;
 
     const OK = 0;
     // name -> {name}

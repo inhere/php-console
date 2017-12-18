@@ -74,7 +74,7 @@ final class Download
     public function start()
     {
         if (!$this->url || !$this->saveAs) {
-            Show::error("Please the property 'url' and 'saveAs'.", 1);
+            Show::liteError("Please the property 'url' and 'saveAs'.", 1);
         }
 
         $ctx = stream_context_create();
@@ -92,24 +92,13 @@ final class Download
             Show::write("\nDone!");
         } else {
             $err = error_get_last();
-            Show::error("\nErr.rrr..orr...\n {$err['message']}\n", 1);
+            Show::liteError("\nErr.rrr..orr...\n {$err['message']}\n", 1);
         }
 
         $this->fileSize = null;
 
         return $this;
     }
-
-    /*
-     progressBar() OUT:
-    Connected...
-    Mime-type: text/html; charset=utf-8
-    Being redirected to: http://no2.php.net/distributions/php-5.2.5.tar.bz2
-    Connected...
-    FileSize: 7773024
-    Mime-type: application/octet-stream
-    [========================================>                                                           ] 40% (3076/7590 kb)
-    */
 
     /**
      * @param int $notifyCode stream notify code
@@ -240,7 +229,16 @@ final class Download
     }
 
     /*
-     progressText() OUT:
+    progressBar() OUT:
+    Connected...
+    Mime-type: text/html; charset=utf-8
+    Being redirected to: http://no2.php.net/distributions/php-5.2.5.tar.bz2
+    Connected...
+    FileSize: 7773024
+    Mime-type: application/octet-stream
+    [========================================>                                                           ] 40% (3076/7590 kb)
+
+    progress Text OUT:
     Connected...
     Found the mime-type: text/html; charset=utf-8
     Being redirected to: http://no.php.net/contact

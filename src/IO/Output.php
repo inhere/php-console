@@ -9,7 +9,7 @@
 namespace Inhere\Console\IO;
 
 use Inhere\Console\Style\Style;
-use Inhere\Console\Traits\FormatOutputTrait;
+use Inhere\Console\Traits\FormatOutputAwareTrait;
 use Inhere\Console\Utils\Helper;
 use Inhere\Console\Utils\Show;
 
@@ -19,7 +19,7 @@ use Inhere\Console\Utils\Show;
  */
 class Output implements OutputInterface
 {
-    use FormatOutputTrait;
+    use FormatOutputAwareTrait;
 
     /**
      * 正常输出流
@@ -53,9 +53,47 @@ class Output implements OutputInterface
         $this->getStyle();
     }
 
-/////////////////////////////////////////////////////////////////
-/// Output Message
-/////////////////////////////////////////////////////////////////
+    /***************************************************************************
+     * Output buffer
+     ***************************************************************************/
+
+    /**
+     * start buffering
+     */
+    public function startBuffer()
+    {
+        Show::startBuffer();
+    }
+
+    /**
+     * clear buffering
+     */
+    public function clearBuffer()
+    {
+        Show::clearBuffer();
+    }
+
+    /**
+     * stop buffering and flush buffer text
+     * {@inheritdoc}
+     */
+    public function stopBuffer($nl = true, $quit = false, array $opts = [])
+    {
+        Show::stopBuffer($nl, $quit, $opts);
+    }
+
+    /**
+     * stop buffering and flush buffer text
+     * {@inheritdoc}
+     */
+    public function flush($nl = true, $quit = false, array $opts = [])
+    {
+        $this->stopBuffer($nl, $quit, $opts);
+    }
+
+    /***************************************************************************
+     * Output Message
+     ***************************************************************************/
 
     /**
      * 读取输入信息
@@ -87,9 +125,9 @@ class Output implements OutputInterface
         return $this;
     }
 
-/////////////////////////////////////////////////////////////////
-/// Getter/Setter
-/////////////////////////////////////////////////////////////////
+    /***************************************************************************
+     * Getter/Setter
+     ***************************************************************************/
 
     /**
      * @return Style

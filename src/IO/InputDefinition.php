@@ -15,6 +15,13 @@ namespace Inhere\Console\IO;
  */
 class InputDefinition
 {
+    /** @var array  */
+    private static $defaultArgOptConfig = [
+        'mode' => null,
+        'description' => '',
+        'default' => null,
+    ];
+
     private $example;
     private $description;
 
@@ -23,19 +30,22 @@ class InputDefinition
      */
     private $arguments;
     private $requiredCount = 0;
-    private $hasAnArrayArgument = false;
     private $hasOptional = false;
+    private $hasAnArrayArgument = false;
 
     /**
      * @var array[]
      */
     private $options;
 
-    /**
-     * @var array
-     */
+    /** @var array */
     private $shortcuts;
 
+    /**
+     * @param array $arguments
+     * @param array $options
+     * @return InputDefinition
+     */
     public static function make(array $arguments = [], array $options = [])
     {
         return new self($arguments, $options);
@@ -71,14 +81,8 @@ class InputDefinition
      */
     public function addArguments(array $arguments)
     {
-        $def = [
-            'mode' => null,
-            'description' => '',
-            'default' => null,
-        ];
-
         foreach ($arguments as $name => $arg) {
-            $arg = array_merge($def, $arg);
+            $arg = $this->mergeArgOptConfig($arg);
             $this->addArgument($name, $arg['mode'], $arg['description'], $arg['default']);
         }
 
@@ -224,14 +228,8 @@ class InputDefinition
      */
     public function addOptions(array $options = [])
     {
-        $def = [
-            'mode' => null,
-            'description' => '',
-            'default' => null,
-        ];
-
         foreach ($options as $name => $opt) {
-            $opt = array_merge($def, $opt);
+            $opt = $this->mergeArgOptConfig($opt);
             $this->addOption($name, $opt['mode'], $opt['description'], $opt['default']);
         }
     }
@@ -386,6 +384,15 @@ class InputDefinition
         }
 
         return $this->shortcuts[$shortcut];
+    }
+
+    /**
+     * @param array $map
+     * @return array
+     */
+    private function mergeArgOptConfig(array $map)
+    {
+        return array_merge(self::$defaultArgOptConfig, $map);
     }
 
     /**

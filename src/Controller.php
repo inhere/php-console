@@ -193,20 +193,22 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
             $usage = "$script {$name}<info>{command}</info> [arguments] [options]";
         }
 
+        $this->output->startBuffer();
+        $this->output->write(ucfirst($classDes) . PHP_EOL);
         $this->output->mList([
-            'Description:' => $classDes,
             'Usage:' => $usage,
             //'Group Name:' => "<info>$sName</info>",
-            'Commands:' => $commands,
             'Options:' => [
                 '-h,--help' => 'Show help of the command group or specified command action',
             ],
+            'Commands:' => $commands,
         ]);
 
         $this->write(sprintf(
             "More information about a command, please use: <cyan>$script $name{command} -h</cyan>",
             $this->standAlone ? ' ' . $name : ''
         ));
+        $this->output->flush();
     }
 
     /**

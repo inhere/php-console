@@ -58,6 +58,12 @@ class Show
     const HELP_EXAMPLES = 'examples';
     const HELP_EXTRAS = 'extras';
 
+    /** @var string */
+    private static $buffer;
+
+    /** @var bool */
+    private static $buffering = false;
+
     /**
      * @var array
      */
@@ -981,9 +987,83 @@ class Show
         return $bar;
     }
 
-/////////////////////////////////////////////////////////////////
-/// Helper Method
-/////////////////////////////////////////////////////////////////
+    /***********************************************************************************
+     * Output buffer
+     ***********************************************************************************/
+
+    /**
+     * @return bool
+     */
+    public static function isBuffering(): bool
+    {
+        return self::$buffering;
+    }
+
+    /**
+     * @return string
+     */
+    public static function getBuffer()
+    {
+        return self::$buffer;
+    }
+
+    /**
+     * @param string $buffer
+     */
+    public static function setBuffer(string $buffer)
+    {
+        self::$buffer = $buffer;
+    }
+
+    /**
+     * start buffering
+     */
+    public static function startBuffer()
+    {
+        self::$buffering = true;
+    }
+
+    /**
+     * start buffering
+     */
+    public static function clearBuffer()
+    {
+        self::$buffer = null;
+    }
+
+    /**
+     * stop buffering and Flush buffer to output stream
+     * @see Show::write()
+     * @param bool $nl
+     * @param bool $quit
+     * @param array $opts
+     */
+    public static function stopBuffer($nl = true, $quit = false, array $opts = [])
+    {
+        self::$buffering = false;
+
+        if (self::$buffer) {
+            self::write(self::$buffer, $nl, $quit, $opts);
+        }
+
+        self::$buffer = null;
+    }
+
+    /**
+     * stop buffering and flush buffer text
+     * @see Show::write()
+     * @param bool $nl
+     * @param bool $quit
+     * @param array $opts
+     */
+    public static function flushBuffer($nl = true, $quit = false, array $opts = [])
+    {
+        self::stopBuffer($nl, $quit, $opts);
+    }
+
+    /***********************************************************************************
+     * Helper methods
+     ***********************************************************************************/
 
     /**
      * @return Style
@@ -1002,7 +1082,7 @@ class Show
      * [
      *     'color' => bool, // whether render color, default is: True.
      *     'stream' => resource, // the stream resource, default is: STDOUT
-     *     'flush' => flush, // flush the stream data, default is: True
+     *     'flush' => bool, // flush the stream data, default is: True
      * ]
      * @return int
      */
@@ -1016,6 +1096,12 @@ class Show
 
         if (!isset($opts['color']) || $opts['color']) {
             $messages = static::getStyle()->render($messages);
+        }
+
+        // if open buffer.
+        if (self::isBuffering()) {
+            self::$buffer .= $messages . ($nl ? PHP_EOL : '');
+            return 0;
         }
 
         $stream = $opts['stream'] ?? STDOUT;

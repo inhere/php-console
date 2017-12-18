@@ -13,7 +13,7 @@ use Inhere\Console\Utils\Helper;
 use Inhere\Console\Utils\Show;
 
 /**
- * Class FormatOutputTrait
+ * Class FormatOutputAwareTrait
  * @package Inhere\Console\Traits
  *
  * @method int info($messages, $quit = false)
@@ -34,7 +34,7 @@ use Inhere\Console\Utils\Show;
  * @method int liteDanger($messages, $quit = false)
  * @method int liteError($messages, $quit = false)
  */
-trait FormatOutputTrait
+trait FormatOutputAwareTrait
 {
     /**
      * @inheritdoc

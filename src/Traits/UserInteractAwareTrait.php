@@ -11,7 +11,7 @@ namespace Inhere\Console\Traits;
 use Inhere\Console\Utils\Interact;
 
 /**
- * Class UserInteractTrait
+ * Class UserInteractAwareTrait
  * @package Inhere\Console\Traits
  * @see Interact
  *
@@ -22,7 +22,7 @@ use Inhere\Console\Utils\Interact;
  * @method string promptSilent(string $prompt = 'Enter Password:')
  * @method string askPassword(string $prompt = 'Enter Password:')
  */
-trait UserInteractTrait
+trait UserInteractAwareTrait
 {
     /**
      * @inheritdoc

@@ -9,13 +9,14 @@
  */
 
 use Inhere\Console\BuiltIn\PharController;
-use Inhere\Console\Examples\HomeController;
-use Inhere\Console\Examples\TestCommand;
+use Inhere\Console\Examples\Commands\DemoCommand;
+use Inhere\Console\Examples\Controllers\HomeController;
+use Inhere\Console\Examples\Commands\TestCommand;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
 use Inhere\Console\Utils\ProgressBar;
 
-$app->command(\Inhere\Console\Examples\DemoCommand::class);
+$app->command(DemoCommand::class);
 $app->command('exam', function (Input $in, Output $out) {
     $cmd = $in->getCommand();
 

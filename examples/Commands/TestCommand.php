@@ -6,12 +6,13 @@
  * Time: 18:58
  */
 
-namespace Inhere\Console\Examples;
+namespace Inhere\Console\Examples\Commands;
 
 use Inhere\Console\Command;
 
 /**
  * Class Test
+ * @package Inhere\Console\Examples\Commands
  */
 class TestCommand extends Command
 {
@@ -26,6 +27,8 @@ class TestCommand extends Command
      * @options
      * --long,-s option description 1
      * --opt    option description 2
+     * @param $input
+     * @param $output
      */
     public function execute($input, $output)
     {
