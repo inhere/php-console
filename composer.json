@@ -1,7 +1,7 @@
 {
   "name": "inhere/console",
   "type": "library",
-  "description": "a php console library, provide console argument parse,color style,user interactive, information show.",
+  "description": "a php console library, provide console argument parse, console controller/command run, color style, user interactive, information show.",
   "keywords": ["library","console","console-color", "command", "command-line", "cli", "console-application"],
   "homepage": "https://github.com/inhere/php-console",
   "license": "MIT",
