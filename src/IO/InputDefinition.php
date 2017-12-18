@@ -419,7 +419,7 @@ class InputDefinition
                     );
                 }
 
-                $shortcut = $option['shortcut'] ? sprintf('-%s|', $option['shortcut']) : '';
+                $shortcut = $option['shortcut'] ? sprintf('-%s, ', $option['shortcut']) : '';
                 $elements[] = sprintf('[%s--%s%s]', $shortcut, $name, $value);
 
                 $key = "{$shortcut}--{$name}";
@@ -449,7 +449,7 @@ class InputDefinition
             $args[$name] = $des;
         }
 
-        $opts['-h|--help'] = 'Show help information for the command';
+        $opts['-h, --help'] = 'Show help information for the command';
 
         return [
             'description' => $this->description,
