@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: inhere
@@ -10,7 +11,6 @@ namespace Inhere\Console\Components;
 
 /**
  * Class AutoCompletion - a simple command auto-completion tool
- *
  * @todo not available
  * @package Inhere\Console\Components
  */
@@ -20,7 +20,6 @@ class AutoCompletion
      * @var callable
      */
     private $matcher;
-
     /**
      * @var array
      */
@@ -34,7 +33,6 @@ class AutoCompletion
     public function __construct(array $data = [], $enable = true)
     {
         $this->data = $data;
-
         if ($enable) {
             $this->register();
         }
@@ -52,7 +50,6 @@ class AutoCompletion
      * The readline_completion_function callback handler.
      * @param string $input the user input
      * @param $index
-     *
      * @return array
      */
     public function completionHandler($input, $index)
@@ -61,14 +58,11 @@ class AutoCompletion
         $line = substr($info['line_buffer'], 0, $info['end']);
         $tokens = token_get_all('<?php ' . $line);
         $input = trim($input);
-
         if (!$input) {
             return $this->data;
         }
-
         $matches = [];
         $matcher = $this->matcher;
-
         foreach ($this->data as $item) {
             if ($matcher && $matcher($input, $item)) {
                 $matches[] = $item;
@@ -76,12 +70,11 @@ class AutoCompletion
                 $matches[] = $item;
             }
         }
-
         if (!$matches) {
             return [];
         }
-
         $matches = array_unique($matches);
+
         return $matches ?: [''];
     }
 
@@ -114,7 +107,7 @@ class AutoCompletion
     /**
      * @return array
      */
-    public function getData(): array
+    public function getData()
     {
         return $this->data;
     }

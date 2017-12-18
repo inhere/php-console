@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: inhere
@@ -16,35 +17,28 @@ use Inhere\Console\Style\LiteStyle;
  */
 class LiteApplication
 {
-
-///////////////////////////////////////////////////////////////////
-/// simple cli support
-///////////////////////////////////////////////////////////////////
-
+    ///////////////////////////////////////////////////////////////////
+    /// simple cli support
+    ///////////////////////////////////////////////////////////////////
     /**
      * parse from `name=val var2=val2`
      * @var array
      */
     private $args = [];
-
     /**
      * parse from `--name=val --var2=val2 -d`
      * @var array
      */
     private $opts = [];
-
     /** @var string */
     private $script = '';
-
     /** @var string */
     private $command = '';
-
     /**
      * user add commands
      * @var array
      */
     private $commands = [];
-
     /**
      * description message for the command
      * @var array
@@ -57,12 +51,10 @@ class LiteApplication
     public function run($exit = true)
     {
         $this->parseCliArgv();
-
         if (isset($this->args[0])) {
             $this->command = $this->args[0];
             unset($this->args[0]);
         }
-
         $this->dispatch($exit);
     }
 
@@ -71,12 +63,10 @@ class LiteApplication
      */
     public function dispatch($exit = true)
     {
-        if (!$command = $this->command) {
+        if (!($command = $this->command)) {
             $this->showCommands();
         }
-
         $status = 0;
-
         try {
             if (isset($this->commands[$command])) {
                 $status = $this->runHandler($command, $this->commands[$command]);
@@ -86,7 +76,6 @@ class LiteApplication
         } catch (\Throwable $e) {
             $status = $this->handleException($e);
         }
-
         if ($exit) {
             $this->stop($status);
         }
@@ -113,23 +102,19 @@ class LiteApplication
             if (\function_exists($handler)) {
                 return $handler($this);
             }
-
             if (class_exists($handler)) {
-                $handler = new $handler;
-
+                $handler = new $handler();
                 // $handler->execute()
                 if (method_exists($handler, 'execute')) {
                     return $handler->execute($this);
                 }
             }
         }
-
         // a \Closure OR $handler->__invoke()
         if (method_exists($handler, '__invoke')) {
             return $handler($this);
         }
-
-        throw new \InvalidArgumentException("Invalid handler of the command: $command");
+        throw new \InvalidArgumentException("Invalid handler of the command: {$command}");
     }
 
     /**
@@ -139,15 +124,7 @@ class LiteApplication
     protected function handleException(\Throwable $e)
     {
         $code = $e->getCode() !== 0 ? $e->getCode() : 133;
-
-        printf(
-            "Exception(%d): %s\nFile: %s(Line %d)\nTrace:\n%s\n",
-            $code,
-            $e->getMessage(),
-            $e->getFile(),
-            $e->getLine(),
-            $e->getTraceAsString()
-        );
+        printf("Exception(%d): %s\nFile: %s(Line %d)\nTrace:\n%s\n", $code, $e->getMessage(), $e->getFile(), $e->getLine(), $e->getTraceAsString());
 
         return $code;
     }
@@ -160,16 +137,13 @@ class LiteApplication
         /** @var array $argv */
         $argv = $_SERVER['argv'];
         $this->script = array_shift($argv);
-
         foreach ($argv as $key => $value) {
             // opts
             if (strpos($value, '-') === 0) {
                 $value = trim($value, '-');
-
                 if (!$value) {
                     continue;
                 }
-
                 if (strpos($value, '=')) {
                     list($n, $v) = explode('=', $value);
                     $this->opts[$n] = $v;
@@ -198,7 +172,6 @@ class LiteApplication
         if (!$command || !$handler) {
             throw new \InvalidArgumentException('Invalid arguments');
         }
-
         $this->commands[$command] = $handler;
         $this->messages[$command] = trim($description);
     }
@@ -210,39 +183,32 @@ class LiteApplication
     {
         foreach ($commands as $command => $handler) {
             $des = '';
-
             if (\is_array($handler)) {
                 $conf = array_values($handler);
                 $handler = $conf[0];
-                $des = $conf[1] ?? '';
+                $des = isset($conf[1]) ? $conf[1] : '';
             }
-
             $this->addCommand($command, $handler, $des);
         }
     }
-
-///////////////////////////////////////////////////////////////////////////////////
-///  helper methods
-///////////////////////////////////////////////////////////////////////////////////
-
+    ///////////////////////////////////////////////////////////////////////////////////
+    ///  helper methods
+    ///////////////////////////////////////////////////////////////////////////////////
     /**
      * @param string $err
      */
     public function showCommands($err = '')
     {
         if ($err) {
-            echo LiteStyle::color("<red>ERROR</red>: $err\n\n");
+            echo LiteStyle::color("<red>ERROR</red>: {$err}\n\n");
         }
-
         $commandWidth = 12;
         $help = "Welcome to the Lite Console Application.\n\n<comment>Available Commands:</comment>\n";
-
         foreach ($this->messages as $command => $desc) {
             $command = str_pad($command, $commandWidth, ' ');
             $desc = $desc ?: 'No description for the command';
-            $help .= "  $command   $desc\n";
+            $help .= "  {$command}   {$desc}\n";
         }
-
         echo LiteStyle::color($help) . PHP_EOL;
         exit(0);
     }
@@ -254,7 +220,7 @@ class LiteApplication
      */
     public function getArg($name, $default = null)
     {
-        return $this->args[$name] ?? $default;
+        return isset($this->args[$name]) ? $this->args[$name] : $default;
     }
 
     /**
@@ -264,17 +230,15 @@ class LiteApplication
      */
     public function getOpt($name, $default = null)
     {
-        return $this->opts[$name] ?? $default;
+        return isset($this->opts[$name]) ? $this->opts[$name] : $default;
     }
-
-///////////////////////////////////////////////////////////////////////////////////
-///  getter/setter methods
-///////////////////////////////////////////////////////////////////////////////////
-
+    ///////////////////////////////////////////////////////////////////////////////////
+    ///  getter/setter methods
+    ///////////////////////////////////////////////////////////////////////////////////
     /**
      * @return array
      */
-    public function getArgs(): array
+    public function getArgs()
     {
         return $this->args;
     }
@@ -290,7 +254,7 @@ class LiteApplication
     /**
      * @return array
      */
-    public function getOpts(): array
+    public function getOpts()
     {
         return $this->opts;
     }
@@ -306,7 +270,7 @@ class LiteApplication
     /**
      * @return string
      */
-    public function getScript(): string
+    public function getScript()
     {
         return $this->script;
     }
@@ -314,7 +278,7 @@ class LiteApplication
     /**
      * @param string $script
      */
-    public function setScript(string $script)
+    public function setScript($script)
     {
         $this->script = $script;
     }
@@ -322,7 +286,7 @@ class LiteApplication
     /**
      * @return string
      */
-    public function getCommand(): string
+    public function getCommand()
     {
         return $this->command;
     }
@@ -330,7 +294,7 @@ class LiteApplication
     /**
      * @param string $command
      */
-    public function setCommand(string $command)
+    public function setCommand($command)
     {
         $this->command = $command;
     }
@@ -338,7 +302,7 @@ class LiteApplication
     /**
      * @return array
      */
-    public function getCommands(): array
+    public function getCommands()
     {
         return $this->commands;
     }
@@ -354,7 +318,7 @@ class LiteApplication
     /**
      * @return array
      */
-    public function getMessages(): array
+    public function getMessages()
     {
         return $this->messages;
     }
@@ -366,5 +330,4 @@ class LiteApplication
     {
         $this->messages = $messages;
     }
-
 }

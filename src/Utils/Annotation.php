@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: inhere
@@ -17,23 +18,18 @@ final class Annotation
     /*
      * 以下三个方法来自 yii2 console/Controller.php
      */
-
     /**
      * Parses the comment block into tags.
-     *
      * @param string $comment The comment block text
      * @return array The parsed tags
      */
     public static function tagList($comment)
     {
-        $comment = "@description \n" . str_replace("\r", '',
-                trim(preg_replace('/^\s*\**( |\t)?/m', '', trim($comment, '/'))));
-
-        $parts = preg_split('/^\s*@/m', $comment, -1, PREG_SPLIT_NO_EMPTY);
+        $comment = "@description \n" . str_replace("\r", '', trim(preg_replace('/^\\s*\\**( |\\t)?/m', '', trim($comment, '/'))));
+        $parts = preg_split('/^\\s*@/m', $comment, -1, PREG_SPLIT_NO_EMPTY);
         $tags = [];
-
         foreach ($parts as $part) {
-            if (preg_match('/^(\w+)(.*)/ms', trim($part), $matches)) {
+            if (preg_match('/^(\\w+)(.*)/ms', trim($part), $matches)) {
                 $name = $matches[1];
                 if (!isset($tags[$name])) {
                     $tags[$name] = trim($matches[2]);
@@ -50,14 +46,12 @@ final class Annotation
 
     /**
      * Returns the first line of docBlock.
-     *
      * @param  $comment
      * @return string
      */
-    public static function firstLine($comment): string
+    public static function firstLine($comment)
     {
-        $docLines = preg_split('~\R~u', $comment);
-
+        $docLines = preg_split('~\\R~u', $comment);
         if (isset($docLines[1])) {
             return trim($docLines[1], "\t *");
         }
@@ -68,15 +62,13 @@ final class Annotation
     /**
      * Returns full description from the doc-block.
      * If have multi line text, will return multi line.
-     *
      * @param  $comment
      * @return string
      */
-    public static function description($comment): string
+    public static function description($comment)
     {
-        $comment = str_replace("\r", '', trim(preg_replace('/^\s*\**( |\t)?/m', '', trim($comment, '/'))));
-
-        if (preg_match('/^\s*@\w+/m', $comment, $matches, PREG_OFFSET_CAPTURE)) {
+        $comment = str_replace("\r", '', trim(preg_replace('/^\\s*\\**( |\\t)?/m', '', trim($comment, '/'))));
+        if (preg_match('/^\\s*@\\w+/m', $comment, $matches, PREG_OFFSET_CAPTURE)) {
             $comment = trim(substr($comment, 0, $matches[0][1]));
         }
 

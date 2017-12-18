@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: inhere
@@ -22,21 +23,16 @@ final class ArgumentOptionParse
 
     /**
      * Parses $GLOBALS['argv'] for parameters and assigns them to an array.
-     *
      * eg:
-     *
      * ```
      * php cli.php server start name=john city=chengdu -s=test --page=23 -d -rf --debug --task=off -y=false -D -e dev -v vvv
      * ```
-     *
      * ```php
      * $result = CommandLineParse::byArgv($_SERVER['argv']);
      * ```
-     *
      * Supports args:
      * <value>
      * arg=<value>
-     *
      * Supports opts:
      * -e
      * -e <value>
@@ -44,67 +40,55 @@ final class ArgumentOptionParse
      * --long-opt
      * --long-opt <value>
      * --long-opt=<value>
-     *
      * @link http://php.net/manual/zh/function.getopt.php#83414
      * @param array $params
      * @param array $noValues List of parameters without values(bool option keys)
      * @param bool $mergeOpts Whether merge short-opts and long-opts
      * @return array
      */
-    public static function byArgv(array $params, array $noValues = [], $mergeOpts = false): array
+    public static function byArgv(array $params, array $noValues = [], $mergeOpts = false)
     {
         $args = $sOpts = $lOpts = [];
-
         // each() will deprecated at 7.2. so,there use current and next instead it.
         // while (list(,$p) = each($params)) {
         while (false !== ($p = current($params))) {
             next($params);
-
             // is options
-            if ($p{0} === '-') {
+            if ($p[0] === '-') {
                 $isLong = false;
                 $opt = substr($p, 1);
                 $value = true;
-
                 // long-opt: (--<opt>)
-                if ($opt{0} === '-') {
+                if ($opt[0] === '-') {
                     $isLong = true;
                     $opt = substr($opt, 1);
-
                     // long-opt: value specified inline (--<opt>=<value>)
                     if (strpos($opt, '=') !== false) {
                         list($opt, $value) = explode('=', $opt, 2);
                     }
-
                     // short-opt: value specified inline (-<opt>=<value>)
-                } elseif (\strlen($opt) > 2 && $opt{1} === '=') {
+                } elseif (\strlen($opt) > 2 && $opt[1] === '=') {
                     list($opt, $value) = explode('=', $opt, 2);
                 }
-
                 // check if next parameter is a descriptor or a value
                 $nxp = current($params);
-
                 // fix: allow empty string ''
-                if ($value === true && $nxp !== false && (!$nxp || $nxp{0} !== '-') && !\in_array($opt, $noValues, true)) {
+                if ($value === true && $nxp !== false && (!$nxp || $nxp[0] !== '-') && !\in_array($opt, $noValues, true)) {
                     // list(,$value) = each($params);
                     $value = current($params);
                     next($params);
-
                     // short-opt: bool opts. like -e -abc
                 } elseif (!$isLong && $value === true) {
                     foreach (str_split($opt) as $char) {
                         $sOpts[$char] = true;
                     }
-
                     continue;
                 }
-
                 if ($isLong) {
                     $lOpts[$opt] = self::filterBool($value);
                 } else {
                     $sOpts[$opt] = self::filterBool($value);
                 }
-
                 // arguments: param doesn't belong to any option, define it is args
             } else {
                 // value specified inline (<arg>=<value>)
@@ -116,7 +100,6 @@ final class ArgumentOptionParse
                 }
             }
         }
-
         if ($mergeOpts) {
             return [$args, array_merge($sOpts, $lOpts)];
         }
@@ -126,7 +109,6 @@ final class ArgumentOptionParse
 
     /**
      * parse custom array params
-     *
      * ```php
      * $result = CommandLineParse::byArray([
      *  'arg' => 'val',
@@ -134,19 +116,16 @@ final class ArgumentOptionParse
      *  '--s' => 'val3',
      * ]);
      * ```
-     *
      * @param array $params
      * @return array
      */
     public static function byArray(array $params)
     {
         $args = $sOpts = $lOpts = [];
-
         foreach ($params as $key => $value) {
             if ($key === '--' || $key === '-') {
                 continue;
             }
-
             if (0 === strpos($key, '--')) {
                 $lOpts[substr($key, 2)] = $value;
             } elseif ('-' === $key[0]) {
@@ -160,16 +139,14 @@ final class ArgumentOptionParse
     }
 
     /**
-     *
      * ```php
      * $result = CommandLineParse::byString('foo --bar="foobar"');
      * ```
      * @todo ...
      * @param string $string
      */
-    public static function byString(string $string)
+    public static function byString($string)
     {
-
     }
 
     /**
@@ -183,15 +160,12 @@ final class ArgumentOptionParse
             if (\is_bool($val) || is_numeric($val)) {
                 return $val;
             }
-
             $tVal = strtolower($val);
-
             // check it is a bool value.
-            if (false !== strpos(self::TRUE_WORDS, "|$tVal|")) {
+            if (false !== strpos(self::TRUE_WORDS, "|{$tVal}|")) {
                 return true;
             }
-
-            if (false !== strpos(self::FALSE_WORDS, "|$tVal|")) {
+            if (false !== strpos(self::FALSE_WORDS, "|{$tVal}|")) {
                 return false;
             }
         }
@@ -201,12 +175,11 @@ final class ArgumentOptionParse
 
     /**
      * Escapes a token through escapeshellarg if it contains unsafe chars.
-     *
      * @param string $token
      * @return string
      */
     public static function escapeToken($token)
     {
-        return preg_match('{^[\w-]+$}', $token) ? $token : escapeshellarg($token);
+        return preg_match('{^[\\w-]+$}', $token) ? $token : escapeshellarg($token);
     }
 }

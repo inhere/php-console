@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: inhere
@@ -23,23 +24,20 @@ use Inhere\Console\Utils\Annotation;
 abstract class AbstractCommand implements CommandInterface
 {
     use InputOutputTrait, UserInteractTrait;
-
     // name -> {$name}
-    const ANNOTATION_VAR = '{%s}'; // '{$%s}';
-
+    const ANNOTATION_VAR = '{%s}';
+    // '{$%s}';
     /**
      * command name e.g 'test' 'test:one'
      * @var string
      */
     protected static $name = '';
-
     /**
      * command/controller description message
      * please use the property setting current controller/command description
      * @var string
      */
     protected static $description = '';
-
     /**
      * Allow display message tags in the command annotation
      * @var array
@@ -52,13 +50,10 @@ abstract class AbstractCommand implements CommandInterface
         'options' => true,
         'example' => true,
     ];
-
     /** @var Application */
     protected $app;
-
-    /** @var InputDefinition|null  */
+    /** @var InputDefinition|null */
     private $definition;
-
     /** @var string */
     private $processTitle;
 
@@ -72,11 +67,9 @@ abstract class AbstractCommand implements CommandInterface
     {
         $this->input = $input;
         $this->output = $output;
-
         if ($definition) {
             $this->definition = $definition;
         }
-
         $this->init();
     }
 
@@ -112,18 +105,11 @@ abstract class AbstractCommand implements CommandInterface
     public function annotationVars()
     {
         // e.g: `more info see {name}/index`
-        return [
-            'script' => $this->input->getScript(),
-            'command' => $this->input->getCommand(),
-            'fullCommand' => $this->input->getScript() . ' ' . $this->input->getCommand(),
-            'name' => self::getName(),
-        ];
+        return ['script' => $this->input->getScript(), 'command' => $this->input->getCommand(), 'fullCommand' => $this->input->getScript() . ' ' . $this->input->getCommand(), 'name' => self::getName()];
     }
-
     /**************************************************************************
      * running a command
      **************************************************************************/
-
     /**
      * run command
      * @param string $command
@@ -133,19 +119,15 @@ abstract class AbstractCommand implements CommandInterface
     {
         // load input definition configure
         $this->configure();
-
         if ($this->input->sameOpt(['h', 'help'])) {
             return $this->showHelp();
         }
-
         if (true !== $this->prepare()) {
             return -1;
         }
-
         if (true !== $this->beforeExecute()) {
             return -1;
         }
-
         $status = $this->execute($this->input, $this->output);
         $this->afterExecute();
 
@@ -167,7 +149,7 @@ abstract class AbstractCommand implements CommandInterface
      * @param  Output $output
      * @return int
      */
-    abstract protected function execute($input, $output);
+    protected abstract function execute($input, $output);
 
     /**
      * after command execute
@@ -210,8 +192,8 @@ abstract class AbstractCommand implements CommandInterface
                 }
             } elseif (\function_exists('setproctitle')) {
                 setproctitle($this->processTitle);
-//            } elseif (isDebug) {
-//                $output->writeln('<comment>Install the proctitle PECL to be able to change the process title.</comment>');
+                //            } elseif (isDebug) {
+                //                $output->writeln('<comment>Install the proctitle PECL to be able to change the process title.</comment>');
             }
         }
 
@@ -225,13 +207,11 @@ abstract class AbstractCommand implements CommandInterface
      */
     public function validateInput()
     {
-        if (!$def = $this->definition) {
+        if (!($def = $this->definition)) {
             return true;
         }
-
         $in = $this->input;
         $givenArgs = $errArgs = [];
-
         foreach ($in->getArgs() as $key => $value) {
             if (\is_int($key)) {
                 $givenArgs[$key] = $value;
@@ -239,38 +219,31 @@ abstract class AbstractCommand implements CommandInterface
                 $errArgs[] = $key;
             }
         }
-
         if (\count($errArgs) > 0) {
             $this->output->liteError(sprintf('Unknown arguments (error: "%s").', implode(', ', $errArgs)));
 
             return false;
         }
-
         $defArgs = $def->getArguments();
         $missingArgs = array_filter(array_keys($defArgs), function ($name, $key) use ($def, $givenArgs) {
             return !array_key_exists($key, $givenArgs) && $def->argumentIsRequired($name);
         }, ARRAY_FILTER_USE_BOTH);
-
         if (\count($missingArgs) > 0) {
             $this->output->liteError(sprintf('Not enough arguments (missing: "%s").', implode(', ', $missingArgs)));
+
             return false;
         }
-
         $index = 0;
         $args = [];
-
         foreach ($defArgs as $name => $conf) {
-            $args[$name] = $givenArgs[$index] ?? $conf['default'];
+            $args[$name] = isset($givenArgs[$index]) ? $givenArgs[$index] : $conf['default'];
             $index++;
         }
-
         $in->setArgs($args);
-
         // check options
         $opts = $missingOpts = [];
         //$givenLOpts = $in->getLongOpts();
         $defOpts = $def->getOptions();
-
         foreach ($defOpts as $name => $conf) {
             if (!$in->hasLOpt($name)) {
                 if (($srt = $conf['shortcut']) && $in->hasSOpt($srt)) {
@@ -280,24 +253,20 @@ abstract class AbstractCommand implements CommandInterface
                 }
             }
         }
-
         if (\count($missingOpts) > 0) {
             $this->output->liteError(sprintf('Not enough options parameters (missing: "%s").', implode(', ', $missingOpts)));
 
             return false;
         }
-
         if ($opts) {
             $in->setLOpts($opts);
         }
 
         return true;
     }
-
     /**************************************************************************
      * helper methods
      **************************************************************************/
-
     /**
      * 为命令注解提供可解析解析变量. 可以在命令的注释中使用
      * @param string $str
@@ -306,7 +275,6 @@ abstract class AbstractCommand implements CommandInterface
     protected function handleAnnotationVars($str)
     {
         $map = [];
-
         foreach ($this->annotationVars() as $key => $value) {
             $key = sprintf(self::ANNOTATION_VAR, $key);
             $map[$key] = $value;
@@ -326,56 +294,47 @@ abstract class AbstractCommand implements CommandInterface
     {
         $ref = new \ReflectionClass($this);
         $name = $this->input->getCommand();
-
         if (!$ref->hasMethod($method)) {
-            $this->write("The command [<info>$name</info>] don't exist in the group: " . static::getName());
+            $this->write("The command [<info>{$name}</info>] don't exist in the group: " . static::getName());
 
             return 0;
         }
-
         // is a console controller command
         if ($action && !$ref->getMethod($method)->isPublic()) {
-            $this->write("The command [<info>$name</info>] don't allow access in the class.");
+            $this->write("The command [<info>{$name}</info>] don't allow access in the class.");
+
             return 0;
         }
-
         $doc = $ref->getMethod($method)->getDocComment();
         $tags = Annotation::tagList($this->handleAnnotationVars($doc));
-
         foreach ($tags as $tag => $msg) {
             if (!$msg || !\is_string($msg)) {
                 continue;
             }
-
             if (isset(self::$annotationTags[$tag])) {
                 $msg = trim($msg);
-
                 // need multi align
                 // if (self::$annotationTags[$tag]) {
                 // $lines = array_map(function ($line) {
                 //     // return trim($line);
                 //     return $line;
                 // }, explode("\n", $msg));
-
                 // $msg = implode("\n", array_filter($lines, 'trim'));
                 // }
-
                 $tag = ucfirst($tag);
-                $this->write("<comment>$tag:</comment>\n $msg\n");
+                $this->write("<comment>{$tag}:</comment>\n {$msg}\n");
             }
         }
 
         return 0;
     }
-
     /**************************************************************************
      * getter/setter methods
      **************************************************************************/
-
     /**
      * @param string $name
      */
-    public static function setName(string $name)
+    public static function setName($name)
     {
         static::$name = $name;
     }
@@ -383,7 +342,7 @@ abstract class AbstractCommand implements CommandInterface
     /**
      * @return string
      */
-    final public static function getName(): string
+    public static final function getName()
     {
         return static::$name;
     }
@@ -391,7 +350,7 @@ abstract class AbstractCommand implements CommandInterface
     /**
      * @return string
      */
-    final public static function getDescription(): ?string
+    public static final function getDescription()
     {
         return static::$description;
     }
@@ -399,7 +358,7 @@ abstract class AbstractCommand implements CommandInterface
     /**
      * @param string $description
      */
-    public static function setDescription(string $description)
+    public static function setDescription($description)
     {
         static::$description = $description;
     }
@@ -407,7 +366,7 @@ abstract class AbstractCommand implements CommandInterface
     /**
      * @return array
      */
-    public static function getAnnotationTags(): array
+    public static function getAnnotationTags()
     {
         return self::$annotationTags;
     }
@@ -440,7 +399,7 @@ abstract class AbstractCommand implements CommandInterface
     /**
      * @return ApplicationInterface
      */
-    public function getApp(): ApplicationInterface
+    public function getApp()
     {
         return $this->app;
     }
@@ -456,7 +415,7 @@ abstract class AbstractCommand implements CommandInterface
     /**
      * @return string
      */
-    public function getProcessTitle(): string
+    public function getProcessTitle()
     {
         return $this->processTitle;
     }
@@ -464,7 +423,7 @@ abstract class AbstractCommand implements CommandInterface
     /**
      * @param string $processTitle
      */
-    public function setProcessTitle(string $processTitle)
+    public function setProcessTitle($processTitle)
     {
         $this->processTitle = $processTitle;
     }

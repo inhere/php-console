@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: inhere
@@ -15,7 +16,6 @@ use Inhere\Console\Utils\Show;
 /**
  * Class FormatOutputTrait
  * @package Inhere\Console\Traits
- *
  * @method int info($messages, $quit = false)
  * @method int note($messages, $quit = false)
  * @method int notice($messages, $quit = false)
@@ -24,7 +24,6 @@ use Inhere\Console\Utils\Show;
  * @method int warning($messages, $quit = false)
  * @method int danger($messages, $quit = false)
  * @method int error($messages, $quit = false)
- *
  * @method int liteInfo($messages, $quit = false)
  * @method int liteNote($messages, $quit = false)
  * @method int liteNotice($messages, $quit = false)
@@ -40,12 +39,9 @@ trait FormatOutputTrait
      * @inheritdoc
      * @see Show::write()
      */
-    public function write($messages, $nl = true, $quit = false): int
+    public function write($messages, $nl = true, $quit = false)
     {
-        return Show::write($messages, $nl, $quit, [
-            'flush' => true,
-            'stream' => $this->outputStream,
-        ]);
+        return Show::write($messages, $nl, $quit, ['flush' => true, 'stream' => $this->outputStream]);
     }
 
     /**
@@ -175,25 +171,22 @@ trait FormatOutputTrait
     public function __call($method, array $args = [])
     {
         $map = Show::getBlockMethods(false);
-
         if (isset($map[$method])) {
             $msg = $args[0];
-            $quit = $args[1] ?? false;
+            $quit = isset($args[1]) ? $args[1] : false;
             $style = $map[$method];
-
             if (0 === strpos($method, 'lite')) {
                 $type = substr($method, 4);
+
                 return Show::liteBlock($msg, $type === 'Primary' ? 'IMPORTANT' : $type, $style, $quit);
             }
 
             return Show::block($msg, $style === 'primary' ? 'IMPORTANT' : $style, $style, $quit);
         }
-
         if (method_exists(Show::class, $method)) {
             return Show::$method(...$args);
         }
-
-        throw new \LogicException("Call a not exists method: $method of the " . static::class);
+        throw new \LogicException("Call a not exists method: {$method} of the " . static::class);
     }
 
     /**
@@ -204,7 +197,6 @@ trait FormatOutputTrait
     public function json($data, $echo = true)
     {
         $string = json_encode($data, JSON_PRETTY_PRINT);
-
         if ($echo) {
             return Show::write($string);
         }
@@ -223,7 +215,7 @@ trait FormatOutputTrait
     /**
      * @param array ...$vars
      */
-    public function print(...$vars)
+    public function prints(...$vars)
     {
         Show::write(Helper::printVars(...$vars));
     }

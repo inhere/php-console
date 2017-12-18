@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: Inhere
@@ -22,7 +23,7 @@ class Interact extends Show
      * @param  bool $nl true 会添加换行符 false 原样输出，不添加换行符
      * @return string
      */
-    public static function readRow($message = null, $nl = false): string
+    public static function readRow($message = null, $nl = false)
     {
         return self::read($message, $nl);
     }
@@ -37,21 +38,18 @@ class Interact extends Show
      * ]
      * @return string
      */
-    public static function read($message = null, $nl = false, array $opts = []): string
+    public static function read($message = null, $nl = false, array $opts = [])
     {
         if ($message) {
             self::write($message, $nl);
         }
-
-        $stream = $opts['stream'] ?? \STDIN;
+        $stream = isset($opts['stream']) ? $opts['stream'] : \STDIN;
 
         return trim(fgets($stream));
     }
-
     /**************************************************************************************************
      * Interactive method (select/confirm/question/loopAsk)
      **************************************************************************************************/
-
     /**
      * Select one of the options 在多个选项中选择一个
      * @param  string $description 说明
@@ -81,35 +79,28 @@ class Interact extends Show
      */
     public static function choice($description, $options, $default = null, $allowExit = true)
     {
-        if (!$description = trim($description)) {
+        if (!($description = trim($description))) {
             self::error('Please provide a description text!', 1);
         }
-
         $options = \is_array($options) ? $options : explode(',', $options);
-
         // If default option is error
         if (null !== $default && !isset($options[$default])) {
             self::error("The default option [{$default}] don't exists.", true);
         }
-
         if ($allowExit) {
             $options['q'] = 'quit';
         }
-
         beginChoice:
-        $text = " <comment>$description</comment>";
+        $text = " <comment>{$description}</comment>";
         foreach ($options as $key => $value) {
-            $text .= "\n  <info>$key</info>) $value";
+            $text .= "\n  <info>{$key}</info>) {$value}";
         }
-
         $defaultText = $default ? "[default:<comment>{$default}</comment>]" : '';
         $r = self::read($text . "\n You choice{$defaultText} : ");
-
         // error, allow try again once.
         if (!array_key_exists($r, $options)) {
             goto beginChoice;
         }
-
         // exit
         if ($r === 'q') {
             self::write("\n  Quit,ByeBye.", true, true);
@@ -134,28 +125,23 @@ class Interact extends Show
      * @param bool $default Default value
      * @return bool
      */
-    public static function confirm($question, $default = true): bool
+    public static function confirm($question, $default = true)
     {
-        if (!$question = trim($question)) {
+        if (!($question = trim($question))) {
             self::error('Please provide a question text!', 1);
         }
-
         $question = ucfirst(trim($question, '?'));
         $default = (bool)$default;
         $defaultText = $default ? 'yes' : 'no';
-        $message = "<comment>$question ?</comment>\nPlease confirm (yes|no)[default:<info>$defaultText</info>]: ";
-
+        $message = "<comment>{$question} ?</comment>\nPlease confirm (yes|no)[default:<info>{$defaultText}</info>]: ";
         while (true) {
             $answer = self::read($message);
-
             if (empty($answer)) {
                 return $default;
             }
-
             if (0 === stripos($answer, 'y')) {
                 return true;
             }
-
             if (0 === stripos($answer, 'n')) {
                 return false;
             }
@@ -196,13 +182,11 @@ class Interact extends Show
      */
     public static function question($question, $default = null, \Closure $validator = null)
     {
-        if (!$question = trim($question)) {
+        if (!($question = trim($question))) {
             self::error('Please provide a question text!', 1);
         }
-
-        $defaultText = null !== $default ? "(default: <info>$default</info>)" : '';
-        $answer = self::read('<comment>' . ucfirst($question) . "</comment>$defaultText ");
-
+        $defaultText = null !== $default ? "(default: <info>{$default}</info>)" : '';
+        $answer = self::read('<comment>' . ucfirst($question) . "</comment>{$defaultText} ");
         if ('' === $answer) {
             if (null === $default) {
                 self::error('A value is required.');
@@ -212,7 +196,6 @@ class Interact extends Show
 
             return $default;
         }
-
         if ($validator) {
             return $validator($answer) ? $answer : static::question($question, $default, $validator);
         }
@@ -253,59 +236,48 @@ class Interact extends Show
      */
     public static function limitedAsk($question, $default = null, \Closure $validator = null, $times = 3)
     {
-        if (!$question = trim($question)) {
+        if (!($question = trim($question))) {
             self::error('Please provide a question text!', 1);
         }
-
         $result = false;
         $answer = '';
         $question = ucfirst($question);
-        $back = $times = ((int)$times > 6 || $times < 1) ? 3 : (int)$times;
-        $defaultText = null !== $default ? "(default: <info>$default</info>)" : '';
-
+        $back = $times = (int)$times > 6 || $times < 1 ? 3 : (int)$times;
+        $defaultText = null !== $default ? "(default: <info>{$default}</info>)" : '';
         while ($times--) {
             if ($defaultText) {
                 $answer = self::read("<comment>{$question}</comment>{$defaultText} ");
-
                 if ('' === $answer) {
                     $answer = $default;
                     $result = true;
-
                     break;
                 }
             } else {
                 $num = $times + 1;
-                $answer = self::read("<comment>{$question}</comment>\n(You have a [<bold>$num</bold>] chance to enter!) ");
+                $answer = self::read("<comment>{$question}</comment>\n(You have a [<bold>{$num}</bold>] chance to enter!) ");
             }
-
             // If setting verify callback
             if ($validator && ($result = $validator($answer)) === true) {
                 break;
             }
-
             // no setting verify callback
             if (!$validator && $answer !== '') {
                 $result = true;
-
                 break;
             }
         }
-
         if (!$result) {
             if (null !== $default) {
                 return $default;
             }
-
-            self::write("\n  You've entered incorrectly <danger>$back</danger> times in a row. exit!\n", true, 1);
+            self::write("\n  You've entered incorrectly <danger>{$back}</danger> times in a row. exit!\n", true, 1);
         }
 
         return $answer;
     }
-
     /**************************************************************************************************
      * password ask
      **************************************************************************************************/
-
     /**
      * Interactively prompts for input without echoing to the terminal.
      * Requires a bash shell or Windows and won't work with
@@ -315,40 +287,31 @@ class Interact extends Show
      * @link https://stackoverflow.com/questions/187736/command-line-password-prompt-in-php
      * @link http://www.sitepoint.com/blogs/2009/05/01/interactive-cli-password-prompt-in-php
      */
-    public static function promptSilent(string $prompt = 'Enter Password:')
+    public static function promptSilent($prompt = 'Enter Password:')
     {
         $prompt = $prompt ? addslashes($prompt) : 'Enter:';
-
         // $checkCmd = "/usr/bin/env bash -c 'echo OK'";
         // $shell = 'echo $0';
         $checkCmd = "bash -c 'echo OK'";
-
         // linux, unix, git-bash
         if (Helper::runCommand($checkCmd, false) === 'OK') {
             // COMMAND: bash -c 'read -p "Enter Password:" -s user_input && echo $user_input'
             $command = sprintf('bash -c "read -p \'%s\' -s user_input && echo $user_input"', $prompt);
             $password = Helper::runCommand($command, false);
-
             echo "\n";
+
             return $password;
         }
-
         // at windows cmd.
         if (Helper::isWindows()) {
             $vbScript = sys_get_temp_dir() . 'prompt_password.vbs';
-
-            file_put_contents(
-                $vbScript,
-                'wscript.echo(InputBox("' . $prompt . '", "", "password here"))'
-            );
-
+            file_put_contents($vbScript, 'wscript.echo(InputBox("' . $prompt . '", "", "password here"))');
             $command = 'cscript //nologo ' . escapeshellarg($vbScript);
             $password = rtrim(shell_exec($command));
             unlink($vbScript);
 
             return $password;
         }
-
         throw new \RuntimeException('Can not invoke bash shell env');
     }
 
@@ -357,7 +320,7 @@ class Interact extends Show
      * @param string $prompt
      * @return string
      */
-    public static function askHiddenInput(string $prompt = 'Enter Password:')
+    public static function askHiddenInput($prompt = 'Enter Password:')
     {
         return self::promptSilent($prompt);
     }
@@ -367,7 +330,7 @@ class Interact extends Show
      * @param string $prompt
      * @return string
      */
-    public static function askPassword(string $prompt = 'Enter Password:')
+    public static function askPassword($prompt = 'Enter Password:')
     {
         return self::promptSilent($prompt);
     }

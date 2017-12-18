@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: inhere
@@ -12,8 +13,8 @@ use Inhere\Console\Base\AbstractCommand;
 use Inhere\Console\Base\ControllerInterface;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
-use Inhere\Console\Utils\Helper;
 use Inhere\Console\Utils\Annotation;
+use Inhere\Console\Utils\Helper;
 
 /**
  * Class Controller
@@ -23,20 +24,16 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
 {
     /** @var string */
     private $action;
-
-    /** @var string  */
+    /** @var string */
     private $defaultAction = 'help';
-
-    /** @var string  */
+    /** @var string */
     private $actionSuffix = 'Command';
-
-    /** @var string  */
+    /** @var string */
     protected $notFoundCallback = 'notFound';
-
-    /** @var string  */
-    protected $delimiter = ':'; // '/' ':'
-
-    /** @var bool  */
+    /** @var string */
+    protected $delimiter = ':';
+    // '/' ':'
+    /** @var bool */
     private $standAlone = false;
 
     /**
@@ -45,7 +42,7 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
      */
     public function run($command = '')
     {
-        if (!$this->action = trim($command)) {
+        if (!($this->action = trim($command))) {
             return $this->showHelp();
         }
 
@@ -59,9 +56,8 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
     {
         if ($action = $this->action) {
             $method = $action . 'Configure';
-
             if (method_exists($this, $method)) {
-                $this->$method();
+                $this->{$method}();
             }
         }
     }
@@ -77,31 +73,25 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
     {
         $action = Helper::camelCase(trim($this->action ?: $this->defaultAction, $this->delimiter));
         $method = $this->actionSuffix ? $action . ucfirst($this->actionSuffix) : $action;
-
         // the action method exists and only allow access public method.
         if (method_exists($this, $method) && (($rfm = new \ReflectionMethod($this, $method)) && $rfm->isPublic())) {
             // run action
-            $status = $this->$method($input, $output);
-
+            $status = $this->{$method}($input, $output);
             // if you defined the method '$this->notFoundCallback' , will call it
         } elseif (($notFoundCallback = $this->notFoundCallback) && method_exists($this, $notFoundCallback)) {
             $status = $this->{$notFoundCallback}($action);
         } else {
             $group = static::getName();
             $status = -1;
-            $output->liteError("Sorry, The command '$action' not exist of the group '{$group}'!");
-
+            $output->liteError("Sorry, The command '{$action}' not exist of the group '{$group}'!");
             // find similar command names by similar_text()
             $similar = [];
-
             foreach ($this->getAllCommandMethods() as $cmd => $refM) {
                 similar_text($action, $cmd, $percent);
-
                 if (45 <= (int)$percent) {
                     $similar[] = $cmd;
                 }
             }
-
             if ($similar) {
                 $output->write(sprintf("\nMaybe what you mean is:\n    <info>%s</info>", implode(', ', $similar)));
             } else {
@@ -134,20 +124,18 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
      *  {script} {name}/help index
      *  {script} {name}/index -h
      *  {script} {name} index
-     *
      * @return int
      * @throws \ReflectionException
      */
-    final public function helpCommand()
+    public final function helpCommand()
     {
         $action = $this->action;
-
         // show all commands of the controller
         if (!$action && !($action = $this->input->getFirstArg())) {
             $this->showCommandList();
+
             return 0;
         }
-
         $action = Helper::camelCase($action);
         $method = $this->actionSuffix ? $action . ucfirst($this->actionSuffix) : $action;
 
@@ -159,57 +147,43 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
      * show command list of the controller class
      * @throws \ReflectionException
      */
-    final public function showCommandList()
+    public final function showCommandList()
     {
         $ref = new \ReflectionClass($this);
         $sName = lcfirst(self::getName() ?: $ref->getShortName());
-
         if (!($classDes = self::getDescription())) {
             $classDes = Annotation::description($ref->getDocComment()) ?: 'No Description for the console controller';
         }
-
         $commands = [];
         foreach ($this->getAllCommandMethods($ref) as $cmd => $m) {
             $desc = Annotation::firstLine($m->getDocComment());
-
             if ($cmd) {
                 $commands[$cmd] = $desc;
             }
         }
-
         // sort commands
         ksort($commands);
-
         // move 'help' to last.
-        if ($helpCmd = $commands['help'] ?? null) {
+        if ($helpCmd = isset($commands['help']) ? $commands['help'] : null) {
             unset($commands['help']);
             $commands['help'] = $helpCmd;
         }
-
         $script = $this->getScriptName();
-
         if ($this->standAlone) {
             $name = $sName . ' ';
-            $usage = "$script <info>{command}</info> [arguments] [options]";
+            $usage = "{$script} <info>{command}</info> [arguments] [options]";
         } else {
             $name = $sName . $this->delimiter;
-            $usage = "$script {$name}<info>{command}</info> [arguments] [options]";
+            $usage = "{$script} {$name}<info>{command}</info> [arguments] [options]";
         }
-
         $this->output->mList([
             'Description:' => $classDes,
             'Usage:' => $usage,
             //'Group Name:' => "<info>$sName</info>",
             'Commands:' => $commands,
-            'Options:' => [
-                '-h,--help' => 'Show help of the command group or specified command action',
-            ],
+            'Options:' => ['-h,--help' => 'Show help of the command group or specified command action'],
         ]);
-
-        $this->write(sprintf(
-            "More information about a command, please use: <cyan>$script $name{command} -h</cyan>",
-            $this->standAlone ? ' ' . $name : ''
-        ));
+        $this->write(sprintf("More information about a command, please use: <cyan>{$script} {$name}{command} -h</cyan>", $this->standAlone ? ' ' . $name : ''));
     }
 
     /**
@@ -219,30 +193,24 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
     protected function getAllCommandMethods(\ReflectionClass $ref = null)
     {
         $ref = $ref ?: new \ReflectionObject($this);
-
         $suffix = $this->actionSuffix;
         $suffixLen = Helper::strLen($suffix);
-
         foreach ($ref->getMethods() as $m) {
             $mName = $m->getName();
-
-            if ($m->isPublic() && substr($mName, - $suffixLen) === $suffix) {
+            if ($m->isPublic() && substr($mName, -$suffixLen) === $suffix) {
                 // suffix is empty ?
                 $cmd = $suffix ? substr($mName, 0, -$suffixLen) : $mName;
-
-                yield $cmd => $m;
+                (yield $cmd => $m);
             }
         }
     }
-
     /**************************************************************************
      * getter/setter methods
      **************************************************************************/
-
     /**
      * @return string
      */
-    public function getAction(): string
+    public function getAction()
     {
         return $this->action;
     }
@@ -251,7 +219,7 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
      * @param string $action
      * @return $this
      */
-    public function setAction(string $action)
+    public function setAction($action)
     {
         if ($action) {
             $this->action = Helper::camelCase($action);
@@ -263,7 +231,7 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
     /**
      * @return string
      */
-    public function getDefaultAction(): string
+    public function getDefaultAction()
     {
         return $this->defaultAction;
     }
@@ -279,7 +247,7 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
     /**
      * @return string
      */
-    public function getActionSuffix(): string
+    public function getActionSuffix()
     {
         return $this->actionSuffix;
     }
@@ -311,7 +279,7 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
     /**
      * @return bool
      */
-    public function isStandAlone(): bool
+    public function isStandAlone()
     {
         return $this->standAlone;
     }
@@ -327,7 +295,7 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
     /**
      * @return string
      */
-    public function getDelimiter(): string
+    public function getDelimiter()
     {
         return $this->delimiter;
     }
@@ -335,7 +303,7 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
     /**
      * @param string $delimiter
      */
-    public function setDelimiter(string $delimiter)
+    public function setDelimiter($delimiter)
     {
         $this->delimiter = $delimiter;
     }

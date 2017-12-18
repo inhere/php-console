@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: Inhere
@@ -18,7 +19,6 @@ interface InputInterface
     const ARG_REQUIRED = 1;
     const ARG_OPTIONAL = 2;
     const ARG_IS_ARRAY = 4;
-
     const OPT_BOOLEAN = 1;
     const OPT_REQUIRED = 2;
     const OPT_OPTIONAL = 4;
@@ -30,23 +30,23 @@ interface InputInterface
      * @param  bool $nl true 会添加换行符 false 原样输出，不添加换行符
      * @return string
      */
-    public function read($question = null, $nl = false): string;
+    public function read($question = null, $nl = false);
 
     /**
      * @return string
      */
-    public function getScript(): string;
+    public function getScript();
 
     /**
      * @param string $default
      * @return string
      */
-    public function getCommand($default = ''): string;
+    public function getCommand($default = '');
 
     /**
      * @return array
      */
-    public function getArgs(): array;
+    public function getArgs();
 
     /**
      * get Argument
@@ -59,12 +59,12 @@ interface InputInterface
     /**
      * @return array
      */
-    public function getOpts(): array;
+    public function getOpts();
 
     /**
      * @param string $name
      * @param null $default
      * @return bool|mixed|null
      */
-    public function getOpt(string $name, $default = null);
+    public function getOpt($name, $default = null);
 }

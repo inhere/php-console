@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: inhere
@@ -15,12 +16,10 @@ namespace Inhere\Console\Utils;
 class ArtFont
 {
     private static $instance;
-
     /**
      * @var array
      */
     private $artPaths = [];
-
     /**
      * @var array
      */
@@ -29,7 +28,7 @@ class ArtFont
     /**
      * @return self
      */
-    public static function create(): self
+    public static function create()
     {
         if (!self::$instance) {
             self::$instance = new self();
@@ -42,12 +41,11 @@ class ArtFont
      * @param string $name
      * @param array $opts
      */
-    public function draw(string $name, array $opts = [])
+    public function draw($name, array $opts = [])
     {
-
     }
 
-    public function addFont(string $name, string $content)
+    public function addFont($name, $content)
     {
         if ($name && $content) {
             $this->fonts[$name] = $content;
@@ -57,7 +55,7 @@ class ArtFont
     /**
      * @param string $path
      */
-    public function addPath(string $path)
+    public function addPath($path)
     {
         if (file_exists($path)) {
             $this->artPaths[] = $path;
@@ -67,7 +65,7 @@ class ArtFont
     /**
      * @return array
      */
-    public function getArtPaths(): array
+    public function getArtPaths()
     {
         return $this->artPaths;
     }
@@ -85,7 +83,7 @@ class ArtFont
     /**
      * @return array
      */
-    public function getFonts(): array
+    public function getFonts()
     {
         return $this->fonts;
     }

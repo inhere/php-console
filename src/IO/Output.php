@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: Inhere
@@ -20,19 +21,16 @@ use Inhere\Console\Utils\Show;
 class Output implements OutputInterface
 {
     use FormatOutputTrait;
-
     /**
      * 正常输出流
      * Property outStream.
      */
     protected $outputStream = STDOUT;
-
     /**
      * 错误输出流
      * Property errorStream.
      */
     protected $errorStream = STDERR;
-
     /**
      * 控制台窗口(字体/背景)颜色添加处理
      * window colors
@@ -49,21 +47,18 @@ class Output implements OutputInterface
         if ($outputStream) {
             $this->outputStream = $outputStream;
         }
-
         $this->getStyle();
     }
-
-/////////////////////////////////////////////////////////////////
-/// Output Message
-/////////////////////////////////////////////////////////////////
-
+    /////////////////////////////////////////////////////////////////
+    /// Output Message
+    /////////////////////////////////////////////////////////////////
     /**
      * 读取输入信息
      * @param  string $question 若不为空，则先输出文本
      * @param  bool $nl true 会添加换行符 false 原样输出，不添加换行符
      * @return string
      */
-    public function read($question = null, $nl = false): string
+    public function read($question = null, $nl = false)
     {
         if ($question) {
             $this->write($question, $nl);
@@ -81,20 +76,17 @@ class Output implements OutputInterface
     public function stderr($text = '', $nl = true)
     {
         $text = $this->getStyle()->format($text);
-
         fwrite($this->errorStream, $text . ($nl ? "\n" : null));
 
         return $this;
     }
-
-/////////////////////////////////////////////////////////////////
-/// Getter/Setter
-/////////////////////////////////////////////////////////////////
-
+    /////////////////////////////////////////////////////////////////
+    /// Getter/Setter
+    /////////////////////////////////////////////////////////////////
     /**
      * @return Style
      */
-    public function getStyle(): Style
+    public function getStyle()
     {
         if (!$this->style) {
             $this->style = Show::getStyle();
@@ -106,7 +98,7 @@ class Output implements OutputInterface
     /**
      * @return bool
      */
-    public function supportColor(): bool
+    public function supportColor()
     {
         return Helper::isSupportColor();
     }

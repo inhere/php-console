@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: inhere
@@ -21,7 +22,6 @@ trait InputOutputTrait
      * @var Input
      */
     protected $input;
-
     /**
      * @var Output
      */
@@ -30,7 +30,7 @@ trait InputOutputTrait
     /**
      * @return string
      */
-    public function getScriptName(): string
+    public function getScriptName()
     {
         return $this->input->getScript();
     }
@@ -93,7 +93,7 @@ trait InputOutputTrait
      * @param string $msg
      * @return string
      */
-    protected function read($msg = ''): string
+    protected function read($msg = '')
     {
         return $this->input->read($msg);
     }
@@ -104,7 +104,7 @@ trait InputOutputTrait
      * @param bool|int $quit
      * @return int
      */
-    protected function write($message, $nl = true, $quit = false): int
+    protected function write($message, $nl = true, $quit = false)
     {
         return $this->output->write($message, $nl, $quit);
     }
@@ -114,7 +114,7 @@ trait InputOutputTrait
      * @param bool|int $quit
      * @return int
      */
-    protected function writeln($message, $quit = false): int
+    protected function writeln($message, $quit = false)
     {
         return $this->output->write($message, true, $quit);
     }
@@ -122,7 +122,7 @@ trait InputOutputTrait
     /**
      * @return Input
      */
-    public function getInput(): Input
+    public function getInput()
     {
         return $this->input;
     }
@@ -138,7 +138,7 @@ trait InputOutputTrait
     /**
      * @return Output
      */
-    public function getOutput(): Output
+    public function getOutput()
     {
         return $this->output;
     }

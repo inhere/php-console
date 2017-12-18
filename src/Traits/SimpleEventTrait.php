@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: inhere
@@ -20,7 +21,6 @@ trait SimpleEventTrait
      * @var array
      */
     protected static $supportedEvents = [];
-
     /**
      * registered Events
      * @var array
@@ -29,7 +29,6 @@ trait SimpleEventTrait
      * ]
      */
     private static $events = [];
-
     /**
      * events and handlers
      * @var array
@@ -49,7 +48,6 @@ trait SimpleEventTrait
     {
         if (self::isSupportedEvent($event)) {
             self::$eventHandlers[$event][] = $handler;
-
             if (!isset(self::$events[$event])) {
                 self::$events[$event] = (bool)$once;
             }
@@ -77,7 +75,6 @@ trait SimpleEventTrait
         if (!isset(self::$events[$event])) {
             return false;
         }
-
         // call event handlers of the event.
         foreach ((array)self::$eventHandlers[$event] as $cb) {
             // return FALSE to stop go on handle.
@@ -85,7 +82,6 @@ trait SimpleEventTrait
                 break;
             }
         }
-
         // is a once event, remove it
         if (self::$events[$event]) {
             return self::off($event);
@@ -139,10 +135,9 @@ trait SimpleEventTrait
      */
     public static function isSupportedEvent($event)
     {
-        if (!$event || !preg_match('/[a-zA-z][\w-]+/', $event)) {
+        if (!$event || !preg_match('/[a-zA-z][\\w-]+/', $event)) {
             return false;
         }
-
         if ($ets = self::$supportedEvents) {
             return \in_array($event, $ets, true);
         }

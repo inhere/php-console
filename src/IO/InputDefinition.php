@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: inhere
@@ -17,7 +18,6 @@ class InputDefinition
 {
     private $example;
     private $description;
-
     /**
      * @var array[]
      */
@@ -25,12 +25,10 @@ class InputDefinition
     private $requiredCount = 0;
     private $hasAnArrayArgument = false;
     private $hasOptional = false;
-
     /**
      * @var array[]
      */
     private $options;
-
     /**
      * @var array
      */
@@ -43,7 +41,6 @@ class InputDefinition
 
     /**
      * Constructor.
-     *
      * @param array $arguments
      * @param array $options
      */
@@ -71,12 +68,7 @@ class InputDefinition
      */
     public function addArguments(array $arguments)
     {
-        $def = [
-            'mode' => null,
-            'description' => '',
-            'default' => null,
-        ];
-
+        $def = ['mode' => null, 'description' => '', 'default' => null];
         foreach ($arguments as $name => $arg) {
             $arg = array_merge($def, $arg);
             $this->addArgument($name, $arg['mode'], $arg['description'], $arg['default']);
@@ -87,7 +79,6 @@ class InputDefinition
 
     /**
      * Adds an argument.
-     *
      * @param string $name The argument name
      * @param int $mode The argument mode: InputArgument::REQUIRED or InputArgument::OPTIONAL
      * @param string $description A description text
@@ -102,50 +93,35 @@ class InputDefinition
         } elseif (!\is_int($mode) || $mode > 7 || $mode < 1) {
             throw new \InvalidArgumentException(sprintf('Argument mode "%s" is not valid.', $mode));
         }
-
         if (isset($this->arguments[$name])) {
             throw new \LogicException(sprintf('An argument with name "%s" already exists.', $name));
         }
-
         if ($this->hasAnArrayArgument) {
             throw new \LogicException('Cannot add an argument after an array argument.');
         }
-
         if (($required = $mode === Input::ARG_REQUIRED) && $this->hasOptional) {
             throw new \LogicException('Cannot add a required argument after an optional one.');
         }
-
         if ($isArray = ($mode === Input::ARG_IS_ARRAY)) {
             if (!$this->argumentIsAcceptValue($mode)) {
                 throw new \InvalidArgumentException('Impossible to have an option mode ARG_IS_ARRAY if the option does not accept a value.');
             }
-
             $this->hasAnArrayArgument = true;
-
             if (null === $default) {
                 $default = [];
             } elseif (!\is_array($default)) {
                 throw new \LogicException('A default value for an array argument must be an array.');
             }
         }
-
         if ($required) {
             if (null !== $default) {
                 throw new \LogicException('Cannot set a default value except for OPTIONAL-ARGUMENT mode.');
             }
-
             ++$this->requiredCount;
         } else {
             $this->hasOptional = true;
         }
-
-        $this->arguments[$name] = [
-            'mode' => $mode,
-            'required' => $required,
-            'isArray' => $isArray,
-            'description' => $description,
-            'default' => $default,
-        ];
+        $this->arguments[$name] = ['mode' => $mode, 'required' => $required, 'isArray' => $isArray, 'description' => $description, 'default' => $default];
 
         return $this;
     }
@@ -160,7 +136,6 @@ class InputDefinition
         if (!$this->hasArgument($name)) {
             throw new \InvalidArgumentException(sprintf('The "%s" argument does not exist.', $name));
         }
-
         $arguments = \is_int($name) ? array_values($this->arguments) : $this->arguments;
 
         return $arguments[$name];
@@ -204,7 +179,6 @@ class InputDefinition
 
     /**
      * Sets the options
-     *
      * @param array[] $options An array of InputOption objects
      * @throws \LogicException
      * @throws \InvalidArgumentException
@@ -217,19 +191,13 @@ class InputDefinition
 
     /**
      * Adds an array of option
-     *
      * @param array
      * @throws \LogicException
      * @throws \InvalidArgumentException
      */
     public function addOptions(array $options = [])
     {
-        $def = [
-            'mode' => null,
-            'description' => '',
-            'default' => null,
-        ];
-
+        $def = ['mode' => null, 'description' => '', 'default' => null];
         foreach ($options as $name => $opt) {
             $opt = array_merge($def, $opt);
             $this->addOption($name, $opt['mode'], $opt['description'], $opt['default']);
@@ -238,13 +206,11 @@ class InputDefinition
 
     /**
      * Adds an option.
-     *
      * @param string|bool $name The option name, must is a string
      * @param string|array $shortcut The shortcut (can be null)
      * @param int $mode The option mode: One of the Input::OPT_* constants
      * @param string $description A description text
      * @param mixed $default The default value (must be null for InputOption::OPT_BOOL)
-     *
      * @return $this
      * @throws \InvalidArgumentException
      * @throws \LogicException
@@ -254,34 +220,27 @@ class InputDefinition
         if (0 === strpos($name, '--')) {
             $name = substr($name, 2);
         }
-
         if (empty($name)) {
             throw new \InvalidArgumentException('An option name cannot be empty.');
         }
-
         if (empty($shortcut)) {
             $shortcut = null;
         }
-
         if (null === $mode) {
             $mode = Input::OPT_BOOLEAN;
         } elseif (!\is_int($mode) || $mode > 15 || $mode < 1) {
             throw new \InvalidArgumentException(sprintf('Option mode "%s" is not valid.', $mode));
         }
-
         if (($isArray = $mode === Input::OPT_IS_ARRAY) && !$this->optionIsAcceptValue($mode)) {
             throw new \InvalidArgumentException('Impossible to have an option mode VALUE_IS_ARRAY if the option does not accept a value.');
         }
-
         if (isset($this->options[$name])) {
             throw new \LogicException(sprintf('An option named "%s" already exists.', $name));
         }
-
         // set default value
         if (Input::OPT_BOOLEAN === (Input::OPT_BOOLEAN & $mode) && null !== $default) {
             throw new \LogicException('Cannot set a default value when using Input::OPT_BOOLEAN mode.');
         }
-
         if ($isArray) {
             if (null === $default) {
                 $default = array();
@@ -289,30 +248,25 @@ class InputDefinition
                 throw new \LogicException('A default value for an array option must be an array.');
             }
         }
-
         $default = $this->optionIsAcceptValue($mode) ? $default : false;
-
         if ($shortcut) {
             if (\is_array($shortcut)) {
                 $shortcut = implode('|', $shortcut);
             }
-
-            $shortcuts = preg_split('{(\|)-?}', ltrim($shortcut, '-'));
+            $shortcuts = preg_split('{(\\|)-?}', ltrim($shortcut, '-'));
             $shortcuts = array_filter($shortcuts);
             $shortcut = implode('|', $shortcuts);
-
             foreach ($shortcuts as $srt) {
                 if (isset($this->shortcuts[$srt])) {
                     throw new \LogicException(sprintf('An option with shortcut "%s" already exists.', $srt));
                 }
-
                 $this->shortcuts[$srt] = $name;
             }
         }
-
         $this->options[$name] = [
             'mode' => $mode,
-            'shortcut' => $shortcut, // 允许数组
+            'shortcut' => $shortcut,
+            // 允许数组
             'required' => $mode === Input::OPT_REQUIRED,
             'optional' => $mode === Input::OPT_OPTIONAL,
             'description' => $description,
@@ -347,7 +301,6 @@ class InputDefinition
 
     /**
      * Gets the array of options
-     *
      * @return array[]
      */
     public function getOptions()
@@ -396,61 +349,40 @@ class InputDefinition
     public function getSynopsis($short = false)
     {
         $elements = $args = $opts = [];
-
         if ($short && $this->options) {
             $elements[] = '[options]';
         } elseif (!$short) {
             foreach ($this->options as $name => $option) {
                 $value = '';
-
                 if ($this->optionIsAcceptValue($option['mode'])) {
-                    $value = sprintf(
-                        ' %s%s%s',
-                        $option['optional'] ? '[' : '',
-                        strtoupper($name),
-                        $option['optional'] ? ']' : ''
-                    );
+                    $value = sprintf(' %s%s%s', $option['optional'] ? '[' : '', strtoupper($name), $option['optional'] ? ']' : '');
                 }
-
                 $shortcut = $option['shortcut'] ? sprintf('-%s|', $option['shortcut']) : '';
                 $elements[] = sprintf('[%s--%s%s]', $shortcut, $name, $value);
-
                 $key = "{$shortcut}--{$name}";
                 $opts[$key] = ($option['required'] ? '<red>*</red>' : '') . $option['description'];
             }
         }
-
         if ($this->arguments && \count($elements)) {
             $elements[] = '[--]';
         }
-
         foreach ($this->arguments as $name => $argument) {
             $des = $argument['required'] ? '<red>*</red>' . $argument['description'] : $argument['description'];
-
             $element = '<' . $name . '>';
             if (!$argument['required']) {
                 $element = '[' . $element . ']';
             } elseif ($argument['isArray']) {
                 $element = $element . ' (' . $element . ')';
             }
-
             if ($argument['isArray']) {
                 $element .= '...';
             }
-
             $elements[] = $element;
             $args[$name] = $des;
         }
-
         $opts['-h|--help'] = 'Show help information for the command';
 
-        return [
-            'description' => $this->description,
-            'usage' => implode(' ', $elements),
-            'arguments' => $args,
-            'options' => $opts,
-            'example' => $this->example,
-        ];
+        return ['description' => $this->description, 'usage' => implode(' ', $elements), 'arguments' => $args, 'options' => $opts, 'example' => $this->example];
     }
 
     /**
@@ -525,7 +457,7 @@ class InputDefinition
     /**
      * @return array
      */
-    public function getShortcuts(): array
+    public function getShortcuts()
     {
         return $this->shortcuts;
     }

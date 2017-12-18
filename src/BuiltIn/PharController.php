@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: inhere
@@ -9,8 +10,8 @@
 namespace Inhere\Console\BuiltIn;
 
 use Inhere\Console\Components\PharBuilder;
-use Inhere\Console\Controller;
 use Inhere\Console\Components\PharCompiler;
+use Inhere\Console\Controller;
 
 /**
  * Class PharController
@@ -25,41 +26,23 @@ class PharController extends Controller
      * pack directory(s) to a phar file.
      * @usage
      *  {command} phar=[FILE] src-dir=[DIR] [-c --format ...]
-     *
      * @arguments
      *  phar       The output phar file path.<red>*</red>
      *  src-dirs   The source directory for pack, multi use ',' split.<red>*</red>
-     *
      * @options
      *  -c, --compress      Compress the phar file to 'gz','bz','zip'.
      *      --format        Format php source file content(will remove all annotations).
      *      --file-include  Append file include
-     *
      * @example
      *  {command} phar=my.phar src-dir=./ -c --format
      */
     public function packCommand()
     {
         $pcr = new PharCompiler(BASE_PATH);
-        $pcr->setOptions([
-            'cliIndex' => 'examples/app',
-            'webIndex' => null,
-
-            'compress' => $this->getSameOpt(['c', 'compress'], false),
-
-            'dirExclude' => '#[\.git|tests]#',
-
-            'fileInclude' => ['LICENSE', 'app', 'liteApp'],
-            'fileMatch' => '#\.php$#',
-        ]);
-
+        $pcr->setOptions(['cliIndex' => 'examples/app', 'webIndex' => null, 'compress' => $this->getSameOpt(['c', 'compress'], false), 'dirExclude' => '#[\\.git|tests]#', 'fileInclude' => ['LICENSE', 'app', 'liteApp'], 'fileMatch' => '#\\.php$#']);
         $pharFile = BASE_PATH . '/test.phar';
         $count = $pcr->pack($pharFile);
-
-        $this->output->json([
-            'count' => $count,
-            'size' => round(filesize($pharFile) / 1000, 2) . ' kb',
-        ]);
+        $this->output->json(['count' => $count, 'size' => round(filesize($pharFile) / 1000, 2) . ' kb']);
     }
 
     /**
@@ -68,23 +51,16 @@ class PharController extends Controller
     public function buildCommand()
     {
         $packer = new PharBuilder(BASE_PATH);
-
         $packer->addDirectory(BASE_PATH);
         $packer->setOptions([
             'cliIndex' => 'examples/app',
             'webIndex' => null,
-
             // 'compress' => $this->getSameOpt(['c', 'compress'], false),
-
-            'dirExclude' => '#[\.git|tests]#',
-
+            'dirExclude' => '#[\\.git|tests]#',
             'fileInclude' => ['LICENSE', 'app', 'liteApp'],
-            'fileMatch' => '#\.php$#',
+            'fileMatch' => '#\\.php$#',
         ]);
         $packer->build($pharFile = BASE_PATH . '/example.phar');
-
-        $this->output->json([
-            'size' => round(filesize($pharFile) / 1000, 2) . ' kb',
-        ]);
+        $this->output->json(['size' => round(filesize($pharFile) / 1000, 2) . ' kb']);
     }
 }

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: inhere
@@ -14,10 +15,8 @@ use Inhere\Console\Utils\Interact;
  * Class UserInteractTrait
  * @package Inhere\Console\Traits
  * @see Interact
- *
  * @method string readRow($message = null, $nl = false)
  * @method string read($message = null, $nl = false, array $opts = [])
- *
  * @method string askHiddenInput(string $prompt = 'Enter Password:')
  * @method string promptSilent(string $prompt = 'Enter Password:')
  * @method string askPassword(string $prompt = 'Enter Password:')
@@ -85,7 +84,6 @@ trait UserInteractTrait
         if (method_exists(Interact::class, $method)) {
             return Interact::$method(...$args);
         }
-
-        throw new \LogicException("Call a not exists method: $method of the " . static::class);
+        throw new \LogicException("Call a not exists method: {$method} of the " . static::class);
     }
 }

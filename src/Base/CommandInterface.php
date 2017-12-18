@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: inhere
@@ -31,15 +32,15 @@ interface CommandInterface
     /**
      * @return ApplicationInterface
      */
-    public function getApp(): ApplicationInterface;
+    public function getApp();
 
     /**
      * @return string
      */
-    public static function getName(): string;
+    public static function getName();
 
     /**
      * @return string
      */
-    public static function getDescription(): ?string;
+    public static function getDescription();
 }

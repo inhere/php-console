@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: inhere
@@ -11,10 +12,8 @@ namespace Inhere\Console\Style;
 /**
  * Class Highlighter
  * @package Inhere\Console\Style
- *
  * @referrer jakub-onderka/php-console-highlighter
  */
 class Highlighter
 {
-
 }

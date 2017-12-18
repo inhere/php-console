@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: inhere
@@ -24,15 +25,15 @@ interface ControllerInterface
     /**
      * @return string
      */
-    public function getAction(): string;
+    public function getAction();
 
     /**
      * @return string
      */
-    public function getDefaultAction(): string;
+    public function getDefaultAction();
 
     /**
      * @param string $delimiter
      */
-    public function setDelimiter(string $delimiter);
+    public function setDelimiter($delimiter);
 }

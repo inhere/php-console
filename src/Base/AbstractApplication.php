@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: inhere
@@ -10,9 +11,9 @@ namespace Inhere\Console\Base;
 
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
+use Inhere\Console\Style\Style;
 use Inhere\Console\Traits\InputOutputTrait;
 use Inhere\Console\Traits\SimpleEventTrait;
-use Inhere\Console\Style\Style;
 use Inhere\Console\Utils\Helper;
 
 /**
@@ -22,27 +23,14 @@ use Inhere\Console\Utils\Helper;
 abstract class AbstractApplication implements ApplicationInterface
 {
     use InputOutputTrait, SimpleEventTrait;
-
     /**
      * @var array
      */
-    protected static $internalCommands = [
-        'version' => 'Show application version information',
-        'help' => 'Show application help information',
-        'list' => 'List all group and independent commands',
-    ];
-
+    protected static $internalCommands = ['version' => 'Show application version information', 'help' => 'Show application help information', 'list' => 'List all group and independent commands'];
     /**
      * @var array
      */
-    protected static $internalOptions = [
-        '--debug' => 'Setting the application runtime debug level',
-        '--profile' => 'Display timing and memory usage information',
-        '--no-color' => 'Disable color/ANSI for message output',
-        '-h, --help' => 'Display this help message',
-        '-V, --version' => 'Show application version information',
-    ];
-
+    protected static $internalOptions = ['--debug' => 'Setting the application runtime debug level', '--profile' => 'Display timing and memory usage information', '--no-color' => 'Disable color/ANSI for message output', '-h, --help' => 'Display this help message', '-V, --version' => 'Show application version information'];
     /**
      * app meta config
      * @var array
@@ -59,23 +47,18 @@ abstract class AbstractApplication implements ApplicationInterface
         // 'timeZone' => 'Asia/Shanghai',
         // 'env' => 'pdt', // dev test pdt
         // 'charset' => 'UTF-8',
-
         // runtime stats
         '_stats' => [],
     ];
-
     /** @var string Command delimiter. e.g dev:serve */
-    public $delimiter = ':'; // '/' ':'
-
+    public $delimiter = ':';
+    // '/' ':'
     /** @var array The group commands */
     protected $controllers = [];
-
     /** @var array The independent commands */
     protected $commands = [];
-
-    /** @var array  */
+    /** @var array */
     private $commandMessages = [];
-
     /** @var string */
     private $commandName;
 
@@ -89,20 +72,14 @@ abstract class AbstractApplication implements ApplicationInterface
     {
         $this->runtimeCheck();
         $this->setMeta($meta);
-
         $this->input = $input ?: new Input();
         $this->output = $output ?: new Output();
-
         $this->init();
     }
 
     protected function init()
     {
-        $this->meta['_stats'] = [
-            'startTime' => microtime(1),
-            'startMemory' => memory_get_usage(true),
-        ];
-
+        $this->meta['_stats'] = ['startTime' => microtime(1), 'startMemory' => memory_get_usage(true)];
         $this->commandName = $this->input->getCommand();
         set_exception_handler([$this, 'handleException']);
     }
@@ -110,7 +87,6 @@ abstract class AbstractApplication implements ApplicationInterface
     /**********************************************************
      * app run
      **********************************************************/
-
     protected function prepareRun()
     {
         // date_default_timezone_set($this->config('timeZone', 'UTC'));
@@ -118,7 +94,8 @@ abstract class AbstractApplication implements ApplicationInterface
     }
 
     protected function beforeRun()
-    {}
+    {
+    }
 
     /**
      * run app
@@ -127,14 +104,11 @@ abstract class AbstractApplication implements ApplicationInterface
     public function run($exit = true)
     {
         $command = trim($this->input->getCommand(), $this->delimiter);
-
         $this->prepareRun();
         $this->filterSpecialCommand($command);
-
         // call 'onBeforeRun' service, if it is registered.
         self::fire(self::ON_BEFORE_RUN, [$this]);
         $this->beforeRun();
-
         // do run ...
         try {
             $returnCode = $this->dispatch($command);
@@ -143,13 +117,10 @@ abstract class AbstractApplication implements ApplicationInterface
             $returnCode = $e->getCode() === 0 ? $e->getLine() : $e->getCode();
             $this->handleException($e);
         }
-
         $this->meta['_stats']['endTime'] = microtime(1);
-
         // call 'onAfterRun' service, if it is registered.
         self::fire(self::ON_AFTER_RUN, [$this]);
         $this->afterRun();
-
         if ($exit) {
             $this->stop((int)$returnCode);
         }
@@ -160,19 +131,19 @@ abstract class AbstractApplication implements ApplicationInterface
      * @param string $command A command name
      * @return int|mixed
      */
-    abstract protected function dispatch($command);
+    protected abstract function dispatch($command);
 
     /**
      * run a independent command
      * {@inheritdoc}
      */
-    abstract public function runCommand($name, $believable = false);
+    public abstract function runCommand($name, $believable = false);
 
     /**
      * run a controller's action
      * {@inheritdoc}
      */
-    abstract public function runAction($name, $action, $believable = false, $standAlone = false);
+    public abstract function runAction($name, $action, $believable = false, $standAlone = false);
 
     protected function afterRun()
     {
@@ -193,14 +164,11 @@ abstract class AbstractApplication implements ApplicationInterface
     {
         // call 'onAppStop' service, if it is registered.
         self::fire(self::ON_STOP_RUN, [$this]);
-
         exit((int)$code);
     }
-
     /**********************************************************
      * helper method for the application
      **********************************************************/
-
     /**
      * runtime env check
      */
@@ -209,9 +177,7 @@ abstract class AbstractApplication implements ApplicationInterface
         // check env
         if (!\in_array(PHP_SAPI, ['cli', 'cli-server'], true)) {
             header('HTTP/1.1 403 Forbidden');
-            exit("  403 Forbidden \n\n"
-                . " current environment is CLI. \n"
-                . " :( Sorry! Run this script is only allowed in the terminal environment!\n,You are not allowed to access this file.\n");
+            exit("  403 Forbidden \n\n" . " current environment is CLI. \n" . " :( Sorry! Run this script is only allowed in the terminal environment!\n,You are not allowed to access this file.\n");
         }
     }
 
@@ -222,18 +188,20 @@ abstract class AbstractApplication implements ApplicationInterface
     public function handleException($e)
     {
         $type = $e instanceof \Error ? 'Error' : 'Exception';
-        $title = ":( OO ... An $type Occurred!";
+        $title = ":( OO ... An {$type} Occurred!";
         $this->logError($e);
-
         // open debug, throw exception
         if ($this->isDebug()) {
             $tpl = <<<ERR
-    <danger>$title</danger>
+    <danger>{$title}</danger>
 
 Message   <magenta>%s</magenta>
 At File   <cyan>%s</cyan> line <cyan>%d</cyan>
-Catch by  %s()\n
-Code Trace:\n%s\n
+Catch by  %s()
+
+Code Trace:
+%s
+
 ERR;
             $message = sprintf(
                 $tpl,
@@ -244,11 +212,9 @@ ERR;
                 __METHOD__,
                 $e->getTraceAsString()
             );
-
             if ($this->meta['hideRootPath'] && ($rootPath = $this->meta['rootPath'])) {
                 $message = str_replace($rootPath, '{ROOT}', $message);
             }
-
             $this->output->write($message, false);
         } else {
             // simple output
@@ -273,18 +239,14 @@ ERR;
             if ($this->input->getSameOpt(['V', 'version'])) {
                 $this->showVersionInfo();
             }
-
             if ($this->input->getSameOpt(['h', 'help'])) {
                 $this->showHelpInfo();
             }
         }
-
         if ($this->input->getSameOpt(['no-color'])) {
             Style::setNoColor();
         }
-
         $command = $command ?: 'list';
-
         switch ($command) {
             case 'help':
                 $this->showHelpInfo(true, $this->input->getFirstArg());
@@ -303,29 +265,25 @@ ERR;
      * @param bool $isGroup
      * @throws \InvalidArgumentException
      */
-    protected function validateName(string $name, $isGroup = false)
+    protected function validateName($name, $isGroup = false)
     {
-        $pattern = $isGroup ? '/^[a-z][\w-]+$/' : '/^[a-z][\w-]*:?([a-z][\w-]+)?$/';
-
+        $pattern = $isGroup ? '/^[a-z][\\w-]+$/' : '/^[a-z][\\w-]*:?([a-z][\\w-]+)?$/';
         if (1 !== preg_match($pattern, $name)) {
             throw new \InvalidArgumentException('The command name is must match: ' . $pattern);
         }
-
         if ($this->isInternalCommand($name)) {
-            throw new \InvalidArgumentException("The command name [$name] is not allowed. It is a built in command.");
+            throw new \InvalidArgumentException("The command name [{$name}] is not allowed. It is a built in command.");
         }
     }
-
     /***************************************************************************
      * some information for the application
      ***************************************************************************/
-
     /**
      * show the application help information
      * @param bool $quit
      * @param string $command
      */
-    public function showHelpInfo($quit = true, string $command = null)
+    public function showHelpInfo($quit = true, $command = null)
     {
         // display help for a special command
         if ($command) {
@@ -335,19 +293,9 @@ ERR;
             $this->dispatch($command);
             $this->stop();
         }
-
         $script = $this->input->getScript();
         $sep = $this->delimiter;
-
-        $this->output->helpPanel([
-            'usage' => "$script {command} [arg0 arg1=value1 arg2=value2 ...] [--opt -v -h ...]",
-            'example' => [
-                "$script test (run a independent command)",
-                "$script home{$sep}index (run a command of the group)",
-                "$script help {command} (see a command help information)",
-                "$script home{$sep}index -h (see a command help of the group)",
-            ]
-        ], $quit);
+        $this->output->helpPanel(['usage' => "{$script} {command} [arg0 arg1=value1 arg2=value2 ...] [--opt -v -h ...]", 'example' => ["{$script} test (run a independent command)", "{$script} home{$sep}index (run a command of the group)", "{$script} help {command} (see a command help information)", "{$script} home{$sep}index -h (see a command help of the group)"]], $quit);
     }
 
     /**
@@ -363,16 +311,7 @@ ERR;
         $updateAt = $this->getMeta('updateAt', 'Unknown');
         $phpVersion = PHP_VERSION;
         $os = PHP_OS;
-
-        $this->output->aList([
-            "\n  <info>{$name}</info>, Version <comment>$version</comment>\n",
-            'System Info' => "PHP version <info>$phpVersion</info>, on <info>$os</info> system",
-            'Application Info' => "Update at <info>$updateAt</info>, publish at <info>$publishAt</info>(current $date)",
-        ], null, [
-            'leftChar' => '',
-            'sepChar' => ' :  '
-        ]);
-
+        $this->output->aList(["\n  <info>{$name}</info>, Version <comment>{$version}</comment>\n", 'System Info' => "PHP version <info>{$phpVersion}</info>, on <info>{$os}</info> system", 'Application Info' => "Update at <info>{$updateAt}</info>, publish at <info>{$publishAt}</info>(current {$date})"], null, ['leftChar' => '', 'sepChar' => ' :  ']);
         $quit && $this->stop();
     }
 
@@ -386,22 +325,18 @@ ERR;
         $hasGroup = $hasCommand = false;
         $controllerArr = $commandArr = [];
         $desPlaceholder = 'No description of the command';
-
         // all console controllers
         $controllerArr[] = PHP_EOL . '- <cyan>Group Commands</cyan>';
         $controllers = $this->controllers;
         ksort($controllers);
-
         foreach ($controllers as $name => $controller) {
             $hasGroup = true;
             /** @var AbstractCommand $controller */
             $controllerArr[$name] = $controller::getDescription() ?: $desPlaceholder;
         }
-
         if (!$hasGroup) {
             $controllerArr[] = '... No register any group command(controller)';
         }
-
         // all independent commands
         $commands = $this->commands;
         $commandArr[] = PHP_EOL . '- <cyan>Independent Commands</cyan>';
@@ -409,39 +344,37 @@ ERR;
         foreach ($commands as $name => $command) {
             $desc = $desPlaceholder;
             $hasCommand = true;
-
             /** @var AbstractCommand $command */
             if (is_subclass_of($command, CommandInterface::class)) {
                 $desc = $command::getDescription() ?: $desPlaceholder;
-            } else if ($msg = $this->getCommandMessage($name)) {
-                $desc = $msg;
-            } else if (\is_string($command)) {
-                $desc = 'A handler : ' . $command;
-            } else if (\is_object($command)) {
-                $desc = 'A handler by ' . \get_class($command);
+            } else {
+                if ($msg = $this->getCommandMessage($name)) {
+                    $desc = $msg;
+                } else {
+                    if (\is_string($command)) {
+                        $desc = 'A handler : ' . $command;
+                    } else {
+                        if (\is_object($command)) {
+                            $desc = 'A handler by ' . \get_class($command);
+                        }
+                    }
+                }
             }
-
             $commandArr[$name] = $desc;
         }
-
         if (!$hasCommand) {
             $commandArr[] = '... No register any group command(controller)';
         }
-
         // built in commands
         $internalCommands = static::$internalCommands;
         ksort($internalCommands);
         array_unshift($internalCommands, "\n- <cyan>Internal Commands</cyan>");
-
         $this->output->mList([
             //'There are all console controllers and independent commands.',
-            'Usage:' => "$script {command} [arg0 arg1=value1 arg2=value2 ...] [--opt -v -h ...]",
+            'Usage:' => "{$script} {command} [arg0 arg1=value1 arg2=value2 ...] [--opt -v -h ...]",
             'Options:' => self::$internalOptions,
             'Available Commands:' => array_merge($controllerArr, $commandArr, $internalCommands),
-            //'Independent Commands:' => $commandArr ?: '... No register any independent command',
-            // 'Internal Commands:' => $internalCommands,
         ]);
-
         // $this->output->mList([
         //     //'There are all console controllers and independent commands.',
         //     'Usage:' => "$script {command} [arg0 arg1=value1 arg2=value2 ...] [--opt -v -h ...]",
@@ -450,10 +383,8 @@ ERR;
         //     'Independent Commands:' => $commandArr ?: '... No register any independent command',
         //     'Internal Commands:' => $internalCommands,
         // ]);
-
         unset($controllerArr, $commandArr, $internalCommands);
-        $this->output->write("More command information, please use: <cyan>$script {command} -h</cyan>");
-
+        $this->output->write("More command information, please use: <cyan>{$script} {command} -h</cyan>");
         $quit && $this->stop();
     }
 
@@ -464,7 +395,7 @@ ERR;
      */
     public function getCommandMessage($name, $default = null)
     {
-        return $this->commandMessages[$name] ?? $default;
+        return isset($this->commandMessages[$name]) ? $this->commandMessages[$name] : $default;
     }
 
     /**
@@ -476,11 +407,9 @@ ERR;
     {
         return $this->commandMessages[$name] = $message;
     }
-
     /**********************************************************
      * getter/setter methods
      **********************************************************/
-
     /**
      * @return array
      */
@@ -514,7 +443,7 @@ ERR;
     /**
      * @return array
      */
-    public function getControllers(): array
+    public function getControllers()
     {
         return $this->controllers;
     }
@@ -545,7 +474,7 @@ ERR;
     /**
      * @return array
      */
-    public function getCommands(): array
+    public function getCommands()
     {
         return $this->commands;
     }
@@ -562,7 +491,7 @@ ERR;
     /**
      * @return array
      */
-    public static function getInternalCommands(): array
+    public static function getInternalCommands()
     {
         return static::$internalCommands;
     }
@@ -571,7 +500,7 @@ ERR;
      * @param $name
      * @return bool
      */
-    public function isInternalCommand(string $name): bool
+    public function isInternalCommand($name)
     {
         return isset(static::$internalCommands[$name]);
     }
@@ -607,7 +536,7 @@ ERR;
             return $this->meta;
         }
 
-        return $this->meta[$name] ?? $default;
+        return isset($this->meta[$name]) ? $this->meta[$name] : $default;
     }
 
     /**
@@ -631,7 +560,7 @@ ERR;
     /**
      * @return array
      */
-    public function getCommandMessages(): array
+    public function getCommandMessages()
     {
         return $this->commandMessages;
     }

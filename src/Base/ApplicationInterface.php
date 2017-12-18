@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: inhere
@@ -46,9 +47,9 @@ interface ApplicationInterface
      */
     public function runAction($name, $action, $believable = false, $standAlone = false);
 
-    public function controller(string $name, string $controller = null);
+    public function controller($name, $controller = null);
 
-    public function command(string $name, $handler = null, $description = null);
+    public function command($name, $handler = null, $description = null);
 
     public function showCommandList($quit = true);
 }

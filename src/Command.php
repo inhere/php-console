@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: inhere
@@ -26,7 +27,6 @@ abstract class Command extends AbstractCommand
     // {
     //      // something logic ...
     // }
-
     /**
      * configure
      */
@@ -37,7 +37,6 @@ abstract class Command extends AbstractCommand
     //     ->addArgument('test')
     //     ->addOption('test');
     // }
-
     /**
      * @return int
      */

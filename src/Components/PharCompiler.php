@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: inhere
@@ -18,7 +19,6 @@ use Phar;
 class PharCompiler
 {
     private $version;
-
     /**
      * @var array
      */
@@ -26,22 +26,16 @@ class PharCompiler
         // for create phar Stub. It is relative the srcDir path.
         'cliIndex' => null,
         'webIndex' => null,
-
         // compress php code
         'compress' => false,
-
-        'dirExclude' => '#[\.git|tests]#',
-
+        'dirExclude' => '#[\\.git|tests]#',
         'fileInclude' => [],
-        'fileMatch' => '#\.php#',
+        'fileMatch' => '#\\.php#',
     ];
-
     /** @var array */
     private $srcDirs;
-
     /** @var array */
     private $appendFiles;
-
     /** @var string */
     private $dstDir;
 
@@ -55,7 +49,6 @@ class PharCompiler
     {
         $this->srcDirs = $srcDirs ? (array)$srcDirs : [];
         $this->dstDir = $dstDir;
-
         $this->setOptions($options);
     }
 
@@ -73,38 +66,26 @@ class PharCompiler
         if (file_exists($pharFile)) {
             unlink($pharFile);
         }
-
         $pharName = basename($pharFile);
         $this->version = $version;
-
         if (!$this->srcDirs) {
             throw new \LogicException('Please setting the source directory for pack');
         }
-
         $phar = new Phar($pharFile, 0, $pharName);
-//        $phar = new Phar($pharFile, \FilesystemIterator::CURRENT_AS_FILEINFO | \FilesystemIterator::KEY_AS_FILENAME, $pharName);
+        //        $phar = new Phar($pharFile, \FilesystemIterator::CURRENT_AS_FILEINFO | \FilesystemIterator::KEY_AS_FILENAME, $pharName);
         $phar->setMetadata(['author' => 'inhere']);
         $phar->setSignatureAlgorithm(Phar::SHA1);
-
         // begin
         $phar->startBuffering();
-
         foreach ($this->srcDirs as $srcDir) {
             $this->collectFiles($phar, $srcDir);
         }
-
         // Stubs
-//        $phar->setStub($this->getStub());
-//        $stub = Phar::createDefaultStub($this->options['cliIndex'], $this->options['webIndex']);
-//        $phar->setStub($stub);
-
+        //        $phar->setStub($this->getStub());
+        //        $stub = Phar::createDefaultStub($this->options['cliIndex'], $this->options['webIndex']);
+        //        $phar->setStub($stub);
         // 设置入口
-        $phar->setStub("<?php
-Phar::mapPhar('{$pharName}');
-require 'phar://{$pharName}/examples/app';
-__HALT_COMPILER();
-?>");
-
+        $phar->setStub("<?php\nPhar::mapPhar('{$pharName}');\nrequire 'phar://{$pharName}/examples/app';\n__HALT_COMPILER();\n?>");
         $phar->stopBuffering();
         $count = $phar->count();
         unset($phar);
@@ -117,9 +98,9 @@ __HALT_COMPILER();
      * @param string|null $distDir
      * @throws \LogicException
      */
-    public function unpack(string $file, string $distDir = null)
+    public function unpack($file, $distDir = null)
     {
-        if (!$distDir = $distDir ?: $this->dstDir) {
+        if (!($distDir = $distDir ?: $this->dstDir)) {
             throw new \LogicException('Please setting the dist directory for unpack');
         }
     }
@@ -129,17 +110,14 @@ __HALT_COMPILER();
         $iterator = Helper::recursiveDirectoryIterator($srcDir, function ($file) {
             /** @var \SplFileInfo $file */
             $name = $file->getFilename();
-
             // Skip hidden files and directories.
             if ($name[0] === '.') {
                 return false;
             }
-
             if ($file->isDir()) {
                 // Only recurse into intended subdirectories.
                 return preg_match($this->options['dirExclude'], $name);
             }
-
             if (\in_array($name, $this->options['fileInclude'], true)) {
                 return true;
             }
@@ -147,13 +125,11 @@ __HALT_COMPILER();
             // Only consume files of interest.
             return preg_match($this->options['fileMatch'], $name);
         });
-
         $phar->buildFromIterator($iterator, $srcDir);
-//        $phar->buildFromDirectory($srcDir, '/[\.php|app]$/');
-
-//        foreach ($iterator as $file) {
-//            $this->addFileToPhar($phar, $file, $srcDir);
-//        }
+        //        $phar->buildFromDirectory($srcDir, '/[\.php|app]$/');
+        //        foreach ($iterator as $file) {
+        //            $this->addFileToPhar($phar, $file, $srcDir);
+        //        }
     }
 
     /**
@@ -167,7 +143,6 @@ __HALT_COMPILER();
         $isPhp = $file->getExtension() === 'php';
         // $path = str_replace($basePath . DIRECTORY_SEPARATOR, '', $file->getRealPath());
         $path = substr($file->getRealPath(), \strlen($basePath) + 1);
-
         if ($isPhp && $this->options['compress']) {
             $content = php_strip_whitespace($file);
         } elseif ('LICENSE' === basename($file)) {
@@ -176,7 +151,6 @@ __HALT_COMPILER();
         } else {
             $content = file_get_contents($file);
         }
-
         $phar->addFromString($path, $content);
     }
 
@@ -193,9 +167,8 @@ EOS;
     protected function getStub()
     {
         $content = file_get_contents(__DIR__ . '/../../bin/psysh');
-        $content = preg_replace('{/\* <<<.*?>>> \*/}sm', self::STUB_AUTOLOAD, $content);
+        $content = preg_replace('{/\\* <<<.*?>>> \\*/}sm', self::STUB_AUTOLOAD, $content);
         $content = preg_replace('/\\(c\\) .*?with this source code./sm', self::getStubLicense(), $content);
-
         $content .= '__HALT_COMPILER();';
 
         return $content;
@@ -214,7 +187,7 @@ EOS;
      * @param string $file
      * @return $this
      */
-    public function setCliIndex(string $file)
+    public function setCliIndex($file)
     {
         $this->options['cliIndex'] = $file;
 
@@ -225,7 +198,7 @@ EOS;
      * @param string $file
      * @return $this
      */
-    public function setWebIndex(string $file)
+    public function setWebIndex($file)
     {
         $this->options['webIndex'] = $file;
 
@@ -247,7 +220,7 @@ EOS;
      * @param string $regex
      * @return $this
      */
-    public function setDirExclude(string $regex)
+    public function setDirExclude($regex)
     {
         $this->options['dirExclude'] = $regex;
 
@@ -258,7 +231,7 @@ EOS;
      * @param string $regex
      * @return $this
      */
-    public function setFileMatch(string $regex)
+    public function setFileMatch($regex)
     {
         $this->options['fileMatch'] = $regex;
 
@@ -269,7 +242,7 @@ EOS;
      * @param string $srcDir
      * @return $this
      */
-    public function addSrcDir(string $srcDir)
+    public function addSrcDir($srcDir)
     {
         $this->srcDirs[] = $srcDir;
 
@@ -279,7 +252,7 @@ EOS;
     /**
      * @return array
      */
-    public function getAppendFiles(): array
+    public function getAppendFiles()
     {
         return $this->appendFiles;
     }
@@ -288,7 +261,7 @@ EOS;
      * @param array $appendFiles
      * @return PharCompiler
      */
-    public function setAppendFiles(array $appendFiles): PharCompiler
+    public function setAppendFiles(array $appendFiles)
     {
         $this->appendFiles = $appendFiles;
 
@@ -298,7 +271,7 @@ EOS;
     /**
      * @return array
      */
-    public function getSrcDirs(): array
+    public function getSrcDirs()
     {
         return $this->srcDirs;
     }
@@ -314,7 +287,7 @@ EOS;
     /**
      * @return string
      */
-    public function getDstDir(): ?string
+    public function getDstDir()
     {
         return $this->dstDir;
     }
@@ -322,7 +295,7 @@ EOS;
     /**
      * @param string $dstDir
      */
-    public function setDstDir(string $dstDir)
+    public function setDstDir($dstDir)
     {
         $this->dstDir = $dstDir;
     }
@@ -330,7 +303,7 @@ EOS;
     /**
      * @return array
      */
-    public function getOptions(): array
+    public function getOptions()
     {
         return $this->options;
     }

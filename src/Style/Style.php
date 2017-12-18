@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: Inhere
@@ -35,29 +36,24 @@ class Style
     const QUESTION = 'question';
     const DANGER = 'danger';
     const ERROR = 'error';
-
     /**
      * Regex to match tags
      * @var string
      */
-    const COLOR_TAG = '/<([a-z=;]+)>(.*?)<\/\\1>/s';
-
+    const COLOR_TAG = '/<([a-z=;]+)>(.*?)<\\/\\1>/s';
     /**
      * Regex used for removing color codes
      */
-    const STRIP_TAG = '/<[\/]?[a-z=;]+>/';
-
+    const STRIP_TAG = '/<[\\/]?[a-z=;]+>/';
     /**
      * @var self
      */
     private static $instance;
-
     /**
      * Flag to remove color codes from the output
      * @var bool
      */
     protected static $noColor = false;
-
     /**
      * Array of Style objects
      * @var array
@@ -67,7 +63,7 @@ class Style
     /**
      * @return Style
      */
-    public static function create(): Style
+    public static function create()
     {
         if (!self::$instance) {
             self::$instance = new self();
@@ -85,13 +81,8 @@ class Style
     public function __construct($fg = '', $bg = '', array $options = [])
     {
         if ($fg || $bg || $options) {
-            $this->add('base', [
-                'fg' => $fg,
-                'bg' => $bg,
-                'options' => $options
-            ]);
+            $this->add('base', ['fg' => $fg, 'bg' => $bg, 'options' => $options]);
         }
-
         $this->loadDefaultStyles();
     }
 
@@ -101,27 +92,7 @@ class Style
      */
     protected function loadDefaultStyles()
     {
-        $this
-            ->add(self::NORMAL, ['fg' => 'normal'])
-            // 不明显的 浅灰色的
-            ->add(self::FAINTLY, ['fg' => 'normal', 'options' => ['italic']])
-            ->add(self::BOLD, ['options' => ['bold']])
-            ->add(self::INFO, ['fg' => 'green',])//'options' => ['bold']
-            ->add(self::NOTE, ['fg' => 'green', 'options' => ['bold']])//'options' => ['bold']
-            ->add(self::PRIMARY, ['fg' => 'blue',])//'options' => ['bold']
-            ->add(self::SUCCESS, ['fg' => 'green', 'options' => ['bold']])
-            ->add(self::NOTICE, ['options' => ['bold', 'underscore'],])
-            ->add(self::WARNING, ['fg' => 'black', 'bg' => 'yellow',])//'options' => ['bold']
-            ->add(self::COMMENT, ['fg' => 'yellow',])//'options' => ['bold']
-            ->add(self::QUESTION, ['fg' => 'black', 'bg' => 'cyan'])
-            ->add(self::DANGER, ['fg' => 'red',])// 'bg' => 'magenta', 'options' => ['bold']
-            ->add(self::ERROR, ['fg' => 'black', 'bg' => 'red'])
-            ->add('underline', ['fg' => 'normal', 'options' => ['underscore']])
-            ->add('blue', ['fg' => 'blue'])
-            ->add('cyan', ['fg' => 'cyan'])
-            ->add('magenta', ['fg' => 'magenta'])
-            ->add('red', ['fg' => 'red'])
-            ->add('yellow', ['fg' => 'yellow']);
+        $this->add(self::NORMAL, ['fg' => 'normal'])->add(self::FAINTLY, ['fg' => 'normal', 'options' => ['italic']])->add(self::BOLD, ['options' => ['bold']])->add(self::INFO, ['fg' => 'green'])->add(self::NOTE, ['fg' => 'green', 'options' => ['bold']])->add(self::PRIMARY, ['fg' => 'blue'])->add(self::SUCCESS, ['fg' => 'green', 'options' => ['bold']])->add(self::NOTICE, ['options' => ['bold', 'underscore']])->add(self::WARNING, ['fg' => 'black', 'bg' => 'yellow'])->add(self::COMMENT, ['fg' => 'yellow'])->add(self::QUESTION, ['fg' => 'black', 'bg' => 'cyan'])->add(self::DANGER, ['fg' => 'red'])->add(self::ERROR, ['fg' => 'black', 'bg' => 'red'])->add('underline', ['fg' => 'normal', 'options' => ['underscore']])->add('blue', ['fg' => 'blue'])->add('cyan', ['fg' => 'cyan'])->add('magenta', ['fg' => 'magenta'])->add('red', ['fg' => 'red'])->add('yellow', ['fg' => 'yellow']);
     }
 
     /**
@@ -143,20 +114,16 @@ class Style
         if (!$text || false === strpos($text, '<')) {
             return $text;
         }
-
         // if don't support output color text, clear color tag.
         if (!Helper::isSupportColor() || self::isNoColor()) {
             return static::stripColor($text);
         }
-
         if (!preg_match_all(self::COLOR_TAG, $text, $matches)) {
             return $text;
         }
-
         foreach ((array)$matches[0] as $i => $m) {
             if (array_key_exists($matches[1][$i], $this->styles)) {
                 $text = $this->replaceColor($text, $matches[1][$i], $matches[2][$i], (string)$this->styles[$matches[1][$i]]);
-
                 // Custom style format @see Style::makeByString()
             } elseif (strpos($matches[1][$i], '=')) {
                 $text = $this->replaceColor($text, $matches[1][$i], $matches[2][$i], (string)Color::makeByString($matches[1][$i]));
@@ -174,11 +141,11 @@ class Style
      * @param   string $style The color style to apply.
      * @return  string
      */
-    protected function replaceColor($text, $tag, $match, $style): string
+    protected function replaceColor($text, $tag, $match, $style)
     {
-        $replace = self::$noColor ? $match : sprintf("\033[%sm%s\033[0m", $style, $match);
+        $replace = self::$noColor ? $match : sprintf("\33[%sm%s\33[0m", $style, $match);
 
-        return str_replace("<$tag>$match</$tag>", $replace, $text);
+        return str_replace("<{$tag}>{$match}</{$tag}>", $replace, $text);
         // return sprintf("\033[%sm%s\033[%sm", implode(';', $setCodes), $text, implode(';', $unsetCodes));
     }
 
@@ -192,8 +159,7 @@ class Style
         // $text = strip_tags($text);
         return preg_replace(self::STRIP_TAG, '', $string);
     }
-
-///////////////////////////////////////// Attr Color Style /////////////////////////////////////////
+    ///////////////////////////////////////// Attr Color Style /////////////////////////////////////////
 
     /**
      * Add a style.
@@ -209,7 +175,6 @@ class Style
         if (\is_array($fg)) {
             return $this->addByArray($name, $fg);
         }
-
         if (\is_object($fg) && $fg instanceof Color) {
             $this->styles[$name] = $fg;
         } else {
@@ -232,15 +197,9 @@ class Style
      */
     public function addByArray($name, array $styleConfig)
     {
-        $style = [
-            'fg' => '',
-            'bg' => '',
-            'options' => []
-        ];
-
+        $style = ['fg' => '', 'bg' => '', 'options' => []];
         $config = array_merge($style, $styleConfig);
         list($fg, $bg, $options) = array_values($config);
-
         $this->styles[$name] = Color::make($fg, $bg, $options);
 
         return $this;
@@ -249,7 +208,7 @@ class Style
     /**
      * @return array
      */
-    public function getStyleNames(): array
+    public function getStyleNames()
     {
         return array_keys($this->styles);
     }
@@ -257,7 +216,7 @@ class Style
     /**
      * @return array
      */
-    public function getNames(): array
+    public function getNames()
     {
         return array_keys($this->styles);
     }
@@ -265,7 +224,7 @@ class Style
     /**
      * @return array
      */
-    public function getStyles(): array
+    public function getStyles()
     {
         return $this->styles;
     }
@@ -287,7 +246,7 @@ class Style
      * @param $name
      * @return bool
      */
-    public function hasStyle($name): bool
+    public function hasStyle($name)
     {
         return isset($this->styles[$name]);
     }
@@ -295,7 +254,7 @@ class Style
     /**
      * Method to get property NoColor
      */
-    public static function isNoColor(): bool
+    public static function isNoColor()
     {
         return (bool)self::$noColor;
     }

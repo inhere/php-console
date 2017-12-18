@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: inhere
@@ -20,7 +21,6 @@ class Application extends AbstractApplication
     /****************************************************************************
      * register console controller/command
      ****************************************************************************/
-
     /**
      * Register a app group command(by controller)
      * @param string $name The controller name
@@ -28,30 +28,23 @@ class Application extends AbstractApplication
      * @return static
      * @throws \InvalidArgumentException
      */
-    public function controller(string $name, string $class = null)
+    public function controller($name, $class = null)
     {
         if (!$class && class_exists($name)) {
             /** @var Controller $class */
             $class = $name;
             $name = $class::getName();
         }
-
         if (!$name || !$class) {
-            throw new \InvalidArgumentException(
-                'Group-command "name" and "controller" not allowed to is empty! name: ' . $name . ', controller: ' . $class
-            );
+            throw new \InvalidArgumentException('Group-command "name" and "controller" not allowed to is empty! name: ' . $name . ', controller: ' . $class);
         }
-
         $this->validateName($name, true);
-
         if (!class_exists($class)) {
-            throw new \InvalidArgumentException("The console controller class [$class] not exists!");
+            throw new \InvalidArgumentException("The console controller class [{$class}] not exists!");
         }
-
         if (!is_subclass_of($class, Controller::class)) {
             throw new \InvalidArgumentException('The console controller class must is subclass of the: ' . Controller::class);
         }
-
         $this->controllers[$name] = $class;
 
         return $this;
@@ -62,7 +55,7 @@ class Application extends AbstractApplication
      * @see Application::controller()
      * @throws \InvalidArgumentException
      */
-    public function addController(string $name, string $class = null)
+    public function addController($name, $class = null)
     {
         return $this->controller($name, $class);
     }
@@ -83,42 +76,32 @@ class Application extends AbstractApplication
      * @return $this
      * @throws \InvalidArgumentException
      */
-    public function command(string $name, $handler = null, $description = null)
+    public function command($name, $handler = null, $description = null)
     {
         if (!$handler && class_exists($name)) {
             /** @var Command $name */
             $handler = $name;
             $name = $name::getName();
         }
-
         if (!$name || !$handler) {
-            throw new \InvalidArgumentException("Command 'name' and 'handler' not allowed to is empty! name: $name");
+            throw new \InvalidArgumentException("Command 'name' and 'handler' not allowed to is empty! name: {$name}");
         }
-
         $this->validateName($name);
-
         if (isset($this->commands[$name])) {
-            throw new \InvalidArgumentException("Command '$name' have been registered!");
+            throw new \InvalidArgumentException("Command '{$name}' have been registered!");
         }
-
         if (\is_string($handler)) {
             if (!class_exists($handler)) {
-                throw new \InvalidArgumentException("The console command class [$handler] not exists!");
+                throw new \InvalidArgumentException("The console command class [{$handler}] not exists!");
             }
-
             if (!is_subclass_of($handler, Command::class)) {
                 throw new \InvalidArgumentException('The console command class must is subclass of the: ' . Command::class);
             }
         } elseif (!\is_object($handler) || !method_exists($handler, '__invoke')) {
-            throw new \InvalidArgumentException(sprintf(
-                'The console command handler must is an subclass of %s OR a Closure OR a object have method __invoke()',
-                Command::class
-            ));
+            throw new \InvalidArgumentException(sprintf('The console command handler must is an subclass of %s OR a Closure OR a object have method __invoke()', Command::class));
         }
-
         // is an class name string
         $this->commands[$name] = $handler;
-
         if ($description) {
             $this->addCommandMessage($name, $description);
         }
@@ -141,7 +124,7 @@ class Application extends AbstractApplication
      * @return $this
      * @throws \InvalidArgumentException
      */
-    public function addCommand(string $name, $handler = null)
+    public function addCommand($name, $handler = null)
     {
         return $this->command($name, $handler);
     }
@@ -153,7 +136,7 @@ class Application extends AbstractApplication
      * @return static
      * @throws \InvalidArgumentException
      */
-    public function addGroup(string $name, string $controller = null)
+    public function addGroup($name, $controller = null)
     {
         return $this->controller($name, $controller);
     }
@@ -165,11 +148,10 @@ class Application extends AbstractApplication
      * @return $this
      * @throws \InvalidArgumentException
      */
-    public function registerCommands(string $namespace, string $basePath)
+    public function registerCommands($namespace, $basePath)
     {
         $length = \strlen($basePath) + 1;
         $iterator = Helper::recursiveDirectoryIterator($basePath, $this->getFileFilter());
-
         foreach ($iterator as $file) {
             $class = $namespace . '\\' . \substr($file, $length, -4);
             $this->addCommand($class);
@@ -185,11 +167,10 @@ class Application extends AbstractApplication
      * @return $this
      * @throws \InvalidArgumentException
      */
-    public function registerGroups(string $namespace, string $basePath)
+    public function registerGroups($namespace, $basePath)
     {
         $length = \strlen($basePath) + 1;
         $iterator = Helper::recursiveDirectoryIterator($basePath, $this->getFileFilter());
-
         foreach ($iterator as $file) {
             $class = $namespace . '\\' . \substr($file, $length, -4);
             $this->addController($class);
@@ -205,12 +186,10 @@ class Application extends AbstractApplication
     {
         return function (\SplFileInfo $f) {
             $name = $f->getFilename();
-
             // Skip hidden files and directories.
             if ($name[0] === '.') {
                 return false;
             }
-
             // go on read sub-dir
             if ($f->isDir()) {
                 return true;
@@ -220,11 +199,9 @@ class Application extends AbstractApplication
             return $f->isFile() && \substr($name, -4) === '.php';
         };
     }
-
     /****************************************************************************
      * dispatch and run console controller/command
      ****************************************************************************/
-
     /**
      * @inheritdoc
      * @throws \InvalidArgumentException
@@ -232,43 +209,32 @@ class Application extends AbstractApplication
     protected function dispatch($name)
     {
         $sep = $this->delimiter ?: '/';
-
         //// is a command name
-
         if ($this->isCommand($name)) {
             return $this->runCommand($name, true);
         }
-
         //// is a controller name
-
         $action = '';
-
         // like 'home/index'
         if (strpos($name, $sep) > 0) {
             $input = array_filter(explode($sep, $name));
             list($name, $action) = \count($input) > 2 ? array_splice($input, 2) : $input;
         }
-
         if ($this->isController($name)) {
             return $this->runAction($name, $action, true);
         }
-
         // command not found
         if (true !== self::fire(self::ON_NOT_FOUND, [$this])) {
             $this->output->liteError("The console command '{$name}' not exists!");
-
             // find similar command names by similar_text()
             $similar = [];
             $commands = array_merge($this->getControllerNames(), $this->getCommandNames());
-
             foreach ($commands as $command) {
                 similar_text($name, $command, $percent);
-
                 if (45 <= (int)$percent) {
                     $similar[] = $command;
                 }
             }
-
             if ($similar) {
                 $this->write(sprintf("\nMaybe what you mean is:\n    <info>%s</info>", implode(', ', $similar)));
             } else {
@@ -290,26 +256,21 @@ class Application extends AbstractApplication
     {
         // if $believable = true, will skip check.
         if (!$believable && $this->isCommand($name)) {
-            throw new \InvalidArgumentException("The console independent-command [$name] not exists!");
+            throw new \InvalidArgumentException("The console independent-command [{$name}] not exists!");
         }
-
         /** @var \Closure|string $handler Command class */
         $handler = $this->commands[$name];
-
         if (\is_object($handler) && method_exists($handler, '__invoke')) {
             $status = $handler($this->input, $this->output);
         } else {
             if (!class_exists($handler)) {
-                throw new \InvalidArgumentException("The console command class [$handler] not exists!");
+                throw new \InvalidArgumentException("The console command class [{$handler}] not exists!");
             }
-
             /** @var Command $object */
             $object = new $handler($this->input, $this->output);
-
-            if (!($object instanceof Command)) {
-                throw new \InvalidArgumentException("The console command class [$handler] must instanceof the " . Command::class);
+            if (!$object instanceof Command) {
+                throw new \InvalidArgumentException("The console command class [{$handler}] must instanceof the " . Command::class);
             }
-
             $object::setName($name);
             $object->setApp($this);
             $status = $object->run();
@@ -330,23 +291,18 @@ class Application extends AbstractApplication
     {
         // if $believable = true, will skip check.
         if (!$believable && !$this->isController($name)) {
-            throw new \InvalidArgumentException("The console controller-command [$name] not exists!");
+            throw new \InvalidArgumentException("The console controller-command [{$name}] not exists!");
         }
-
         // Controller class
         $controller = $this->controllers[$name];
-
         if (!class_exists($controller)) {
-            throw new \InvalidArgumentException("The console controller class [$controller] not exists!");
+            throw new \InvalidArgumentException("The console controller class [{$controller}] not exists!");
         }
-
         /** @var Controller $object */
         $object = new $controller($this->input, $this->output);
-
-        if (!($object instanceof Controller)) {
-            throw new \InvalidArgumentException("The console controller class [$object] must instanceof the " . Controller::class);
+        if (!$object instanceof Controller) {
+            throw new \InvalidArgumentException("The console controller class [{$object}] must instanceof the " . Controller::class);
         }
-
         $object::setName($name);
         $object->setApp($this);
         $object->setDelimiter($this->delimiter);

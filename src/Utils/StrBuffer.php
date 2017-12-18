@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: inhere
@@ -27,7 +28,7 @@ class StrBuffer
     /**
      * @param string $content
      */
-    public function write(string $content)
+    public function write($content)
     {
         $this->body .= $content;
     }
@@ -35,7 +36,7 @@ class StrBuffer
     /**
      * @param string $content
      */
-    public function append(string $content)
+    public function append($content)
     {
         $this->write($content);
     }
@@ -43,7 +44,7 @@ class StrBuffer
     /**
      * @param string $content
      */
-    public function prepend(string $content)
+    public function prepend($content)
     {
         $this->body = $content . $this->body;
     }
@@ -59,7 +60,7 @@ class StrBuffer
     /**
      * @return string
      */
-    public function getBody(): string
+    public function getBody()
     {
         return $this->body;
     }
@@ -67,7 +68,7 @@ class StrBuffer
     /**
      * @param string $body
      */
-    public function setBody(string $body)
+    public function setBody($body)
     {
         $this->body = $body;
     }
