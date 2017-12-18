@@ -4,8 +4,8 @@ namespace Inhere\Console\Examples;
 
 use Inhere\Console\Controller;
 use Inhere\Console\IO\Input;
-use Inhere\Console\Utils\AnsiCode;
-use Inhere\Console\Utils\Download;
+use Inhere\Console\Components\AnsiCode;
+use Inhere\Console\Components\Download;
 use Inhere\Console\Utils\Helper;
 use Inhere\Console\Utils\Interact;
 use Inhere\Console\Utils\Show;
@@ -150,13 +150,20 @@ class HomeController extends Controller
     }
 
     /**
-     * output more format message text
+     * output format message: title
      */
-    public function fmtMsgCommand()
+    public function titleCommand()
     {
         $this->output->title('title show');
-        echo "\n";
 
+        return 0;
+    }
+
+    /**
+     * output format message: section
+     */
+    public function sectionCommand()
+    {
         $body = 'If screen size could not be detected, or the indentation is greater than the screen size, the text will not be wrapped.' .
             'Word wrap text with indentation to fit the screen size,' .
             'Word wrap text with indentation to fit the screen size,' .
@@ -167,17 +174,31 @@ class HomeController extends Controller
             'pos' => 'l'
         ]);
 
+        return 0;
+    }
+
+    /**
+     * output format message: panel
+     */
+    public function panelCommand()
+    {
         $data = [
             'application version' => '1.2.0',
             'system version' => '5.2.3',
             'see help' => 'please use php bin/app -h',
             'a only value message text',
         ];
+
         Show::panel($data, 'panel show', [
             'borderChar' => '#'
         ]);
+    }
 
-        echo "\n";
+    /**
+     * output format message: helpPanel
+     */
+    public function helpPanelCommand()
+    {
         Show::helpPanel([
             Show::HELP_DES => 'a help panel description text. (help panel show)',
             Show::HELP_USAGE => 'a usage text',
@@ -192,6 +213,21 @@ class HomeController extends Controller
                 '-h, --help' => 'Display this help message'
             ],
         ], false);
+    }
+
+    /**
+     * output format message: aList
+     */
+    public function aListCommand()
+    {
+        $list = [
+            'The is a list line 0',
+            'The is a list line 1',
+            'The is a list line 2',
+            'The is a list line 3',
+        ];
+
+        Show::aList($list, 'a List show(No key)');
 
         $commands = [
             'version' => 'Show application version information',
@@ -199,28 +235,8 @@ class HomeController extends Controller
             'list' => 'List all group and independent commands',
             'a only value message text'
         ];
-        Show::aList($commands, 'a List show');
 
-        Show::table([
-            [
-                'id' => 1,
-                'name' => 'john',
-                'status' => 2,
-                'email' => 'john@email.com',
-            ],
-            [
-                'id' => 2,
-                'name' => 'tom',
-                'status' => 0,
-                'email' => 'tom@email.com',
-            ],
-            [
-                'id' => 3,
-                'name' => 'jack',
-                'status' => 1,
-                'email' => 'jack-test@email.com',
-            ],
-        ], 'table show');
+        Show::aList($commands, 'a List show(Has key)');
     }
 
     /**
@@ -323,7 +339,7 @@ class HomeController extends Controller
         $this->output->dump($data);
 
         $this->output->write('use print:');
-        $this->output->print($data);
+        $this->output->prints($data);
 
         $this->output->write('use json:');
         $this->output->json($data);
@@ -350,6 +366,7 @@ class HomeController extends Controller
 
     /**
      * command `defArgCommand` config
+     * @throws \LogicException
      */
     protected function defArgConfigure()
     {
@@ -369,7 +386,7 @@ class HomeController extends Controller
     }
 
     /**
-     * use <red>Interact::confirm</red> method
+     * This is a demo for use <red>Interact::confirm</red> method
      */
     public function confirmCommand()
     {
@@ -379,7 +396,7 @@ class HomeController extends Controller
     }
 
     /**
-     * example for use <magenta>Interact::select</magenta> method
+     * This is a demo for use <magenta>Interact::select</magenta> method
      */
     public function selectCommand()
     {
@@ -406,16 +423,16 @@ class HomeController extends Controller
     }
 
     /**
-     * download a file to local
+     * This is a demo for download a file to local
      * @usage {command} url=url saveTo=[saveAs] type=[bar|text]
-     * @example {command} url=https://github.com/inhere/php-librarys/archive/v2.0.1.zip type=bar
+     * @example {command} url=https://github.com/inhere/php-console/archive/master.zip type=bar
      */
     public function downCommand()
     {
         $url = $this->input->getArg('url');
 
         if (!$url) {
-            Show::error('Please input you want to downloaded file url, use: url=[url]', 1);
+            $this->output->liteError('Please input you want to downloaded file url, use: url=[url]', 1);
         }
 
         $saveAs = $this->input->getArg('saveAs');
@@ -425,7 +442,7 @@ class HomeController extends Controller
             $saveAs = __DIR__ . '/' . basename($url);
         }
 
-        $goon = Interact::confirm("Now, will download $url to $saveAs, go on");
+        $goon = Interact::confirm("Now, will download $url \nto dir $saveAs, go on");
 
         if (!$goon) {
             Show::notice('Quit download, Bye!');
@@ -435,13 +452,13 @@ class HomeController extends Controller
 
         $d = Download::down($url, $saveAs, $type);
 
-        echo Helper::dumpVars($d);
+        // echo Helper::dumpVars($d);
 
         return 0;
     }
 
     /**
-     * show cursor move on the screen
+     * This is a demo for show cursor move on the screen
      */
     public function cursorCommand()
     {
