@@ -1,7 +1,7 @@
 <?php
 require dirname(__DIR__) . '/../../autoload.php';
 
-use inhere\console\utils\ProgressBar;
+use Inhere\Console\Utils\ProgressBar;
 
 $i = 1;
 $total = 100;

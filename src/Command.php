@@ -6,105 +6,47 @@
  * Time: 13:23
  */
 
-namespace inhere\console;
+namespace Inhere\Console;
 
-use inhere\console\io\Input;
-use inhere\console\io\Output;
+use Inhere\Console\Base\AbstractCommand;
 
 /**
  * Class Command
- * @package inhere\console
+ * @package Inhere\Console
  */
 abstract class Command extends AbstractCommand
 {
-    /**
-     * command usage message
-     * @var string
-     */
-    protected $usage = '';
-
-    /**
-     * command arguments message
-     * @var array
-     */
-    protected $arguments = [];
-
-    /**
-     * command arguments message
-     * @var array
-     */
-    protected $options = [];
-
-    /**
-     * command example message
-     * @var string
-     */
-    protected $example = '';
-
-    /**
-     * run command
-     * @param  string $name
-     * @return int
-     */
-    public function run($name = '')
-    {
-        $this->setName($name);
-
-        if ($this->input->sameOpt(['h','help'])) {
-            return $this->showHelp();
-        }
-
-        $status = 0;
-
-        try {
-            $this->beforeRun($name);
-            $status = $this->execute($this->input, $this->output);
-            $this->afterRun($name);
-
-        } catch (\Exception $e) {
-            $this->handleRuntimeException($e);
-        }
-
-        return $status;
-    }
-
-    /**
+    /*
      * do execute
-     * @param  Input $input
-     * @param  Output $output
+     * @param  \Inhere\Console\IO\Input $input
+     * @param  \Inhere\Console\IO\Output $output
      * @return int
      */
-    abstract protected function execute($input, $output);
+    // protected function execute($input, $output)
+    // {
+    //      // something logic ...
+    // }
 
     /**
-     * @return array
+     * configure
      */
-    protected function configure()
-    {
-        return [
-            // 'usage' => '',
-
-            // 'arguments' => [],
-            // 'options' => [],
-            // 'examples' => [],
-        ];
-    }
+    // protected function configure()
+    // {
+    // $this
+    //     ->createDefinition()
+    //     ->addArgument('test')
+    //     ->addOption('test');
+    // }
 
     /**
      * @return int
      */
-    public function showHelp()
+    protected function showHelp()
     {
-        $configure = $this->configure();
-
-        if (!$configure) {
-            return __LINE__;
+        if (true === parent::showHelp()) {
+            return 0;
         }
 
-        $configure['description'] = static::DESCRIPTION;
-
-        $this->output->helpPanel($configure, false);
-
-        return 0;
+        return $this->showHelpByMethodAnnotation('execute');
     }
 }

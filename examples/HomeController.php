@@ -1,26 +1,34 @@
 <?php
 
-namespace inhere\console\examples;
+namespace Inhere\Console\Examples;
 
-use inhere\console\Controller;
-use inhere\console\utils\Download;
-use inhere\console\utils\Show;
-use inhere\console\utils\Interact;
+use Inhere\Console\Controller;
+use Inhere\Console\IO\Input;
+use Inhere\Console\Utils\AnsiCode;
+use Inhere\Console\Utils\Download;
+use Inhere\Console\Utils\Helper;
+use Inhere\Console\Utils\Interact;
+use Inhere\Console\Utils\Show;
 
 /**
  * default command controller. there are some command usage examples(1)
- *
  * Class HomeController
- * @package inhere\console\examples
+ * @package Inhere\Console\examples
  */
 class HomeController extends Controller
 {
-    const DESCRIPTION = 'default command controller. there are some command usage examples(2)';
+    protected static $description = 'default command controller. there are some command usage examples(2)';
 
     /**
      * this is a command's description message
      * the second line text
      * @usage usage message
+     * @arguments
+     * arg1  argument description 1
+     * arg2  argument description 2
+     * @options
+     * --long,-s option description 1
+     * --opt    option description 2
      * @example example text one
      *  the second line example
      */
@@ -30,8 +38,19 @@ class HomeController extends Controller
     }
 
     /**
+     * a example for input password on command line
+     * @usage {fullCommand}
+     */
+    public function passwdCommand()
+    {
+        $pwd = $this->askPassword();
+
+        $this->write('Your input is:' . $pwd);
+    }
+
+    /**
      * a example for use color text output on command
-     * @usage ./bin/app home/color
+     * @usage {fullCommand}
      */
     public function colorCommand()
     {
@@ -41,10 +60,9 @@ class HomeController extends Controller
             return 0;
         }
 
+        $this->write('color text output:');
         $styles = $this->output->getStyle()->getStyleNames();
-        $this->write('normal text output');
 
-        $this->write('color text output');
         foreach ($styles as $style) {
             $this->output->write("<$style>$style style text</$style>");
         }
@@ -60,8 +78,72 @@ class HomeController extends Controller
     {
         $this->write('block message:');
 
-        foreach (Interact::$defaultBlocks as $type) {
-            $this->output->$type('message text');
+        foreach (Show::getBlockMethods() as $type) {
+            $this->output->$type("$type style message text");
+        }
+
+        return 0;
+    }
+
+    /**
+     * a counter example show. It is like progress txt, but no max value.
+     * @example
+     *  {script} {command}
+     * @return int
+     */
+    public function counterCommand()
+    {
+        $total = 120;
+        $ctr = Show::counterTxt('handling ...', 'handled.');
+        $this->write('Counter:');
+
+        while ($total - 1) {
+            $ctr->send(1);
+            usleep(30000);
+            $total--;
+        }
+
+        // end of the counter.
+        $ctr->send(-1);
+
+        return 0;
+    }
+
+    /**
+     * a progress bar example show
+     * @options
+     *  --type      the progress type, allow: bar,txt. <cyan>txt</cyan>
+     *  --done-char the done show char. <info>=</info>
+     *  --wait-char the waiting show char. <info>-</info>
+     *  --sign-char the sign char show. <info>></info>
+     * @example
+     *  {script} {command}
+     *  {script} {command} --done-char '#' --wait-char ' '
+     * @param Input $input
+     * @return int
+     */
+    public function progressCommand($input)
+    {
+        $i = 0;
+        $total = 120;
+        if ($input->getOpt('type') === 'bar') {
+            $bar = $this->output->progressBar($total, [
+                'msg' => 'Msg Text',
+                'doneMsg' => 'Done Msg Text',
+                'doneChar' => $input->getOpt('done-char', '='), // ▓
+                'waitChar' => $input->getOpt('wait-char', '-'), // ░
+                'signChar' => $input->getOpt('sign-char', '>'),
+            ]);
+        } else {
+            $bar = $this->output->progressTxt($total, 'Doing gggg ...', 'Done');
+        }
+
+        $this->write('Progress:');
+
+        while ($i <= $total) {
+            $bar->send(1);
+            usleep(50000);
+            $i++;
         }
 
         return 0;
@@ -85,12 +167,15 @@ class HomeController extends Controller
             'pos' => 'l'
         ]);
 
-        $commands = [
-            'version' => 'Show application version information',
-            'help' => 'Show application help information',
-            'list' => 'List all group and independent commands',
+        $data = [
+            'application version' => '1.2.0',
+            'system version' => '5.2.3',
+            'see help' => 'please use php bin/app -h',
+            'a only value message text',
         ];
-        Show::panel($commands, 'panel show', '#');
+        Show::panel($data, 'panel show', [
+            'borderChar' => '#'
+        ]);
 
         echo "\n";
         Show::helpPanel([
@@ -108,7 +193,13 @@ class HomeController extends Controller
             ],
         ], false);
 
-        Show::aList($commands, 'aList show');
+        $commands = [
+            'version' => 'Show application version information',
+            'help' => 'Show application help information',
+            'list' => 'List all group and independent commands',
+            'a only value message text'
+        ];
+        Show::aList($commands, 'a List show');
 
         Show::table([
             [
@@ -133,26 +224,152 @@ class HomeController extends Controller
     }
 
     /**
+     * a example for display a table
+     */
+    public function tableCommand()
+    {
+        $data = [
+            [
+                'id' => 1,
+                'name' => 'john',
+                'status' => 2,
+                'email' => 'john@email.com',
+            ],
+            [
+                'id' => 2,
+                'name' => 'tom',
+                'status' => 0,
+                'email' => 'tom@email.com',
+            ],
+            [
+                'id' => 3,
+                'name' => 'jack',
+                'status' => 1,
+                'email' => 'jack-test@email.com',
+            ],
+        ];
+        Show::table($data, 'table show');
+
+        Show::table($data, 'No border table show', [
+            'showBorder' => 0
+        ]);
+
+        Show::table($data, 'change style table show', [
+            'bodyStyle' => 'info'
+        ]);
+
+        $data1 = [
+            [
+                'Walter White',
+                'Father',
+                'Teacher',
+            ],
+            [
+                'Skyler White',
+                'Mother',
+                'Accountant',
+            ],
+            [
+                'Walter White Jr.',
+                'Son',
+                'Student',
+            ],
+        ];
+
+        Show::table($data1, 'no head table show');
+    }
+
+    /**
+     * a example use padding() for show data
+     */
+    public function paddingCommand()
+    {
+        $data = [
+            'Eggs' => '$1.99',
+            'Oatmeal' => '$4.99',
+            'Bacon' => '$2.99',
+        ];
+
+        Show::padding($data, 'padding data show');
+    }
+
+    /**
+     * a example for dump, print, json data
+     */
+    public function jsonCommand()
+    {
+        $data = [
+            [
+                'id' => 1,
+                'name' => 'john',
+                'status' => 2,
+                'email' => 'john@email.com',
+            ],
+            [
+                'id' => 2,
+                'name' => 'tom',
+                'status' => 0,
+                'email' => 'tom@email.com',
+            ],
+            [
+                'id' => 3,
+                'name' => 'jack',
+                'status' => 1,
+                'email' => 'jack-test@email.com',
+            ],
+        ];
+
+        $this->output->write('use dump:');
+        $this->output->dump($data);
+
+        $this->output->write('use print:');
+        $this->output->print($data);
+
+        $this->output->write('use json:');
+        $this->output->json($data);
+    }
+
+    /**
      * a example for use arguments on command
-     * @usage home/useArg [arg1=val1 arg2=arg2] [options]
-     * @example home/useArg status=2 name=john arg0 -s=test --page=23 -d -rf --debug --test=false
-     *   home/useArg status=2 name=john name=tom name=jack arg0 -s=test --page=23 --id=23 --id=154 --id=456  -d -rf --debug --test=false
+     * @usage home:useArg [arg1=val1 arg2=arg2] [options]
+     * @example
+     *  home:useArg status=2 name=john arg0 -s=test --page=23 -d -rf --debug --test=false
+     *  home:useArg status=2 name=john name=tom name=jack arg0 -s=test --page=23 --id=23 --id=154 --id=456  -d -rf --debug --test=false
      */
     public function useArgCommand()
     {
         $this->write('input arguments:');
-        var_dump($this->input->getArgs());
+        echo Helper::dumpVars($this->input->getArgs());
 
         $this->write('input options:');
-        var_dump($this->input->getOpts());
+        echo Helper::dumpVars($this->input->getOpts());
 
         // $this->write('the Input object:');
         // var_dump($this->input);
     }
 
     /**
-     * use Interact::confirm method
-     *
+     * command `defArgCommand` config
+     */
+    protected function defArgConfigure()
+    {
+        $this->createDefinition()
+            ->setDescription('the command arg/opt config use defined configure, it like symfony console: argument define by position')
+            ->addArgument('name', Input::ARG_REQUIRED, 'description for the argument [name]')
+            ->addOption('yes', 'y', Input::OPT_BOOLEAN, 'description for the option [yes]')
+            ->addOption('opt1', null, Input::OPT_REQUIRED, 'description for the option [opt1]');
+    }
+
+    /**
+     * the command arg/opt config use defined configure, it like symfony console: argument define by position
+     */
+    public function defArgCommand()
+    {
+        $this->output->dump($this->input->getArgs(), $this->input->getOpts(), $this->input->getBoolOpt('y'));
+    }
+
+    /**
+     * use <red>Interact::confirm</red> method
      */
     public function confirmCommand()
     {
@@ -162,8 +379,7 @@ class HomeController extends Controller
     }
 
     /**
-     * use <normal>Interact::select</normal> method
-     *
+     * example for use <magenta>Interact::select</magenta> method
      */
     public function selectCommand()
     {
@@ -185,11 +401,12 @@ class HomeController extends Controller
         ];
 
         Interact::panel($info);
+
+        echo Helper::printVars($_SERVER);
     }
 
     /**
      * download a file to local
-     *
      * @usage {command} url=url saveTo=[saveAs] type=[bar|text]
      * @example {command} url=https://github.com/inhere/php-librarys/archive/v2.0.1.zip type=bar
      */
@@ -198,7 +415,7 @@ class HomeController extends Controller
         $url = $this->input->getArg('url');
 
         if (!$url) {
-            $this->output->error('Please input you want to downloaded file url, use: url=[url]', 1);
+            Show::error('Please input you want to downloaded file url, use: url=[url]', 1);
         }
 
         $saveAs = $this->input->getArg('saveAs');
@@ -211,15 +428,52 @@ class HomeController extends Controller
         $goon = Interact::confirm("Now, will download $url to $saveAs, go on");
 
         if (!$goon) {
-            $this->output->notice('Quit download, Bye!');
+            Show::notice('Quit download, Bye!');
 
             return 0;
         }
 
         $d = Download::down($url, $saveAs, $type);
 
-        var_dump($d);
+        echo Helper::dumpVars($d);
 
         return 0;
+    }
+
+    /**
+     * show cursor move on the screen
+     */
+    public function cursorCommand()
+    {
+        $this->write('hello, this in ' . __METHOD__);
+
+        // $this->output->panel($_SERVER, 'Server information', '');
+
+        $this->write('this is a message text.', false);
+
+        sleep(1);
+        AnsiCode::make()->cursor(AnsiCode::CURSOR_BACKWARD, 6);
+
+        sleep(1);
+        AnsiCode::make()->cursor(AnsiCode::CURSOR_FORWARD, 3);
+
+        sleep(1);
+        AnsiCode::make()->cursor(AnsiCode::CURSOR_BACKWARD, 2);
+
+        sleep(2);
+
+        AnsiCode::make()->screen(AnsiCode::CLEAR_LINE, 3);
+
+        $this->write('after 2s scroll down 3 row.');
+
+        sleep(2);
+
+        AnsiCode::make()->screen(AnsiCode::SCROLL_DOWN, 3);
+
+        $this->write('after 3s clear screen.');
+
+        sleep(3);
+
+        AnsiCode::make()->screen(AnsiCode::CLEAR);
     }
 }

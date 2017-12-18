@@ -1,6 +1,6 @@
 <?php
 
-namespace inhere\console\examples\baks;
+namespace Inhere\Console\examples\baks;
 
 /**
  * Created by PhpStorm.
@@ -85,7 +85,7 @@ class OldInput
         // is a have value option. eg: `-s=test --page=23`
         if (strpos($item, '=')) {
             $item = trim($item, '-= ');
-            list($name, $val) = explode('=', $item);
+            [$name, $val] = explode('=', $item);
             $tVal = strtolower($val);
 
             // check it is a bool value.
@@ -145,7 +145,7 @@ class OldInput
 
         // eg: `name=john`
         if (strpos($item, '=')) {
-            list($name, $val) = explode('=', $item);
+            [$name, $val] = explode('=', $item);
 
             // is array. eg: `name=john name=tom`
             if (isset($args[$name])) {

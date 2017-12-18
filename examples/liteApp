@@ -1,0 +1,21 @@
+#!/usr/bin/env php
+<?php
+
+define('BASE_PATH', dirname(__DIR__));
+
+require __DIR__ . '/s-autoload.php';
+
+// create app instance
+$app = new \Inhere\Console\LiteApplication;
+
+// register commands
+$app->addCommand('test', function () {
+    echo "hello\n";
+}, 'the description text for the command: test');
+
+$app->addCommand('test1', function () {
+    echo "hello\n";
+}, 'the description text for the command: test1');
+
+// run
+$app->run();

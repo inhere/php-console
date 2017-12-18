@@ -6,191 +6,264 @@
  * Time: 13:23
  */
 
-namespace inhere\console;
+namespace Inhere\Console;
+
+use Inhere\Console\Base\AbstractCommand;
+use Inhere\Console\Base\ControllerInterface;
+use Inhere\Console\IO\Input;
+use Inhere\Console\IO\Output;
+use Inhere\Console\Utils\Helper;
+use Inhere\Console\Utils\Annotation;
 
 /**
- * Class Command
- * @package inhere\console
+ * Class Controller
+ * @package Inhere\Console
  */
-abstract class Controller extends AbstractCommand
+abstract class Controller extends AbstractCommand implements ControllerInterface
 {
-    /**
-     * @var string
-     */
-    protected $defaultAction = 'help';
+    /** @var string */
+    private $action;
 
-    /**
-     * @var string
-     */
-    protected $actionSuffix = 'Command';
+    /** @var string  */
+    private $defaultAction = 'help';
 
-    /**
-     * @var string
-     */
+    /** @var string  */
+    private $actionSuffix = 'Command';
+
+    /** @var string  */
     protected $notFoundCallback = 'notFound';
+
+    /** @var string  */
+    protected $delimiter = ':'; // '/' ':'
+
+    /** @var bool  */
+    private $standAlone = false;
+
+    /**
+     * @param string $command
+     * @return int
+     */
+    public function run($command = '')
+    {
+        if (!$this->action = trim($command)) {
+            return $this->showHelp();
+        }
+
+        return parent::run($command);
+    }
+
+    /**
+     * load command configure
+     */
+    protected function configure()
+    {
+        if ($action = $this->action) {
+            $method = $action . 'Configure';
+
+            if (method_exists($this, $method)) {
+                $this->$method();
+            }
+        }
+    }
 
     /**
      * 运行控制器的 action
-     * @param $action
+     * @param  Input $input
+     * @param  Output $output
      * @return mixed
-     * @throws \HttpException
+     * @throws \ReflectionException
      */
-    public function run($action = '')
+    protected function execute($input, $output)
     {
-        if ($action && $this->input->sameOpt(['h','help'])) {
-            return $this->helpCommand($action);
-        }
-
-        $result = '';
-        $action = $action ?: $this->defaultAction;
-
-        if ($params = func_get_args()) {
-            array_shift($params);// the first argument is `$action`
-        }
-
-        $action = trim($action, '/');
-
-        // convert 'first-second' to 'firstSecond'
-        if (strpos($action, '-')) {
-            $action = ucwords(str_replace('-', ' ', $action));
-            $action = str_replace(' ', '', lcfirst($action));
-        }
-
+        $action = Helper::camelCase(trim($this->action ?: $this->defaultAction, $this->delimiter));
         $method = $this->actionSuffix ? $action . ucfirst($this->actionSuffix) : $action;
 
         // the action method exists and only allow access public method.
-        if (
-            method_exists($this, $method) &&
-            (($refMethod = new \ReflectionMethod($this, $method)) && $refMethod->isPublic())
-        ) {
+        if (method_exists($this, $method) && (($rfm = new \ReflectionMethod($this, $method)) && $rfm->isPublic())) {
             // run action
-            try {
-                $this->beforeRun($action);
-                $result = $params ? call_user_func_array([$this, $method], $params) : $this->$method();
-                $this->afterRun($action);
-
-            } catch (\Exception $e) {
-                $this->handleRuntimeException($e);
-            }
+            $status = $this->$method($input, $output);
 
             // if you defined the method '$this->notFoundCallback' , will call it
         } elseif (($notFoundCallback = $this->notFoundCallback) && method_exists($this, $notFoundCallback)) {
-            $result = $this->{$notFoundCallback}($action);
+            $status = $this->{$notFoundCallback}($action);
         } else {
-            // throw new \RuntimeException('Sorry, the page you want to visit already does not exist!');
-            $this->output->error("Sorry, the controller command [$action] not exist!");
-            $this->showCommandList();
+            $group = static::getName();
+            $status = -1;
+            $output->liteError("Sorry, The command '$action' not exist of the group '{$group}'!");
+
+            // find similar command names by similar_text()
+            $similar = [];
+
+            foreach ($this->getAllCommandMethods() as $cmd => $refM) {
+                similar_text($action, $cmd, $percent);
+
+                if (45 <= (int)$percent) {
+                    $similar[] = $cmd;
+                }
+            }
+
+            if ($similar) {
+                $output->write(sprintf("\nMaybe what you mean is:\n    <info>%s</info>", implode(', ', $similar)));
+            } else {
+                $this->showCommandList();
+            }
         }
 
-        return $result;
+        return $status;
+    }
+
+    /**
+     * @return int
+     * @throws \ReflectionException
+     */
+    protected function showHelp()
+    {
+        if (true === parent::showHelp()) {
+            return 0;
+        }
+
+        return $this->helpCommand();
     }
 
     /**
      * Show help of the controller command group or specified command action
-     * @usage <info>{name}/[action] -h</info> OR <info>{name}/help [action]</info> OR <info>{name} [action]</info>
-     * @example home/help
-     *    home/help index
-     *    home/index -h
-     *    home index
+     * @usage <info>{name}/[command] -h</info> OR <info>{command} [command]</info> OR <info>{name} [command] -h</info>
+     * @example
+     *  {script} {name} -h
+     *  {script} {name}/help
+     *  {script} {name}/help index
+     *  {script} {name}/index -h
+     *  {script} {name} index
      *
-     * @param string $action
      * @return int
+     * @throws \ReflectionException
      */
-    final public function helpCommand($action = '')
+    final public function helpCommand()
     {
+        $action = $this->action;
+
+        // show all commands of the controller
         if (!$action && !($action = $this->input->getFirstArg())) {
             $this->showCommandList();
             return 0;
         }
 
-        // convert 'first-second' to 'firstSecond'
-        if (strpos($action, '-')) {
-            $action = ucwords(str_replace('-', ' ', $action));
-            $action = str_replace(' ', '', lcfirst($action));
-        }
-
+        $action = Helper::camelCase($action);
         $method = $this->actionSuffix ? $action . ucfirst($this->actionSuffix) : $action;
 
-        $ref = new \ReflectionClass($this);
-        $sName = lcfirst($this->getName() ?: $ref->getShortName());
-
-        if (!$ref->hasMethod($method) || !$ref->getMethod($method)->isPublic()) {
-            $this->write("Command [<info>$sName/$action</info>] don't exist or don't allow access in the class.");
-            return 0;
-        }
-
-        $m = $ref->getMethod($method);
-        $tags = $this->parseDocCommentTags($m->getDocComment());
-
-        foreach ($tags as $tag => $msg) {
-            if (!self::$allowTags || in_array($tag, self::$allowTags, true)) {
-                $tag = ucfirst($tag);
-                $this->write("<comment>$tag:</comment>\n   $msg\n");
-            }
-        }
-
-        return 0;
+        // show help info for a command.
+        return $this->showHelpByMethodAnnotation($method, $action);
     }
 
     /**
      * show command list of the controller class
+     * @throws \ReflectionException
      */
-    final protected function showCommandList()
+    final public function showCommandList()
     {
         $ref = new \ReflectionClass($this);
+        $sName = lcfirst(self::getName() ?: $ref->getShortName());
 
-        $class = $ref->getName();
-        $sName = lcfirst($this->getName() ?: $ref->getShortName());
-        $this->write("This is in the console controller [<bold>$class</bold>]\n");
-
-        if (!($desc = static::DESCRIPTION)) {
-            $desc = $this->parseDocCommentDetail($ref->getDocComment()) ?: 'No Description';
+        if (!($classDes = self::getDescription())) {
+            $classDes = Annotation::description($ref->getDocComment()) ?: 'No Description for the console controller';
         }
 
-        $suffix = $this->actionSuffix;
-        $suffixLen = Helper::strLen($suffix);
-        $text = "<comment>Description:</comment>
-  $desc
-<comment>Usage</comment>:
-  $sName/[command] [options] [arguments]
-<comment>Group Name:</comment>
-  <info>$sName</info>";
-
-        $this->write($text);
-
         $commands = [];
-        foreach ($ref->getMethods() as $m) {
-            $mName = $m->getName();
+        foreach ($this->getAllCommandMethods($ref) as $cmd => $m) {
+            $desc = Annotation::firstLine($m->getDocComment());
 
-            if ($m->isPublic() && substr($mName, -$suffixLen) === $suffix) {
-                $desc = $this->parseDocCommentSummary($m->getDocComment());
-                $length = strlen($this->actionSuffix);
-                $cmd = '';
-
-                if ($length) {
-                    if (substr($mName, -$length) === $this->actionSuffix) {
-                        $cmd = substr($mName, 0, -$length);
-                    }
-
-                } else {
-                    $cmd = $mName;
-                }
-
-                if ($cmd) {
-                    //$this->write("  <info>$cmd</info>  $desc");
-                    $commands[$cmd] = $desc;
-                }
+            if ($cmd) {
+                $commands[$cmd] = $desc;
             }
         }
 
-        $commands[] = "\nFor more information please use: <info>$sName/help [command]</info>";
-        $this->output->aList($commands, '<comment>Commands:</comment>');
+        // sort commands
+        ksort($commands);
+
+        // move 'help' to last.
+        if ($helpCmd = $commands['help'] ?? null) {
+            unset($commands['help']);
+            $commands['help'] = $helpCmd;
+        }
+
+        $script = $this->getScriptName();
+
+        if ($this->standAlone) {
+            $name = $sName . ' ';
+            $usage = "$script <info>{command}</info> [arguments] [options]";
+        } else {
+            $name = $sName . $this->delimiter;
+            $usage = "$script {$name}<info>{command}</info> [arguments] [options]";
+        }
+
+        $this->output->mList([
+            'Description:' => $classDes,
+            'Usage:' => $usage,
+            //'Group Name:' => "<info>$sName</info>",
+            'Commands:' => $commands,
+            'Options:' => [
+                '-h,--help' => 'Show help of the command group or specified command action',
+            ],
+        ]);
+
+        $this->write(sprintf(
+            "More information about a command, please use: <cyan>$script $name{command} -h</cyan>",
+            $this->standAlone ? ' ' . $name : ''
+        ));
+    }
+
+    /**
+     * @param \ReflectionClass|null $ref
+     * @return \Generator
+     */
+    protected function getAllCommandMethods(\ReflectionClass $ref = null)
+    {
+        $ref = $ref ?: new \ReflectionObject($this);
+
+        $suffix = $this->actionSuffix;
+        $suffixLen = Helper::strLen($suffix);
+
+        foreach ($ref->getMethods() as $m) {
+            $mName = $m->getName();
+
+            if ($m->isPublic() && substr($mName, - $suffixLen) === $suffix) {
+                // suffix is empty ?
+                $cmd = $suffix ? substr($mName, 0, -$suffixLen) : $mName;
+
+                yield $cmd => $m;
+            }
+        }
+    }
+
+    /**************************************************************************
+     * getter/setter methods
+     **************************************************************************/
+
+    /**
+     * @return string
+     */
+    public function getAction(): string
+    {
+        return $this->action;
+    }
+
+    /**
+     * @param string $action
+     * @return $this
+     */
+    public function setAction(string $action)
+    {
+        if ($action) {
+            $this->action = Helper::camelCase($action);
+        }
+
+        return $this;
     }
 
     /**
      * @return string
      */
-    public function getDefaultAction()
+    public function getDefaultAction(): string
     {
         return $this->defaultAction;
     }
@@ -206,7 +279,7 @@ abstract class Controller extends AbstractCommand
     /**
      * @return string
      */
-    public function getActionSuffix()
+    public function getActionSuffix(): string
     {
         return $this->actionSuffix;
     }
@@ -235,73 +308,35 @@ abstract class Controller extends AbstractCommand
         $this->notFoundCallback = $notFoundCallback;
     }
 
-    /*
-     * 以下三个方法来自 yii2 console/Controller.php
-     */
-
     /**
-     * Parses the comment block into tags.
-     * @param string $comment the comment block
-     * @return array the parsed tags
+     * @return bool
      */
-    protected function parseDocCommentTags($comment)
+    public function isStandAlone(): bool
     {
-//        $comment = $reflection->getDocComment();
-        $comment = "@description \n" . strtr(trim(preg_replace('/^\s*\**( |\t)?/m', '', trim($comment, '/'))), "\r", '');
-
-        $parts = preg_split('/^\s*@/m', $comment, -1, PREG_SPLIT_NO_EMPTY);
-        $tags = [];
-
-        foreach ($parts as $part) {
-            if (preg_match('/^(\w+)(.*)/ms', trim($part), $matches)) {
-                $name = $matches[1];
-                if (!isset($tags[$name])) {
-                    $tags[$name] = trim($matches[2]);
-                } elseif (is_array($tags[$name])) {
-                    $tags[$name][] = trim($matches[2]);
-                } else {
-                    $tags[$name] = [$tags[$name], trim($matches[2])];
-                }
-            }
-        }
-
-        return $tags;
+        return $this->standAlone;
     }
 
     /**
-     * Returns the first line of docBlock.
-     *
-     * @param  $comment
-     * @return string
+     * @param bool $standAlone
      */
-    protected function parseDocCommentSummary($comment)
+    public function setStandAlone($standAlone = true)
     {
-        $docLines = preg_split('~\R~u', $comment);
-
-        if (isset($docLines[1])) {
-            return trim($docLines[1], "\t *");
-        }
-
-        return '';
+        $this->standAlone = (bool)$standAlone;
     }
 
     /**
-     * Returns full description from the doc block.
-     *
-     * @param  $comment
      * @return string
      */
-    protected function parseDocCommentDetail($comment)
+    public function getDelimiter(): string
     {
-        $comment = strtr(trim(preg_replace('/^\s*\**( |\t)?/m', '', trim($comment, '/'))), "\r", '');
+        return $this->delimiter;
+    }
 
-        if (preg_match('/^\s*@\w+/m', $comment, $matches, PREG_OFFSET_CAPTURE)) {
-            $comment = trim(substr($comment, 0, $matches[0][1]));
-        }
-//        if ($comment !== '') {
-//            return $this->write($comment);
-//        }
-
-        return $comment;
+    /**
+     * @param string $delimiter
+     */
+    public function setDelimiter(string $delimiter)
+    {
+        $this->delimiter = $delimiter;
     }
 }

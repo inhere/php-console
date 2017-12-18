@@ -1,8 +1,8 @@
 {
   "name": "inhere/console",
   "type": "library",
-  "description": "a php console application library.",
-  "keywords": ["library","console","console-color","command", "console-application"],
+  "description": "a php console library, provide console argument parse,color style,user interactive, information show.",
+  "keywords": ["library","console","console-color", "command", "command-line", "cli", "console-application"],
   "homepage": "https://github.com/inhere/php-console",
   "license": "MIT",
   "authors": [
@@ -17,7 +17,12 @@
   },
   "autoload": {
     "psr-4": {
-      "inhere\\console\\" : "src/"
+      "Inhere\\Console\\" : "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Inhere\\Console\\Tests\\" : "tests/"
     }
   },
   "suggest": {

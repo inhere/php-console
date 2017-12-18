@@ -6,51 +6,29 @@
  * Time: 18:58
  */
 
-namespace inhere\console\examples;
+namespace Inhere\Console\Examples;
 
-use inhere\console\Command;
-use inhere\console\utils\AnsiCode;
+use Inhere\Console\Command;
 
 /**
  * Class Test
- * @package app\console\commands
  */
 class TestCommand extends Command
 {
+    protected static $description = 'this is a test independent command';
+
     /**
-     * {@inheritdoc}
+     * test text
+     * @usage {name} test message
+     * @arguments
+     * arg1  argument description 1
+     * arg2  argument description 2
+     * @options
+     * --long,-s option description 1
+     * --opt    option description 2
      */
     public function execute($input, $output)
     {
         $output->write('hello, this in ' . __METHOD__);
-
-        // $this->output->panel($_SERVER, 'Server information', '');
-
-        $this->write('this is a message text.', false);
-
-        sleep(1);
-        AnsiCode::make()->cursor(AnsiCode::CURSOR_BACKWARD, 6);
-
-        sleep(1);
-        AnsiCode::make()->cursor(AnsiCode::CURSOR_FORWARD, 3);
-
-        sleep(1);
-        AnsiCode::make()->cursor(AnsiCode::CURSOR_BACKWARD, 2);
-
-        sleep(2);
-
-        AnsiCode::make()->screen(AnsiCode::CLEAR_LINE, 3);
-
-        $this->write('after 2s scroll down 3 row.');
-
-        sleep(2);
-
-        AnsiCode::make()->screen(AnsiCode::SCROLL_DOWN, 3);
-
-        $this->write('after 3s clear screen.');
-
-        sleep(3);
-
-        AnsiCode::make()->screen(AnsiCode::CLEAR);
     }
 }
