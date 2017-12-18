@@ -14,7 +14,6 @@ use Inhere\Console\Traits\InputOutputAwareTrait;
 use Inhere\Console\Traits\SimpleEventTrait;
 use Inhere\Console\Style\Style;
 use Inhere\Console\Utils\FormatUtil;
-use Inhere\Console\Utils\Helper;
 
 /**
  * Class AbstractApplication
@@ -471,7 +470,7 @@ ERR;
      */
     public function addCommandMessage($name, $message)
     {
-        if (!$name || !$message) {
+        if ($name && $message) {
             $this->commandMessages[$name] = $message;
         }
 

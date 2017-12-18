@@ -322,6 +322,12 @@ class Application extends AbstractApplication
         $handler = $this->commands[$name];
 
         if (\is_object($handler) && method_exists($handler, '__invoke')) {
+            if ($this->input->getSameOpt(['h', 'help'])) {
+                $des = $this->getCommandMessage($name, 'No command description message.');
+
+                return $this->output->write($des);
+            }
+
             $status = $handler($this->input, $this->output);
         } else {
             if (!class_exists($handler)) {
