@@ -16,6 +16,13 @@ use Inhere\Console\Utils\Helper;
  * Class Style
  * @package Inhere\Console\Style
  * @link https://github.com/ventoviro/windwalker-IO
+ *
+ * @method string info(string $message)
+ * @method string comment(string $message)
+ * @method string success(string $message)
+ * @method string warning(string $message)
+ * @method string danger(string $message)
+ * @method string error(string $message)
  */
 class Style
 {
@@ -93,6 +100,21 @@ class Style
         }
 
         $this->loadDefaultStyles();
+    }
+
+    /**
+     * @param string $method
+     * @param array $args
+     * @return mixed|string
+     * @throws \InvalidArgumentException
+     */
+    public function __call($method, array $args)
+    {
+        if (isset($args[0]) && $this->hasStyle($method)) {
+            return $this->format(sprintf('<%s>%s</%s>', $method, $args[0], $method));
+        }
+
+        throw new \InvalidArgumentException("You called method is not exists: $method");
     }
 
     /**
@@ -193,7 +215,9 @@ class Style
         return preg_replace(self::STRIP_TAG, '', $string);
     }
 
-///////////////////////////////////////// Attr Color Style /////////////////////////////////////////
+    /****************************************************************************
+     * Attr Color Style
+     ****************************************************************************/
 
     /**
      * Add a style.

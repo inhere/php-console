@@ -374,6 +374,18 @@ $output->write('hello <info>world<info>');
 
 > output 实例拥有 `Inhere\Console\Utils\Show` 的所有格式化输出方法。不过都是通过对象式访问的。
 
+- **单独使用颜色风格**
+
+```php
+$style = Inhere\Console\Style\Style::create();
+
+echo $style->render('no color <info>color text</info>');
+
+// 直接使用内置的风格
+echo $style->info('message');
+echo $style->error('message');
+```
+
 ### 标题文本输出
 
 使用 `Show::title()/$output->title()`
