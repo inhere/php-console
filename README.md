@@ -1,7 +1,7 @@
 # php 命令行应用库
 
-[![License](https://img.shields.io/packagist/l/inhere/console.svg?style=flat-square)](LICENSE-2.0.txt)
-[![Php Version](https://img.shields.io/badge/php-%3E=7.0-brightgreen.svg?maxAge=2592000)](https://packagist.org/packages/inhere/console)
+[![License](https://img.shields.io/packagist/l/inhere/console.svg?style=flat-square)](LICENSE)
+[![Php Version](https://img.shields.io/badge/php-%3E=5.6.0-brightgreen.svg?maxAge=2592000)](https://packagist.org/packages/inhere/console)
 [![Latest Stable Version](http://img.shields.io/packagist/v/inhere/console.svg)](https://packagist.org/packages/inhere/console)
 
 简洁、功能全面的php命令行应用库。提供控制台参数解析, 颜色风格输出, 用户信息交互, 特殊格式信息显示。
