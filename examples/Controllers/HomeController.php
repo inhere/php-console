@@ -379,6 +379,7 @@ class HomeController extends Controller
      */
     public function confirmCommand()
     {
+        // can also: $this->confirm();
         $a = Interact::confirm('continue');
 
         $this->write('Your answer is: ' . ($a ? 'yes' : 'no'));
@@ -390,9 +391,23 @@ class HomeController extends Controller
     public function selectCommand()
     {
         $opts = ['john', 'simon', 'rose'];
+        // can also: $this->select();
         $a = Interact::select('you name is', $opts);
 
         $this->write('Your answer is: ' . $opts[$a]);
+    }
+
+    /**
+     * This is a demo for use <magenta>Interact::multiSelect()</magenta> method
+     */
+    public function msCommand()
+    {
+        $opts = ['john', 'simon', 'rose', 'tom'];
+
+        // can also: $a = Interact::multiSelect('Your friends are', $opts);
+        $a = $this->multiSelect('Your friends are', $opts);
+
+        $this->write('Your answer is: ' . json_encode($a));
     }
 
     /**

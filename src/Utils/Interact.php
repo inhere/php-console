@@ -142,7 +142,55 @@ class Interact extends Show
      */
     public static function multiSelect(string $description, $options, $default = null, $allowExit = true)
     {
-        return [];
+        if (!$description = trim($description)) {
+            self::error('Please provide a description text!', 1);
+        }
+
+        $sep = ','; // ',' ' '
+        $options = \is_array($options) ? $options : explode(',', $options);
+
+        // If default option is error
+        if (null !== $default && !isset($options[$default])) {
+            self::error("The default option [{$default}] don't exists.", true);
+        }
+
+        if ($allowExit) {
+            $options['q'] = 'quit';
+        }
+
+        $text = "<comment>$description</comment>";
+        foreach ($options as $key => $value) {
+            $text .= "\n  <info>$key</info>) $value";
+        }
+
+        self::write($text);
+        $defaultText = $default ? "[default:<comment>{$default}</comment>]" : '';
+        $filter = function ($val) use($options){
+            return $val !== 'q' && isset($options[$val]);
+        };
+
+        beginChoice:
+        $r = self::read("Your choice{$defaultText} : ");
+        $r = $r !== '' ? str_replace(' ', '', trim($r, $sep)) : '';
+
+        // empty
+        if ($r === '') {
+            goto beginChoice;
+        }
+
+        // exit
+        if ($r === 'q') {
+            self::write("\n  Quit,ByeBye.", true, true);
+        }
+
+        $rs = strpos($r, $sep) ? array_filter(explode($sep, $r), $filter) : [$r];
+
+        // error, try again
+        if (!$rs) {
+            goto beginChoice;
+        }
+
+        return $rs;
     }
 
     /**
@@ -333,7 +381,7 @@ class Interact extends Show
                 }
             } else {
                 $num = $times + 1;
-                $answer = self::read(sprintf('(You have a [<bold>%s</bold>] chance to enter!) ', $num));
+                $answer = self::read(sprintf('(You have [<bold>%s</bold>] chances to enter!) ', $num));
             }
 
             // If setting verify callback

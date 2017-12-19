@@ -18,6 +18,9 @@ use Inhere\Console\Utils\Interact;
  * @method string readRow($message = null, $nl = false)
  * @method string read($message = null, $nl = false, array $opts = [])
  *
+ * @method array checkbox(string $description, $options, $default = null, $allowExit = true)
+ * @method array multiSelect(string $description, $options, $default = null, $allowExit = true)
+ *
  * @method string askHiddenInput(string $prompt = 'Enter Password:')
  * @method string promptSilent(string $prompt = 'Enter Password:')
  * @method string askPassword(string $prompt = 'Enter Password:')
