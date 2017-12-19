@@ -64,9 +64,7 @@ class Show
     /** @var bool */
     private static $buffering = false;
 
-    /**
-     * @var array
-     */
+    /** @var array */
     public static $defaultBlocks = [
         'block', 'primary', 'info', 'notice', 'success', 'warning', 'danger', 'error'
     ];
@@ -782,6 +780,10 @@ class Show
         return 0;
     }
 
+    /***********************************************************************************
+     * Output progress message
+     ***********************************************************************************/
+
     /**
      * 与文本进度条相比，没有 total
      * @param string $msg
@@ -959,7 +961,6 @@ class Show
 
     /**
      * create ProgressBar
-     *
      * ```php
      * $max = 200;
      * $bar = Show::createProgressBar($max);
@@ -970,7 +971,6 @@ class Show
      * }
      * $bar->finish();
      * ```
-     *
      * @param int $max
      * @param bool $start
      * @return ProgressBar
@@ -1032,21 +1032,30 @@ class Show
     }
 
     /**
-     * stop buffering and Flush buffer to output stream
+     * stop buffering
      * @see Show::write()
-     * @param bool $nl
+     * @param bool $flush Whether flush buffer to output stream
+     * @param bool $nl Default is False, because the last write() have been added "\n"
      * @param bool $quit
      * @param array $opts
+     * @return null|string If flush = False, will return all buffer text.
      */
-    public static function stopBuffer($nl = true, $quit = false, array $opts = [])
+    public static function stopBuffer($flush = true, $nl = false, $quit = false, array $opts = [])
     {
         self::$buffering = false;
 
-        if (self::$buffer) {
+        if ($flush && self::$buffer) {
+            // all text have been rendered by Style::render() in every write();
+            $opts['color'] = false;
+
+            // flush to stream
             self::write(self::$buffer, $nl, $quit, $opts);
+
+            // clear buffer
+            self::$buffer = null;
         }
 
-        self::$buffer = null;
+        return self::$buffer;
     }
 
     /**
@@ -1056,9 +1065,9 @@ class Show
      * @param bool $quit
      * @param array $opts
      */
-    public static function flushBuffer($nl = true, $quit = false, array $opts = [])
+    public static function flushBuffer($nl = false, $quit = false, array $opts = [])
     {
-        self::stopBuffer($nl, $quit, $opts);
+        self::stopBuffer(true, $nl, $quit, $opts);
     }
 
     /***********************************************************************************
@@ -1098,10 +1107,17 @@ class Show
             $messages = static::getStyle()->render($messages);
         }
 
-        // if open buffer.
+        // if open buffering
         if (self::isBuffering()) {
             self::$buffer .= $messages . ($nl ? PHP_EOL : '');
-            return 0;
+
+            if (!$quit) {
+                return 0;
+            }
+
+            // if will quit.
+            $messages = self::$buffer;
+            self::clearBuffer();
         }
 
         $stream = $opts['stream'] ?? STDOUT;

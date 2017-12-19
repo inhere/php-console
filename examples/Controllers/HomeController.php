@@ -2,10 +2,10 @@
 
 namespace Inhere\Console\Examples\Controllers;
 
-use Inhere\Console\Controller;
-use Inhere\Console\IO\Input;
 use Inhere\Console\Components\AnsiCode;
 use Inhere\Console\Components\Download;
+use Inhere\Console\Controller;
+use Inhere\Console\IO\Input;
 use Inhere\Console\Utils\Helper;
 use Inhere\Console\Utils\Interact;
 use Inhere\Console\Utils\Show;
@@ -35,17 +35,6 @@ class HomeController extends Controller
     public function indexCommand()
     {
         $this->write('hello, welcome!! this is ' . __METHOD__);
-    }
-
-    /**
-     * a example for input password on command line
-     * @usage {fullCommand}
-     */
-    public function passwdCommand()
-    {
-        $pwd = $this->askPassword();
-
-        $this->write('Your input is:' . $pwd);
     }
 
     /**
@@ -392,18 +381,74 @@ class HomeController extends Controller
     {
         $a = Interact::confirm('continue');
 
-        $this->write('you answer is: ' . ($a ? 'yes' : 'no'));
+        $this->write('Your answer is: ' . ($a ? 'yes' : 'no'));
     }
 
     /**
-     * This is a demo for use <magenta>Interact::select</magenta> method
+     * This is a demo for use <magenta>Interact::select()</magenta> method
      */
     public function selectCommand()
     {
         $opts = ['john', 'simon', 'rose'];
         $a = Interact::select('you name is', $opts);
 
-        $this->write('you answer is: ' . $opts[$a]);
+        $this->write('Your answer is: ' . $opts[$a]);
+    }
+
+    /**
+     * This is a demo for use <magenta>Interact::ask()</magenta> method
+     */
+    public function askCommand()
+    {
+        $a = Interact::ask('you name is: ', null, function ($val, &$err) {
+            if (!preg_match('/^\w{2,}$/', $val)) {
+                $err = 'Your input must match /^\w{2,}$/';
+
+                return false;
+            }
+
+            return true;
+        });
+
+        $this->write('Your answer is: ' . $a);
+    }
+
+    /**
+     * This is a demo for use <magenta>Interact::limitedAsk()</magenta> method
+     * @options
+     *  --nv   Not use validator.
+     *  --limit  limit times.(default: 3)
+     */
+    public function limitedAskCommand()
+    {
+        $times = (int)$this->input->getOpt('limit', 3);
+
+        if ($this->input->getBoolOpt('nv')) {
+            $a = Interact::limitedAsk('you name is: ', null, null, $times);
+        } else {
+            $a = Interact::limitedAsk('you name is: ', null, function ($val) {
+                if (!preg_match('/^\w{2,}$/', $val)) {
+                    Show::error('Your input must match /^\w{2,}$/');
+
+                    return false;
+                }
+
+                return true;
+            }, $times);
+        }
+
+        $this->write('Your answer is: ' . $a);
+    }
+
+    /**
+     * a example for input password on command line. use: <magenta>Interact::askPassword()</magenta>
+     * @usage {fullCommand}
+     */
+    public function pwdCommand()
+    {
+        $pwd = $this->askPassword();
+
+        $this->write('Your input is: ' . $pwd);
     }
 
     /**

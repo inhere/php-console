@@ -53,7 +53,7 @@ class Interact extends Show
      **************************************************************************************************/
 
     /**
-     * Select one of the options 在多个选项中选择一个
+     * alias of the `select()`
      * @param  string $description 说明
      * @param  mixed $options 选项数据
      * e.g
@@ -72,9 +72,9 @@ class Interact extends Show
     }
 
     /**
-     * alias of the `select()`
+     * choice one of the options 在多个选项中选择一个
      * @param $description
-     * @param $options
+     * @param string|array $options
      * @param null $default
      * @param bool $allowExit
      * @return string
@@ -118,12 +118,27 @@ class Interact extends Show
         return $r;
     }
 
-    public static function checkbox($description, $options, $default = null, $allowExit = true)
+    /**
+     * alias of the `multiSelect()`
+     * @param string $description
+     * @param string|array $options
+     * @param null|mixed $default
+     * @param bool $allowExit
+     * @return array
+     */
+    public static function checkbox(string $description, $options, $default = null, $allowExit = true)
     {
         return self::multiSelect($description, $options, $default, $allowExit);
     }
 
-    public static function multiSelect($description, $options, $default = null, $allowExit = true)
+    /**
+     * @param string $description
+     * @param string|array $options
+     * @param null|mixed $default
+     * @param bool $allowExit
+     * @return array
+     */
+    public static function multiSelect(string $description, $options, $default = null, $allowExit = true)
     {
         return [];
     }
@@ -137,7 +152,7 @@ class Interact extends Show
     public static function confirm($question, $default = true): bool
     {
         if (!$question = trim($question)) {
-            self::error('Please provide a question text!', 1);
+            self::warning('Please provide a question message!', 1);
         }
 
         $question = ucfirst(trim($question, '?'));
@@ -166,20 +181,9 @@ class Interact extends Show
 
     /**
      * alias of the `question()`
-     * 询问，提出问题；返回 输入的结果
      * @param string $question 问题
      * @param null|string $default 默认值
      * @param \Closure $validator The validate callback. It must return bool.
-     * @example This is an example
-     * ```php
-     *  $answer = Interact::ask('Please input your name?', null, function ($answer) {
-     *      if (!preg_match('/\w+/', $answer)) {
-     *          Interact::error('The name must match "/\w+/"');
-     *          return false;
-     *      }
-     *      return true;
-     *   });
-     * ```
      * @return string
      */
     public static function ask($question, $default = null, \Closure $validator = null)
@@ -189,9 +193,39 @@ class Interact extends Show
 
     /**
      * 询问，提出问题；返回 输入的结果
+     * @example This is an example
+     * ```php
+     *  $answer = Interact::ask('Please input your name?', null, function ($answer) {
+     *      if (!preg_match('/\w{2,}/', $answer)) {
+     *          // output error tips.
+     *          Interact::error('The name must match "/\w{2,}/"');
+     *          return false;
+     *      }
+     *
+     *      return true;
+     *   });
+     *
+     *  echo "Your input: $answer";
+     * ```
+     *
+     * ```php
+     *  // use the second arg in the validator.
+     *  $answer = Interact::ask('Please input your name?', null, function ($answer, &$err) {
+     *      if (!preg_match('/\w{2,}/', $answer)) {
+     *          // setting error message.
+     *          $err = 'The name must match "/\w{2,}/"';
+     *
+     *          return false;
+     *      }
+     *
+     *      return true;
+     *   });
+     *
+     *  echo "Your input: $answer";
+     * ```
      * @param string $question
-     * @param null $default
-     * @param \Closure|null $validator
+     * @param null|mixed $default
+     * @param \Closure|null $validator Validator, must return bool.
      * @return null|string
      */
     public static function question($question, $default = null, \Closure $validator = null)
@@ -200,21 +234,35 @@ class Interact extends Show
             self::error('Please provide a question text!', 1);
         }
 
-        $defaultText = null !== $default ? "(default: <info>$default</info>)" : '';
-        $answer = self::read('<comment>' . ucfirst($question) . "</comment>$defaultText ");
+        $defText = null !== $default ? "(default: <info>$default</info>)" : '';
+        $message = '<comment>' . ucfirst($question) . "</comment>$defText ";
+
+        askQuestion:
+        $answer = self::read($message);
 
         if ('' === $answer) {
             if (null === $default) {
                 self::error('A value is required.');
 
-                return static::question($question, $default, $validator);
+                goto askQuestion;
             }
 
             return $default;
         }
 
+        // has answer validator
         if ($validator) {
-            return $validator($answer) ? $answer : static::question($question, $default, $validator);
+            $error = null;
+
+            if ($validator($answer, $error)) {
+                return $answer;
+            }
+
+            if ($error) {
+                Show::warning($error);
+            }
+
+            goto askQuestion;
         }
 
         return $answer;
@@ -228,7 +276,7 @@ class Interact extends Show
      * @param null|string $default 默认值
      * @param \Closure $validator (默认验证输入是否为空)自定义回调验证输入是否符合要求; 验证成功返回true 否则 可返回错误消息
      * @example This is an example
-     * ```
+     * ```php
      * // no default value
      * Interact::limitedAsk('please entry you age?', null, function($age)
      * {
@@ -238,6 +286,7 @@ class Interact extends Show
      *     }
      *     return true;
      * } );
+     *
      * // has default value
      * Interact::limitedAsk('please entry you age?', 89, function($age)
      * {
@@ -260,12 +309,19 @@ class Interact extends Show
         $result = false;
         $answer = '';
         $question = ucfirst($question);
+        $hasDefault = null !== $default;
         $back = $times = ((int)$times > 6 || $times < 1) ? 3 : (int)$times;
-        $defaultText = null !== $default ? "(default: <info>$default</info>)" : '';
+
+        if ($hasDefault) {
+            $message = "<comment>{$question}</comment>(default: <info>$default</info>) ";
+        } else {
+            $message = "<comment>{$question}</comment>";
+            Show::write($message);
+        }
 
         while ($times--) {
-            if ($defaultText) {
-                $answer = self::read("<comment>{$question}</comment>{$defaultText} ");
+            if ($hasDefault) {
+                $answer = self::read($message);
 
                 if ('' === $answer) {
                     $answer = $default;
@@ -275,7 +331,7 @@ class Interact extends Show
                 }
             } else {
                 $num = $times + 1;
-                $answer = self::read("<comment>{$question}</comment>\n(You have a [<bold>$num</bold>] chance to enter!) ");
+                $answer = self::read(sprintf('(You have a [<bold>%s</bold>] chance to enter!) ', $num));
             }
 
             // If setting verify callback
@@ -296,7 +352,7 @@ class Interact extends Show
                 return $default;
             }
 
-            self::write("\n  You've entered incorrectly <danger>$back</danger> times in a row. exit!\n", true, 1);
+            self::write("\n  You've entered incorrectly <danger>$back</danger> times in a row. exit!", true, 1);
         }
 
         return $answer;
@@ -314,6 +370,7 @@ class Interact extends Show
      * @return string
      * @link https://stackoverflow.com/questions/187736/command-line-password-prompt-in-php
      * @link http://www.sitepoint.com/blogs/2009/05/01/interactive-cli-password-prompt-in-php
+     * @throws \RuntimeException
      */
     public static function promptSilent(string $prompt = 'Enter Password:')
     {
@@ -330,6 +387,7 @@ class Interact extends Show
             $password = CliUtil::runCommand($command, false);
 
             echo "\n";
+
             return $password;
         }
 
@@ -337,10 +395,7 @@ class Interact extends Show
         if (Helper::isWindows()) {
             $vbScript = sys_get_temp_dir() . 'prompt_password.vbs';
 
-            file_put_contents(
-                $vbScript,
-                'wscript.echo(InputBox("' . $prompt . '", "", "password here"))'
-            );
+            file_put_contents($vbScript, 'wscript.echo(InputBox("' . $prompt . '", "", "password here"))');
 
             $command = 'cscript //nologo ' . escapeshellarg($vbScript);
             $password = rtrim(shell_exec($command));
@@ -356,6 +411,7 @@ class Interact extends Show
      * alias of the method `promptSilent()`
      * @param string $prompt
      * @return string
+     * @throws \RuntimeException
      */
     public static function askHiddenInput(string $prompt = 'Enter Password:')
     {
@@ -366,6 +422,7 @@ class Interact extends Show
      * alias of the method `promptSilent()`
      * @param string $prompt
      * @return string
+     * @throws \RuntimeException
      */
     public static function askPassword(string $prompt = 'Enter Password:')
     {

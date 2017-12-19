@@ -76,19 +76,20 @@ class Output implements OutputInterface
     /**
      * stop buffering and flush buffer text
      * {@inheritdoc}
+     * @see Show::stopBuffer()
      */
-    public function stopBuffer($nl = true, $quit = false, array $opts = [])
+    public function stopBuffer($flush = true, $nl = false, $quit = false, array $opts = [])
     {
-        Show::stopBuffer($nl, $quit, $opts);
+        Show::stopBuffer($flush, $nl, $quit, $opts);
     }
 
     /**
      * stop buffering and flush buffer text
      * {@inheritdoc}
      */
-    public function flush($nl = true, $quit = false, array $opts = [])
+    public function flush($nl = false, $quit = false, array $opts = [])
     {
-        $this->stopBuffer($nl, $quit, $opts);
+        $this->stopBuffer(true, $nl, $quit, $opts);
     }
 
     /***************************************************************************
