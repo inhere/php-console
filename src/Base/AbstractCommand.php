@@ -139,6 +139,7 @@ abstract class AbstractCommand implements BaseCommandInterface
             return $this->showHelp();
         }
 
+        // some prepare check
         if (true !== $this->prepare()) {
             return -1;
         }
@@ -183,8 +184,7 @@ abstract class AbstractCommand implements BaseCommandInterface
      */
     protected function showHelp()
     {
-        // 创建了 InputDefinition , 则使用它的信息。
-        // 不会再解析和使用命令的注释。
+        // 创建了 InputDefinition , 则使用它的信息。此时不会再解析和使用命令的注释。
         if ($def = $this->getDefinition()) {
             $cmd = $this->input->getCommand();
             $spt = $this->input->getScript();
@@ -202,17 +202,17 @@ abstract class AbstractCommand implements BaseCommandInterface
 
     /**
      * prepare run
+     * @throws \RuntimeException
      */
     protected function prepare()
     {
         if ($this->processTitle) {
             if (\function_exists('cli_set_process_title')) {
                 if (false === @cli_set_process_title($this->processTitle)) {
-                    if ('Darwin' === PHP_OS) {
-                        $this->output->writeln('<comment>Running "cli_get_process_title" as an unprivileged user is not supported on MacOS.</comment>');
-                    } else {
-                        $error = error_get_last();
-                        trigger_error($error['message'], E_USER_WARNING);
+                    $error = error_get_last();
+
+                    if ($error && 'Darwin' !== PHP_OS) {
+                        throw new \RuntimeException($error['message']);
                     }
                 }
             } elseif (\function_exists('setproctitle')) {
@@ -326,9 +326,10 @@ abstract class AbstractCommand implements BaseCommandInterface
      * show help by parse method annotation
      * @param string $method
      * @param null|string $action
+     * @param array $aliases
      * @return int
      */
-    protected function showHelpByMethodAnnotation($method, $action = null)
+    protected function showHelpByMethodAnnotation($method, $action = null, array $aliases = [])
     {
         $ref = new \ReflectionClass($this);
         $name = $this->input->getCommand();
@@ -342,11 +343,14 @@ abstract class AbstractCommand implements BaseCommandInterface
         // is a console controller command
         if ($action && !$ref->getMethod($method)->isPublic()) {
             $this->write("The command [<info>$name</info>] don't allow access in the class.");
+
             return 0;
         }
 
         $doc = $ref->getMethod($method)->getDocComment();
         $tags = Annotation::tagList($this->handleAnnotationVars($doc));
+
+        $this->output->startBuffer();
 
         foreach ($tags as $tag => $msg) {
             if (!$msg || !\is_string($msg)) {
@@ -370,6 +374,8 @@ abstract class AbstractCommand implements BaseCommandInterface
                 $this->write("<comment>$tag:</comment>\n $msg\n");
             }
         }
+
+        $this->output->flush();
 
         return 0;
     }

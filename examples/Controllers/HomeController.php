@@ -20,15 +20,26 @@ class HomeController extends Controller
     protected static $description = 'default command controller. there are some command usage examples(2)';
 
     /**
+     * @return array
+     */
+    protected static function commandMap()
+    {
+        return [
+            'i' => 'index',
+            'prg' => 'progress',
+        ];
+    }
+
+    /**
      * this is a command's description message
      * the second line text
      * @usage usage message
      * @arguments
-     * arg1  argument description 1
-     * arg2  argument description 2
+     *  arg1  argument description 1
+     *  arg2  argument description 2
      * @options
-     * --long,-s option description 1
-     * --opt    option description 2
+     *  -s, --long  option description 1
+     *  --opt      option description 2
      * @example example text one
      *  the second line example
      */
@@ -229,7 +240,7 @@ class HomeController extends Controller
     }
 
     /**
-     * a example for display a table
+     * output format message: table
      */
     public function tableCommand()
     {
@@ -285,7 +296,7 @@ class HomeController extends Controller
     }
 
     /**
-     * a example use padding() for show data
+     * output format message: padding
      */
     public function paddingCommand()
     {
@@ -299,7 +310,7 @@ class HomeController extends Controller
     }
 
     /**
-     * a example for dump, print, json data
+     * output format message: dump
      */
     public function jsonCommand()
     {
@@ -375,7 +386,7 @@ class HomeController extends Controller
     }
 
     /**
-     * This is a demo for use <red>Interact::confirm</red> method
+     * This is a demo for use <magenta>Interact::confirm</magenta> method
      */
     public function confirmCommand()
     {
@@ -456,7 +467,7 @@ class HomeController extends Controller
     }
 
     /**
-     * a example for input password on command line. use: <magenta>Interact::askPassword()</magenta>
+     * This is a demo for input password on command line. use: <magenta>Interact::askPassword()</magenta>
      * @usage {fullCommand}
      */
     public function pwdCommand()

@@ -22,8 +22,16 @@ use Inhere\Console\Utils\Annotation;
  */
 abstract class Controller extends AbstractCommand implements ControllerInterface
 {
+    /**
+     * @var array
+     */
+    private static $commandMap;
+
     /** @var string */
     private $action;
+
+    /** @var bool  */
+    private $standAlone = false;
 
     /** @var string  */
     private $defaultAction = 'help';
@@ -37,8 +45,17 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
     /** @var string  */
     protected $delimiter = ':'; // '/' ':'
 
-    /** @var bool  */
-    private $standAlone = false;
+    /**
+     * define command alias map
+     * @return array
+     */
+    protected static function commandMap()
+    {
+        return [
+            // alias => command
+            // 'i'  => 'install',
+        ];
+    }
 
     /**
      * @param string $command
@@ -46,7 +63,9 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
      */
     public function run($command = '')
     {
-        if (!$this->action = trim($command)) {
+        $this->action = $this->getRealCommandName(trim($command, $this->delimiter));
+
+        if (!$this->action) {
             return $this->showHelp();
         }
 
@@ -56,7 +75,7 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
     /**
      * load command configure
      */
-    protected function configure()
+    final protected function configure()
     {
         if ($action = $this->action) {
             $method = $action . 'Configure';
@@ -148,9 +167,10 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
 
         $action = FormatUtil::camelCase($action);
         $method = $this->actionSuffix ? $action . ucfirst($this->actionSuffix) : $action;
+        $aliases = $this->getCommandAliases($action);
 
         // show help info for a command.
-        return $this->showHelpByMethodAnnotation($method, $action);
+        return $this->showHelpByMethodAnnotation($method, $action, $aliases);
     }
 
     /**
@@ -234,9 +254,47 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
         }
     }
 
+    /**
+     * @param string $name
+     * @return mixed|string
+     */
+    protected function getRealCommandName(string $name)
+    {
+        if (!$name) {
+            return $name;
+        }
+
+        $map = self::getCommandMap();
+
+        return $map[$name] ?? $name;
+    }
+
+    /**
+     * @param string $name
+     * @return array
+     */
+    protected function getCommandAliases(string $name)
+    {
+        $map = self::getCommandMap();
+
+        return $map ? array_keys($map, $name, true) : [];
+    }
+
     /**************************************************************************
      * getter/setter methods
      **************************************************************************/
+
+    /**
+     * @return array
+     */
+    public static function getCommandMap()
+    {
+        if (null === self::$commandMap) {
+            self::$commandMap = static::commandMap();
+        }
+
+        return self::$commandMap;
+    }
 
     /**
      * @return string

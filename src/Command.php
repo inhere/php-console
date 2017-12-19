@@ -14,6 +14,16 @@ use Inhere\Console\Base\CommandInterface;
 /**
  * Class Command
  * @package Inhere\Console
+ *
+ * ```php
+ * In sub class:
+ *
+ * protected function execute($input, $output)
+ * {
+ *      // some logic ...
+ * }
+ *
+ * ```
  */
 abstract class Command extends AbstractCommand implements CommandInterface
 {
@@ -28,7 +38,7 @@ abstract class Command extends AbstractCommand implements CommandInterface
     //      // something logic ...
     // }
 
-    /**
+    /*
      * configure
      */
     // protected function configure()
