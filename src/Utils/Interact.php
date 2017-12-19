@@ -96,14 +96,16 @@ class Interact extends Show
             $options['q'] = 'quit';
         }
 
-        beginChoice:
-        $text = " <comment>$description</comment>";
+        $text = "<comment>$description</comment>";
         foreach ($options as $key => $value) {
             $text .= "\n  <info>$key</info>) $value";
         }
 
         $defaultText = $default ? "[default:<comment>{$default}</comment>]" : '';
-        $r = self::read($text . "\n You choice{$defaultText} : ");
+        self::write($text);
+
+        beginChoice:
+        $r = self::read("Your choice{$defaultText} : ");
 
         // error, allow try again once.
         if (!array_key_exists($r, $options)) {
@@ -393,7 +395,7 @@ class Interact extends Show
 
         // at windows cmd.
         if (Helper::isWindows()) {
-            $vbScript = sys_get_temp_dir() . 'prompt_password.vbs';
+            $vbScript = CliUtil::getTempDir() . '/hidden_prompt_input.vbs';
 
             file_put_contents($vbScript, 'wscript.echo(InputBox("' . $prompt . '", "", "password here"))');
 
