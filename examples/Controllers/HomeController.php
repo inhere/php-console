@@ -22,11 +22,15 @@ class HomeController extends Controller
     /**
      * @return array
      */
-    protected static function commandMap()
+    protected static function commandAliases()
     {
         return [
+            // now, 'home:i' is equals to 'home:index'
             'i' => 'index',
             'prg' => 'progress',
+            'l' => 'list',
+            'h' => 'helpPanel',
+            'hp' => 'helpPanel',
         ];
     }
 
@@ -39,7 +43,7 @@ class HomeController extends Controller
      *  arg2  argument description 2
      * @options
      *  -s, --long  option description 1
-     *  --opt      option description 2
+     *  --opt       option description 2
      * @example example text one
      *  the second line example
      */
@@ -60,7 +64,7 @@ class HomeController extends Controller
             return 0;
         }
 
-        $this->write('color text output:');
+        $this->write('color style text output:');
         $styles = $this->output->getStyle()->getStyleNames();
 
         foreach ($styles as $style) {
@@ -218,7 +222,7 @@ class HomeController extends Controller
     /**
      * output format message: aList
      */
-    public function aListCommand()
+    public function listCommand()
     {
         $list = [
             'The is a list line 0',
@@ -521,8 +525,8 @@ class HomeController extends Controller
             return 0;
         }
 
-        $d = Download::down($url, $saveAs, $type);
-
+        Download::down($url, $saveAs, $type);
+        // $d = Download::down($url, $saveAs, $type);
         // echo Helper::dumpVars($d);
 
         return 0;

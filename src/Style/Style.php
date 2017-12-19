@@ -129,8 +129,8 @@ class Style
             ->add(self::FAINTLY, ['fg' => 'normal', 'options' => ['italic']])
             ->add(self::BOLD, ['options' => ['bold']])
             ->add(self::INFO, ['fg' => 'green',])//'options' => ['bold']
-            ->add(self::NOTE, ['fg' => 'green', 'options' => ['bold']])//'options' => ['bold']
-            ->add(self::PRIMARY, ['fg' => 'blue',])//'options' => ['bold']
+            ->add(self::NOTE, ['fg' => 'cyan', 'options' => ['bold']])//'options' => ['bold']
+            ->add(self::PRIMARY, ['fg' => 'yellow', 'options' => ['bold']])//
             ->add(self::SUCCESS, ['fg' => 'green', 'options' => ['bold']])
             ->add(self::NOTICE, ['options' => ['bold', 'underscore'],])
             ->add(self::WARNING, ['fg' => 'black', 'bg' => 'yellow',])//'options' => ['bold']
@@ -177,11 +177,13 @@ class Style
 
         foreach ((array)$matches[0] as $i => $m) {
             if (array_key_exists($matches[1][$i], $this->styles)) {
-                $text = $this->replaceColor($text, $matches[1][$i], $matches[2][$i], (string)$this->styles[$matches[1][$i]]);
+                $text = $this->replaceColor($text, $matches[1][$i], $matches[2][$i],
+                    (string)$this->styles[$matches[1][$i]]);
 
                 // Custom style format @see Style::makeByString()
             } elseif (strpos($matches[1][$i], '=')) {
-                $text = $this->replaceColor($text, $matches[1][$i], $matches[2][$i], (string)Color::makeByString($matches[1][$i]));
+                $text = $this->replaceColor($text, $matches[1][$i], $matches[2][$i],
+                    (string)Color::makeByString($matches[1][$i]));
             }
         }
 

@@ -66,7 +66,14 @@ class Show
 
     /** @var array */
     public static $defaultBlocks = [
-        'block', 'primary', 'info', 'notice', 'success', 'warning', 'danger', 'error'
+        'block',
+        'primary',
+        'info',
+        'notice',
+        'success',
+        'warning',
+        'danger',
+        'error'
     ];
 
     /**************************************************************************************************
@@ -336,6 +343,7 @@ class Show
         $string = '';
         $opts = array_merge([
             'leftChar' => '  ',
+            // 'sepChar' => '  ',
             'keyStyle' => 'info',
             'keyMinWidth' => 8,
             'titleStyle' => 'comment',
@@ -345,12 +353,7 @@ class Show
         // title
         if ($title) {
             $title = ucwords(trim($title));
-
-            if ($style = $opts['titleStyle']) {
-                $title = "<$style>$title</$style>";
-            }
-
-            $string .= $title . PHP_EOL;
+            $string .= Helper::wrapTag($title, $opts['titleStyle']) . PHP_EOL;
         }
 
         // handle item list
@@ -445,7 +448,10 @@ class Show
      */
     public static function helpPanel(array $config, $showAfterQuit = true)
     {
-        $help = '';
+        $parts = [];
+        $option = [
+            'indentDes' => '  ',
+        ];
         $config = array_merge([
             'description' => '',
             'usage' => '',
@@ -458,11 +464,20 @@ class Show
 
             // extra
             'extras' => [],
+
+            '_opts' => [],
         ], $config);
+
+        // some option for show.
+        if (isset($config['_opts'])) {
+            $option = array_merge($option, $config['_opts']);
+
+            unset($config['_opts']);
+        }
 
         // description
         if ($config['description']) {
-            $help .= "  {$config['description']}\n\n";
+            $parts[] = "{$option['indentDes']}{$config['description']}\n";
             unset($config['description']);
         }
 
@@ -482,6 +497,7 @@ class Show
                 } else {
                     $value = Helper::spliceKeyValue($value, [
                         'leftChar' => '  ',
+                        'sepChar' => '  ',
                         'keyStyle' => 'info',
                     ]);
                 }
@@ -490,12 +506,12 @@ class Show
             if (\is_string($value)) {
                 $value = trim($value);
                 $section = ucfirst($section);
-                $help .= "<comment>$section</comment>:\n  {$value}\n\n";
+                $parts[] = "<comment>$section</comment>:\n  {$value}\n";
             }
         }
 
-        if ($help) {
-            self::write($help, false);
+        if ($parts) {
+            self::write(implode("\n", $parts), false);
         }
 
         if ($showAfterQuit) {
@@ -554,10 +570,12 @@ class Show
                 }
 
                 $value = rtrim($temp, ' ,');
-            } else if (\is_bool($value)) {
-                $value = $value ? 'True' : 'False';
             } else {
-                $value = trim((string)$value);
+                if (\is_bool($value)) {
+                    $value = $value ? 'True' : 'False';
+                } else {
+                    $value = trim((string)$value);
+                }
             }
 
             // get value width
@@ -745,7 +763,8 @@ class Show
 
             // head border: split head and body
             if ($headBorderChar = $opts['headBorderChar']) {
-                $headBorder = $leftIndent . str_pad($headBorderChar, $tableWidth + ($columnCount * 3) + 2, $headBorderChar);
+                $headBorder = $leftIndent . str_pad($headBorderChar, $tableWidth + ($columnCount * 3) + 2,
+                        $headBorderChar);
                 $buf->write($headBorder . "\n");
             }
         }
@@ -817,9 +836,6 @@ class Show
                 $counter += $step;
             }
 
-            // printf("\r%d%% %s", $percent, $msg);
-            // printf("\x0D\x2K %d%% %s", $percent, $msg);
-            // printf("\x0D\r%'2d%% %s", $percent, $msg);
             printf($tpl, $counter, $msg);
 
             if ($finished) {
@@ -1118,11 +1134,11 @@ class Show
             // if will quit.
             $messages = self::$buffer;
             self::clearBuffer();
+        } else {
+            $messages .= $nl ? PHP_EOL : '';
         }
 
-        $stream = $opts['stream'] ?? STDOUT;
-
-        fwrite($stream, $messages . ($nl ? PHP_EOL : ''));
+        fwrite($stream = $opts['stream'] ?? \STDOUT, $messages);
 
         if (!isset($opts['flush']) || $opts['flush']) {
             fflush($stream);

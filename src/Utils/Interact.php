@@ -165,7 +165,7 @@ class Interact extends Show
 
         self::write($text);
         $defaultText = $default ? "[default:<comment>{$default}</comment>]" : '';
-        $filter = function ($val) use($options){
+        $filter = function ($val) use ($options) {
             return $val !== 'q' && isset($options[$val]);
         };
 

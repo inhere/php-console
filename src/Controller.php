@@ -25,31 +25,31 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
     /**
      * @var array
      */
-    private static $commandMap;
+    private static $commandAliases;
 
     /** @var string */
     private $action;
 
-    /** @var bool  */
+    /** @var bool */
     private $standAlone = false;
 
-    /** @var string  */
+    /** @var string */
     private $defaultAction = 'help';
 
-    /** @var string  */
+    /** @var string */
     private $actionSuffix = 'Command';
 
-    /** @var string  */
+    /** @var string */
     protected $notFoundCallback = 'notFound';
 
-    /** @var string  */
+    /** @var string */
     protected $delimiter = ':'; // '/' ':'
 
     /**
      * define command alias map
      * @return array
      */
-    protected static function commandMap()
+    protected static function commandAliases()
     {
         return [
             // alias => command
@@ -167,7 +167,7 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
 
         $action = FormatUtil::camelCase($action);
         $method = $this->actionSuffix ? $action . ucfirst($this->actionSuffix) : $action;
-        $aliases = $this->getCommandAliases($action);
+        $aliases = self::getCommandAliases($action);
 
         // show help info for a command.
         return $this->showHelpByMethodAnnotation($method, $action, $aliases);
@@ -182,15 +182,24 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
         $sName = lcfirst(self::getName() ?: $ref->getShortName());
 
         if (!($classDes = self::getDescription())) {
-            $classDes = Annotation::description($ref->getDocComment()) ?: 'No Description for the console controller';
+            $classDes = Annotation::description($ref->getDocComment()) ?: 'No description for the console controller';
         }
 
         $commands = [];
+        $defCommandDes = 'No description message';
+
         foreach ($this->getAllCommandMethods($ref) as $cmd => $m) {
-            $desc = Annotation::firstLine($m->getDocComment());
+            $desc = Annotation::firstLine($m->getDocComment()) ?: $defCommandDes;
+
+            // is a annotation tag
+            if ($desc[0] === '@') {
+                $desc = $defCommandDes;
+            }
 
             if ($cmd) {
-                $commands[$cmd] = $desc;
+                $aliases = self::getCommandAliases($cmd);
+                $extra = $aliases ? Helper::wrapTag(' [alias: ' . implode(',', $aliases) . ']', 'info') : '';
+                $commands[$cmd] = $desc . $extra;
             }
         }
 
@@ -245,7 +254,7 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
         foreach ($ref->getMethods() as $m) {
             $mName = $m->getName();
 
-            if ($m->isPublic() && substr($mName, - $suffixLen) === $suffix) {
+            if ($m->isPublic() && substr($mName, -$suffixLen) === $suffix) {
                 // suffix is empty ?
                 $cmd = $suffix ? substr($mName, 0, -$suffixLen) : $mName;
 
@@ -264,20 +273,9 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
             return $name;
         }
 
-        $map = self::getCommandMap();
+        $map = self::getCommandAliases();
 
         return $map[$name] ?? $name;
-    }
-
-    /**
-     * @param string $name
-     * @return array
-     */
-    protected function getCommandAliases(string $name)
-    {
-        $map = self::getCommandMap();
-
-        return $map ? array_keys($map, $name, true) : [];
     }
 
     /**************************************************************************
@@ -285,15 +283,20 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
      **************************************************************************/
 
     /**
+     * @param string|null $name
      * @return array
      */
-    public static function getCommandMap()
+    public static function getCommandAliases(string $name = null)
     {
-        if (null === self::$commandMap) {
-            self::$commandMap = static::commandMap();
+        if (null === self::$commandAliases) {
+            self::$commandAliases = static::commandAliases();
         }
 
-        return self::$commandMap;
+        if ($name) {
+            return self::$commandAliases ? array_keys(self::$commandAliases, $name, true) : [];
+        }
+
+        return self::$commandAliases;
     }
 
     /**

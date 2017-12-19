@@ -85,7 +85,8 @@ final class CommandLineParse
                 $nxp = current($params);
 
                 // fix: allow empty string ''
-                if ($value === true && $nxp !== false && (!$nxp || $nxp{0} !== '-') && !\in_array($opt, $noValues, true)) {
+                if ($value === true && $nxp !== false && (!$nxp || $nxp{0} !== '-') && !\in_array($opt, $noValues,
+                        true)) {
                     // list(,$value) = each($params);
                     $value = current($params);
                     next($params);

@@ -14,6 +14,7 @@ use Inhere\Console\Traits\InputOutputAwareTrait;
 use Inhere\Console\Traits\SimpleEventTrait;
 use Inhere\Console\Style\Style;
 use Inhere\Console\Utils\FormatUtil;
+use Inhere\Console\Utils\Helper;
 
 /**
  * Class AbstractApplication
@@ -25,16 +26,21 @@ abstract class AbstractApplication implements ApplicationInterface
 
     /**
      * @var array
+     * [
+     *  0 => logo text,
+     *  1 => color style, // 'info'
+     * ]
      */
+    private static $logoInfo;
+
+    /** @var array */
     protected static $internalCommands = [
         'version' => 'Show application version information',
         'help' => 'Show application help information',
         'list' => 'List all group and independent commands',
     ];
 
-    /**
-     * @var array
-     */
+    /** @var array */
     protected static $internalOptions = [
         '--debug' => 'Setting the application runtime debug level',
         '--profile' => 'Display timing and memory usage information',
@@ -44,7 +50,7 @@ abstract class AbstractApplication implements ApplicationInterface
     ];
 
     /**
-     * app meta config
+     * application meta info
      * @var array
      */
     private $meta = [
@@ -121,7 +127,8 @@ abstract class AbstractApplication implements ApplicationInterface
     }
 
     protected function beforeRun()
-    {}
+    {
+    }
 
     /**
      * run app
@@ -398,7 +405,10 @@ ERR;
         foreach ($controllers as $name => $controller) {
             $hasGroup = true;
             /** @var AbstractCommand $controller */
-            $controllerArr[$name] = $controller::getDescription() ?: $desPlaceholder;
+            $desc = $controller::getDescription() ?: $desPlaceholder;
+            $aliases = $this->getCommandAliases($name);
+            $extra = $aliases ? Helper::wrapTag(' [alias: ' . implode(',', $aliases) . ']', 'info') : '';
+            $controllerArr[$name] = $desc . $extra;
         }
 
         if (!$hasGroup) {
@@ -417,15 +427,17 @@ ERR;
             /** @var AbstractCommand $command */
             if (is_subclass_of($command, CommandInterface::class)) {
                 $desc = $command::getDescription() ?: $desPlaceholder;
-            } else if ($msg = $this->getCommandMessage($name)) {
+            } elseif ($msg = $this->getCommandMessage($name)) {
                 $desc = $msg;
-            } else if (\is_string($command)) {
+            } elseif (\is_string($command)) {
                 $desc = 'A handler : ' . $command;
-            } else if (\is_object($command)) {
+            } elseif (\is_object($command)) {
                 $desc = 'A handler by ' . \get_class($command);
             }
 
-            $commandArr[$name] = $desc;
+            $aliases = $this->getCommandAliases($name);
+            $extra = $aliases ? Helper::wrapTag(' [alias: ' . implode(',', $aliases) . ']', 'info') : '';
+            $commandArr[$name] = $desc . $extra;
         }
 
         if (!$hasCommand) {
@@ -435,7 +447,6 @@ ERR;
         // built in commands
         $internalCommands = static::$internalCommands;
         ksort($internalCommands);
-        // array_unshift($internalCommands, "\n- <cyan>Internal Commands</cyan>");
 
         // built in options
         $internalOptions = FormatUtil::commandOptions(self::$internalOptions);
@@ -445,6 +456,8 @@ ERR;
             'Options:' => $internalOptions,
             'Internal Commands:' => $internalCommands,
             'Available Commands:' => array_merge($controllerArr, $commandArr),
+        ], [
+            'sepChar' => '  ',
         ]);
 
         unset($controllerArr, $commandArr, $internalCommands);
@@ -588,6 +601,54 @@ ERR;
     public function isCommand($name)
     {
         return isset($this->commands[$name]);
+    }
+
+    /**
+     * @return string|null
+     */
+    public static function getLogoTxt()
+    {
+        return self::$logoInfo[0] ?? null;
+    }
+
+    /**
+     * @param string $logoTxt
+     */
+    public static function setLogoTxt(string $logoTxt)
+    {
+        self::$logoInfo[0] = $logoTxt;
+    }
+
+    /**
+     * @return string|null
+     */
+    public static function getLogoStyle()
+    {
+        return self::$logoInfo[1] ?? 'info';
+    }
+
+    /**
+     * @param string $style
+     */
+    public static function setLogoStyle(string $style)
+    {
+        self::$logoInfo[1] = $style;
+    }
+
+    /**
+     * @return array
+     */
+    public static function getLogoInfo(): array
+    {
+        return self::$logoInfo;
+    }
+
+    /**
+     * @param array $logoInfo
+     */
+    public static function setLogoInfo(array $logoInfo)
+    {
+        self::$logoInfo = $logoInfo;
     }
 
     /**

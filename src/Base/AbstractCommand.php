@@ -57,7 +57,7 @@ abstract class AbstractCommand implements BaseCommandInterface
     /** @var Application */
     protected $app;
 
-    /** @var InputDefinition|null  */
+    /** @var InputDefinition|null */
     private $definition;
 
     /** @var string */
@@ -190,7 +190,7 @@ abstract class AbstractCommand implements BaseCommandInterface
             $spt = $this->input->getScript();
 
             $info = $def->getSynopsis();
-            $info['usage'] = "$spt $cmd ". $info['usage'];
+            $info['usage'] = "$spt $cmd " . $info['usage'];
 
             $this->output->mList($info);
 
@@ -289,7 +289,8 @@ abstract class AbstractCommand implements BaseCommandInterface
         }
 
         if (\count($missingOpts) > 0) {
-            $this->output->liteError(sprintf('Not enough options parameters (missing: "%s").', implode(', ', $missingOpts)));
+            $this->output->liteError(sprintf('Not enough options parameters (missing: "%s").',
+                implode(', ', $missingOpts)));
 
             return false;
         }
@@ -348,9 +349,12 @@ abstract class AbstractCommand implements BaseCommandInterface
         }
 
         $doc = $ref->getMethod($method)->getDocComment();
-        $tags = Annotation::tagList($this->handleAnnotationVars($doc));
+        $tags = Annotation::getTags($this->handleAnnotationVars($doc));
+        $comments = [];
 
-        $this->output->startBuffer();
+        if ($aliases) {
+            $comments[] = sprintf("<comment>Alias Name:</comment> %s\n", implode(',', $aliases));
+        }
 
         foreach ($tags as $tag => $msg) {
             if (!$msg || !\is_string($msg)) {
@@ -371,11 +375,11 @@ abstract class AbstractCommand implements BaseCommandInterface
                 // }
 
                 $tag = ucfirst($tag);
-                $this->write("<comment>$tag:</comment>\n $msg\n");
+                $comments[] = "<comment>$tag:</comment>\n $msg\n";
             }
         }
 
-        $this->output->flush();
+        $this->output->write(implode("\n", $comments), false);
 
         return 0;
     }

@@ -24,7 +24,7 @@ final class Annotation
      * @param string $comment The comment block text
      * @return array The parsed tags
      */
-    public static function tagList($comment)
+    public static function getTags($comment)
     {
         $comment = "@description \n" . str_replace("\r", '',
                 trim(preg_replace('/^\s*\**( |\t)?/m', '', trim($comment, '/'))));
@@ -59,7 +59,7 @@ final class Annotation
         $docLines = preg_split('~\R~u', $comment);
 
         if (isset($docLines[1])) {
-            return trim($docLines[1], "\t *");
+            return trim($docLines[1], "/\t *");
         }
 
         return '';

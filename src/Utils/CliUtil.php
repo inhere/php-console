@@ -98,16 +98,20 @@ final class CliUtil
             $output = ob_get_contents();
             ob_end_clean();
             //exec
-        } else if (\function_exists('exec')) {
-            exec($command, $output, $return_var);
-            $output = implode("\n", $output);
-
-            //shell_exec
-        } else if (\function_exists('shell_exec')) {
-            $output = shell_exec($command);
         } else {
-            $output = 'Command execution not possible on this system';
-            $return_var = 0;
+            if (\function_exists('exec')) {
+                exec($command, $output, $return_var);
+                $output = implode("\n", $output);
+
+                //shell_exec
+            } else {
+                if (\function_exists('shell_exec')) {
+                    $output = shell_exec($command);
+                } else {
+                    $output = 'Command execution not possible on this system';
+                    $return_var = 0;
+                }
+            }
         }
 
         if ($returnStatus) {

@@ -9,19 +9,28 @@
 namespace Inhere\Console\Components;
 
 /**
- * Class StrBuffer
+ * Class AryBuffer
  * @package Inhere\Console\Components
  */
-final class StrBuffer
+final class AryBuffer
 {
     /**
-     * @var string
+     * @var string[]
      */
-    private $body;
+    private $body = [];
 
+    /** @var string */
+    private $delimiter = ''; // '/' ':'
+
+    /**
+     * constructor.
+     * @param string $content
+     */
     public function __construct($content = '')
     {
-        $this->body = $content;
+        if ($content) {
+            $this->body[] = $content;
+        }
     }
 
     /**
@@ -29,7 +38,7 @@ final class StrBuffer
      */
     public function write(string $content)
     {
-        $this->body .= $content;
+        $this->body[] = $content;
     }
 
     /**
@@ -45,7 +54,7 @@ final class StrBuffer
      */
     public function prepend(string $content)
     {
-        $this->body = $content . $this->body;
+        array_unshift($this->body, $content);
     }
 
     /**
@@ -53,21 +62,21 @@ final class StrBuffer
      */
     public function clear()
     {
-        $this->body = '';
+        $this->body = [];
     }
 
     /**
-     * @return string
+     * @return string[]
      */
-    public function getBody(): string
+    public function getBody(): array
     {
         return $this->body;
     }
 
     /**
-     * @param string $body
+     * @param string[] $body
      */
-    public function setBody(string $body)
+    public function setBody(array $body)
     {
         $this->body = $body;
     }
@@ -77,7 +86,7 @@ final class StrBuffer
      */
     public function toString()
     {
-        return $this->body;
+        return implode($this->delimiter, $this->body);
     }
 
     /**
@@ -86,5 +95,21 @@ final class StrBuffer
     public function __toString()
     {
         return $this->toString();
+    }
+
+    /**
+     * @return string
+     */
+    public function getDelimiter(): string
+    {
+        return $this->delimiter;
+    }
+
+    /**
+     * @param string $delimiter
+     */
+    public function setDelimiter(string $delimiter)
+    {
+        $this->delimiter = $delimiter;
     }
 }

@@ -313,7 +313,6 @@ class Helper
 
             if ($hasKey && $opts['keyMaxWidth']) {
                 $key = str_pad($key, $opts['keyMaxWidth'], ' ');
-                // $text .= ($keyStyle ? "<{$keyStyle}>$key</{$keyStyle}> " : $key) . $opts['sepChar'];
                 $text .= self::wrapTag($key, $keyStyle) . $opts['sepChar'];
             }
 
@@ -333,10 +332,12 @@ class Helper
                 }
 
                 $value = rtrim($temp, ' ,');
-            } else if (\is_bool($value)) {
-                $value = $value ? 'True' : 'False';
             } else {
-                $value = (string)$value;
+                if (\is_bool($value)) {
+                    $value = $value ? 'True' : 'False';
+                } else {
+                    $value = (string)$value;
+                }
             }
 
             $value = $hasKey && $opts['ucFirst'] ? ucfirst($value) : $value;
@@ -376,7 +377,8 @@ class Helper
         } else {
             // try stty if available
             $stty = [];
-            if (exec('stty -a 2>&1', $stty) && preg_match('/rows\s+(\d+);\s*columns\s+(\d+);/mi', implode(' ', $stty), $matches)) {
+            if (exec('stty -a 2>&1', $stty) && preg_match('/rows\s+(\d+);\s*columns\s+(\d+);/mi', implode(' ', $stty),
+                    $matches)) {
                 return ($size = [$matches[2], $matches[1]]);
             }
 

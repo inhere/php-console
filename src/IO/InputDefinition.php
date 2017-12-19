@@ -15,7 +15,7 @@ namespace Inhere\Console\IO;
  */
 class InputDefinition
 {
-    /** @var array  */
+    /** @var array */
     private static $defaultArgOptConfig = [
         'mode' => null,
         'description' => '',
