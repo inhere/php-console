@@ -63,6 +63,9 @@ abstract class AbstractCommand implements BaseCommandInterface
     /** @var string */
     private $processTitle;
 
+    /** @var array */
+    private $annotationVars;
+
     /**
      * Command constructor.
      * @param Input $input
@@ -73,6 +76,7 @@ abstract class AbstractCommand implements BaseCommandInterface
     {
         $this->input = $input;
         $this->output = $output;
+        $this->annotationVars = $this->annotationVars();
 
         if ($definition) {
             $this->definition = $definition;
@@ -307,17 +311,54 @@ abstract class AbstractCommand implements BaseCommandInterface
      **************************************************************************/
 
     /**
-     * 为命令注解提供可解析解析变量. 可以在命令的注释中使用
+     * @param string $name
+     * @param string $value
+     */
+    protected function addAnnotationVar(string $name,  $value)
+    {
+        if (!isset($this->annotationVars[$name])) {
+            $this->annotationVars[$name] = (string)$value;
+        }
+    }
+
+    /**
+     * @param array $map
+     */
+    protected function addAnnotationVars(array $map)
+    {
+        foreach ($map as $name => $value) {
+            $this->addAnnotationVar($name, $value);
+        }
+    }
+
+    /**
+     * @param string $name
+     * @param string $value
+     */
+    protected function setAnnotationVar(string $name, $value)
+    {
+        $this->annotationVars[$name] = (string)$value;
+    }
+
+    /**
+     * 替换注解中的变量为对应的值
      * @param string $str
      * @return string
      */
-    protected function handleAnnotationVars($str)
+    protected function parseAnnotationVars($str)
     {
-        $map = [];
+        static $map;
 
-        foreach ($this->annotationVars() as $key => $value) {
-            $key = sprintf(self::ANNOTATION_VAR, $key);
-            $map[$key] = $value;
+        if ($map === null) {
+            foreach ($this->annotationVars as $key => $value) {
+                $key = sprintf(self::ANNOTATION_VAR, $key);
+                $map[$key] = $value;
+            }
+        }
+
+        // not use vars
+        if (false === strpos($str, '{')) {
+            return $str;
         }
 
         return $map ? strtr($str, $map) : $str;
@@ -349,7 +390,7 @@ abstract class AbstractCommand implements BaseCommandInterface
         }
 
         $doc = $ref->getMethod($method)->getDocComment();
-        $tags = Annotation::getTags($this->handleAnnotationVars($doc));
+        $tags = Annotation::getTags($this->parseAnnotationVars($doc));
         $comments = [];
 
         if ($aliases) {
@@ -362,7 +403,7 @@ abstract class AbstractCommand implements BaseCommandInterface
             }
 
             if (isset(self::$annotationTags[$tag])) {
-                $msg = trim($msg);
+                $msg = $this->parseAnnotationVars(trim($msg));
 
                 // need multi align
                 // if (self::$annotationTags[$tag]) {
@@ -451,6 +492,14 @@ abstract class AbstractCommand implements BaseCommandInterface
     public function setDefinition(InputDefinition $definition)
     {
         $this->definition = $definition;
+    }
+
+    /**
+     * @return array
+     */
+    public function getAnnotationVars(): array
+    {
+        return $this->annotationVars;
     }
 
     /**

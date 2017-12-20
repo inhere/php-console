@@ -3,6 +3,7 @@
 namespace Inhere\Console\Examples\Controllers;
 
 use Inhere\Console\Components\AnsiCode;
+use Inhere\Console\Components\ArtFont;
 use Inhere\Console\Components\Download;
 use Inhere\Console\Controller;
 use Inhere\Console\IO\Input;
@@ -31,7 +32,15 @@ class HomeController extends Controller
             'l' => 'list',
             'h' => 'helpPanel',
             'hp' => 'helpPanel',
+            'af' => 'artFont',
         ];
+    }
+
+    protected function init()
+    {
+        parent::init();
+
+        $this->addAnnotationVar('internalFonts', implode(',', ArtFont::getInternalFonts()));
     }
 
     /**
@@ -85,6 +94,22 @@ class HomeController extends Controller
         foreach (Show::getBlockMethods() as $type) {
             $this->output->$type("$type style message text");
         }
+
+        return 0;
+    }
+
+    /**
+     * output art font text
+     * @options
+     *  --font   Set the art font name(allow: {internalFonts}).
+     *  --style  Set the art font style.
+     * @return int
+     */
+    public function artFontCommand()
+    {
+        ArtFont::create()->show('404', ArtFont::INTERNAL_GROUP,[
+            'style' => $this->input->getOpt('style')
+        ]);
 
         return 0;
     }
