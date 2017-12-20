@@ -49,12 +49,6 @@ class ArtFont
     private $fontContents = [];
 
     /**
-     * @see ArtFontsBlock
-     * @var array
-     */
-    private $classFonts = [];
-
-    /**
      * @return self
      */
     public static function create(): self
@@ -219,6 +213,15 @@ class ArtFont
     }
 
     /**
+     * @param string $name
+     * @return bool
+     */
+    public static function isInternalFont($name): bool
+    {
+        return \in_array((string)$name, self::$internalFonts, true);
+    }
+
+    /**
      * @return array
      */
     public static function getInternalFonts(): array
@@ -258,21 +261,5 @@ class ArtFont
         foreach ($fonts as $name => $font) {
             $this->addFont($name, $font);
         }
-    }
-
-    /**
-     * @return array
-     */
-    public function getClassFonts(): array
-    {
-        return $this->classFonts;
-    }
-
-    /**
-     * @param array $classFonts
-     */
-    public function setClassFonts(array $classFonts)
-    {
-        $this->classFonts = $classFonts;
     }
 }

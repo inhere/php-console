@@ -101,14 +101,22 @@ class HomeController extends Controller
     /**
      * output art font text
      * @options
-     *  --font   Set the art font name(allow: {internalFonts}).
-     *  --style  Set the art font style.
+     *  --font    Set the art font name(allow: {internalFonts}).
+     *  --italic  Set the art font type is italic.
+     *  --style   Set the art font style.
      * @return int
      */
     public function artFontCommand()
     {
-        ArtFont::create()->show('404', ArtFont::INTERNAL_GROUP,[
-            'style' => $this->input->getOpt('style')
+        $name = $this->input->getLongOpt('font', '404');
+
+        if (!ArtFont::isInternalFont($name)) {
+            return $this->output->liteError("Your input font name: $name, is not exists. Please use '-h' see allowed.");
+        }
+
+        ArtFont::create()->show($name, ArtFont::INTERNAL_GROUP,[
+            'type' => $this->input->getBoolOpt('italic') ? 'italic' : '',
+            'style' => $this->input->getOpt('style'),
         ]);
 
         return 0;
