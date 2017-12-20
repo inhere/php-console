@@ -14,6 +14,18 @@ namespace Inhere\Console\Utils;
  */
 final class CliUtil
 {
+    /**
+     * get bash is available
+     * @return bool
+     */
+    public static function bashIsAvailable()
+    {
+        // $checkCmd = "/usr/bin/env bash -c 'echo OK'";
+        // $shell = 'echo $0';
+        $checkCmd = "bash -c 'echo OK'";
+
+        return self::runCommand($checkCmd, false) === 'OK';
+    }
 
     /**
      * @return string

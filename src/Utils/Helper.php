@@ -393,21 +393,14 @@ class Helper
             return $size;
         }
 
-        if (self::isOnWindows()) {
-            $output = [];
-            exec('mode con', $output);
-
-            if (isset($output[1]) && strpos($output[1], 'CON') !== false) {
-                return ($size = [
-                    (int)preg_replace('~\D~', '', $output[3]),
-                    (int)preg_replace('~\D~', '', $output[4])
-                ]);
-            }
-        } else {
+        if (CliUtil::bashIsAvailable()) {
             // try stty if available
             $stty = [];
-            if (exec('stty -a 2>&1', $stty) && preg_match('/rows\s+(\d+);\s*columns\s+(\d+);/mi', implode(' ', $stty),
-                    $matches)) {
+
+            if (
+                exec('stty -a 2>&1', $stty) &&
+                preg_match('/rows\s+(\d+);\s*columns\s+(\d+);/mi', implode(' ', $stty), $matches)
+            ) {
                 return ($size = [$matches[2], $matches[1]]);
             }
 
@@ -419,6 +412,18 @@ class Helper
             // fallback to ENV variables, which may not be updated on terminal resize
             if (($width = (int)getenv('COLUMNS')) > 0 && ($height = (int)getenv('LINES')) > 0) {
                 return ($size = [$width, $height]);
+            }
+        }
+
+        if (self::isOnWindows()) {
+            $output = [];
+            exec('mode con', $output);
+
+            if (isset($output[1]) && strpos($output[1], 'CON') !== false) {
+                return ($size = [
+                    (int)preg_replace('~\D~', '', $output[3]),
+                    (int)preg_replace('~\D~', '', $output[4])
+                ]);
             }
         }
 

@@ -428,10 +428,9 @@ class Interact extends Show
 
         // $checkCmd = "/usr/bin/env bash -c 'echo OK'";
         // $shell = 'echo $0';
-        $checkCmd = "bash -c 'echo OK'";
 
         // linux, unix, git-bash
-        if (CliUtil::runCommand($checkCmd, false) === 'OK') {
+        if (CliUtil::bashIsAvailable()) {
             // COMMAND: bash -c 'read -p "Enter Password:" -s user_input && echo $user_input'
             $command = sprintf('bash -c "read -p \'%s\' -s user_input && echo $user_input"', $prompt);
             $password = CliUtil::runCommand($command, false);
