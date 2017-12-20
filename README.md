@@ -4,12 +4,12 @@
 [![Php Version](https://img.shields.io/badge/php-%3E=7.0-brightgreen.svg?maxAge=2592000)](https://packagist.org/packages/inhere/console)
 [![Latest Stable Version](http://img.shields.io/packagist/v/inhere/console.svg)](https://packagist.org/packages/inhere/console)
 
-简洁、功能全面的php命令行应用库。提供控制台参数解析, 颜色风格输出, 用户信息交互, 特殊格式信息显示。
+简洁、功能全面的php命令行应用库。提供控制台参数解析, 命令运行，颜色风格输出, 用户信息交互, 特殊格式信息显示。
 
 > 无其他库依赖，可以方便的整合到任何已有项目中。
 
 - 功能全面的命令行的选项参数解析(命名参数，短选项，长选项 ...)
-- 命令行应用, 命令行的 `controller`, `command` 解析运行
+- 命令行应用, 命令行的 `controller`, `command` 解析运行。(支持命令别名)
 - 命令行中功能强大的 `input`, `output` 管理、使用
 - 消息文本的多种颜色风格输出支持(`info`, `comment`, `success`, `danger`, `error` ... ...)
 - 丰富的特殊格式信息显示(`section`, `panel`, `padding`, `help-panel`, `table`, `title`, `list`, `multiList`, `progressBar`)

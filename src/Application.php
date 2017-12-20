@@ -82,6 +82,7 @@ class Application extends AbstractApplication
 
     /**
      * @param array $controllers
+     * @throws \InvalidArgumentException
      */
     public function controllers(array $controllers)
     {
@@ -149,6 +150,7 @@ class Application extends AbstractApplication
 
     /**
      * @param array $commands
+     * @throws \InvalidArgumentException
      */
     public function commands(array $commands)
     {
@@ -254,16 +256,14 @@ class Application extends AbstractApplication
     {
         $sep = $this->delimiter ?: ':';
 
-        //// is a command name
-
+        // maybe is a command name
         $realName = $this->getRealCommandName($name);
 
         if ($this->isCommand($realName)) {
             return $this->runCommand($realName, true);
         }
 
-        //// is a controller name
-
+        // maybe is a controller name
         $action = '';
 
         // like 'home:index'
@@ -282,19 +282,10 @@ class Application extends AbstractApplication
         if (true !== self::fire(self::ON_NOT_FOUND, [$this])) {
             $this->output->liteError("The console command '{$name}' not exists!");
 
-            // find similar command names by similar_text()
-            $similar = [];
             $commands = array_merge($this->getControllerNames(), $this->getCommandNames());
 
-            foreach ($commands as $command) {
-                similar_text($name, $command, $percent);
-
-                if (45 <= (int)$percent) {
-                    $similar[] = $command;
-                }
-            }
-
-            if ($similar) {
+            // find similar command names by similar_text()
+            if ($similar = Helper::findSimilar($name, $commands)) {
                 $this->write(sprintf("\nMaybe what you mean is:\n    <info>%s</info>", implode(', ', $similar)));
             } else {
                 $this->showCommandList(false);

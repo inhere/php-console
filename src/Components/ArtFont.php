@@ -8,6 +8,8 @@
 
 namespace Inhere\Console\Components;
 
+use Inhere\Console\BuiltIn\ArtFonts\ArtFontsBlock;
+
 /**
  * Class ArtFont
  * @package Inhere\Console\Components
@@ -25,6 +27,12 @@ class ArtFont
      * @var array
      */
     private $fonts = [];
+
+    /**
+     * @see ArtFontsBlock
+     * @var array
+     */
+    private $classFonts = [];
 
     /**
      * @return self
@@ -98,5 +106,21 @@ class ArtFont
         foreach ($fonts as $name => $font) {
             $this->addFont($name, $font);
         }
+    }
+
+    /**
+     * @return array
+     */
+    public function getClassFonts(): array
+    {
+        return $this->classFonts;
+    }
+
+    /**
+     * @param array $classFonts
+     */
+    public function setClassFonts(array $classFonts)
+    {
+        $this->classFonts = $classFonts;
     }
 }

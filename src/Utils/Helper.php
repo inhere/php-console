@@ -212,6 +212,33 @@ class Helper
     }
 
     /**
+     * find similar text from an array|Iterator
+     * @param string $need
+     * @param \Iterator|array $iterator
+     * @param int $similarPercent
+     * @return array
+     */
+    public static function findSimilar($need, $iterator, $similarPercent = 45)
+    {
+        // find similar command names by similar_text()
+        $similar = [];
+
+        if (!$need) {
+            return $similar;
+        }
+
+        foreach ($iterator as $name) {
+            similar_text($need, $name, $percent);
+
+            if ($similarPercent <= (int)$percent) {
+                $similar[] = $name;
+            }
+        }
+
+        return $similar;
+    }
+
+    /**
      * @param $string
      * @param $width
      * @return array
@@ -347,11 +374,13 @@ class Helper
         return $text;
     }
 
-    // next: form yii2
-
     /**
-     * Usage: list($width, $height) = ConsoleHelper::getScreenSize();
+     * get screen size
      *
+     * ```php
+     * list($width, $height) = Helper::getScreenSize();
+     * ```
+     * @from Yii2
      * @param boolean $refresh whether to force checking and not re-use cached size value.
      * This is useful to detect changing window size while the application is running but may
      * not get up to date values on every terminal.

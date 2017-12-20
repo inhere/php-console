@@ -24,15 +24,6 @@ abstract class AbstractApplication implements ApplicationInterface
 {
     use InputOutputAwareTrait, SimpleEventTrait;
 
-    /**
-     * @var array
-     * [
-     *  0 => logo text,
-     *  1 => color style, // 'info'
-     * ]
-     */
-    private static $logoInfo;
-
     /** @var array */
     protected static $internalCommands = [
         'version' => 'Show application version information',
@@ -65,6 +56,9 @@ abstract class AbstractApplication implements ApplicationInterface
         // 'timeZone' => 'Asia/Shanghai',
         // 'env' => 'pdt', // dev test pdt
         // 'charset' => 'UTF-8',
+
+        'logoText' => '',
+        'logoStyle' => 'info',
 
         // runtime stats
         '_stats' => [],
@@ -366,16 +360,21 @@ ERR;
      */
     public function showVersionInfo($quit = true)
     {
+        $os = PHP_OS;
         $date = date('Y.m.d');
+        $logo = '';
         $name = $this->getMeta('name', 'Console Application');
         $version = $this->getMeta('version', 'Unknown');
         $publishAt = $this->getMeta('publishAt', 'Unknown');
         $updateAt = $this->getMeta('updateAt', 'Unknown');
         $phpVersion = PHP_VERSION;
-        $os = PHP_OS;
+
+        if ($logoTxt = $this->getLogoText()) {
+            $logo = Helper::wrapTag($logoTxt, $this->getLogoStyle());
+        }
 
         $this->output->aList([
-            "\n  <info>{$name}</info>, Version <comment>$version</comment>\n",
+            "\n  <info>{$name}</info>, Version <comment>$version</comment>\n$logo",
             'System Info' => "PHP version <info>$phpVersion</info>, on <info>$os</info> system",
             'Application Info' => "Update at <info>$updateAt</info>, publish at <info>$publishAt</info>(current $date)",
         ], null, [
@@ -606,49 +605,33 @@ ERR;
     /**
      * @return string|null
      */
-    public static function getLogoTxt()
+    public function getLogoText()
     {
-        return self::$logoInfo[0] ?? null;
+        return $this->meta['logoText'] ?? null;
     }
 
     /**
      * @param string $logoTxt
      */
-    public static function setLogoTxt(string $logoTxt)
+    public function setLogoText(string $logoTxt)
     {
-        self::$logoInfo[0] = $logoTxt;
+        $this->meta['logoText'] = $logoTxt;
     }
 
     /**
      * @return string|null
      */
-    public static function getLogoStyle()
+    public function getLogoStyle()
     {
-        return self::$logoInfo[1] ?? 'info';
+        return $this->meta['logoStyle'] ?? 'info';
     }
 
     /**
      * @param string $style
      */
-    public static function setLogoStyle(string $style)
+    public function setLogoStyle(string $style)
     {
-        self::$logoInfo[1] = $style;
-    }
-
-    /**
-     * @return array
-     */
-    public static function getLogoInfo(): array
-    {
-        return self::$logoInfo;
-    }
-
-    /**
-     * @param array $logoInfo
-     */
-    public static function setLogoInfo(array $logoInfo)
-    {
-        self::$logoInfo = $logoInfo;
+        $this->meta['logoStyle'] = $style;
     }
 
     /**

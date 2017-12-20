@@ -110,16 +110,8 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
             $status = -1;
             $output->liteError("Sorry, The command '$action' not exist of the group '{$group}'!");
 
-            // find similar command names by similar_text()
-            $similar = [];
-
-            foreach ($this->getAllCommandMethods() as $cmd => $refM) {
-                similar_text($action, $cmd, $percent);
-
-                if (45 <= (int)$percent) {
-                    $similar[] = $cmd;
-                }
-            }
+            // find similar command names
+            $similar = Helper::findSimilar($action, $this->getAllCommandMethods(null, true));
 
             if ($similar) {
                 $output->write(sprintf("\nMaybe what you mean is:\n    <info>%s</info>", implode(', ', $similar)));
@@ -242,9 +234,10 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
 
     /**
      * @param \ReflectionClass|null $ref
+     * @param bool $onlyName
      * @return \Generator
      */
-    protected function getAllCommandMethods(\ReflectionClass $ref = null)
+    protected function getAllCommandMethods(\ReflectionClass $ref = null, $onlyName = false)
     {
         $ref = $ref ?: new \ReflectionObject($this);
 
@@ -258,7 +251,11 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
                 // suffix is empty ?
                 $cmd = $suffix ? substr($mName, 0, -$suffixLen) : $mName;
 
-                yield $cmd => $m;
+                if ($onlyName) {
+                    yield $cmd;
+                } else {
+                    yield $cmd => $m;
+                }
             }
         }
     }
