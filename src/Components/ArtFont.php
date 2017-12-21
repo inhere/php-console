@@ -8,7 +8,6 @@
 
 namespace Inhere\Console\Components;
 
-use Inhere\Console\BuiltIn\ArtFonts\ArtFontsBlock;
 use Inhere\Console\Utils\Helper;
 use Inhere\Console\Utils\Show;
 
@@ -95,6 +94,18 @@ class ArtFont
     }
 
     /**
+     * @param string $name
+     * @param string $group
+     * @return string
+     */
+    public function showItalic(string $name, string $group = null, array $opts = [])
+    {
+        $opts['type'] = 'italic';
+
+        return $this->show($name . '_italic', $group, $opts);
+    }
+
+    /**
      * display the art font
      * @param string $name
      * @param string $group
@@ -155,30 +166,60 @@ class ArtFont
         return '';
     }
 
+
     /**
-     * @param string $name
      * @param string $group
-     * @return string
+     * @param string $path
+     * @return $this
      */
-    public function italic(string $name, string $group = null)
+    public function addGroup(string $group, string $path)
     {
-        return $this->font($name . '_italic', $group);
+        $group = trim($group, '_');
+
+        if (!$group || !is_dir($path)) {
+            return $this;
+        }
+
+        if (!isset($this->groups[$group])) {
+            $this->groups[$group] = $path;
+        }
+
+        return $this;
     }
 
-    public function addFontsFromPath(string $path, string $group)
+    /**
+     * @param string $group
+     * @param string $path
+     * @return $this
+     */
+    public function setGroup(string $group, string $path)
     {
+        $group = trim($group, '_');
 
+        if (!$group || !is_dir($path)) {
+            return $this;
+        }
+
+        $this->groups[$group] = $path;
+
+        return $this;
     }
 
     /**
      * @param string $name
      * @param string $file font file path
+     * @param string|null $group
      * @return $this
      */
-    public function addFont(string $name, string $file)
+    public function addFont(string $name, string $file, string $group = null)
     {
-        if (is_file($file) && ($txt = trim(file_get_contents($file)))) {
-            $this->fonts[$name] = $txt;
+        $group = $group ?: self::DEFAULT_GROUP;
+
+        if (is_file($file)) {
+            $info = pathinfo($file);
+            $ext = !empty($info['extension']) ? $info['extension'] : 'txt';
+
+            $this->fonts[$group][$name] = $info['dirname'] . '/' . $info['filename'] . '.' . $ext;
         }
 
         return $this;
@@ -193,20 +234,6 @@ class ArtFont
     {
         if ($name && ($content = trim($content))) {
             $this->fontContents[$name] = $content;
-        }
-
-        return $this;
-    }
-
-    /**
-     * @param string $name Named fonts path
-     * @param string $path fonts path
-     * @return ArtFont
-     */
-    public function addPath(string $name, string $path)
-    {
-        if (file_exists($path)) {
-            $this->groups[$name] = $path;
         }
 
         return $this;

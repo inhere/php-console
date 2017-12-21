@@ -108,7 +108,7 @@ class Output implements OutputInterface
             $this->write($question, $nl);
         }
 
-        return trim(fgets(STDIN));
+        return trim(fgets(\STDIN));
     }
 
     /**

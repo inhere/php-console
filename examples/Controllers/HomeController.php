@@ -18,7 +18,7 @@ use Inhere\Console\Utils\Show;
  */
 class HomeController extends Controller
 {
-    protected static $description = 'default command controller. there are some command usage examples(2)';
+    protected static $description = 'This is a demo command controller. there are some command usage examples(2)';
 
     /**
      * @return array
@@ -123,7 +123,7 @@ class HomeController extends Controller
     }
 
     /**
-     * a counter example show. It is like progress txt, but no max value.
+     * dynamic notice message show: counterTxt. It is like progress txt, but no max value.
      * @example
      *  {script} {command}
      * @return int
@@ -144,6 +144,32 @@ class HomeController extends Controller
         $ctr->send(-1);
 
         return 0;
+    }
+
+    /**
+     * dynamic notice message show: spinner
+     */
+    public function spinnerCommand()
+    {
+        $total = 5000;
+
+        while ($total--) {
+            Show::spinner();
+            usleep(100);
+        }
+    }
+
+    /**
+     * dynamic notice message show: pending
+     */
+    public function pendingCommand()
+    {
+        $total = 5000;
+
+        while ($total--) {
+            Show::spinner();
+            usleep(100);
+        }
     }
 
     /**
@@ -504,7 +530,7 @@ class HomeController extends Controller
     }
 
     /**
-     * This is a demo for input password on command line. use: <magenta>Interact::askPassword()</magenta>
+     * This is a demo for input password. use: <magenta>Interact::askPassword()</magenta>
      * @usage {fullCommand}
      */
     public function pwdCommand()

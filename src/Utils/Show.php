@@ -627,6 +627,16 @@ class Show
     }
 
     /**
+     * @todo un-completed
+     * @param array $data
+     * @param array $opts
+     */
+    public static function tree(array $data, array $opts = [])
+    {
+
+    }
+
+    /**
      * 表格数据信息展示
      * @param  array $data
      * @param  string $title
@@ -802,6 +812,64 @@ class Show
     /***********************************************************************************
      * Output progress message
      ***********************************************************************************/
+
+    /**
+     * @todo un-completed
+     */
+    public static function spinner()
+    {
+        static $spinner = 0;
+        static $lastTime = null;
+        static $chars = '-\|/';
+        // static $chars = '-.*.-';
+
+        $tpl = (Helper::isSupportColor() ? "\x0D\x1B[2K" : "\x0D\r") . '%s';
+        $now = microtime(true);
+
+        if (null === $lastTime || ($lastTime < $now - 0.1)) {
+            $lastTime = $now;
+            // echo $chars[$spinner];
+            printf($tpl, $chars[$spinner]);
+            $spinner++;
+
+            if ($spinner > \strlen($chars) - 1) {
+                $spinner = 0;
+            }
+        }
+    }
+
+    /**
+     * '.'
+     * '..'
+     * '...'
+     * '.'
+     * @param null $msg
+     */
+    public static function loading($msg = null)
+    {
+
+    }
+
+    public static function pending($msg = 'pending')
+    {
+        static $spinner = 0;
+        static $lastTime = null;
+        static $chars = '...';
+
+        $tpl = (Helper::isSupportColor() ? "\x0D\x1B[2K" : "\x0D\r") . '%s';
+        $now = microtime(true);
+
+        if (null === $lastTime || ($lastTime < $now - 0.1)) {
+            $lastTime = $now;
+            // echo $chars[$spinner];
+            printf($tpl, $chars[$spinner]);
+            $spinner++;
+
+            if ($spinner > \strlen($chars) - 1) {
+                $spinner = 0;
+            }
+        }
+    }
 
     /**
      * 与文本进度条相比，没有 total

@@ -8,8 +8,13 @@
 
 namespace Inhere\Console\Components\Notify;
 
+use Inhere\Console\Components\NotifyMessage;
 
-class Spinner
+/**
+ * Class Spinner
+ * @package Inhere\Console\Components\Notify
+ */
+class Spinner extends NotifyMessage
 {
 
 }

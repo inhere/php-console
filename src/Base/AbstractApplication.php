@@ -45,7 +45,7 @@ abstract class AbstractApplication implements ApplicationInterface
      * @var array
      */
     private $meta = [
-        'name' => 'My Console',
+        'name' => 'My Console Application',
         'debug' => false,
         'profile' => false,
         'version' => '0.5.1',
@@ -374,7 +374,7 @@ ERR;
         }
 
         $this->output->aList([
-            "\n  <info>{$name}</info>, Version <comment>$version</comment>\n$logo",
+            "$logo\n  <info>{$name}</info>, Version <comment>$version</comment>\n",
             'System Info' => "PHP version <info>$phpVersion</info>, on <info>$os</info> system",
             'Application Info' => "Update at <info>$updateAt</info>, publish at <info>$publishAt</info>(current $date)",
         ], null, [
@@ -612,10 +612,15 @@ ERR;
 
     /**
      * @param string $logoTxt
+     * @param string|null $style
      */
-    public function setLogoText(string $logoTxt)
+    public function setLogo(string $logoTxt, string $style = null)
     {
         $this->meta['logoText'] = $logoTxt;
+        
+        if ($style) {
+            $this->meta['logoStyle'] = $style;
+        }
     }
 
     /**

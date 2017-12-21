@@ -92,9 +92,11 @@ $app->run();
 
 然后在命令行里执行 `php examples/app`, 立即就可以看到如下输出了:
 
-!['output-commands-info'](images/example-app.png)
+!['app-command-list'](docs/screenshots/app-command-list.png)
 
 > `Independent Commands` 中的 demo 就是我们上面添加的命令
+
+- `[alias: ...]` 命令最后的alias 表明了此命令拥有的别名。 
 
 ## 添加命令
 
@@ -206,7 +208,7 @@ class HomeController extends Controller
 
 - 运行效果(by `php examples/app home`):
 
-![command-group-example](./images/example-for-group.png)
+![group-command-list](docs/screenshots/group-command-list.png)
 
 更多请查看 [examples](./examples) 中的示例代码和在目录下运行示例 `php examples/app` 来查看效果
 
@@ -429,7 +431,7 @@ while ($i <= $total) {
 }
 ```
 
-![show-progress](images/show-progress.png)
+![show-progress](docs/screenshots/progress-demo.png)
 
 ### 列表数据展示输出 
 

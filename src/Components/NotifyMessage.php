@@ -8,7 +8,11 @@
 
 namespace Inhere\Console\Components;
 
-
+/**
+ * Class NotifyMessage - like progress, spinner ....
+ * @package Inhere\Console\Components
+ * @link https://github.com/wp-cli/php-cli-tools/tree/master/lib/cli
+ */
 class NotifyMessage
 {
 

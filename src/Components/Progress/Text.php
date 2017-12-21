@@ -8,7 +8,10 @@
 
 namespace Inhere\Console\Components\Progress;
 
-
+/**
+ * Class Text
+ * @package Inhere\Console\Components\Progress
+ */
 class Text
 {
 

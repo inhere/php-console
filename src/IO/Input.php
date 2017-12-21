@@ -119,7 +119,9 @@ class Input implements InputInterface
      */
     public function read($question = null, $nl = false): string
     {
-        fwrite(STDOUT, $question . ($nl ? "\n" : ''));
+        if ($question) {
+            fwrite(\STDOUT, $question . ($nl ? "\n" : ''));
+        }
 
         return trim(fgets($this->inputStream));
     }

@@ -8,7 +8,10 @@
 
 namespace Inhere\Console\Utils;
 
-
+/**
+ * Class ProcessUtil
+ * @package Inhere\Console\Utils
+ */
 class ProcessUtil
 {
 

@@ -8,8 +8,35 @@
 
 namespace Inhere\Console\Components;
 
-
+/**
+ * Class CodeExecComparator - PHP code exec speed comparator
+ * @package Inhere\Console\Components
+ */
 class CodeExecComparator
 {
+    /**
+     * @var array
+     */
+    private $vars = [];
 
+    public function compare($code1, $code2, $loops = 10000)
+    {
+
+    }
+
+    /**
+     * @return array
+     */
+    public function getVars(): array
+    {
+        return $this->vars;
+    }
+
+    /**
+     * @param array $vars
+     */
+    public function setVars(array $vars)
+    {
+        $this->vars = $vars;
+    }
 }

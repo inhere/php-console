@@ -8,8 +8,13 @@
 
 namespace Inhere\Console\Components\Notify;
 
+use Inhere\Console\Components\NotifyMessage;
 
-class Pending
+/**
+ * Class Pending
+ * @package Inhere\Console\Components\Notify
+ */
+class Pending extends NotifyMessage
 {
 
 }
