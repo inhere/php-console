@@ -28,6 +28,14 @@ class Helper
     /**
      * @return bool
      */
+    public static function isMac(): bool
+    {
+        return stripos(PHP_OS, 'Darwin') !== false;
+    }
+
+    /**
+     * @return bool
+     */
     public static function isWindows(): bool
     {
         return stripos(PHP_OS, 'WIN') !== false;
