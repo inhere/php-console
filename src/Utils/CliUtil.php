@@ -40,19 +40,6 @@ final class CliUtil
     }
 
     /**
-     * run a command in background
-     * @param string $cmd
-     */
-    public static function execInBackground($cmd)
-    {
-        if (Helper::isWindows()) {
-            pclose(popen('start /B ' . $cmd, 'r'));
-        } else {
-            exec($cmd . ' > /dev/null &');
-        }
-    }
-
-    /**
      * @param string $command
      * @param null|string $logfile
      * @param null|string $user

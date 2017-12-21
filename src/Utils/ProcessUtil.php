@@ -52,6 +52,19 @@ class ProcessUtil
     }
 
     /**
+     * run a command in background
+     * @param string $cmd
+     */
+    public static function runInBackground($cmd)
+    {
+        if (Helper::isWindows()) {
+            pclose(popen('start /B ' . $cmd, 'r'));
+        } else {
+            exec($cmd . ' > /dev/null &');
+        }
+    }
+
+    /**
      * fork multi child processes.
      * @param int $number
      * @param callable|null $childHandler
@@ -309,7 +322,7 @@ class ProcessUtil
     }
 
     /**
-     * @param $pid
+     * @param int $pid
      * @return bool
      */
     public static function isRunning($pid)
@@ -337,6 +350,28 @@ class ProcessUtil
     public static function getPid()
     {
         return getmypid();// or use posix_getpid()
+    }
+
+    /**
+     * get Pid from File
+     * @param string $file
+     * @param bool $checkLive
+     * @return int
+     */
+    public static function getPidByFile($file, $checkLive = false)
+    {
+        if ($file && file_exists($file)) {
+            $pid = (int)file_get_contents($file);
+
+            // check live
+            if ($checkLive && self::isRunning($pid)) {
+                return $pid;
+            }
+
+            unlink($file);
+        }
+
+        return 0;
     }
 
     /**
@@ -462,25 +497,4 @@ class ProcessUtil
         }
     }
 
-    /**
-     * get Pid from File
-     * @param string $file
-     * @param bool $checkLive
-     * @return int
-     */
-    public static function getPidFromFile($file, $checkLive = false)
-    {
-        if ($file && file_exists($file)) {
-            $pid = (int)file_get_contents($file);
-
-            // check live
-            if ($checkLive && self::isRunning($pid)) {
-                return $pid;
-            }
-
-            unlink($file);
-        }
-
-        return 0;
-    }
 }
