@@ -16,5 +16,6 @@ use Inhere\Console\Components\NotifyMessage;
  */
 class Pending extends NotifyMessage
 {
-
+    /** @var int Speed value. allow 1 - 100 */
+    private $speed = 20;
 }

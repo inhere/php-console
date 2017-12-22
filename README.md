@@ -553,7 +553,7 @@ Show::table($data, 'a table', $opts);
 
 > 渲染效果请看下面的预览
 
-![table-show](images/table-show.png)
+![table-show](docs/screenshots/table-show.png)
 
 ### 快速的渲染一个帮助信息面板 
 

@@ -2,13 +2,14 @@
 
 namespace Inhere\Console\Examples\Controllers;
 
-use Inhere\Console\Components\AnsiCode;
+use Inhere\Console\Components\Terminal;
 use Inhere\Console\Components\ArtFont;
 use Inhere\Console\Components\Download;
 use Inhere\Console\Controller;
 use Inhere\Console\IO\Input;
 use Inhere\Console\Utils\Helper;
 use Inhere\Console\Utils\Interact;
+use Inhere\Console\Utils\ProgressBar;
 use Inhere\Console\Utils\Show;
 
 /**
@@ -157,6 +158,8 @@ class HomeController extends Controller
             Show::spinner();
             usleep(100);
         }
+
+        Show::spinner('Done', true);
     }
 
     /**
@@ -164,16 +167,18 @@ class HomeController extends Controller
      */
     public function pendingCommand()
     {
-        $total = 5000;
+        $total = 8000;
 
         while ($total--) {
-            Show::spinner();
-            usleep(100);
+            Show::pending();
+            usleep(200);
         }
+
+        Show::pending('Done', true);
     }
 
     /**
-     * a progress bar example show
+     * a progress bar example show, by Show::progressBar()
      * @options
      *  --type      the progress type, allow: bar,txt. <cyan>txt</cyan>
      *  --done-char the done show char. <info>=</info>
@@ -210,6 +215,26 @@ class HomeController extends Controller
         }
 
         return 0;
+    }
+
+    /**
+     * a progress bar example show, by class ProgressBar
+     * @throws \LogicException
+     */
+    public function prgCommand()
+    {
+        $i = 0;
+        $total = 120;
+        $bar = new ProgressBar();
+        $bar->start(120);
+
+        while ($i <= $total) {
+            $bar->advance();
+            usleep(50000);
+            $i++;
+        }
+
+        $bar->finish();
     }
 
     /**
@@ -592,39 +617,36 @@ class HomeController extends Controller
     }
 
     /**
-     * This is a demo for show cursor move on the screen
+     * This is a demo for show cursor move on the Terminal screen
      */
     public function cursorCommand()
     {
         $this->write('hello, this in ' . __METHOD__);
-
-        // $this->output->panel($_SERVER, 'Server information', '');
-
         $this->write('this is a message text.', false);
 
         sleep(1);
-        AnsiCode::make()->cursor(AnsiCode::CURSOR_BACKWARD, 6);
+        Terminal::make()->cursor(Terminal::CURSOR_BACKWARD, 6);
 
         sleep(1);
-        AnsiCode::make()->cursor(AnsiCode::CURSOR_FORWARD, 3);
+        Terminal::make()->cursor(Terminal::CURSOR_FORWARD, 3);
 
         sleep(1);
-        AnsiCode::make()->cursor(AnsiCode::CURSOR_BACKWARD, 2);
+        Terminal::make()->cursor(Terminal::CURSOR_BACKWARD, 2);
 
         sleep(2);
 
-        AnsiCode::make()->screen(AnsiCode::CLEAR_LINE, 3);
+        Terminal::make()->screen(Terminal::CLEAR_LINE, 3);
 
         $this->write('after 2s scroll down 3 row.');
 
         sleep(2);
 
-        AnsiCode::make()->screen(AnsiCode::SCROLL_DOWN, 3);
+        Terminal::make()->screen(Terminal::SCROLL_DOWN, 3);
 
         $this->write('after 3s clear screen.');
 
         sleep(3);
 
-        AnsiCode::make()->screen(AnsiCode::CLEAR);
+        Terminal::make()->screen(Terminal::CLEAR);
     }
 }

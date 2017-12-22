@@ -26,6 +26,6 @@
     }
   },
   "suggest": {
-    "inhere/simple-print-tool": "Very lightweight data printing tools"
+    "symfony/process": "php process operation"
   }
 }

@@ -64,6 +64,14 @@ class Helper
     }
 
     /**
+     * @return bool
+     */
+    public static function supportColor()
+    {
+        return self::isSupportColor();
+    }
+
+    /**
      * Returns true if STDOUT supports colorization.
      * This code has been copied and adapted from
      * \Symfony\Component\Console\Output\OutputStream.
@@ -383,62 +391,6 @@ class Helper
     }
 
     /**
-     * get screen size
-     *
-     * ```php
-     * list($width, $height) = Helper::getScreenSize();
-     * ```
-     * @from Yii2
-     * @param boolean $refresh whether to force checking and not re-use cached size value.
-     * This is useful to detect changing window size while the application is running but may
-     * not get up to date values on every terminal.
-     * @return array|boolean An array of ($width, $height) or false when it was not able to determine size.
-     */
-    public static function getScreenSize($refresh = false)
-    {
-        static $size;
-        if ($size !== null && !$refresh) {
-            return $size;
-        }
-
-        if (CliUtil::bashIsAvailable()) {
-            // try stty if available
-            $stty = [];
-
-            if (
-                exec('stty -a 2>&1', $stty) &&
-                preg_match('/rows\s+(\d+);\s*columns\s+(\d+);/mi', implode(' ', $stty), $matches)
-            ) {
-                return ($size = [$matches[2], $matches[1]]);
-            }
-
-            // fallback to tput, which may not be updated on terminal resize
-            if (($width = (int)exec('tput cols 2>&1')) > 0 && ($height = (int)exec('tput lines 2>&1')) > 0) {
-                return ($size = [$width, $height]);
-            }
-
-            // fallback to ENV variables, which may not be updated on terminal resize
-            if (($width = (int)getenv('COLUMNS')) > 0 && ($height = (int)getenv('LINES')) > 0) {
-                return ($size = [$width, $height]);
-            }
-        }
-
-        if (self::isOnWindows()) {
-            $output = [];
-            exec('mode con', $output);
-
-            if (isset($output[1]) && strpos($output[1], 'CON') !== false) {
-                return ($size = [
-                    (int)preg_replace('~\D~', '', $output[3]),
-                    (int)preg_replace('~\D~', '', $output[4])
-                ]);
-            }
-        }
-
-        return ($size = false);
-    }
-
-    /**
      * Word wrap text with indentation to fit the screen size
      *
      * If screen size could not be detected, or the indentation is greater than the screen size, the text will not be wrapped.
@@ -465,7 +417,7 @@ class Helper
         }
 
         if ((int)$width <= 0) {
-            $size = static::getScreenSize();
+            $size = CliUtil::getScreenSize();
 
             if ($size === false || $size[0] <= $indent) {
                 return $text;

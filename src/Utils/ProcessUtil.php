@@ -15,12 +15,24 @@ namespace Inhere\Console\Utils;
 class ProcessUtil
 {
     /**
+     * @return bool
+     */
+    public static function isSupported()
+    {
+        return !Helper::isWindows() && \function_exists('pcntl_fork');
+    }
+
+    /**
      * Daemon, detach and run in the background
      * @param \Closure|null $beforeQuit
      * @return int Return new process PID
      */
     public static function daemonRun(\Closure $beforeQuit = null)
     {
+        if (!self::isSupported()) {
+            return 0;
+        }
+
         // umask(0);
         $pid = pcntl_fork();
 
@@ -65,42 +77,74 @@ class ProcessUtil
     }
 
     /**
-     * fork multi child processes.
+     * @see ProcessUtil::forks()
      * @param int $number
-     * @param callable|null $childHandler
-     * @return array|int
+     * @param callable|null $onStart
+     * @param callable|null $onError
+     * @return array|false
      */
-    public static function forks($number, callable $childHandler = null)
+    public static function multi(int $number, callable $onStart = null, callable $onError = null)
     {
-        $num = (int)$number > 0 ? (int)$number : 0;
+        return self::forks($number, $onStart, $onError);
+    }
 
-        if ($num <= 0) {
+    /**
+     * fork/create multi child processes.
+     * @param int $number
+     * @param callable|null $onStart Will running on the child processes.
+     * @param callable|null $onError
+     * @return array|false
+     */
+    public static function forks(int $number, callable $onStart = null, callable $onError = null)
+    {
+        if ($number <= 0) {
+            return false;
+        }
+
+        if (!self::isSupported()) {
             return false;
         }
 
         $pidAry = [];
 
-        for ($id = 0; $id < $num; $id++) {
-            $child = self::fork($id, $childHandler);
-            $pidAry[$child['pid']] = $child;
+        for ($id = 0; $id < $number; $id++) {
+            $info = self::fork($onStart, $onError, $id);
+            $pidAry[$info['pid']] = $info;
         }
 
         return $pidAry;
     }
 
     /**
-     * fork a child process.
+     * @see ProcessUtil::fork()
      * @param int $id
-     * @param callable|null $childHandler
-     * param bool $first
-     * @return array
+     * @param callable|null $onStart
+     * @param callable|null $onError
+     * @return array|false
      */
-    public static function fork($id = 0, callable $childHandler = null)
+    public static function create($id = 0, callable $onStart = null, callable $onError = null)
     {
+        return self::fork($id, $onStart, $onError);
+    }
+
+    /**
+     * fork/create a child process.
+     * @param callable|null $onStart Will running on the child process start.
+     * @param int $id The process index number. will use `forks()`
+     * @param callable|null $onError
+     * @return array|false
+     */
+    public static function fork(callable $onStart = null, callable $onError = null, $id = 0)
+    {
+        if (!self::isSupported()) {
+            return false;
+        }
+
         $info = [];
         $pid = pcntl_fork();
 
-        if ($pid > 0) {// at parent, get forked child info
+        // at parent, get forked child info
+        if ($pid > 0) {
             $info = [
                 'id' => $id,
                 'pid' => $pid,
@@ -109,11 +153,14 @@ class ProcessUtil
         } elseif ($pid === 0) { // at child
             $pid = getmypid();
 
-            if ($childHandler) {
-                $childHandler($id, $pid);
+            if ($onStart) {
+                $onStart($id, $pid);
+            }
+        } else {
+            if ($onError) {
+                $onError($pid);
             }
 
-        } else {
             Show::error('Fork child process failed! exiting.');
         }
 
@@ -127,6 +174,10 @@ class ProcessUtil
      */
     public static function wait(callable $onExit)
     {
+        if (!self::isSupported()) {
+            return false;
+        }
+
         $status = null;
 
         //pid<0：子进程都没了
@@ -168,6 +219,10 @@ class ProcessUtil
     public static function stopChildren(array $children, $signal = SIGTERM, array $events = [])
     {
         if (!$children) {
+            return false;
+        }
+
+        if (!self::isSupported()) {
             return false;
         }
 
@@ -273,6 +328,29 @@ class ProcessUtil
         return exec($cmd);
     }
 
+
+    /**
+     * @param int $pid
+     * @return bool
+     */
+    public static function isRunning($pid)
+    {
+        return ($pid > 0) && @posix_kill($pid, 0);
+    }
+
+    /**
+     * exit
+     * @param int $code
+     */
+    public static function quit($code = 0)
+    {
+        exit((int)$code);
+    }
+
+    /**************************************************************************************
+     * process signal handle
+     *************************************************************************************/
+
     /**
      * send signal to the process
      * @param int $pid
@@ -283,6 +361,10 @@ class ProcessUtil
     public static function sendSignal($pid, $signal, $timeout = 0)
     {
         if ($pid <= 0) {
+            return false;
+        }
+
+        if (!self::isSupported()) {
             return false;
         }
 
@@ -322,21 +404,24 @@ class ProcessUtil
     }
 
     /**
-     * @param int $pid
+     * install signal
+     * @param  int $signal e.g: SIGTERM SIGINT(Ctrl+C) SIGUSR1 SIGUSR2 SIGHUP
+     * @param  callable $handler
      * @return bool
      */
-    public static function isRunning($pid)
+    public static function installSignal($signal, callable $handler)
     {
-        return ($pid > 0) && @posix_kill($pid, 0);
+        return pcntl_signal($signal, $handler, false);
     }
 
     /**
-     * exit
-     * @param int $code
+     * dispatch signal
+     * @return bool
      */
-    public static function quit($code = 0)
+    public static function dispatchSignal()
     {
-        exit((int)$code);
+        // receive and dispatch sig
+        return pcntl_signal_dispatch();
     }
 
     /**************************************************************************************
@@ -402,27 +487,6 @@ class ProcessUtil
 
         // self::alarm($seconds);
         pcntl_alarm($seconds);
-    }
-
-    /**
-     * install signal
-     * @param  int $signal e.g: SIGTERM SIGINT(Ctrl+C) SIGUSR1 SIGUSR2 SIGHUP
-     * @param  callable $handler
-     * @return bool
-     */
-    public static function installSignal($signal, callable $handler)
-    {
-        return pcntl_signal($signal, $handler, false);
-    }
-
-    /**
-     * dispatch signal
-     * @return bool
-     */
-    public static function dispatchSignal()
-    {
-        // receive and dispatch sig
-        return pcntl_signal_dispatch();
     }
 
     /**

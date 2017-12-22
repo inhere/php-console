@@ -11,14 +11,14 @@ namespace Inhere\Console\Components;
 use Inhere\Console\Utils\Show;
 
 /**
- * Class AnsiCode terminal
+ * Class Terminal - terminal control by ansiCode
  * @package Inhere\Console\Components
  *
  * 2K 清除本行
  * \x0D = \r = 13 回车，回到行首
  * ESC = \x1B = 27
  */
-final class AnsiCode
+final class Terminal
 {
     const BEGIN_CHAR = "\033[";
 
@@ -133,8 +133,8 @@ final class AnsiCode
      * build ansi code string
      *
      * ```
-     * AnsiCode::build(null, 'u');  // "\033[s" Saves the current cursor position
-     * AnsiCode::build(0);          // "\033[0m" Build end char, Resets any ANSI format
+     * Terminal::build(null, 'u');  // "\033[s" Saves the current cursor position
+     * Terminal::build(0);          // "\033[0m" Build end char, Resets any ANSI format
      * ```
      *
      * @param mixed $format

@@ -686,7 +686,7 @@ class Show
 
         $hasHead = false;
         $rowIndex = 0;
-        $head = $table = [];
+        $head = [];
         $tableHead = $opts['columns'];
         $leftIndent = $opts['leftIndent'];
         $showBorder = $opts['showBorder'];
@@ -814,59 +814,94 @@ class Show
      ***********************************************************************************/
 
     /**
-     * @todo un-completed
+     * show a spinner icon message
+     * ```php
+     *  $total = 5000;
+     *  while ($total--) {
+     *      Show::spinner();
+     *      usleep(100);
+     *  }
+     *  Show::spinner('Done', true);
+     * ```
+     * @param string $msg
+     * @param bool $ended
      */
-    public static function spinner()
+    public static function spinner($msg = '', $ended = false)
     {
-        static $spinner = 0;
-        static $lastTime = null;
         static $chars = '-\|/';
-        // static $chars = '-.*.-';
+        static $counter = 0;
+        static $lastTime = null;
 
-        $tpl = (Helper::isSupportColor() ? "\x0D\x1B[2K" : "\x0D\r") . '%s';
+        $tpl = (Helper::supportColor() ? "\x0D\x1B[2K" : "\x0D\r") . '%s';
+
+        if ($ended) {
+            printf($tpl, $msg);
+
+            return;
+        }
+
         $now = microtime(true);
 
         if (null === $lastTime || ($lastTime < $now - 0.1)) {
             $lastTime = $now;
-            // echo $chars[$spinner];
-            printf($tpl, $chars[$spinner]);
-            $spinner++;
+            // echo $chars[$counter];
+            printf($tpl, $chars[$counter] . $msg);
+            $counter++;
 
-            if ($spinner > \strlen($chars) - 1) {
-                $spinner = 0;
+            if ($counter > \strlen($chars) - 1) {
+                $counter = 0;
             }
         }
     }
 
     /**
-     * '.'
-     * '..'
-     * '...'
-     * '.'
-     * @param null $msg
+     * alias of the pending()
+     * @param string $msg
+     * @param bool $ended
      */
-    public static function loading($msg = null)
+    public static function loading($msg = 'Loading ', $ended = false)
     {
-
+        self::pending($msg, $ended);
     }
 
-    public static function pending($msg = 'pending')
+    /**
+     * show a pending message
+     * ```php
+     *  $total = 8000;
+     *
+     *  while ($total--) {
+     *      Show::pending();
+     *      usleep(200);
+     *  }
+     *
+     *  Show::pending('Done', true);
+     * ```
+     * @param string $msg
+     * @param bool $ended
+     */
+    public static function pending($msg = 'Pending ', $ended = false)
     {
-        static $spinner = 0;
+        static $counter = 0;
         static $lastTime = null;
-        static $chars = '...';
+        static $chars = ['', '.', '..', '...'];
 
-        $tpl = (Helper::isSupportColor() ? "\x0D\x1B[2K" : "\x0D\r") . '%s';
+        $tpl = (Helper::supportColor() ? "\x0D\x1B[2K" : "\x0D\r") . '%s';
+
+        if ($ended) {
+            printf($tpl, $msg);
+
+            return;
+        }
+
         $now = microtime(true);
 
-        if (null === $lastTime || ($lastTime < $now - 0.1)) {
+        if (null === $lastTime || ($lastTime < $now - 0.8)) {
             $lastTime = $now;
-            // echo $chars[$spinner];
-            printf($tpl, $chars[$spinner]);
-            $spinner++;
+            printf($tpl, $msg . $chars[$counter]);
+            $counter++;
 
-            if ($spinner > \strlen($chars) - 1) {
-                $spinner = 0;
+            if ($counter > \count($chars) - 1) {
+                $counter = 0;
             }
         }
     }
