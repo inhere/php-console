@@ -9,10 +9,10 @@
 namespace Inhere\Console\Components;
 
 /**
- * Class CodeExecComparator - PHP code exec speed comparator
+ * Class ExecComparator - PHP code exec speed comparator
  * @package Inhere\Console\Components
  */
-class CodeExecComparator
+class ExecComparator
 {
     /**
      * @var array

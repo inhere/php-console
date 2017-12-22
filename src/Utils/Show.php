@@ -589,6 +589,7 @@ class Show
 
         $border = null;
         $panelWidth = $labelMaxWidth + $valueMaxWidth;
+        self::startBuffer();
 
         // output title
         if ($title) {
@@ -621,6 +622,7 @@ class Show
             self::write("  $border\n");
         }
 
+        self::flushBuffer();
         unset($panelData);
 
         return 0;

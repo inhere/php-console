@@ -26,6 +26,7 @@
     }
   },
   "suggest": {
-    "symfony/process": "php process operation"
+    "symfony/process": "php process operation",
+    "text/template": "Single-Class string template engine for PHP5/7 supporting if/loops/filters"
   }
 }

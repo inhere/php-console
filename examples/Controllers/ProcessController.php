@@ -33,6 +33,16 @@ class ProcessController extends Controller
     /**
      * simple process example for child-process
      */
+    public function runScriptCommand()
+    {
+        $script = '<?php echo "foo"; ?>';
+
+
+    }
+
+    /**
+     * simple process example for child-process
+     */
     public function childProcessCommand()
     {
         $ret = ProcessUtil::create(function ($pid) {

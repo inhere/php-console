@@ -15,5 +15,23 @@ namespace Inhere\Console\Components;
  */
 class NotifyMessage
 {
+    /** @var int Speed value. allow 1 - 10 */
+    protected $speed = 2;
+
+    /**
+     * @return int
+     */
+    public function getSpeed(): int
+    {
+        return $this->speed;
+    }
+
+    /**
+     * @param int $speed
+     */
+    public function setSpeed($speed)
+    {
+        $this->speed = (int)$speed;
+    }
 
 }

@@ -6,13 +6,13 @@
  * Time: 17:56
  */
 
-namespace Inhere\Console\Components;
+namespace Inhere\Console\Components\AutoComplete;
 
 /**
  * Class AutoCompletion - a simple command auto-completion tool
  *
  * @todo not available
- * @package Inhere\Console\Components
+ * @package Inhere\Console\Components\AutoComplete
  */
 class AutoCompletion
 {
@@ -57,9 +57,9 @@ class AutoCompletion
      */
     public function completionHandler($input, $index)
     {
-        $info = readline_info();
-        $line = substr($info['line_buffer'], 0, $info['end']);
-        $tokens = token_get_all('<?php ' . $line);
+        // $info = readline_info();
+        // $line = substr($info['line_buffer'], 0, $info['end']);
+        // $tokens = token_get_all('<?php ' . $line);
         $input = trim($input);
 
         if (!$input) {
