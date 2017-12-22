@@ -208,10 +208,10 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
 
         if ($this->standAlone) {
             $name = $sName . ' ';
-            $usage = "$script <info>{command}</info> [arguments] [options]";
+            $usage = "$script <info>{command}</info> [arguments ...] [options ...]";
         } else {
             $name = $sName . $this->delimiter;
-            $usage = "$script {$name}<info>{command}</info> [arguments] [options]";
+            $usage = "$script {$name}<info>{command}</info> [arguments ...] [options ...]";
         }
 
         $this->output->startBuffer();
@@ -220,9 +220,11 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
             'Usage:' => $usage,
             //'Group Name:' => "<info>$sName</info>",
             'Options:' => [
-                '-h,--help' => 'Show help of the command group or specified command action',
+                '-h, --help' => 'Show help of the command group or specified command action',
             ],
             'Commands:' => $commands,
+        ], [
+            'sepChar' => '  ',
         ]);
 
         $this->write(sprintf(

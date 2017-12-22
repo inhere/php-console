@@ -33,6 +33,14 @@ use Inhere\Console\Utils\Show;
  * @method int liteWarning($messages, $quit = false)
  * @method int liteDanger($messages, $quit = false)
  * @method int liteError($messages, $quit = false)
+ *
+ * @method padding(array $data, string $title = null, array $opts = [])
+ *
+ * @method spinner($msg = '', $ended = false)
+ * @method loading($msg = 'Loading ', $ended = false)
+ * @method pending($msg = 'Pending ', $ended = false)
+ *
+ * @method \Generator counterTxt($msg = 'Pending ', $ended = false)
  */
 trait FormatOutputAwareTrait
 {

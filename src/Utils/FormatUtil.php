@@ -33,10 +33,46 @@ final class FormatUtil
     }
 
     /**
+     * @param string $string
+     * @param int $indent
+     * @param string $indentChar
+     * @return string
+     */
+    public static function applyIndent(string $string, int $indent = 2, string $indentChar = ' ')
+    {
+        if (!$string || $indent <= 0) {
+            return $string;
+        }
+
+        $new = '';
+        $list = explode("\n", $string);
+        $indentStr = str_repeat($indentChar ?: ' ', $indent);
+
+        foreach ($list as $value) {
+            $new .= $indentStr . trim($value) . "\n";
+        }
+
+        return $new;
+    }
+
+    /**
+     * @param string $optsStr
+     */
+    public static function annotationOptions(string $optsStr)
+    {
+
+    }
+
+    public static function annotationArguments(string $optsStr)
+    {
+
+    }
+
+    /**
      * @param array $options
      * @return array
      */
-    public static function commandOptions(array $options)
+    public static function arrayOptions(array $options)
     {
         // e.g '-h, --help'
         $hasShort = (bool)strpos(implode(array_keys($options), ''), ',');
@@ -47,8 +83,15 @@ final class FormatUtil
 
         $formatted = [];
         foreach ($options as $name => $des) {
+            if (!$name = trim($name, ', ')) {
+                continue;
+            }
+
             if (!strpos($name, ',')) {
+                // padding length equals to '-h, '
                 $name = '    ' . $name;
+            } else {
+                $name = str_replace([' ', ','], ['', ', '], $name);
             }
 
             $formatted[$name] = $des;

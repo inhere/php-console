@@ -412,7 +412,7 @@ class Show
             $buffer[] = self::aList($list, $title, $opts);
         }
 
-        self::write($buffer);
+        self::write(implode("\n", $buffer), false);
     }
 
     /**

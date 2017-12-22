@@ -33,5 +33,5 @@ $app->controller('home', HomeController::class, [
 ]);
 
 $app->controller(ProcessController::class, null, [
-    'prc'
+    'aliases' => 'prc'
 ]);

@@ -344,7 +344,7 @@ ERR;
         $sep = $this->delimiter;
 
         $this->output->helpPanel([
-            'usage' => "$script {command} [arg0 arg1=value1 arg2=value2 ...] [--opt -v -h ...]",
+            'usage' => "$script <info>{command}</info> [arg0 arg1=value1 arg2=value2 ...] [--opt -v -h ...]",
             'example' => [
                 "$script test (run a independent command)",
                 "$script home{$sep}index (run a command of the group)",
@@ -397,7 +397,7 @@ ERR;
         $desPlaceholder = 'No description of the command';
 
         // all console controllers
-        $controllerArr[] = PHP_EOL . '- <cyan>Group Commands</cyan>';
+        $controllerArr[] = PHP_EOL . '- <bold>Group Commands</bold>';
         $controllers = $this->controllers;
         ksort($controllers);
 
@@ -414,9 +414,9 @@ ERR;
             $controllerArr[] = '... No register any group command(controller)';
         }
 
-        // all independent commands
+        // all independent commands, Independent, Single, Alone
         $commands = $this->commands;
-        $commandArr[] = PHP_EOL . '- <cyan>Independent Commands</cyan>';
+        $commandArr[] = PHP_EOL . '- <bold>Alone Commands</bold>';
         ksort($commands);
 
         foreach ($commands as $name => $command) {
@@ -448,10 +448,10 @@ ERR;
         ksort($internalCommands);
 
         // built in options
-        $internalOptions = FormatUtil::commandOptions(self::$internalOptions);
+        $internalOptions = FormatUtil::arrayOptions(self::$internalOptions);
 
         $this->output->mList([
-            'Usage:' => "$script {command} [arg0 arg1=value1 arg2=value2 ...] [--opt -v -h ...]",
+            'Usage:' => "$script <info>{command}</info> [arg0 arg1=value1 arg2=value2 ...] [--opt -v -h ...]",
             'Options:' => $internalOptions,
             'Internal Commands:' => $internalCommands,
             'Available Commands:' => array_merge($controllerArr, $commandArr),

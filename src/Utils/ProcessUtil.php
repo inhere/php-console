@@ -117,21 +117,21 @@ class ProcessUtil
 
     /**
      * @see ProcessUtil::fork()
-     * @param int $id
      * @param callable|null $onStart
      * @param callable|null $onError
+     * @param int $id
      * @return array|false
      */
-    public static function create($id = 0, callable $onStart = null, callable $onError = null)
+    public static function create(callable $onStart = null, callable $onError = null, $id = 0)
     {
-        return self::fork($id, $onStart, $onError);
+        return self::fork($onStart, $onError, $id);
     }
 
     /**
      * fork/create a child process.
      * @param callable|null $onStart Will running on the child process start.
-     * @param int $id The process index number. will use `forks()`
      * @param callable|null $onError
+     * @param int $id The process index number. will use `forks()`
      * @return array|false
      */
     public static function fork(callable $onStart = null, callable $onError = null, $id = 0)
@@ -154,7 +154,7 @@ class ProcessUtil
             $pid = getmypid();
 
             if ($onStart) {
-                $onStart($id, $pid);
+                $onStart($pid, $id);
             }
         } else {
             if ($onError) {

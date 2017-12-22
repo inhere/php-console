@@ -30,10 +30,14 @@ class HomeController extends Controller
             // now, 'home:i' is equals to 'home:index'
             'i' => 'index',
             'prg' => 'progress',
+            'pgb' => 'progressBar',
+            'pwd' => 'password',
             'l' => 'list',
             'h' => 'helpPanel',
             'hp' => 'helpPanel',
             'af' => 'artFont',
+            'ml' => 'multiList',
+            'ms' => 'multiSelect',
         ];
     }
 
@@ -42,6 +46,11 @@ class HomeController extends Controller
         parent::init();
 
         $this->addAnnotationVar('internalFonts', implode(',', ArtFont::getInternalFonts()));
+    }
+
+    protected function afterExecute()
+    {
+        $this->write('after command execute');
     }
 
     /**
@@ -203,7 +212,7 @@ class HomeController extends Controller
                 'signChar' => $input->getOpt('sign-char', '>'),
             ]);
         } else {
-            $bar = $this->output->progressTxt($total, 'Doing gggg ...', 'Done');
+            $bar = $this->output->progressTxt($total, 'Doing go g...', 'Done');
         }
 
         $this->write('Progress:');
@@ -221,7 +230,7 @@ class HomeController extends Controller
      * a progress bar example show, by class ProgressBar
      * @throws \LogicException
      */
-    public function prgCommand()
+    public function progressBarCommand()
     {
         $i = 0;
         $total = 120;
@@ -278,7 +287,7 @@ class HomeController extends Controller
         ];
 
         Show::panel($data, 'panel show', [
-            'borderChar' => '#'
+            'borderChar' => '*'
         ]);
     }
 
@@ -304,7 +313,7 @@ class HomeController extends Controller
     }
 
     /**
-     * output format message: aList
+     * output format message: list
      */
     public function listCommand()
     {
@@ -325,6 +334,33 @@ class HomeController extends Controller
         ];
 
         Show::aList($commands, 'a List show(Has key)');
+    }
+
+    /**
+     * output format message: multiList
+     */
+    public function multiListCommand()
+    {
+        Show::multiList([
+            'list0' => [
+                'value in the list 0',
+                'key' => 'value in the list 0',
+                'key1' => 'value1 in the list 0',
+                'key2' => 'value2 in the list 0',
+            ],
+            'list1' => [
+                'key' => 'value in the list 1',
+                'key1' => 'value1 in the list 1',
+                'key2' => 'value2 in the list 1',
+                'value in the list 1',
+            ],
+            'list2' => [
+                'key' => 'value in the list 2',
+                'value in the list 2',
+                'key1' => 'value1 in the list 2',
+                'key2' => 'value2 in the list 2',
+            ],
+        ]);
     }
 
     /**
@@ -499,7 +535,7 @@ class HomeController extends Controller
     /**
      * This is a demo for use <magenta>Interact::multiSelect()</magenta> method
      */
-    public function msCommand()
+    public function multiSelectCommand()
     {
         $opts = ['john', 'simon', 'rose', 'tom'];
 
@@ -558,7 +594,7 @@ class HomeController extends Controller
      * This is a demo for input password. use: <magenta>Interact::askPassword()</magenta>
      * @usage {fullCommand}
      */
-    public function pwdCommand()
+    public function passwordCommand()
     {
         $pwd = $this->askPassword();
 
