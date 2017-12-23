@@ -22,13 +22,14 @@ use Inhere\Console\Utils\Annotation;
  */
 abstract class Controller extends AbstractCommand implements ControllerInterface
 {
-    /**
-     * @var array
-     */
-    private static $commandAliases;
+    /** @var array */
+    private static $aliases;
 
     /** @var string */
     private $action;
+
+    /** @var string */
+    private $delimiter = ':'; // '/' ':'
 
     /** @var bool */
     private $standAlone = false;
@@ -41,9 +42,6 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
 
     /** @var string */
     protected $notFoundCallback = 'notFound';
-
-    /** @var string */
-    protected $delimiter = ':'; // '/' ':'
 
     /**
      * define command alias map
@@ -137,12 +135,15 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
 
     /**
      * Show help of the controller command group or specified command action
-     * @usage <info>{name}/[command] -h</info> OR <info>{command} [command]</info> OR <info>{name} [command] -h</info>
+     * @usage <info>{name}:[command] -h</info> OR <info>{command} [command]</info> OR <info>{name} [command] -h</info>
+     * @options
+     *  -s, --search  Search command by input keywords
+     *  --format      Set the help information dump format(raw, xml, json, markdown)
      * @example
      *  {script} {name} -h
-     *  {script} {name}/help
-     *  {script} {name}/help index
-     *  {script} {name}/index -h
+     *  {script} {name}:help
+     *  {script} {name}:help index
+     *  {script} {name}:index -h
      *  {script} {name} index
      *
      * @return int
@@ -162,7 +163,7 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
         $aliases = self::getCommandAliases($action);
 
         // show help info for a command.
-        return $this->showHelpByMethodAnnotation($method, $action, $aliases);
+        return $this->showHelpByMethodAnnotations($method, $action, $aliases);
     }
 
     /**
@@ -287,15 +288,15 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
      */
     public static function getCommandAliases(string $name = null)
     {
-        if (null === self::$commandAliases) {
-            self::$commandAliases = static::commandAliases();
+        if (null === self::$aliases) {
+            self::$aliases = static::commandAliases();
         }
 
         if ($name) {
-            return self::$commandAliases ? array_keys(self::$commandAliases, $name, true) : [];
+            return self::$aliases ? array_keys(self::$aliases, $name, true) : [];
         }
 
-        return self::$commandAliases;
+        return self::$aliases;
     }
 
     /**

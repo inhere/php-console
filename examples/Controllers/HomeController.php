@@ -58,15 +58,17 @@ class HomeController extends Controller
      * the second line text
      * @usage usage message
      * @arguments
-     *  arg1  argument description 1
-     *  arg2  argument description 2
+     *  arg1        argument description 1
+     *              the second line
+     *  a2,arg2     argument description 2
+     *              the second line
      * @options
      *  -s, --long  option description 1
      *  --opt       option description 2
      * @example example text one
      *  the second line example
      */
-    public function indexCommand()
+    public function testCommand()
     {
         $this->write('hello, welcome!! this is ' . __METHOD__);
     }

@@ -27,10 +27,11 @@ final class Annotation
     public static function getTags($comment)
     {
         $comment = "@description \n" . str_replace("\r", '',
-                trim(preg_replace('/^\s*\**( |\t)?/m', '', trim($comment, '/'))));
+                trim(preg_replace('/^\s*\**( |\t)?/m', '', trim($comment, '/')))
+            );
 
-        $parts = preg_split('/^\s*@/m', $comment, -1, PREG_SPLIT_NO_EMPTY);
         $tags = [];
+        $parts = preg_split('/^\s*@/m', $comment, -1, PREG_SPLIT_NO_EMPTY);
 
         foreach ($parts as $part) {
             if (preg_match('/^(\w+)(.*)/ms', trim($part), $matches)) {

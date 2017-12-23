@@ -282,7 +282,7 @@ class Show
         }
 
         $body = \is_array($body) ? implode(PHP_EOL, $body) : $body;
-        $body = Helper::wrapText($body, 4, $opts['width']);
+        $body = FormatUtil::wrapText($body, 4, $opts['width']);
 
         self::write(sprintf($tpl, $titleLine, $topBorder, $body, $bottomBorder));
     }
@@ -335,7 +335,7 @@ class Show
      * ```
      * @param array $data
      * @param string $title
-     * @param array $opts More @see Helper::spliceKeyValue()
+     * @param array $opts More {@see FormatUtil::spliceKeyValue()}
      * @return int|string
      */
     public static function aList($data, $title = null, array $opts = [])
@@ -357,7 +357,7 @@ class Show
         }
 
         // handle item list
-        $string .= Helper::spliceKeyValue((array)$data, $opts);
+        $string .= FormatUtil::spliceKeyValue((array)$data, $opts);
 
         if ($opts['returned']) {
             return $string;
@@ -412,7 +412,7 @@ class Show
             $buffer[] = self::aList($list, $title, $opts);
         }
 
-        self::write(implode("\n", $buffer), false);
+        self::write(implode("\n", $buffer));
     }
 
     /**
@@ -495,7 +495,7 @@ class Show
 
                     // is key-value [ 'key1' => 'text1', 'key2' => 'text2']
                 } else {
-                    $value = Helper::spliceKeyValue($value, [
+                    $value = FormatUtil::spliceKeyValue($value, [
                         'leftChar' => '  ',
                         'sepChar' => '  ',
                         'keyStyle' => 'info',
@@ -607,7 +607,7 @@ class Show
         }
 
         // output panel body
-        $panelStr = Helper::spliceKeyValue($panelData, [
+        $panelStr = FormatUtil::spliceKeyValue($panelData, [
             'leftChar' => "  $borderChar ",
             'sepChar' => ' | ',
             'keyMaxWidth' => $labelMaxWidth,

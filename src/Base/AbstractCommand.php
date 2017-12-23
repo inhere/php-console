@@ -365,13 +365,13 @@ abstract class AbstractCommand implements BaseCommandInterface
     }
 
     /**
-     * show help by parse method annotation
+     * show help by parse method annotations
      * @param string $method
      * @param null|string $action
      * @param array $aliases
      * @return int
      */
-    protected function showHelpByMethodAnnotation($method, $action = null, array $aliases = [])
+    protected function showHelpByMethodAnnotations($method, $action = null, array $aliases = [])
     {
         $ref = new \ReflectionClass($this);
         $name = $this->input->getCommand();
@@ -391,36 +391,23 @@ abstract class AbstractCommand implements BaseCommandInterface
 
         $doc = $ref->getMethod($method)->getDocComment();
         $tags = Annotation::getTags($this->parseAnnotationVars($doc));
-        $comments = [];
+        $help = [];
 
         if ($aliases) {
-            $comments[] = sprintf("<comment>Alias Name:</comment> %s\n", implode(',', $aliases));
+            $help[] = sprintf("<comment>Alias Name:</comment> %s\n", implode(',', $aliases));
         }
 
-        foreach ($tags as $tag => $msg) {
-            if (!$msg || !\is_string($msg)) {
+        foreach (array_keys(self::$annotationTags) as $tag) {
+            if (empty($tags[$tag]) || !\is_string($tags[$tag])) {
                 continue;
             }
 
-            if (isset(self::$annotationTags[$tag])) {
-                $msg = $this->parseAnnotationVars(trim($msg));
-
-                // need multi align
-                // if (self::$annotationTags[$tag]) {
-                // $lines = array_map(function ($line) {
-                //     // return trim($line);
-                //     return $line;
-                // }, explode("\n", $msg));
-
-                // $msg = implode("\n", array_filter($lines, 'trim'));
-                // }
-
-                $tag = ucfirst($tag);
-                $comments[] = "<comment>$tag:</comment>\n $msg\n";
-            }
+            $msg = trim($tags[$tag]);
+            $tag = ucfirst($tag);
+            $help[] = "<comment>$tag:</comment>\n $msg\n";
         }
 
-        $this->output->write(implode("\n", $comments), false);
+        $this->output->write(implode("\n", $help), false);
 
         return 0;
     }
@@ -467,6 +454,16 @@ abstract class AbstractCommand implements BaseCommandInterface
     public static function getAnnotationTags(): array
     {
         return self::$annotationTags;
+    }
+
+    /**
+     * @param string $name
+     */
+    public static function addAnnotationTag(string $name)
+    {
+        if (!isset(self::$annotationTags[$name])) {
+            self::$annotationTags[$name] = true;
+        }
     }
 
     /**

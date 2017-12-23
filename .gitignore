@@ -8,6 +8,7 @@
 !README.md
 !.gitkeep
 composer.lock
+*.log
 *.swp
 *.swo
 *.zip

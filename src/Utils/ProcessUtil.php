@@ -66,14 +66,17 @@ class ProcessUtil
     /**
      * run a command in background
      * @param string $cmd
+     * @return int|string
      */
     public static function runInBackground($cmd)
     {
         if (Helper::isWindows()) {
-            pclose(popen('start /B ' . $cmd, 'r'));
+            $ret = pclose(popen('start /B ' . $cmd, 'r'));
         } else {
-            exec($cmd . ' > /dev/null &');
+            $ret = exec($cmd . ' > /dev/null &');
         }
+
+        return $ret;
     }
 
     /**

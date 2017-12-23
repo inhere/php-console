@@ -10,6 +10,7 @@ namespace Inhere\Console\Components\AutoComplete;
 
 /**
  * Class ScriptGenerator
+ * - ref linux system '/etc/bash_completion.d/'
  * - generate bash/zsh auto complete script for current console application.
  * @package Inhere\Console\Components\AutoComplete
  * @link http://www.linuxidc.com/Linux/2016-10/136201.htm

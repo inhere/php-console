@@ -448,7 +448,7 @@ ERR;
         ksort($internalCommands);
 
         // built in options
-        $internalOptions = FormatUtil::arrayOptions(self::$internalOptions);
+        $internalOptions = FormatUtil::alignmentOptions(self::$internalOptions);
 
         $this->output->mList([
             'Usage:' => "$script <info>{command}</info> [arg0 arg1=value1 arg2=value2 ...] [--opt -v -h ...]",
@@ -617,7 +617,7 @@ ERR;
     public function setLogo(string $logoTxt, string $style = null)
     {
         $this->meta['logoText'] = $logoTxt;
-        
+
         if ($style) {
             $this->meta['logoStyle'] = $style;
         }
@@ -637,6 +637,14 @@ ERR;
     public function setLogoStyle(string $style)
     {
         $this->meta['logoStyle'] = $style;
+    }
+
+    /**
+     * @return string
+     */
+    public function getRootPath()
+    {
+        return $this->getMeta('rootPath');
     }
 
     /**

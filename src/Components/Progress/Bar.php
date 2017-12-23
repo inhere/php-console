@@ -12,7 +12,7 @@ namespace Inhere\Console\Components\Progress;
  * Class Bar
  * @package Inhere\Console\Components\Progress
  */
-class Bar
+class Bar extends Text
 {
 
 }

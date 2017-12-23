@@ -153,6 +153,15 @@ class Helper
     }
 
     /**
+     * @param string $command
+     * @param array $map
+     */
+    public static function commandSearch(string $command, array $map)
+    {
+
+    }
+
+    /**
      * wrap a style tag
      * @param string $string
      * @param string $tag
@@ -255,42 +264,6 @@ class Helper
     }
 
     /**
-     * @param $string
-     * @param $width
-     * @return array
-     */
-    public static function splitStringByWidth($string, $width)
-    {
-        // str_split is not suitable for multi-byte characters, we should use preg_split to get char array properly.
-        // additionally, array_slice() is not enough as some character has doubled width.
-        // we need a function to split string not by character count but by string width
-        if (false === $encoding = mb_detect_encoding($string, null, true)) {
-            return str_split($string, $width);
-        }
-
-        $utf8String = mb_convert_encoding($string, 'utf8', $encoding);
-        $lines = array();
-        $line = '';
-        foreach (preg_split('//u', $utf8String) as $char) {
-            // test if $char could be appended to current line
-            if (mb_strwidth($line . $char, 'utf8') <= $width) {
-                $line .= $char;
-                continue;
-            }
-            // if not, push current line to array and make new line
-            $lines[] = str_pad($line, $width);
-            $line = $char;
-        }
-        if ('' !== $line) {
-            $lines[] = \count($lines) ? str_pad($line, $width) : $line;
-        }
-
-        mb_convert_variables($encoding, 'utf8', $lines);
-
-        return $lines;
-    }
-
-    /**
      * get key Max Width
      *
      * @param  array $data
@@ -314,131 +287,6 @@ class Helper
         }
 
         return $keyMaxWidth;
-    }
-
-    /**
-     * spliceArray
-     * @param  array $data
-     * e.g [
-     *     'system'  => 'Linux',
-     *     'version'  => '4.4.5',
-     * ]
-     * @param  array $opts
-     * @return string
-     */
-    public static function spliceKeyValue(array $data, array $opts = [])
-    {
-        $text = '';
-        $opts = array_merge([
-            'leftChar' => '',   // e.g '  ', ' * '
-            'sepChar' => ' ',  // e.g ' | ' OUT: key | value
-            'keyStyle' => '',   // e.g 'info','comment'
-            'valStyle' => '',   // e.g 'info','comment'
-            'keyMinWidth' => 8,
-            'keyMaxWidth' => null, // if not set, will automatic calculation
-            'ucFirst' => true,  // upper first char
-        ], $opts);
-
-        if (!is_numeric($opts['keyMaxWidth'])) {
-            $opts['keyMaxWidth'] = self::getKeyMaxWidth($data);
-        }
-
-        // compare
-        if ((int)$opts['keyMinWidth'] > $opts['keyMaxWidth']) {
-            $opts['keyMaxWidth'] = $opts['keyMinWidth'];
-        }
-
-        $keyStyle = trim($opts['keyStyle']);
-
-        foreach ($data as $key => $value) {
-            $hasKey = !\is_int($key);
-            $text .= $opts['leftChar'];
-
-            if ($hasKey && $opts['keyMaxWidth']) {
-                $key = str_pad($key, $opts['keyMaxWidth'], ' ');
-                $text .= self::wrapTag($key, $keyStyle) . $opts['sepChar'];
-            }
-
-            // if value is array, translate array to string
-            if (\is_array($value)) {
-                $temp = '';
-
-                /** @var array $value */
-                foreach ($value as $k => $val) {
-                    if (\is_bool($val)) {
-                        $val = $val ? 'True' : 'False';
-                    } else {
-                        $val = is_scalar($val) ? (string)$val : \gettype($val);
-                    }
-
-                    $temp .= (!is_numeric($k) ? "$k: " : '') . "$val, ";
-                }
-
-                $value = rtrim($temp, ' ,');
-            } else {
-                if (\is_bool($value)) {
-                    $value = $value ? 'True' : 'False';
-                } else {
-                    $value = (string)$value;
-                }
-            }
-
-            $value = $hasKey && $opts['ucFirst'] ? ucfirst($value) : $value;
-            $text .= self::wrapTag($value, $opts['valStyle']) . "\n";
-        }
-
-        return $text;
-    }
-
-    /**
-     * Word wrap text with indentation to fit the screen size
-     *
-     * If screen size could not be detected, or the indentation is greater than the screen size, the text will not be wrapped.
-     *
-     * The first line will **not** be indented, so `Console::wrapText("Lorem ipsum dolor sit amet.", 4)` will result in the
-     * following output, given the screen width is 16 characters:
-     *
-     * ```
-     * Lorem ipsum
-     *     dolor sit
-     *     amet.
-     * ```
-     *
-     * @param string $text the text to be wrapped
-     * @param integer $indent number of spaces to use for indentation.
-     * @param integer $width
-     * @return string the wrapped text.
-     * @from yii2
-     */
-    public static function wrapText($text, $indent = 0, $width = 0)
-    {
-        if (!$text) {
-            return $text;
-        }
-
-        if ((int)$width <= 0) {
-            $size = CliUtil::getScreenSize();
-
-            if ($size === false || $size[0] <= $indent) {
-                return $text;
-            }
-
-            $width = $size[0];
-        }
-
-        $pad = str_repeat(' ', $indent);
-        $lines = explode("\n", wordwrap($text, $width - $indent, "\n", true));
-        $first = true;
-
-        foreach ($lines as $i => $line) {
-            if ($first) {
-                $first = false;
-                continue;
-            }
-            $lines[$i] = $pad . $line;
-        }
-
-        return $pad . '  ' . implode("\n", $lines);
     }
 
     /**

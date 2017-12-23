@@ -6,7 +6,7 @@ define('BASE_PATH', dirname(__DIR__));
 require dirname(__DIR__) . '/tests/boot.php';
 
 // create app instance
-$app = new \Inhere\Console\LiteApplication;
+$app = new \Inhere\Console\LiteApp;
 
 // register commands
 $app->addCommand('test', function () {
