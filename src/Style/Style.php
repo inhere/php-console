@@ -47,12 +47,12 @@ class Style
      * Regex to match tags
      * @var string
      */
-    const COLOR_TAG = '/<([a-z=;]+)>(.*?)<\/\\1>/s';
+    const COLOR_TAG = '/<([a-zA-Z=;]+)>(.*?)<\/\\1>/s';
 
     /**
      * Regex used for removing color codes
      */
-    const STRIP_TAG = '/<[\/]?[a-z=;]+>/';
+    const STRIP_TAG = '/<[\/]?[a-zA-Z=;]+>/';
 
     /**
      * @var self
@@ -143,7 +143,19 @@ class Style
             ->add('cyan', ['fg' => 'cyan'])
             ->add('magenta', ['fg' => 'magenta'])
             ->add('red', ['fg' => 'red'])
+            ->add('darkGray', ['fg' => 'black', 'extra' => true])
             ->add('yellow', ['fg' => 'yellow']);
+    }
+
+    /**
+     * Process a string use style
+     * @param string $style
+     * @param $text
+     * @return string
+     */
+    public function apply(string $style, $text)
+    {
+        return $this->format(Helper::wrapTag($text, $style));
     }
 
     /**
@@ -223,14 +235,15 @@ class Style
 
     /**
      * Add a style.
-     * @param  string $name
-     * @param  string|Color|array $fg 前景色|也可以穿入Color对象|也可以是style配置数组(@see self::addByArray())
-     *                                      当它为Color对象或配置数组时，后面两个参数无效
-     * @param  string $bg 背景色
-     * @param  array $options 其它选项
+     * @param string $name
+     * @param string|Color|array $fg 前景色|Color对象|也可以是style配置数组(@see self::addByArray())
+     *                               当它为Color对象或配置数组时，后面两个参数无效
+     * @param string $bg 背景色
+     * @param array $options 其它选项
+     * @param bool $extra
      * @return $this
      */
-    public function add($name, $fg = '', $bg = '', array $options = [])
+    public function add(string $name, $fg = '', $bg = '', array $options = [], $extra = false)
     {
         if (\is_array($fg)) {
             return $this->addByArray($name, $fg);
@@ -239,7 +252,7 @@ class Style
         if (\is_object($fg) && $fg instanceof Color) {
             $this->styles[$name] = $fg;
         } else {
-            $this->styles[$name] = Color::make($fg, $bg, $options);
+            $this->styles[$name] = Color::make($fg, $bg, $options, $extra);
         }
 
         return $this;
@@ -247,27 +260,30 @@ class Style
 
     /**
      * Add a style by an array config
-     * @param $name
+     * @param string $name
      * @param array $styleConfig 样式设置信息
-     * e.g  [
-     *       'fg' => 'white',
-     *       'bg' => 'black',
-     *       'options' => ['bold', 'underscore']
-     *   ]
+     * e.g
+     * [
+     *     'fg' => 'white',
+     *     'bg' => 'black',
+     *     'extra' => true,
+     *     'options' => ['bold', 'underscore']
+     * ]
      * @return $this
      */
-    public function addByArray($name, array $styleConfig)
+    public function addByArray(string $name, array $styleConfig)
     {
         $style = [
             'fg' => '',
             'bg' => '',
+            'extra' => false,
             'options' => []
         ];
 
         $config = array_merge($style, $styleConfig);
-        list($fg, $bg, $options) = array_values($config);
+        list($fg, $bg, $extra, $options) = array_values($config);
 
-        $this->styles[$name] = Color::make($fg, $bg, $options);
+        $this->styles[$name] = Color::make($fg, $bg, $options, $extra);
 
         return $this;
     }

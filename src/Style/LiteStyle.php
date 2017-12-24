@@ -36,7 +36,7 @@ class LiteStyle
     const FG_LIGHT_BLUE = 94;
     const FG_LIGHT_MAGENTA = 95;
     const FG_LIGHT_CYAN = 96;
-    const FG_WHITE_W = 97;
+    const FG_WHITE_EXTRA = 97;
 
     // Background color
     const BG_BLACK = 40;
@@ -56,7 +56,7 @@ class LiteStyle
     const BG_LIGHT_BLUE = 104;
     const BG_LIGHT_MAGENTA = 105;
     const BG_LIGHT_CYAN = 106;
-    const BG_WHITE_W = 107;
+    const BG_WHITE_EXTRA = 107;
 
     // color option
     const BOLD = 1;      // 加粗
@@ -78,12 +78,8 @@ class LiteStyle
      * @var array
      */
     const STYLES = [
-        'light_red' => '1;31',
-        'light_green' => '1;32',
         'yellow' => '1;33',
-        'light_blue' => '1;34',
         'magenta' => '1;35',
-        'light_cyan' => '1;36',
         'white' => '1;37',
         'black' => '0;30',
         'red' => '0;31',
@@ -91,6 +87,22 @@ class LiteStyle
         'brown' => '0;33',
         'blue' => '0;34',
         'cyan' => '0;36',
+
+        'light_red' => '1;31',
+        'light_blue' => '1;34',
+        'light_gray' => '37',
+        'light_green' => '1;32',
+        'light_cyan' => '1;36',
+
+        'dark_gray' => '90',
+
+        'light_red_ex' => '91',
+        'light_green_ex' => '92',
+        'light_yellow' => '93',
+        'light_blue_ex' => '94',
+        'light_magenta' => '95',
+        'light_cyan_ex' => '96',
+        'white_ex' => '97',
 
         'bold' => '1',
         'underscore' => '4',
@@ -107,7 +119,7 @@ class LiteStyle
     ];
 
     /**
-     * @param $text
+     * @param string $text
      * @param string|int|array $style
      * @return string
      */
@@ -117,7 +129,7 @@ class LiteStyle
             return $text;
         }
 
-        if (!Helper::isSupportColor()) {
+        if (!Helper::supportColor()) {
             return self::clearColor($text);
         }
 
@@ -141,7 +153,7 @@ class LiteStyle
 
     /**
      * render color tag to color style
-     * @param $text
+     * @param string $text
      * @return mixed|string
      */
     public static function renderColor($text)
@@ -151,7 +163,7 @@ class LiteStyle
         }
 
         // if don't support output color text, clear color tag.
-        if (!Helper::isSupportColor()) {
+        if (!Helper::supportColor()) {
             return static::clearColor($text);
         }
 

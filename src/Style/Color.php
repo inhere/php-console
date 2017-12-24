@@ -13,15 +13,17 @@ namespace Inhere\Console\Style;
  */
 final class Color
 {
-    /**
-     * Foreground base value
-     */
+    /** Foreground base value */
     const FG_BASE = 30;
 
-    /**
-     * Background base value
-     */
+    /** Background base value */
     const BG_BASE = 40;
+
+    /** Extra Foreground base value */
+    const FG_EXTRA = 90;
+
+    /** Extra Background base value */
+    const BG_EXTRA = 100;
 
     // color
     const BLACK = 'black';
@@ -43,9 +45,7 @@ final class Color
     const REVERSE = 'reverse';    // 颠倒的 交换背景色与前景色
     const CONCEALED = 'concealed';  // 隐匿的
 
-    /**
-     * Known color list
-     */
+    /** @var array Known color list */
     private static $knownColors = array(
         'black' => 0,
         'red' => 1,
@@ -58,10 +58,7 @@ final class Color
         'normal' => 9,
     );
 
-    /**
-     * Known style option
-     * @var array
-     */
+    /** @var array Known style option */
     private static $knownOptions = [
         'bold' => 1,       // 22 加粗
         'fuzzy' => 2,      // 模糊(不是所有的终端仿真器都支持)
@@ -72,44 +69,40 @@ final class Color
         'concealed' => 8,  // 28 隐匿的
     ];
 
-    /**
-     * Foreground color
-     */
+    /** @var int Foreground color */
     private $fgColor = 0;
 
-    /**
-     * Background color
-     */
+    /** @var int Background color */
     private $bgColor = 0;
 
-    /**
-     * Array of style options
-     */
+    /** @var array Array of style options */
     private $options = [];
 
     /**
      * @param string $fg
      * @param string $bg
      * @param array $options
+     * @param bool $extra
      * @return Color
      */
-    public static function make($fg = '', $bg = '', array $options = [])
+    public static function make($fg = '', $bg = '', array $options = [], $extra = false)
     {
-        return new self($fg, $bg, $options);
+        return new self($fg, $bg, $options, $extra);
     }
 
     /**
      * Create a color style from a parameter string.
      *
-     * @param string $string e.g 'fg=white;bg=black;options=bold,underscore'
+     * @param string $string e.g 'fg=white;bg=black;options=bold,underscore;extra=1'
      * @return static
      * @throws \RuntimeException
      */
     public static function makeByString($string)
     {
         $fg = $bg = '';
+        $extra = false;
         $options = [];
-        $parts = explode(';', $string);
+        $parts = explode(';', str_replace(' ', '', $string));
 
         foreach ($parts as $part) {
             $subParts = explode('=', $part);
@@ -125,6 +118,9 @@ final class Color
                 case 'bg':
                     $bg = $subParts[1];
                     break;
+                case 'extra':
+                    $extra = $subParts[1];
+                    break;
                 case 'options':
                     $options = explode(',', $subParts[1]);
                     break;
@@ -135,7 +131,7 @@ final class Color
             }
         }
 
-        return new self($fg, $bg, $options);
+        return new self($fg, $bg, $options, $extra);
     }
 
     /**
@@ -143,9 +139,9 @@ final class Color
      * @param string $fg Foreground color.  e.g 'white'
      * @param string $bg Background color.  e.g 'black'
      * @param array $options Style options. e.g ['bold', 'underscore']
-     * @throws \InvalidArgumentException
+     * @param bool $extra
      */
-    public function __construct($fg = '', $bg = '', array $options = [])
+    public function __construct($fg = '', $bg = '', array $options = [], $extra = false)
     {
         if ($fg) {
             if (false === array_key_exists($fg, static::$knownColors)) {
@@ -157,7 +153,7 @@ final class Color
                 );
             }
 
-            $this->fgColor = self::FG_BASE + static::$knownColors[$fg];
+            $this->fgColor = ($extra ? self::FG_EXTRA : self::FG_BASE) + static::$knownColors[$fg];
         }
 
         if ($bg) {
@@ -170,7 +166,7 @@ final class Color
                 );
             }
 
-            $this->bgColor = self::BG_BASE + static::$knownColors[$bg];
+            $this->bgColor = ($extra ? self::BG_EXTRA : self::BG_BASE) + static::$knownColors[$bg];
         }
 
         foreach ($options as $option) {

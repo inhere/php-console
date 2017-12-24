@@ -67,6 +67,15 @@ trait FormatOutputAwareTrait
 
     /**
      * @inheritdoc
+     * @see Show::writeRaw()
+     */
+    public function writeRaw($text, $nl = true, $quit = false, array $opts = [])
+    {
+        return Show::writeRaw($text, $nl, $quit, $opts);
+    }
+
+    /**
+     * @inheritdoc
      * @see Show::block()
      */
     public function block($messages, $type = 'MESSAGE', $style = Style::NORMAL, $quit = false)

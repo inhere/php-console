@@ -39,3 +39,4 @@ _phalcon()
 
 } &&
 complete -F _phalcon phalcon
+# complete -o default -F _symfony console

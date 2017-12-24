@@ -1258,6 +1258,21 @@ class Show
     }
 
     /**
+     * write raw data to stdout
+     * @param string|array $text
+     * @param bool $nl
+     * @param bool|int $quit
+     * @param array $opts
+     * @return int
+     */
+    public static function writeRaw($text, $nl = true, $quit = false, array $opts = [])
+    {
+        $opts['color'] = false;
+
+        return self::write($text, $nl, $quit, $opts);
+    }
+
+    /**
      * Logs data to stdout
      * @param string|array $text
      * @param array $opts

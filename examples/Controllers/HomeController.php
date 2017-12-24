@@ -7,6 +7,7 @@ use Inhere\Console\Components\ArtFont;
 use Inhere\Console\Components\Download;
 use Inhere\Console\Controller;
 use Inhere\Console\IO\Input;
+use Inhere\Console\Style\Highlighter;
 use Inhere\Console\Utils\Helper;
 use Inhere\Console\Utils\Interact;
 use Inhere\Console\Utils\ProgressBar;
@@ -34,6 +35,7 @@ class HomeController extends Controller
             'pwd' => 'password',
             'l' => 'list',
             'h' => 'helpPanel',
+            'hl' => 'highlight',
             'hp' => 'helpPanel',
             'af' => 'artFont',
             'ml' => 'multiList',
@@ -71,6 +73,24 @@ class HomeController extends Controller
     public function testCommand()
     {
         $this->write('hello, welcome!! this is ' . __METHOD__);
+    }
+
+    /**
+     * a example for highlight code
+     * @options
+     *  --ln   With line number
+     * @param Input $in
+     */
+    public function highlightCommand($in)
+    {
+        // $file = $this->app->getRootPath() . '/examples/routes.php';
+        $file = $this->app->getRootPath() . '/src/Utils/Show.php';
+        $src = file_get_contents($file);
+
+        $hl = new Highlighter();
+        $code = $hl->highlight($src, $in->getBoolOpt('ln'));
+
+        $this->output->writeRaw($code);
     }
 
     /**

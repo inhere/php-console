@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 
 #
+# This is auto completion script for bash env.
 # Auto generate by inhere/console.
-# console application name: {$name}
+# application name: {$name}
 # @date {$datetime}
 #
 
