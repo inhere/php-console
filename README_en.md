@@ -12,7 +12,7 @@ a php console application library.
 - console color support, format message output
 - console interactive
 
-[中文README](./README.md)
+> [中文README](./README.md)
 
 ## project
 
@@ -174,7 +174,7 @@ $output->write('hello');
 
 #### use color style 
 
-![alt text](images/output-color-text.png "Title")
+![alt text](docs/screenshots/output-color-text.png "Title")
 
 #### special format output
 

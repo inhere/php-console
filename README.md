@@ -370,7 +370,7 @@ $output->write('hello <info>world<info>');
 
 已经内置了常用的风格:
 
-![alt text](images/output-color-text.png "Title")
+![alt text](docs/screenshots/output-color-text.png "Title")
 
 来自于类 `Inhere\Console\Utils\Show`。
 
@@ -425,7 +425,7 @@ echo "Progress:\n";
 
 $i = 0;
 while ($i <= $total) {
-     $bar->send($i);
+     $bar->send(1);// 发送步进长度，通常是 1
      usleep(50000);
      $i++;
 }

@@ -918,7 +918,7 @@ class Show
     {
         $counter = 0;
         $finished = false;
-        $tpl = (Helper::isSupportColor() ? "\x0D\x1B[2K" : "\x0D\r") . '%d %s';
+        $tpl = (Helper::supportColor() ? "\x0D\x1B[2K" : "\x0D\r") . '%d %s';
         $msg = self::getStyle()->render($msg);
         $doneMsg = $doneMsg ? self::getStyle()->render($doneMsg) : null;
 
@@ -962,7 +962,7 @@ class Show
     {
         $current = 0;
         $finished = false;
-        $tpl = (Helper::isSupportColor() ? "\x0D\x1B[2K" : "\x0D\r") . "%' 3d%% %s";
+        $tpl = (Helper::supportColor() ? "\x0D\x1B[2K" : "\x0D\r") . "%' 3d%% %s";
         $msg = self::getStyle()->render($msg);
         $doneMsg = $doneMsg ? self::getStyle()->render($doneMsg) : null;
 
