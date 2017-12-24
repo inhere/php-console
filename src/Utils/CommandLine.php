@@ -9,10 +9,10 @@
 namespace Inhere\Console\Utils;
 
 /**
- * Class CommandLineParse - console argument and option parse
+ * Class CommandLine - console argument and option parse
  * @package Inhere\Console\Utils
  */
-final class CommandLineParse
+final class CommandLine
 {
     /**
      * These words will be as a Boolean value
@@ -51,7 +51,7 @@ final class CommandLineParse
      * @param bool $mergeOpts Whether merge short-opts and long-opts
      * @return array
      */
-    public static function byArgv(array $params, array $noValues = [], $mergeOpts = false): array
+    public static function parseByArgv(array $params, array $noValues = [], $mergeOpts = false): array
     {
         $args = $sOpts = $lOpts = [];
 
@@ -125,11 +125,16 @@ final class CommandLineParse
         return [$args, $sOpts, $lOpts];
     }
 
+    public static function parseByDefinition(array $tokens, array $allowArray = [], array $noValues = [])
+    {
+
+    }
+
     /**
      * parse custom array params
      *
      * ```php
-     * $result = CommandLineParse::byArray([
+     * $result = CommandLine::parseByArray([
      *  'arg' => 'val',
      *  '--lp' => 'val2',
      *  '--s' => 'val3',
@@ -139,7 +144,7 @@ final class CommandLineParse
      * @param array $params
      * @return array
      */
-    public static function byArray(array $params)
+    public static function parseByArray(array $params)
     {
         $args = $sOpts = $lOpts = [];
 
@@ -163,12 +168,12 @@ final class CommandLineParse
     /**
      *
      * ```php
-     * $result = CommandLineParse::byString('foo --bar="foobar"');
+     * $result = CommandLine::parseByString('foo --bar="foobar"');
      * ```
      * @todo ...
      * @param string $string
      */
-    public static function byString(string $string)
+    public static function parseByString(string $string)
     {
 
     }

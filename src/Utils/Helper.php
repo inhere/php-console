@@ -66,9 +66,9 @@ class Helper
     /**
      * @return bool
      */
-    public static function supportColor()
+    public static function isSupportColor()
     {
-        return self::isSupportColor();
+        return self::supportColor();
     }
 
     /**
@@ -77,7 +77,7 @@ class Helper
      * \Symfony\Component\Console\Output\OutputStream.
      * @return boolean
      */
-    public static function isSupportColor()
+    public static function supportColor()
     {
         if (DIRECTORY_SEPARATOR === '\\') {
             return

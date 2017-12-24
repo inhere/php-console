@@ -1025,7 +1025,7 @@ class Show
     {
         $current = 0;
         $finished = false;
-        $tplPrefix = Helper::isSupportColor() ? "\x0D\x1B[2K" : "\x0D\r";
+        $tplPrefix = Helper::supportColor() ? "\x0D\x1B[2K" : "\x0D\r";
         $opts = array_merge([
             'doneChar' => '=',
             'waitChar' => ' ',
