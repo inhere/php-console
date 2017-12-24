@@ -184,7 +184,7 @@ $output->write('hello');
 - `$output->table()`
 - `$output->helpPanel()`
 
-![alt text](images/output-format-msg.png "Title")
+![alt text](docs/screenshots/output-format-msg.png "Title")
 
 ## more interactive
 

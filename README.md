@@ -460,7 +460,9 @@ $data = [
 Show::aList($data, $title);
 ```
 
-> 渲染效果请看下面的预览
+> 渲染效果
+
+![fmt-list](docs/screenshots/fmt-list.png)
 
 ### 多列表数据展示输出
 
@@ -489,7 +491,9 @@ $data = [
 Show::mList($data);
 ```
 
-> 渲染效果请看下面的预览
+> 渲染效果
+
+![fmt-multi-list](docs/screenshots/fmt-multi-list.png)
 
 ### 面板展示信息输出
 
@@ -511,7 +515,9 @@ $data = [
 Show::panel($data, 'panel show', '#');
 ```
 
-> 渲染效果请看下面的预览
+> 渲染效果
+
+![fmt-panel](docs/screenshots/fmt-panel.png)
 
 ### 数据表格信息输出
 
@@ -580,9 +586,9 @@ Show::helpPanel([
 ], false);
 ```
 
-### 渲染效果预览
+> 渲染效果预览
 
-![alt text](images/output-format-msg.png "Title")
+![alt text](docs/screenshots/fmt-help-panel.png "Title")
 
 ## 用户交互方法
 
