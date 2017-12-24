@@ -114,7 +114,7 @@ $app->command('demo', function (Input $in, Output $out) {
 }, 'this is message for the command');
 ```
 
-### 继承 `Inhere\Console\Command`
+### 独立命令
 
 通过继承 `Inhere\Console\Command` 添加独立命令
 
@@ -165,7 +165,7 @@ $app->command(TestCommand::class);
 // $app->command('test1', TestCommand::class);
 ```
 
-### 继承 `Inhere\Console\Controller`
+### 命令组
 
 通过继承 `Inhere\Console\Controller` 添加一组命令. 即是命令行的控制器
 
@@ -181,13 +181,29 @@ class HomeController extends Controller
     protected static $description = 'default command controller. there are some command usage examples';
 
     /**
-     * this is a command's description message <info>a color text</info>
+     * this is a command's description message, <cyan>color text</cyan>
      * the second line text
-     * @usage usage message
+     * @usage {command} [arg ...] [--opt ...]
+     * @arguments
+     *  arg1        argument description 1
+     *              the second line
+     *  a2,arg2     argument description 2
+     *              the second line
+     * @options
+     *  -s, --long  option description 1
+     *  --opt       option description 2
      * @example example text one
      *  the second line example
      */
-    public function indexCommand()
+    public function testCommand()
+    {
+        $this->write('hello, welcome!! this is ' . __METHOD__);
+    }
+    
+    /**
+     * a example for use color text output on command
+     */
+    public function otherCommand()
     {
         $this->write('hello, welcome!! this is ' . __METHOD__);
     }
@@ -202,13 +218,14 @@ class HomeController extends Controller
 
 - 支持的tag有 `@usage` `@arguments` `@options` `@example`
 - 当你使用 `php examples/app home -h` 时，可以查看到 `HomeController` 的所有命令描述注释信息
-- 当使用 `php examples/app home:index -h` 时，可以查看到关于 `HomeController::indexCommand` 更详细的信息。包括描述注释文本、`@usage` 、`@example`
+  
+  ![group-command-list](docs/screenshots/group-command-list.png)
+- 当使用 `php examples/app home:test -h` 时，可以查看到关于 `HomeController::testCommand` 更详细的信息。包括描述注释文本、`@usage` 、`@example`
+
+  ![group-command-list](docs/screenshots/group-command-help.png)
 
 > 小提示：注释里面同样支持带颜色的文本输出 `eg: this is a command's description <info>message</info>`
 
-- 运行效果(by `php examples/app home`):
-
-![group-command-list](docs/screenshots/group-command-list.png)
 
 更多请查看 [examples](./examples) 中的示例代码和在目录下运行示例 `php examples/app` 来查看效果
 

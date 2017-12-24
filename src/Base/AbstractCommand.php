@@ -76,13 +76,14 @@ abstract class AbstractCommand implements BaseCommandInterface
     {
         $this->input = $input;
         $this->output = $output;
-        $this->annotationVars = $this->annotationVars();
 
         if ($definition) {
             $this->definition = $definition;
         }
 
         $this->init();
+
+        $this->annotationVars = $this->annotationVars();
     }
 
     protected function init()
@@ -116,12 +117,13 @@ abstract class AbstractCommand implements BaseCommandInterface
      */
     public function annotationVars()
     {
-        // e.g: `more info see {name}/index`
+        // e.g: `more info see {name}:index`
         return [
-            'script' => $this->input->getScript(),
-            'command' => $this->input->getCommand(),
-            'fullCommand' => $this->input->getScript() . ' ' . $this->input->getCommand(),
             'name' => self::getName(),
+            'group' => self::getName(),
+            'script' => $this->input->getScript(), // bin/app
+            'command' => $this->input->getCommand(), // demo OR home:test
+            'fullCommand' => $this->input->getScript() . ' ' . $this->input->getCommand(),
         ];
     }
 

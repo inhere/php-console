@@ -24,11 +24,38 @@ class TextTemplate
     private $closeChar = '}';
 
     /**
+     * TextTemplate constructor.
+     * @param array $vars
+     */
+    public function __construct(array $vars = [])
+    {
+        if ($vars) {
+            $this->setVars($vars);
+        }
+    }
+
+    /**
+     * @param string $tplFile
+     * @param array $vars
+     * @param null|string $saveAs
+     * @return string|bool
+     */
+    public function renderFile(string $tplFile, array $vars = [], $saveAs = null)
+    {
+        if (!\is_file($tplFile)) {
+            throw new \InvalidArgumentException("Template file not exists. FILE: $tplFile");
+        }
+
+        return $this->render(file_get_contents($tplFile), $vars, $saveAs);
+    }
+
+    /**
      * @param string $template
      * @param array $vars
+     * @param null|string $saveAs
      * @return string
      */
-    public function render(string $template, array $vars = [])
+    public function render(string $template, array $vars = [], $saveAs = null)
     {
         if (!$template || false === strpos($template, $this->openChar)) {
             return $template;
@@ -38,14 +65,47 @@ class TextTemplate
             $vars = array_merge($this->vars, $vars);
         }
 
-        $pairs = [];
+        $pairs = $map = [];
+        $this->expandVars($vars, $map);
 
-        foreach ($vars as $name => $value) {
+        foreach ($map as $name => $value) {
             $key = $this->openChar . $name . $this->closeChar;
             $pairs[$key] = $value;
         }
 
-        return strtr($template, $pairs);
+        // replace vars to values.
+        $rendered = strtr($template, $pairs);
+
+        if (!$saveAs) {
+            return $rendered;
+        }
+
+        $dstDir = \dirname($saveAs);
+
+        if (!is_dir($dstDir) && !mkdir($dstDir, 0775, true) && !is_dir($dstDir)) {
+            throw new \RuntimeException(sprintf('Directory "%s" was not created', $dstDir));
+        }
+
+        return (bool)file_put_contents($saveAs, $rendered);
+    }
+
+    /**
+     * Multidimensional array expansion to one dimension array
+     * @param array $vars
+     * @param null|string $prefix
+     * @param array $map
+     */
+    protected function expandVars(array $vars, array &$map = [], $prefix = null)
+    {
+        foreach ($vars as $name => $value) {
+            $key = $prefix !== null ? $prefix . '.' . $name : $name;
+
+            if (is_scalar($value)) {
+                $map[$key] = $value;
+            } elseif (\is_array($value)) {
+                $this->expandVars($value, $map, (string)$key);
+            }
+        }
     }
 
     /**

@@ -58,7 +58,7 @@ class HomeController extends Controller
     /**
      * this is a command's description message
      * the second line text
-     * @usage usage message
+     * @usage {command} [arg ...] [--opt ...]
      * @arguments
      *  arg1        argument description 1
      *              the second line

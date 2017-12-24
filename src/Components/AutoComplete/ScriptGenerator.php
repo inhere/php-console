@@ -8,6 +8,8 @@
 
 namespace Inhere\Console\Components\AutoComplete;
 
+use Inhere\Console\Components\TextTemplate;
+
 /**
  * Class ScriptGenerator
  * - ref linux system '/etc/bash_completion.d/'
@@ -30,6 +32,9 @@ class ScriptGenerator
     /** @var int The mode */
     private $mode = 1;
 
+    /** @var TextTemplate */
+    private $renderer;
+
     /**
      * @return array
      */
@@ -44,6 +49,28 @@ class ScriptGenerator
     public static function modeList()
     {
         return [self::MODE_SIMPLE, self::MODE_FULL];
+    }
+
+    /**
+     * @param string $tplFile
+     * @param string $dstFile
+     * @param array $vars
+     * @param bool $override
+     * @return bool
+     */
+    public function gen(string $tplFile, string $dstFile, array $vars = [], $override = false)
+    {
+        if (!\is_file($tplFile)) {
+            throw new \InvalidArgumentException("Template file not exists. FILE: $tplFile");
+        }
+
+        if (!$override && is_file($dstFile)) {
+            return true;
+        }
+
+        $tt = $this->getRenderer();
+
+        return $tt->render(file_get_contents($tplFile), $vars, $dstFile);
     }
 
     /**
@@ -80,5 +107,25 @@ class ScriptGenerator
         if (\in_array($mode, self::modeList(), 1)) {
             $this->mode = $mode;
         }
+    }
+
+    /**
+     * @return TextTemplate
+     */
+    public function getRenderer(): TextTemplate
+    {
+        if (!$this->renderer) {
+            $this->renderer = new TextTemplate();
+        }
+
+        return $this->renderer;
+    }
+
+    /**
+     * @param TextTemplate $renderer
+     */
+    public function setRenderer(TextTemplate $renderer)
+    {
+        $this->renderer = $renderer;
     }
 }
