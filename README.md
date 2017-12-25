@@ -4,16 +4,16 @@
 [![Php Version](https://img.shields.io/badge/php-%3E=5.6.0-brightgreen.svg?maxAge=2592000)](https://packagist.org/packages/inhere/console)
 [![Latest Stable Version](http://img.shields.io/packagist/v/inhere/console.svg)](https://packagist.org/packages/inhere/console)
 
-简洁、功能全面的php命令行应用库。提供控制台参数解析, 颜色风格输出, 用户信息交互, 特殊格式信息显示。
+简洁、功能全面的php命令行应用库。提供控制台参数解析, 命令运行，颜色风格输出, 用户信息交互, 特殊格式信息显示。
 
 > 无其他库依赖，可以方便的整合到任何已有项目中。
 
 - 功能全面的命令行的选项参数解析(命名参数，短选项，长选项 ...)
-- 命令行应用, 命令行的 `controller`, `command` 解析运行
+- 命令行应用, 命令行的 `controller`, `command` 解析运行。(支持命令别名)
 - 命令行中功能强大的 `input`, `output` 管理、使用
 - 消息文本的多种颜色风格输出支持(`info`, `comment`, `success`, `danger`, `error` ... ...)
-- 丰富的特殊格式信息显示(`section`, `panel`, `padding`, `help-panel`, `table`, `title`, `list`, `progressBar`)
-- 常用的用户信息交互支持(`select`, `confirm`, `ask/question`)
+- 丰富的特殊格式信息显示(`section`, `panel`, `padding`, `help-panel`, `table`, `title`, `list`, `multiList`, `progressBar`)
+- 常用的用户信息交互支持(`select`, `multiSelect`, `confirm`, `ask/question`, `askPassword/askHiddenInput`)
 - 命令方法注释自动解析（提取为参数 `arguments` 和 选项 `options` 等信息）
 - 类似 `symfony/console` 的预定义参数定义支持(按位置赋予参数值)
 - 输出是 windows,linux 兼容的，不支持颜色的环境会自动去除相关CODE
@@ -34,12 +34,20 @@
 
 ## 安装
 
-- 使用 composer
+- 使用 composer 命令
+
+```bash
+composer require inhere/console
+```
+
+- 使用 composer.json
 
 编辑 `composer.json`，在 `require` 添加
 
 ```
 "inhere/console": "dev-master",
+
+// "inhere/console": "^2.0", // 指定稳定版本
 // "inhere/console": "dev-php5", // for php5
 ```
 
@@ -84,9 +92,11 @@ $app->run();
 
 然后在命令行里执行 `php examples/app`, 立即就可以看到如下输出了:
 
-!['output-commands-info'](images/example-app.png)
+!['app-command-list'](docs/screenshots/app-command-list.png)
 
 > `Independent Commands` 中的 demo 就是我们上面添加的命令
+
+- `[alias: ...]` 命令最后的alias 表明了此命令拥有的别名。 
 
 ## 添加命令
 
@@ -104,7 +114,7 @@ $app->command('demo', function (Input $in, Output $out) {
 }, 'this is message for the command');
 ```
 
-### 继承 `Inhere\Console\Command`
+### 独立命令
 
 通过继承 `Inhere\Console\Command` 添加独立命令
 
@@ -155,7 +165,7 @@ $app->command(TestCommand::class);
 // $app->command('test1', TestCommand::class);
 ```
 
-### 继承 `Inhere\Console\Controller`
+### 命令组
 
 通过继承 `Inhere\Console\Controller` 添加一组命令. 即是命令行的控制器
 
@@ -171,13 +181,29 @@ class HomeController extends Controller
     protected static $description = 'default command controller. there are some command usage examples';
 
     /**
-     * this is a command's description message <info>a color text</info>
+     * this is a command's description message, <cyan>color text</cyan>
      * the second line text
-     * @usage usage message
+     * @usage {command} [arg ...] [--opt ...]
+     * @arguments
+     *  arg1        argument description 1
+     *              the second line
+     *  a2,arg2     argument description 2
+     *              the second line
+     * @options
+     *  -s, --long  option description 1
+     *  --opt       option description 2
      * @example example text one
      *  the second line example
      */
-    public function indexCommand()
+    public function testCommand()
+    {
+        $this->write('hello, welcome!! this is ' . __METHOD__);
+    }
+    
+    /**
+     * a example for use color text output on command
+     */
+    public function otherCommand()
     {
         $this->write('hello, welcome!! this is ' . __METHOD__);
     }
@@ -192,13 +218,14 @@ class HomeController extends Controller
 
 - 支持的tag有 `@usage` `@arguments` `@options` `@example`
 - 当你使用 `php examples/app home -h` 时，可以查看到 `HomeController` 的所有命令描述注释信息
-- 当使用 `php examples/app home:index -h` 时，可以查看到关于 `HomeController::indexCommand` 更详细的信息。包括描述注释文本、`@usage` 、`@example`
+  
+  ![group-command-list](docs/screenshots/group-command-list.png)
+- 当使用 `php examples/app home:test -h` 时，可以查看到关于 `HomeController::testCommand` 更详细的信息。包括描述注释文本、`@usage` 、`@example`
+
+  ![group-command-list](docs/screenshots/group-command-help.png)
 
 > 小提示：注释里面同样支持带颜色的文本输出 `eg: this is a command's description <info>message</info>`
 
-- 运行效果(by `php examples/app home`):
-
-![command-group-example](./images/example-for-group.png)
 
 更多请查看 [examples](./examples) 中的示例代码和在目录下运行示例 `php examples/app` 来查看效果
 
@@ -360,11 +387,23 @@ $output->write('hello <info>world<info>');
 
 已经内置了常用的风格:
 
-![alt text](images/output-color-text.png "Title")
+![alt text](docs/screenshots/output-color-text.png "Title")
 
 来自于类 `Inhere\Console\Utils\Show`。
 
 > output 实例拥有 `Inhere\Console\Utils\Show` 的所有格式化输出方法。不过都是通过对象式访问的。
+
+- **单独使用颜色风格**
+
+```php
+$style = Inhere\Console\Style\Style::create();
+
+echo $style->render('no color <info>color text</info>');
+
+// 直接使用内置的风格
+echo $style->info('message');
+echo $style->error('message');
+```
 
 ### 标题文本输出
 
@@ -403,13 +442,13 @@ echo "Progress:\n";
 
 $i = 0;
 while ($i <= $total) {
-     $bar->send($i);
+     $bar->send(1);// 发送步进长度，通常是 1
      usleep(50000);
      $i++;
 }
 ```
 
-![show-progress](images/show-progress.png)
+![show-progress](docs/screenshots/progress-demo.png)
 
 ### 列表数据展示输出 
 
@@ -438,7 +477,9 @@ $data = [
 Show::aList($data, $title);
 ```
 
-> 渲染效果请看下面的预览
+> 渲染效果
+
+![fmt-list](docs/screenshots/fmt-list.png)
 
 ### 多列表数据展示输出
 
@@ -467,7 +508,9 @@ $data = [
 Show::mList($data);
 ```
 
-> 渲染效果请看下面的预览
+> 渲染效果
+
+![fmt-multi-list](docs/screenshots/fmt-multi-list.png)
 
 ### 面板展示信息输出
 
@@ -489,7 +532,9 @@ $data = [
 Show::panel($data, 'panel show', '#');
 ```
 
-> 渲染效果请看下面的预览
+> 渲染效果
+
+![fmt-panel](docs/screenshots/fmt-panel.png)
 
 ### 数据表格信息输出
 
@@ -531,7 +576,7 @@ Show::table($data, 'a table', $opts);
 
 > 渲染效果请看下面的预览
 
-![table-show](images/table-show.png)
+![table-show](docs/screenshots/table-show.png)
 
 ### 快速的渲染一个帮助信息面板 
 
@@ -558,9 +603,9 @@ Show::helpPanel([
 ], false);
 ```
 
-### 渲染效果预览
+> 渲染效果预览
 
-![alt text](images/output-format-msg.png "Title")
+![alt text](docs/screenshots/fmt-help-panel.png "Title")
 
 ## 用户交互方法
 

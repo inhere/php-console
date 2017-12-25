@@ -9,6 +9,7 @@
 
 namespace Inhere\Console\Utils;
 
+use Inhere\Console\Components\StrBuffer;
 use Inhere\Console\Style\Style;
 
 /**
@@ -54,9 +55,11 @@ class Show
     const HELP_OPTIONS = 'options';
     const HELP_EXAMPLES = 'examples';
     const HELP_EXTRAS = 'extras';
-    /**
-     * @var array
-     */
+    /** @var string */
+    private static $buffer;
+    /** @var bool */
+    private static $buffering = false;
+    /** @var array */
     public static $defaultBlocks = ['block', 'primary', 'info', 'notice', 'success', 'warning', 'danger', 'error'];
     /**************************************************************************************************
      * Output block Message
@@ -226,7 +229,7 @@ class Show
             }
         }
         $body = \is_array($body) ? implode(PHP_EOL, $body) : $body;
-        $body = Helper::wrapText($body, 4, $opts['width']);
+        $body = FormatUtil::wrapText($body, 4, $opts['width']);
         self::write(sprintf($tpl, $titleLine, $topBorder, $body, $bottomBorder));
     }
 
@@ -269,23 +272,27 @@ class Show
      * ```
      * @param array $data
      * @param string $title
-     * @param array $opts More @see Helper::spliceKeyValue()
+     * @param array $opts More {@see FormatUtil::spliceKeyValue()}
      * @return int|string
      */
     public static function aList($data, $title = null, array $opts = [])
     {
         $string = '';
-        $opts = array_merge(['leftChar' => '  ', 'keyStyle' => 'info', 'keyMinWidth' => 8, 'titleStyle' => 'comment', 'returned' => false], $opts);
+        $opts = array_merge([
+            'leftChar' => '  ',
+            // 'sepChar' => '  ',
+            'keyStyle' => 'info',
+            'keyMinWidth' => 8,
+            'titleStyle' => 'comment',
+            'returned' => false,
+        ], $opts);
         // title
         if ($title) {
             $title = ucwords(trim($title));
-            if ($style = $opts['titleStyle']) {
-                $title = "<{$style}>{$title}</{$style}>";
-            }
-            $string .= $title . PHP_EOL;
+            $string .= Helper::wrapTag($title, $opts['titleStyle']) . PHP_EOL;
         }
         // handle item list
-        $string .= Helper::spliceKeyValue((array)$data, $opts);
+        $string .= FormatUtil::spliceKeyValue((array)$data, $opts);
         if ($opts['returned']) {
             return $string;
         }
@@ -337,7 +344,7 @@ class Show
         foreach ($data as $title => $list) {
             $buffer[] = self::aList($list, $title, $opts);
         }
-        self::write($buffer);
+        self::write(implode("\n", $buffer));
     }
 
     /**
@@ -373,7 +380,8 @@ class Show
      */
     public static function helpPanel(array $config, $showAfterQuit = true)
     {
-        $help = '';
+        $parts = [];
+        $option = ['indentDes' => '  '];
         $config = array_merge([
             'description' => '',
             'usage' => '',
@@ -383,10 +391,16 @@ class Show
             'examples' => [],
             // extra
             'extras' => [],
+            '_opts' => [],
         ], $config);
+        // some option for show.
+        if (isset($config['_opts'])) {
+            $option = array_merge($option, $config['_opts']);
+            unset($config['_opts']);
+        }
         // description
         if ($config['description']) {
-            $help .= "  {$config['description']}\n\n";
+            $parts[] = "{$option['indentDes']}{$config['description']}\n";
             unset($config['description']);
         }
         // now, render usage,commands,arguments,options,examples ...
@@ -401,17 +415,17 @@ class Show
                     $value = implode(PHP_EOL . '  ', $value);
                     // is key-value [ 'key1' => 'text1', 'key2' => 'text2']
                 } else {
-                    $value = Helper::spliceKeyValue($value, ['leftChar' => '  ', 'keyStyle' => 'info']);
+                    $value = FormatUtil::spliceKeyValue($value, ['leftChar' => '  ', 'sepChar' => '  ', 'keyStyle' => 'info']);
                 }
             }
             if (\is_string($value)) {
                 $value = trim($value);
                 $section = ucfirst($section);
-                $help .= "<comment>{$section}</comment>:\n  {$value}\n\n";
+                $parts[] = "<comment>{$section}</comment>:\n  {$value}\n";
             }
         }
-        if ($help) {
-            self::write($help, false);
+        if ($parts) {
+            self::write(implode("\n", $parts), false);
         }
         if ($showAfterQuit) {
             exit(0);
@@ -478,6 +492,7 @@ class Show
         }
         $border = null;
         $panelWidth = $labelMaxWidth + $valueMaxWidth;
+        self::startBuffer();
         // output title
         if ($title) {
             $title = ucwords($title);
@@ -492,16 +507,26 @@ class Show
             self::write('  ' . $border);
         }
         // output panel body
-        $panelStr = Helper::spliceKeyValue($panelData, ['leftChar' => "  {$borderChar} ", 'sepChar' => ' | ', 'keyMaxWidth' => $labelMaxWidth, 'ucFirst' => $opts['ucFirst']]);
+        $panelStr = FormatUtil::spliceKeyValue($panelData, ['leftChar' => "  {$borderChar} ", 'sepChar' => ' | ', 'keyMaxWidth' => $labelMaxWidth, 'ucFirst' => $opts['ucFirst']]);
         // already exists "\n"
         self::write($panelStr, false);
         // output panel bottom border
         if ($border) {
             self::write("  {$border}\n");
         }
+        self::flushBuffer();
         unset($panelData);
 
         return 0;
+    }
+
+    /**
+     * @todo un-completed
+     * @param array $data
+     * @param array $opts
+     */
+    public static function tree(array $data, array $opts = [])
+    {
     }
 
     /**
@@ -555,7 +580,7 @@ class Show
         ], $opts);
         $hasHead = false;
         $rowIndex = 0;
-        $head = $table = [];
+        $head = [];
         $tableHead = $opts['columns'];
         $leftIndent = $opts['leftIndent'];
         $showBorder = $opts['showBorder'];
@@ -656,6 +681,89 @@ class Show
 
         return 0;
     }
+    /***********************************************************************************
+     * Output progress message
+     ***********************************************************************************/
+    /**
+     * show a spinner icon message
+     * ```php
+     *  $total = 5000;
+     *  while ($total--) {
+     *      Show::spinner();
+     *      usleep(100);
+     *  }
+     *  Show::spinner('Done', true);
+     * ```
+     * @param string $msg
+     * @param bool $ended
+     */
+    public static function spinner($msg = '', $ended = false)
+    {
+        static $chars = '-\\|/';
+        static $counter = 0;
+        static $lastTime = null;
+        $tpl = (Helper::supportColor() ? "\r\33[2K" : "\r\r") . '%s';
+        if ($ended) {
+            printf($tpl, $msg);
+
+            return;
+        }
+        $now = microtime(true);
+        if (null === $lastTime || $lastTime < $now - 0.1) {
+            $lastTime = $now;
+            // echo $chars[$counter];
+            printf($tpl, $chars[$counter] . $msg);
+            $counter++;
+            if ($counter > \strlen($chars) - 1) {
+                $counter = 0;
+            }
+        }
+    }
+
+    /**
+     * alias of the pending()
+     * @param string $msg
+     * @param bool $ended
+     */
+    public static function loading($msg = 'Loading ', $ended = false)
+    {
+        self::pending($msg, $ended);
+    }
+
+    /**
+     * show a pending message
+     * ```php
+     *  $total = 8000;
+     *  while ($total--) {
+     *      Show::pending();
+     *      usleep(200);
+     *  }
+     *  Show::pending('Done', true);
+     * ```
+     * @param string $msg
+     * @param bool $ended
+     */
+    public static function pending($msg = 'Pending ', $ended = false)
+    {
+        static $counter = 0;
+        static $lastTime = null;
+        static $chars = ['', '.', '..', '...'];
+        $tpl = (Helper::supportColor() ? "\r\33[2K" : "\r\r") . '%s';
+        if ($ended) {
+            printf($tpl, $msg);
+
+            return;
+        }
+        $now = microtime(true);
+        if (null === $lastTime || $lastTime < $now - 0.8) {
+            $lastTime = $now;
+            printf($tpl, $msg . $chars[$counter]);
+            $counter++;
+            if ($counter > \count($chars) - 1) {
+                $counter = 0;
+            }
+        }
+    }
 
     /**
      * 与文本进度条相比，没有 total
@@ -667,7 +775,7 @@ class Show
     {
         $counter = 0;
         $finished = false;
-        $tpl = (Helper::isSupportColor() ? "\r\33[2K" : "\r\r") . '%d %s';
+        $tpl = (Helper::supportColor() ? "\r\33[2K" : "\r\r") . '%d %s';
         $msg = self::getStyle()->render($msg);
         $doneMsg = $doneMsg ? self::getStyle()->render($doneMsg) : null;
         while (true) {
@@ -685,9 +793,6 @@ class Show
                 }
                 $counter += $step;
             }
-            // printf("\r%d%% %s", $percent, $msg);
-            // printf("\x0D\x2K %d%% %s", $percent, $msg);
-            // printf("\x0D\r%'2d%% %s", $percent, $msg);
             printf($tpl, $counter, $msg);
             if ($finished) {
                 echo "\n";
@@ -707,7 +812,7 @@ class Show
     {
         $current = 0;
         $finished = false;
-        $tpl = (Helper::isSupportColor() ? "\r\33[2K" : "\r\r") . "%' 3d%% %s";
+        $tpl = (Helper::supportColor() ? "\r\33[2K" : "\r\r") . "%' 3d%% %s";
         $msg = self::getStyle()->render($msg);
         $doneMsg = $doneMsg ? self::getStyle()->render($doneMsg) : null;
         while (true) {
@@ -762,7 +867,7 @@ class Show
     {
         $current = 0;
         $finished = false;
-        $tplPrefix = Helper::isSupportColor() ? "\r\33[2K" : "\r\r";
+        $tplPrefix = Helper::supportColor() ? "\r\33[2K" : "\r\r";
         $opts = array_merge(['doneChar' => '=', 'waitChar' => ' ', 'signChar' => '>', 'msg' => '', 'doneMsg' => ''], $opts);
         $msg = self::getStyle()->render($opts['msg']);
         $doneMsg = self::getStyle()->render($opts['doneMsg']);
@@ -825,9 +930,87 @@ class Show
 
         return $bar;
     }
-    /////////////////////////////////////////////////////////////////
-    /// Helper Method
-    /////////////////////////////////////////////////////////////////
+    /***********************************************************************************
+     * Output buffer
+     ***********************************************************************************/
+    /**
+     * @return bool
+     */
+    public static function isBuffering()
+    {
+        return self::$buffering;
+    }
+
+    /**
+     * @return string
+     */
+    public static function getBuffer()
+    {
+        return self::$buffer;
+    }
+
+    /**
+     * @param string $buffer
+     */
+    public static function setBuffer($buffer)
+    {
+        self::$buffer = $buffer;
+    }
+
+    /**
+     * start buffering
+     */
+    public static function startBuffer()
+    {
+        self::$buffering = true;
+    }
+
+    /**
+     * start buffering
+     */
+    public static function clearBuffer()
+    {
+        self::$buffer = null;
+    }
+
+    /**
+     * stop buffering
+     * @see Show::write()
+     * @param bool $flush Whether flush buffer to output stream
+     * @param bool $nl Default is False, because the last write() have been added "\n"
+     * @param bool $quit
+     * @param array $opts
+     * @return null|string If flush = False, will return all buffer text.
+     */
+    public static function stopBuffer($flush = true, $nl = false, $quit = false, array $opts = [])
+    {
+        self::$buffering = false;
+        if ($flush && self::$buffer) {
+            // all text have been rendered by Style::render() in every write();
+            $opts['color'] = false;
+            // flush to stream
+            self::write(self::$buffer, $nl, $quit, $opts);
+            // clear buffer
+            self::$buffer = null;
+        }
+
+        return self::$buffer;
+    }
+
+    /**
+     * stop buffering and flush buffer text
+     * @see Show::write()
+     * @param bool $nl
+     * @param bool $quit
+     * @param array $opts
+     */
+    public static function flushBuffer($nl = false, $quit = false, array $opts = [])
+    {
+        self::stopBuffer(true, $nl, $quit, $opts);
+    }
+    /***********************************************************************************
+     * Helper methods
+     ***********************************************************************************/
     /**
      * @return Style
      */
@@ -845,7 +1028,7 @@ class Show
      * [
      *     'color' => bool, // whether render color, default is: True.
      *     'stream' => resource, // the stream resource, default is: STDOUT
-     *     'flush' => flush, // flush the stream data, default is: True
+     *     'flush' => bool, // flush the stream data, default is: True
      * ]
      * @return int
      */
@@ -858,8 +1041,19 @@ class Show
         if (!isset($opts['color']) || $opts['color']) {
             $messages = static::getStyle()->render($messages);
         }
-        $stream = isset($opts['stream']) ? $opts['stream'] : STDOUT;
-        fwrite($stream, $messages . ($nl ? PHP_EOL : ''));
+        // if open buffering
+        if (self::isBuffering()) {
+            self::$buffer .= $messages . ($nl ? PHP_EOL : '');
+            if (!$quit) {
+                return 0;
+            }
+            // if will quit.
+            $messages = self::$buffer;
+            self::clearBuffer();
+        } else {
+            $messages .= $nl ? PHP_EOL : '';
+        }
+        fwrite($stream = isset($opts['stream']) ? $opts['stream'] : \STDOUT, $messages);
         if (!isset($opts['flush']) || $opts['flush']) {
             fflush($stream);
         }
@@ -869,6 +1063,21 @@ class Show
         }
 
         return 0;
+    }
+
+    /**
+     * write raw data to stdout
+     * @param string|array $text
+     * @param bool $nl
+     * @param bool|int $quit
+     * @param array $opts
+     * @return int
+     */
+    public static function writeRaw($text, $nl = true, $quit = false, array $opts = [])
+    {
+        $opts['color'] = false;
+
+        return self::write($text, $nl, $quit, $opts);
     }
 
     /**

@@ -3,13 +3,22 @@
 
 define('BASE_PATH', dirname(__DIR__));
 
-require __DIR__ . '/s-autoload.php';
+require dirname(__DIR__) . '/tests/boot.php';
 
 // create app instance
 $app = new \Inhere\Console\Application([
     'debug' => true,
-    'rootPath' => BASE_PATH,
+    'rootPath' => dirname(__DIR__),
 ]);
+
+$app->setLogo("
+     ________    ____   ___                ___            __  _
+    / ____/ /   /  _/  /   |  ____  ____  / (_)________ _/ /_(_)___  ____
+   / /   / /    / /   / /| | / __ \/ __ \/ / / ___/ __ `/ __/ / __ \/ __ \
+  / /___/ /____/ /   / ___ |/ /_/ / /_/ / / / /__/ /_/ / /_/ / /_/ / / / /
+  \____/_____/___/  /_/  |_/ .___/ .___/_/_/\___/\__,_/\__/_/\____/_/ /_/
+                          /_/   /_/
+", 'success');
 
 // require dirname(__DIR__) . '/boot/cli-services.php';
 

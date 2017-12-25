@@ -20,6 +20,9 @@ interface ControllerInterface
      */
     public function helpCommand();
 
+    /**
+     * show command list of the controller class
+     */
     public function showCommandList();
 
     /**

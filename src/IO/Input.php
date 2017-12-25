@@ -9,23 +9,24 @@
 
 namespace Inhere\Console\IO;
 
-use Inhere\Console\Utils\ArgumentOptionParse;
+use Inhere\Console\Utils\CommandLine;
 
 /**
- * Class Input
+ * Class Input - the input information. by parse global var $argv.
  * @package Inhere\Console\IO
  */
 class Input implements InputInterface
 {
     /**
-     * @var @resource
+     * @var resource
      */
-    protected $inputStream = STDIN;
+    protected $inputStream = \STDIN;
     /**
-     * @var
+     * @var string
      */
     private $pwd;
     /**
+     * eg `./examples/app home:useArg status=2 name=john arg0 -s=test --page=23`
      * @var string
      */
     private $fullScript;
@@ -65,19 +66,22 @@ class Input implements InputInterface
     /**
      * Input constructor.
      * @param null|array $argv
+     * @param bool $parsing
      */
-    public function __construct($argv = null)
+    public function __construct($argv = null, $parsing = true)
     {
         if (null === $argv) {
             $argv = $_SERVER['argv'];
         }
         $this->pwd = $this->getPwd();
+        $this->tokens = $argv;
         $this->fullScript = implode(' ', $argv);
         $this->script = array_shift($argv);
-        $this->tokens = $argv;
-        list($this->args, $this->sOpts, $this->lOpts) = ArgumentOptionParse::byArgv($argv);
-        // collect command `server`
-        $this->command = isset($this->args[0]) ? array_shift($this->args) : null;
+        if ($parsing) {
+            list($this->args, $this->sOpts, $this->lOpts) = CommandLine::parseByArgv($argv);
+            // collect command. it is first argument.
+            $this->command = isset($this->args[0]) ? array_shift($this->args) : null;
+        }
     }
 
     /**
@@ -87,10 +91,10 @@ class Input implements InputInterface
     {
         $tokens = array_map(function ($token) {
             if (preg_match('{^(-[^=]+=)(.+)}', $token, $match)) {
-                return $match[1] . ArgumentOptionParse::escapeToken($match[2]);
+                return $match[1] . CommandLine::escapeToken($match[2]);
             }
             if ($token && $token[0] !== '-') {
-                return ArgumentOptionParse::escapeToken($token);
+                return CommandLine::escapeToken($token);
             }
 
             return $token;
@@ -107,13 +111,15 @@ class Input implements InputInterface
      */
     public function read($question = null, $nl = false)
     {
-        fwrite(STDOUT, $question . ($nl ? "\n" : ''));
+        if ($question) {
+            fwrite(\STDOUT, $question . ($nl ? "\n" : ''));
+        }
 
         return trim(fgets($this->inputStream));
     }
-    /////////////////////////////////////////////////////////////////////////////////////////
-    /// arguments (eg: name=john city=chengdu)
-    /////////////////////////////////////////////////////////////////////////////////////////
+    /***************************************************************************
+     * arguments (eg: arg0 name=john city=chengdu)
+     ***************************************************************************/
     /**
      * @return array
      */
@@ -611,5 +617,13 @@ class Input implements InputInterface
         }
 
         return $this->pwd;
+    }
+
+    /**
+     * @return array
+     */
+    public function getTokens()
+    {
+        return $this->tokens;
     }
 }

@@ -10,7 +10,7 @@
 namespace Inhere\Console\IO;
 
 use Inhere\Console\Style\Style;
-use Inhere\Console\Traits\FormatOutputTrait;
+use Inhere\Console\Traits\FormatOutputAwareTrait;
 use Inhere\Console\Utils\Helper;
 use Inhere\Console\Utils\Show;
 
@@ -20,17 +20,17 @@ use Inhere\Console\Utils\Show;
  */
 class Output implements OutputInterface
 {
-    use FormatOutputTrait;
+    use FormatOutputAwareTrait;
     /**
      * 正常输出流
      * Property outStream.
      */
-    protected $outputStream = STDOUT;
+    protected $outputStream = \STDOUT;
     /**
      * 错误输出流
      * Property errorStream.
      */
-    protected $errorStream = STDERR;
+    protected $errorStream = \STDERR;
     /**
      * 控制台窗口(字体/背景)颜色添加处理
      * window colors
@@ -49,9 +49,46 @@ class Output implements OutputInterface
         }
         $this->getStyle();
     }
-    /////////////////////////////////////////////////////////////////
-    /// Output Message
-    /////////////////////////////////////////////////////////////////
+    /***************************************************************************
+     * Output buffer
+     ***************************************************************************/
+    /**
+     * start buffering
+     */
+    public function startBuffer()
+    {
+        Show::startBuffer();
+    }
+
+    /**
+     * clear buffering
+     */
+    public function clearBuffer()
+    {
+        Show::clearBuffer();
+    }
+
+    /**
+     * stop buffering and flush buffer text
+     * {@inheritdoc}
+     * @see Show::stopBuffer()
+     */
+    public function stopBuffer($flush = true, $nl = false, $quit = false, array $opts = [])
+    {
+        Show::stopBuffer($flush, $nl, $quit, $opts);
+    }
+
+    /**
+     * stop buffering and flush buffer text
+     * {@inheritdoc}
+     */
+    public function flush($nl = false, $quit = false, array $opts = [])
+    {
+        $this->stopBuffer(true, $nl, $quit, $opts);
+    }
+    /***************************************************************************
+     * Output Message
+     ***************************************************************************/
     /**
      * 读取输入信息
      * @param  string $question 若不为空，则先输出文本
@@ -64,7 +101,7 @@ class Output implements OutputInterface
             $this->write($question, $nl);
         }
 
-        return trim(fgets(STDIN));
+        return trim(fgets(\STDIN));
     }
 
     /**
@@ -80,9 +117,9 @@ class Output implements OutputInterface
 
         return $this;
     }
-    /////////////////////////////////////////////////////////////////
-    /// Getter/Setter
-    /////////////////////////////////////////////////////////////////
+    /***************************************************************************
+     * Getter/Setter
+     ***************************************************************************/
     /**
      * @return Style
      */

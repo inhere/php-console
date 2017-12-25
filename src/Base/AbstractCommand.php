@@ -13,18 +13,19 @@ use Inhere\Console\Application;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\InputDefinition;
 use Inhere\Console\IO\Output;
-use Inhere\Console\Traits\InputOutputTrait;
-use Inhere\Console\Traits\UserInteractTrait;
+use Inhere\Console\Traits\InputOutputAwareTrait;
+use Inhere\Console\Traits\UserInteractAwareTrait;
 use Inhere\Console\Utils\Annotation;
 
 /**
  * Class AbstractCommand
  * @package Inhere\Console
  */
-abstract class AbstractCommand implements CommandInterface
+abstract class AbstractCommand implements BaseCommandInterface
 {
-    use InputOutputTrait, UserInteractTrait;
-    // name -> {$name}
+    use InputOutputAwareTrait, UserInteractAwareTrait;
+    const OK = 0;
+    // name -> {name}
     const ANNOTATION_VAR = '{%s}';
     // '{$%s}';
     /**
@@ -56,6 +57,8 @@ abstract class AbstractCommand implements CommandInterface
     private $definition;
     /** @var string */
     private $processTitle;
+    /** @var array */
+    private $annotationVars;
 
     /**
      * Command constructor.
@@ -71,6 +74,7 @@ abstract class AbstractCommand implements CommandInterface
             $this->definition = $definition;
         }
         $this->init();
+        $this->annotationVars = $this->annotationVars();
     }
 
     protected function init()
@@ -104,8 +108,16 @@ abstract class AbstractCommand implements CommandInterface
      */
     public function annotationVars()
     {
-        // e.g: `more info see {name}/index`
-        return ['script' => $this->input->getScript(), 'command' => $this->input->getCommand(), 'fullCommand' => $this->input->getScript() . ' ' . $this->input->getCommand(), 'name' => self::getName()];
+        // e.g: `more info see {name}:index`
+        return [
+            'name' => self::getName(),
+            'group' => self::getName(),
+            'script' => $this->input->getScript(),
+            // bin/app
+            'command' => $this->input->getCommand(),
+            // demo OR home:test
+            'fullCommand' => $this->input->getScript() . ' ' . $this->input->getCommand(),
+        ];
     }
     /**************************************************************************
      * running a command
@@ -122,6 +134,7 @@ abstract class AbstractCommand implements CommandInterface
         if ($this->input->sameOpt(['h', 'help'])) {
             return $this->showHelp();
         }
+        // some prepare check
         if (true !== $this->prepare()) {
             return -1;
         }
@@ -164,10 +177,13 @@ abstract class AbstractCommand implements CommandInterface
      */
     protected function showHelp()
     {
-        // 创建了 InputDefinition , 则使用它的信息。
-        // 不会再解析和使用命令的注释。
+        // 创建了 InputDefinition , 则使用它的信息。此时不会再解析和使用命令的注释。
         if ($def = $this->getDefinition()) {
-            $this->output->mList($def->getSynopsis());
+            $cmd = $this->input->getCommand();
+            $spt = $this->input->getScript();
+            $info = $def->getSynopsis();
+            $info['usage'] = "{$spt} {$cmd} " . $info['usage'];
+            $this->output->mList($info);
 
             return true;
         }
@@ -177,17 +193,16 @@ abstract class AbstractCommand implements CommandInterface
 
     /**
      * prepare run
+     * @throws \RuntimeException
      */
     protected function prepare()
     {
         if ($this->processTitle) {
             if (\function_exists('cli_set_process_title')) {
                 if (false === @cli_set_process_title($this->processTitle)) {
-                    if ('Darwin' === PHP_OS) {
-                        $this->output->writeln('<comment>Running "cli_get_process_title" as an unprivileged user is not supported on MacOS.</comment>');
-                    } else {
-                        $error = error_get_last();
-                        trigger_error($error['message'], E_USER_WARNING);
+                    $error = error_get_last();
+                    if ($error && 'Darwin' !== PHP_OS) {
+                        throw new \RuntimeException($error['message']);
                     }
                 }
             } elseif (\function_exists('setproctitle')) {
@@ -268,29 +283,65 @@ abstract class AbstractCommand implements CommandInterface
      * helper methods
      **************************************************************************/
     /**
-     * 为命令注解提供可解析解析变量. 可以在命令的注释中使用
+     * @param string $name
+     * @param string $value
+     */
+    protected function addAnnotationVar($name, $value)
+    {
+        if (!isset($this->annotationVars[$name])) {
+            $this->annotationVars[$name] = (string)$value;
+        }
+    }
+
+    /**
+     * @param array $map
+     */
+    protected function addAnnotationVars(array $map)
+    {
+        foreach ($map as $name => $value) {
+            $this->addAnnotationVar($name, $value);
+        }
+    }
+
+    /**
+     * @param string $name
+     * @param string $value
+     */
+    protected function setAnnotationVar($name, $value)
+    {
+        $this->annotationVars[$name] = (string)$value;
+    }
+
+    /**
+     * 替换注解中的变量为对应的值
      * @param string $str
      * @return string
      */
-    protected function handleAnnotationVars($str)
+    protected function parseAnnotationVars($str)
     {
-        $map = [];
-        foreach ($this->annotationVars() as $key => $value) {
-            $key = sprintf(self::ANNOTATION_VAR, $key);
-            $map[$key] = $value;
+        static $map;
+        if ($map === null) {
+            foreach ($this->annotationVars as $key => $value) {
+                $key = sprintf(self::ANNOTATION_VAR, $key);
+                $map[$key] = $value;
+            }
+        }
+        // not use vars
+        if (false === strpos($str, '{')) {
+            return $str;
         }
 
         return $map ? strtr($str, $map) : $str;
     }
 
     /**
-     * show help by parse method annotation
+     * show help by parse method annotations
      * @param string $method
      * @param null|string $action
+     * @param array $aliases
      * @return int
-     * @throws \ReflectionException
      */
-    protected function showHelpByMethodAnnotation($method, $action = null)
+    protected function showHelpByMethodAnnotations($method, $action = null, array $aliases = [])
     {
         $ref = new \ReflectionClass($this);
         $name = $this->input->getCommand();
@@ -306,25 +357,20 @@ abstract class AbstractCommand implements CommandInterface
             return 0;
         }
         $doc = $ref->getMethod($method)->getDocComment();
-        $tags = Annotation::tagList($this->handleAnnotationVars($doc));
-        foreach ($tags as $tag => $msg) {
-            if (!$msg || !\is_string($msg)) {
+        $tags = Annotation::getTags($this->parseAnnotationVars($doc));
+        $help = [];
+        if ($aliases) {
+            $help[] = sprintf("<comment>Alias Name:</comment> %s\n", implode(',', $aliases));
+        }
+        foreach (array_keys(self::$annotationTags) as $tag) {
+            if (empty($tags[$tag]) || !\is_string($tags[$tag])) {
                 continue;
             }
-            if (isset(self::$annotationTags[$tag])) {
-                $msg = trim($msg);
-                // need multi align
-                // if (self::$annotationTags[$tag]) {
-                // $lines = array_map(function ($line) {
-                //     // return trim($line);
-                //     return $line;
-                // }, explode("\n", $msg));
-                // $msg = implode("\n", array_filter($lines, 'trim'));
-                // }
-                $tag = ucfirst($tag);
-                $this->write("<comment>{$tag}:</comment>\n {$msg}\n");
-            }
+            $msg = trim($tags[$tag]);
+            $tag = ucfirst($tag);
+            $help[] = "<comment>{$tag}:</comment>\n {$msg}\n";
         }
+        $this->output->write(implode("\n", $help), false);
 
         return 0;
     }
@@ -372,6 +418,16 @@ abstract class AbstractCommand implements CommandInterface
     }
 
     /**
+     * @param string $name
+     */
+    public static function addAnnotationTag($name)
+    {
+        if (!isset(self::$annotationTags[$name])) {
+            self::$annotationTags[$name] = true;
+        }
+    }
+
+    /**
      * @param array $annotationTags
      * @param bool $replace
      */
@@ -394,6 +450,14 @@ abstract class AbstractCommand implements CommandInterface
     public function setDefinition(InputDefinition $definition)
     {
         $this->definition = $definition;
+    }
+
+    /**
+     * @return array
+     */
+    public function getAnnotationVars()
+    {
+        return $this->annotationVars;
     }
 
     /**

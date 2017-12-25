@@ -10,12 +10,20 @@
 namespace Inhere\Console;
 
 use Inhere\Console\Base\AbstractCommand;
+use Inhere\Console\Base\CommandInterface;
 
 /**
  * Class Command
  * @package Inhere\Console
+ * ```php
+ * In sub class:
+ * protected function execute($input, $output)
+ * {
+ *      // some logic ...
+ * }
+ * ```
  */
-abstract class Command extends AbstractCommand
+abstract class Command extends AbstractCommand implements CommandInterface
 {
     /*
      * do execute
@@ -27,7 +35,7 @@ abstract class Command extends AbstractCommand
     // {
     //      // something logic ...
     // }
-    /**
+    /*
      * configure
      */
     // protected function configure()
@@ -46,6 +54,6 @@ abstract class Command extends AbstractCommand
             return 0;
         }
 
-        return $this->showHelpByMethodAnnotation('execute');
+        return $this->showHelpByMethodAnnotations('execute');
     }
 }

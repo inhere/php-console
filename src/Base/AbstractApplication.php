@@ -12,8 +12,9 @@ namespace Inhere\Console\Base;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
 use Inhere\Console\Style\Style;
-use Inhere\Console\Traits\InputOutputTrait;
+use Inhere\Console\Traits\InputOutputAwareTrait;
 use Inhere\Console\Traits\SimpleEventTrait;
+use Inhere\Console\Utils\FormatUtil;
 use Inhere\Console\Utils\Helper;
 
 /**
@@ -22,21 +23,17 @@ use Inhere\Console\Utils\Helper;
  */
 abstract class AbstractApplication implements ApplicationInterface
 {
-    use InputOutputTrait, SimpleEventTrait;
-    /**
-     * @var array
-     */
+    use InputOutputAwareTrait, SimpleEventTrait;
+    /** @var array */
     protected static $internalCommands = ['version' => 'Show application version information', 'help' => 'Show application help information', 'list' => 'List all group and independent commands'];
-    /**
-     * @var array
-     */
+    /** @var array */
     protected static $internalOptions = ['--debug' => 'Setting the application runtime debug level', '--profile' => 'Display timing and memory usage information', '--no-color' => 'Disable color/ANSI for message output', '-h, --help' => 'Display this help message', '-V, --version' => 'Show application version information'];
     /**
-     * app meta config
+     * application meta info
      * @var array
      */
     private $meta = [
-        'name' => 'My Console',
+        'name' => 'My Console Application',
         'debug' => false,
         'profile' => false,
         'version' => '0.5.1',
@@ -47,20 +44,24 @@ abstract class AbstractApplication implements ApplicationInterface
         // 'timeZone' => 'Asia/Shanghai',
         // 'env' => 'pdt', // dev test pdt
         // 'charset' => 'UTF-8',
+        'logoText' => '',
+        'logoStyle' => 'info',
         // runtime stats
         '_stats' => [],
     ];
     /** @var string Command delimiter. e.g dev:serve */
     public $delimiter = ':';
     // '/' ':'
-    /** @var array The group commands */
-    protected $controllers = [];
+    /** @var string Current command name */
+    private $commandName;
+    /** @var array Some message for command */
+    private $commandMessages = [];
+    /** @var array Save command aliases */
+    private $commandAliases = [];
     /** @var array The independent commands */
     protected $commands = [];
-    /** @var array */
-    private $commandMessages = [];
-    /** @var string */
-    private $commandName;
+    /** @var array The group commands */
+    protected $controllers = [];
 
     /**
      * App constructor.
@@ -151,7 +152,7 @@ abstract class AbstractApplication implements ApplicationInterface
         if ($this->isProfile()) {
             $title = '---------- Runtime Stats(profile=true) ----------';
             $stats = $this->meta['_stats'];
-            $this->meta['_stats'] = Helper::runtime($stats['startTime'], $stats['startMemory'], $stats);
+            $this->meta['_stats'] = FormatUtil::runtime($stats['startTime'], $stats['startMemory'], $stats);
             $this->output->write('');
             $this->output->aList($this->meta['_stats'], $title);
         }
@@ -295,7 +296,7 @@ ERR;
         }
         $script = $this->input->getScript();
         $sep = $this->delimiter;
-        $this->output->helpPanel(['usage' => "{$script} {command} [arg0 arg1=value1 arg2=value2 ...] [--opt -v -h ...]", 'example' => ["{$script} test (run a independent command)", "{$script} home{$sep}index (run a command of the group)", "{$script} help {command} (see a command help information)", "{$script} home{$sep}index -h (see a command help of the group)"]], $quit);
+        $this->output->helpPanel(['usage' => "{$script} <info>{command}</info> [arg0 arg1=value1 arg2=value2 ...] [--opt -v -h ...]", 'example' => ["{$script} test (run a independent command)", "{$script} home{$sep}index (run a command of the group)", "{$script} help {command} (see a command help information)", "{$script} home{$sep}index -h (see a command help of the group)"]], $quit);
     }
 
     /**
@@ -304,14 +305,18 @@ ERR;
      */
     public function showVersionInfo($quit = true)
     {
+        $os = PHP_OS;
         $date = date('Y.m.d');
+        $logo = '';
         $name = $this->getMeta('name', 'Console Application');
         $version = $this->getMeta('version', 'Unknown');
         $publishAt = $this->getMeta('publishAt', 'Unknown');
         $updateAt = $this->getMeta('updateAt', 'Unknown');
         $phpVersion = PHP_VERSION;
-        $os = PHP_OS;
-        $this->output->aList(["\n  <info>{$name}</info>, Version <comment>{$version}</comment>\n", 'System Info' => "PHP version <info>{$phpVersion}</info>, on <info>{$os}</info> system", 'Application Info' => "Update at <info>{$updateAt}</info>, publish at <info>{$publishAt}</info>(current {$date})"], null, ['leftChar' => '', 'sepChar' => ' :  ']);
+        if ($logoTxt = $this->getLogoText()) {
+            $logo = Helper::wrapTag($logoTxt, $this->getLogoStyle());
+        }
+        $this->output->aList(["{$logo}\n  <info>{$name}</info>, Version <comment>{$version}</comment>\n", 'System Info' => "PHP version <info>{$phpVersion}</info>, on <info>{$os}</info> system", 'Application Info' => "Update at <info>{$updateAt}</info>, publish at <info>{$publishAt}</info>(current {$date})"], null, ['leftChar' => '', 'sepChar' => ' :  ']);
         $quit && $this->stop();
     }
 
@@ -326,20 +331,23 @@ ERR;
         $controllerArr = $commandArr = [];
         $desPlaceholder = 'No description of the command';
         // all console controllers
-        $controllerArr[] = PHP_EOL . '- <cyan>Group Commands</cyan>';
+        $controllerArr[] = PHP_EOL . '- <bold>Group Commands</bold>';
         $controllers = $this->controllers;
         ksort($controllers);
         foreach ($controllers as $name => $controller) {
             $hasGroup = true;
             /** @var AbstractCommand $controller */
-            $controllerArr[$name] = $controller::getDescription() ?: $desPlaceholder;
+            $desc = $controller::getDescription() ?: $desPlaceholder;
+            $aliases = $this->getCommandAliases($name);
+            $extra = $aliases ? Helper::wrapTag(' [alias: ' . implode(',', $aliases) . ']', 'info') : '';
+            $controllerArr[$name] = $desc . $extra;
         }
         if (!$hasGroup) {
             $controllerArr[] = '... No register any group command(controller)';
         }
-        // all independent commands
+        // all independent commands, Independent, Single, Alone
         $commands = $this->commands;
-        $commandArr[] = PHP_EOL . '- <cyan>Independent Commands</cyan>';
+        $commandArr[] = PHP_EOL . '- <bold>Alone Commands</bold>';
         ksort($commands);
         foreach ($commands as $name => $command) {
             $desc = $desPlaceholder;
@@ -347,20 +355,16 @@ ERR;
             /** @var AbstractCommand $command */
             if (is_subclass_of($command, CommandInterface::class)) {
                 $desc = $command::getDescription() ?: $desPlaceholder;
-            } else {
-                if ($msg = $this->getCommandMessage($name)) {
-                    $desc = $msg;
-                } else {
-                    if (\is_string($command)) {
-                        $desc = 'A handler : ' . $command;
-                    } else {
-                        if (\is_object($command)) {
-                            $desc = 'A handler by ' . \get_class($command);
-                        }
-                    }
-                }
+            } elseif ($msg = $this->getCommandMessage($name)) {
+                $desc = $msg;
+            } elseif (\is_string($command)) {
+                $desc = 'A handler : ' . $command;
+            } elseif (\is_object($command)) {
+                $desc = 'A handler by ' . \get_class($command);
             }
-            $commandArr[$name] = $desc;
+            $aliases = $this->getCommandAliases($name);
+            $extra = $aliases ? Helper::wrapTag(' [alias: ' . implode(',', $aliases) . ']', 'info') : '';
+            $commandArr[$name] = $desc . $extra;
         }
         if (!$hasCommand) {
             $commandArr[] = '... No register any group command(controller)';
@@ -368,21 +372,9 @@ ERR;
         // built in commands
         $internalCommands = static::$internalCommands;
         ksort($internalCommands);
-        array_unshift($internalCommands, "\n- <cyan>Internal Commands</cyan>");
-        $this->output->mList([
-            //'There are all console controllers and independent commands.',
-            'Usage:' => "{$script} {command} [arg0 arg1=value1 arg2=value2 ...] [--opt -v -h ...]",
-            'Options:' => self::$internalOptions,
-            'Available Commands:' => array_merge($controllerArr, $commandArr, $internalCommands),
-        ]);
-        // $this->output->mList([
-        //     //'There are all console controllers and independent commands.',
-        //     'Usage:' => "$script {command} [arg0 arg1=value1 arg2=value2 ...] [--opt -v -h ...]",
-        //     'Options:' => self::$internalOptions,
-        //     'Group Commands:' => $controllerArr ?: '... No register any group command(controller)',
-        //     'Independent Commands:' => $commandArr ?: '... No register any independent command',
-        //     'Internal Commands:' => $internalCommands,
-        // ]);
+        // built in options
+        $internalOptions = FormatUtil::alignmentOptions(self::$internalOptions);
+        $this->output->mList(['Usage:' => "{$script} <info>{command}</info> [arg0 arg1=value1 arg2=value2 ...] [--opt -v -h ...]", 'Options:' => $internalOptions, 'Internal Commands:' => $internalCommands, 'Available Commands:' => array_merge($controllerArr, $commandArr)], ['sepChar' => '  ']);
         unset($controllerArr, $commandArr, $internalCommands);
         $this->output->write("More command information, please use: <cyan>{$script} {command} -h</cyan>");
         $quit && $this->stop();
@@ -401,11 +393,43 @@ ERR;
     /**
      * @param string $name The command name
      * @param string $message
-     * @return string
+     * @return $this
      */
     public function addCommandMessage($name, $message)
     {
-        return $this->commandMessages[$name] = $message;
+        if ($name && $message) {
+            $this->commandMessages[$name] = $message;
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param string $name
+     * @param string|array $aliases
+     * @return $this
+     */
+    public function addCommandAliases($name, $aliases)
+    {
+        if (!$name || !$aliases) {
+            return $this;
+        }
+        foreach ((array)$aliases as $alias) {
+            if ($alias = trim($alias)) {
+                $this->commandAliases[$alias] = $name;
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param string $name
+     * @return string
+     */
+    protected function getRealCommandName($name)
+    {
+        return isset($this->commandAliases[$name]) ? $this->commandAliases[$name] : $name;
     }
     /**********************************************************
      * getter/setter methods
@@ -428,6 +452,7 @@ ERR;
 
     /**
      * @param array $controllers
+     * @throws \InvalidArgumentException
      */
     public function setControllers(array $controllers)
     {
@@ -459,6 +484,7 @@ ERR;
 
     /**
      * @param array $commands
+     * @throws \InvalidArgumentException
      */
     public function setCommands(array $commands)
     {
@@ -486,6 +512,50 @@ ERR;
     public function isCommand($name)
     {
         return isset($this->commands[$name]);
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getLogoText()
+    {
+        return isset($this->meta['logoText']) ? $this->meta['logoText'] : null;
+    }
+
+    /**
+     * @param string $logoTxt
+     * @param string|null $style
+     */
+    public function setLogo($logoTxt, $style = null)
+    {
+        $this->meta['logoText'] = $logoTxt;
+        if ($style) {
+            $this->meta['logoStyle'] = $style;
+        }
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getLogoStyle()
+    {
+        return isset($this->meta['logoStyle']) ? $this->meta['logoStyle'] : 'info';
+    }
+
+    /**
+     * @param string $style
+     */
+    public function setLogoStyle($style)
+    {
+        $this->meta['logoStyle'] = $style;
+    }
+
+    /**
+     * @return string
+     */
+    public function getRootPath()
+    {
+        return $this->getMeta('rootPath');
     }
 
     /**
@@ -571,5 +641,26 @@ ERR;
     public function setCommandMessages(array $commandMessages)
     {
         $this->commandMessages = $commandMessages;
+    }
+
+    /**
+     * @param null|string $name
+     * @return array
+     */
+    public function getCommandAliases($name = null)
+    {
+        if (!$name) {
+            return $this->commandAliases;
+        }
+
+        return array_keys($this->commandAliases, $name, true);
+    }
+
+    /**
+     * @param array $commandAliases
+     */
+    public function setCommandAliases(array $commandAliases)
+    {
+        $this->commandAliases = $commandAliases;
     }
 }

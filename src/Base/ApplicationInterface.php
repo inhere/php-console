@@ -47,9 +47,33 @@ interface ApplicationInterface
      */
     public function runAction($name, $action, $believable = false, $standAlone = false);
 
-    public function controller($name, $controller = null);
+    /**
+     * Register a app group command(by controller)
+     * @param string $name The controller name
+     * @param string $class The controller class
+     * @param null|array|string $option
+     * string: define the description message.
+     * array:
+     *  - aliases     The command aliases
+     *  - description The description message
+     * @return static
+     * @throws \InvalidArgumentException
+     */
+    public function controller($name, $class = null, $option = null);
 
-    public function command($name, $handler = null, $description = null);
+    /**
+     * Register a app independent console command
+     * @param string|CommandInterface $name
+     * @param string|\Closure|CommandInterface $handler
+     * @param null|array|string $option
+     * string: define the description message.
+     * array:
+     *  - aliases     The command aliases
+     *  - description The description message
+     * @return $this
+     * @throws \InvalidArgumentException
+     */
+    public function command($name, $handler = null, $option = null);
 
     public function showCommandList($quit = true);
 }

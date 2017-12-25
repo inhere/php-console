@@ -29,6 +29,14 @@ class Helper
     /**
      * @return bool
      */
+    public static function isMac()
+    {
+        return stripos(PHP_OS, 'Darwin') !== false;
+    }
+
+    /**
+     * @return bool
+     */
     public static function isWindows()
     {
         return stripos(PHP_OS, 'WIN') !== false;
@@ -57,12 +65,20 @@ class Helper
     }
 
     /**
+     * @return bool
+     */
+    public static function isSupportColor()
+    {
+        return self::supportColor();
+    }
+
+    /**
      * Returns true if STDOUT supports colorization.
      * This code has been copied and adapted from
      * \Symfony\Component\Console\Output\OutputStream.
      * @return boolean
      */
-    public static function isSupportColor()
+    public static function supportColor()
     {
         if (DIRECTORY_SEPARATOR === '\\') {
             return '10.0.10586' === PHP_WINDOWS_VERSION_MAJOR . '.' . PHP_WINDOWS_VERSION_MINOR . '.' . PHP_WINDOWS_VERSION_BUILD || false !== getenv('ANSICON') || 'ON' === getenv('ConEmuANSI') || 'xterm' === getenv('TERM');
@@ -101,154 +117,6 @@ class Helper
     }
 
     /**
-     * @return string
-     */
-    public static function getNullDevice()
-    {
-        if (self::isUnix()) {
-            return '/dev/null';
-        }
-
-        return 'NUL';
-    }
-
-    /**
-     * run a command in background
-     * @param string $cmd
-     */
-    public static function execInBackground($cmd)
-    {
-        if (self::isWindows()) {
-            pclose(popen('start /B ' . $cmd, 'r'));
-        } else {
-            exec($cmd . ' > /dev/null &');
-        }
-    }
-
-    /**
-     * @param string $command
-     * @param null|string $logfile
-     * @param null|string $user
-     * @return mixed
-     * @throws \RuntimeException
-     */
-    public static function exec($command, $logfile = null, $user = null)
-    {
-        // If should run as another user, we must be on *nix and must have sudo privileges.
-        $suDo = '';
-        if ($user && self::isUnix() && self::isRoot()) {
-            $suDo = "sudo -u {$user}";
-        }
-        // Start execution. Run in foreground (will block).
-        $logfile = $logfile ?: self::getNullDevice();
-        // Start execution. Run in foreground (will block).
-        exec("{$suDo} {$command} 1>> \"{$logfile}\" 2>&1", $dummy, $retVal);
-        if ($retVal !== 0) {
-            throw new \RuntimeException("command exited with status '{$retVal}'.");
-        }
-
-        return $dummy;
-    }
-
-    /**
-     * Method to execute a command in the sys
-     * Uses :
-     * 1. system
-     * 2. passthru
-     * 3. exec
-     * 4. shell_exec
-     * @param $command
-     * @param bool $returnStatus
-     * @return array|string
-     */
-    public static function runCommand($command, $returnStatus = true)
-    {
-        $return_var = 1;
-        //system
-        if (\function_exists('system')) {
-            ob_start();
-            system($command, $return_var);
-            $output = ob_get_contents();
-            ob_end_clean();
-            // passthru
-        } elseif (\function_exists('passthru')) {
-            ob_start();
-            passthru($command, $return_var);
-            $output = ob_get_contents();
-            ob_end_clean();
-            //exec
-        } else {
-            if (\function_exists('exec')) {
-                exec($command, $output, $return_var);
-                $output = implode("\n", $output);
-                //shell_exec
-            } else {
-                if (\function_exists('shell_exec')) {
-                    $output = shell_exec($command);
-                } else {
-                    $output = 'Command execution not possible on this system';
-                    $return_var = 0;
-                }
-            }
-        }
-        if ($returnStatus) {
-            return ['output' => trim($output), 'status' => $return_var];
-        }
-
-        return trim($output);
-    }
-
-    /**
-     * @return string
-     */
-    public static function getTempDir()
-    {
-        // @codeCoverageIgnoreStart
-        if (\function_exists('sys_get_temp_dir')) {
-            $tmp = sys_get_temp_dir();
-        } elseif (!empty($_SERVER['TMP'])) {
-            $tmp = $_SERVER['TMP'];
-        } elseif (!empty($_SERVER['TEMP'])) {
-            $tmp = $_SERVER['TEMP'];
-        } elseif (!empty($_SERVER['TMPDIR'])) {
-            $tmp = $_SERVER['TMPDIR'];
-        } else {
-            $tmp = getcwd();
-        }
-
-        // @codeCoverageIgnoreEnd
-        return $tmp;
-    }
-
-    /**
-     * @param string $program
-     * @return int|string
-     */
-    public static function getCpuUsage($program)
-    {
-        if (!$program) {
-            return -1;
-        }
-        $info = exec('ps aux | grep ' . $program . ' | grep -v grep | grep -v su | awk {"print $3"}');
-
-        return $info;
-    }
-
-    /**
-     * @param $program
-     * @return int|string
-     */
-    public static function getMemUsage($program)
-    {
-        if (!$program) {
-            return -1;
-        }
-        $info = exec('ps aux | grep ' . $program . ' | grep -v grep | grep -v su | awk {"print $4"}');
-
-        return $info;
-    }
-
-    /**
      * 给对象设置属性值
      * @param $object
      * @param array $options
@@ -275,6 +143,14 @@ class Helper
         $filterIterator = new \RecursiveCallbackFilterIterator($directory, $filter);
 
         return new \RecursiveIteratorIterator($filterIterator);
+    }
+
+    /**
+     * @param string $command
+     * @param array $map
+     */
+    public static function commandSearch($command, array $map)
+    {
     }
 
     /**
@@ -329,23 +205,6 @@ class Helper
     }
 
     /**
-     * to camel
-     * @param string $name
-     * @return mixed|string
-     */
-    public static function camelCase($name)
-    {
-        $name = trim($name, '-_');
-        // convert 'first-second' to 'firstSecond'
-        if (strpos($name, '-')) {
-            $name = ucwords(str_replace('-', ' ', $name));
-            $name = str_replace(' ', '', lcfirst($name));
-        }
-
-        return $name;
-    }
-
-    /**
      * findValueByNodes
      * @param  array $data
      * @param  array $nodes
@@ -368,82 +227,27 @@ class Helper
     }
 
     /**
-     * @param $string
-     * @param $width
+     * find similar text from an array|Iterator
+     * @param string $need
+     * @param \Iterator|array $iterator
+     * @param int $similarPercent
      * @return array
      */
-    public static function splitStringByWidth($string, $width)
+    public static function findSimilar($need, $iterator, $similarPercent = 45)
     {
-        // str_split is not suitable for multi-byte characters, we should use preg_split to get char array properly.
-        // additionally, array_slice() is not enough as some character has doubled width.
-        // we need a function to split string not by character count but by string width
-        if (false === ($encoding = mb_detect_encoding($string, null, true))) {
-            return str_split($string, $width);
+        // find similar command names by similar_text()
+        $similar = [];
+        if (!$need) {
+            return $similar;
         }
-        $utf8String = mb_convert_encoding($string, 'utf8', $encoding);
-        $lines = array();
-        $line = '';
-        foreach (preg_split('//u', $utf8String) as $char) {
-            // test if $char could be appended to current line
-            if (mb_strwidth($line . $char, 'utf8') <= $width) {
-                $line .= $char;
-                continue;
-            }
-            // if not, push current line to array and make new line
-            $lines[] = str_pad($line, $width);
-            $line = $char;
-        }
-        if ('' !== $line) {
-            $lines[] = \count($lines) ? str_pad($line, $width) : $line;
-        }
-        mb_convert_variables($encoding, 'utf8', $lines);
-
-        return $lines;
-    }
-
-    /**
-     * @param $memory
-     * @return string
-     * ```
-     * Helper::formatMemory(memory_get_usage(true));
-     * ```
-     */
-    public static function formatMemory($memory)
-    {
-        if ($memory >= 1024 * 1024 * 1024) {
-            return sprintf('%.1f GiB', $memory / 1024 / 1024 / 1024);
-        }
-        if ($memory >= 1024 * 1024) {
-            return sprintf('%.1f MiB', $memory / 1024 / 1024);
-        }
-        if ($memory >= 1024) {
-            return sprintf('%d KiB', $memory / 1024);
-        }
-
-        return sprintf('%d B', $memory);
-    }
-
-    /**
-     * formatTime
-     * @param  int $secs
-     * @return string
-     */
-    public static function formatTime($secs)
-    {
-        static $timeFormats = [[0, '< 1 sec'], [1, '1 sec'], [2, 'secs', 1], [60, '1 min'], [120, 'mins', 60], [3600, '1 hr'], [7200, 'hrs', 3600], [86400, '1 day'], [172800, 'days', 86400]];
-        foreach ($timeFormats as $index => $format) {
-            if ($secs >= $format[0]) {
-                if ((isset($timeFormats[$index + 1]) && $secs < $timeFormats[$index + 1][0]) || $index === \count($timeFormats) - 1) {
-                    if (2 === \count($format)) {
-                        return $format[1];
-                    }
-
-                    return floor($secs / $format[2]) . ' ' . $format[1];
-                }
+        foreach ($iterator as $name) {
+            similar_text($need, $name, $percent);
+            if ($similarPercent <= (int)$percent) {
+                $similar[] = $name;
             }
         }
 
-        return date('Y-m-d H:i:s', $secs);
+        return $similar;
     }
 
     /**
@@ -468,182 +272,6 @@ class Helper
         }
 
         return $keyMaxWidth;
-    }
-
-    /**
-     * spliceArray
-     * @param  array $data
-     * e.g [
-     *     'system'  => 'Linux',
-     *     'version'  => '4.4.5',
-     * ]
-     * @param  array $opts
-     * @return string
-     */
-    public static function spliceKeyValue(array $data, array $opts = [])
-    {
-        $text = '';
-        $opts = array_merge([
-            'leftChar' => '',
-            // e.g '  ', ' * '
-            'sepChar' => ' ',
-            // e.g ' | ' OUT: key | value
-            'keyStyle' => '',
-            // e.g 'info','comment'
-            'valStyle' => '',
-            // e.g 'info','comment'
-            'keyMinWidth' => 8,
-            'keyMaxWidth' => null,
-            // if not set, will automatic calculation
-            'ucFirst' => true,
-        ], $opts);
-        if (!is_numeric($opts['keyMaxWidth'])) {
-            $opts['keyMaxWidth'] = self::getKeyMaxWidth($data);
-        }
-        // compare
-        if ((int)$opts['keyMinWidth'] > $opts['keyMaxWidth']) {
-            $opts['keyMaxWidth'] = $opts['keyMinWidth'];
-        }
-        $keyStyle = trim($opts['keyStyle']);
-        foreach ($data as $key => $value) {
-            $hasKey = !\is_int($key);
-            $text .= $opts['leftChar'];
-            if ($hasKey && $opts['keyMaxWidth']) {
-                $key = str_pad($key, $opts['keyMaxWidth'], ' ');
-                // $text .= ($keyStyle ? "<{$keyStyle}>$key</{$keyStyle}> " : $key) . $opts['sepChar'];
-                $text .= self::wrapTag($key, $keyStyle) . $opts['sepChar'];
-            }
-            // if value is array, translate array to string
-            if (\is_array($value)) {
-                $temp = '';
-                /** @var array $value */
-                foreach ($value as $k => $val) {
-                    if (\is_bool($val)) {
-                        $val = $val ? 'True' : 'False';
-                    } else {
-                        $val = is_scalar($val) ? (string)$val : \gettype($val);
-                    }
-                    $temp .= (!is_numeric($k) ? "{$k}: " : '') . "{$val}, ";
-                }
-                $value = rtrim($temp, ' ,');
-            } else {
-                if (\is_bool($value)) {
-                    $value = $value ? 'True' : 'False';
-                } else {
-                    $value = (string)$value;
-                }
-            }
-            $value = $hasKey && $opts['ucFirst'] ? ucfirst($value) : $value;
-            $text .= self::wrapTag($value, $opts['valStyle']) . "\n";
-        }
-
-        return $text;
-    }
-    // next: form yii2
-
-    /**
-     * Usage: list($width, $height) = ConsoleHelper::getScreenSize();
-     * @param boolean $refresh whether to force checking and not re-use cached size value.
-     * This is useful to detect changing window size while the application is running but may
-     * not get up to date values on every terminal.
-     * @return array|boolean An array of ($width, $height) or false when it was not able to determine size.
-     */
-    public static function getScreenSize($refresh = false)
-    {
-        static $size;
-        if ($size !== null && !$refresh) {
-            return $size;
-        }
-        if (self::isOnWindows()) {
-            $output = [];
-            exec('mode con', $output);
-            if (isset($output[1]) && strpos($output[1], 'CON') !== false) {
-                return $size = [(int)preg_replace('~\\D~', '', $output[3]), (int)preg_replace('~\\D~', '', $output[4])];
-            }
-        } else {
-            // try stty if available
-            $stty = [];
-            if (exec('stty -a 2>&1', $stty) && preg_match('/rows\\s+(\\d+);\\s*columns\\s+(\\d+);/mi', implode(' ', $stty), $matches)) {
-                return $size = [$matches[2], $matches[1]];
-            }
-            // fallback to tput, which may not be updated on terminal resize
-            if (($width = (int)exec('tput cols 2>&1')) > 0 && ($height = (int)exec('tput lines 2>&1')) > 0) {
-                return $size = [$width, $height];
-            }
-            // fallback to ENV variables, which may not be updated on terminal resize
-            if (($width = (int)getenv('COLUMNS')) > 0 && ($height = (int)getenv('LINES')) > 0) {
-                return $size = [$width, $height];
-            }
-        }
-
-        return $size = false;
-    }
-
-    /**
-     * Word wrap text with indentation to fit the screen size
-     * If screen size could not be detected, or the indentation is greater than the screen size, the text will not be wrapped.
-     * The first line will **not** be indented, so `Console::wrapText("Lorem ipsum dolor sit amet.", 4)` will result in the
-     * following output, given the screen width is 16 characters:
-     * ```
-     * Lorem ipsum
-     *     dolor sit
-     *     amet.
-     * ```
-     * @param string $text the text to be wrapped
-     * @param integer $indent number of spaces to use for indentation.
-     * @param integer $width
-     * @return string the wrapped text.
-     * @from yii2
-     */
-    public static function wrapText($text, $indent = 0, $width = 0)
-    {
-        if (!$text) {
-            return $text;
-        }
-        if ((int)$width <= 0) {
-            $size = static::getScreenSize();
-            if ($size === false || $size[0] <= $indent) {
-                return $text;
-            }
-            $width = $size[0];
-        }
-        $pad = str_repeat(' ', $indent);
-        $lines = explode("\n", wordwrap($text, $width - $indent, "\n", true));
-        $first = true;
-        foreach ($lines as $i => $line) {
-            if ($first) {
-                $first = false;
-                continue;
-            }
-            $lines[$i] = $pad . $line;
-        }
-
-        return $pad . '  ' . implode("\n", $lines);
-    }
-
-    /**
-     * 获取资源消耗
-     * @param int $startTime
-     * @param int|float $startMem
-     * @param array $info
-     * @return array
-     */
-    public static function runtime($startTime, $startMem, array $info = [])
-    {
-        $info['startTime'] = $startTime;
-        $info['endTime'] = microtime(true);
-        $info['endMemory'] = memory_get_usage(true);
-        // 计算运行时间
-        $info['runtime'] = number_format(($info['endTime'] - $startTime) * 1000, 3) . 'ms';
-        if ($startMem) {
-            $startMem = array_sum(explode(' ', $startMem));
-            $endMem = array_sum(explode(' ', $info['endMemory']));
-            $info['memory'] = number_format(($endMem - $startMem) / 1024, 3) . 'kb';
-        }
-        $peakMem = memory_get_peak_usage() / 1024 / 1024;
-        $info['peakMemory'] = number_format($peakMem, 3) . 'Mb';
-
-        return $info;
     }
 
     /**

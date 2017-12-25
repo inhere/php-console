@@ -25,10 +25,11 @@ class Application extends AbstractApplication
      * Register a app group command(by controller)
      * @param string $name The controller name
      * @param string $class The controller class
+     * @param null|array|string $option
      * @return static
      * @throws \InvalidArgumentException
      */
-    public function controller($name, $class = null)
+    public function controller($name, $class = null, $option = null)
     {
         if (!$class && class_exists($name)) {
             /** @var Controller $class */
@@ -46,6 +47,16 @@ class Application extends AbstractApplication
             throw new \InvalidArgumentException('The console controller class must is subclass of the: ' . Controller::class);
         }
         $this->controllers[$name] = $class;
+        if (!$option) {
+            return $this;
+        }
+        // have option information
+        if (\is_string($option)) {
+            $this->addCommandMessage($name, $option);
+        } elseif (\is_array($option)) {
+            $this->addCommandAliases($name, isset($option['aliases']) ? $option['aliases'] : null);
+            $this->addCommandMessage($name, isset($option['description']) ? $option['description'] : null);
+        }
 
         return $this;
     }
@@ -62,6 +73,7 @@ class Application extends AbstractApplication
 
     /**
      * @param array $controllers
+     * @throws \InvalidArgumentException
      */
     public function controllers(array $controllers)
     {
@@ -72,11 +84,11 @@ class Application extends AbstractApplication
      * Register a app independent console command
      * @param string|Command $name
      * @param string|\Closure|Command $handler
-     * @param null|string $description
+     * @param null|array|string $option
      * @return $this
      * @throws \InvalidArgumentException
      */
-    public function command($name, $handler = null, $description = null)
+    public function command($name, $handler = null, $option = null)
     {
         if (!$handler && class_exists($name)) {
             /** @var Command $name */
@@ -102,8 +114,15 @@ class Application extends AbstractApplication
         }
         // is an class name string
         $this->commands[$name] = $handler;
-        if ($description) {
-            $this->addCommandMessage($name, $description);
+        if (!$option) {
+            return $this;
+        }
+        // have option information
+        if (\is_string($option)) {
+            $this->addCommandMessage($name, $option);
+        } elseif (\is_array($option)) {
+            $this->addCommandAliases($name, isset($option['aliases']) ? $option['aliases'] : null);
+            $this->addCommandMessage($name, isset($option['description']) ? $option['description'] : null);
         }
 
         return $this;
@@ -111,6 +130,7 @@ class Application extends AbstractApplication
 
     /**
      * @param array $commands
+     * @throws \InvalidArgumentException
      */
     public function commands(array $commands)
     {
@@ -208,34 +228,29 @@ class Application extends AbstractApplication
      */
     protected function dispatch($name)
     {
-        $sep = $this->delimiter ?: '/';
-        //// is a command name
-        if ($this->isCommand($name)) {
-            return $this->runCommand($name, true);
+        $sep = $this->delimiter ?: ':';
+        // maybe is a command name
+        $realName = $this->getRealCommandName($name);
+        if ($this->isCommand($realName)) {
+            return $this->runCommand($realName, true);
         }
-        //// is a controller name
+        // maybe is a controller name
         $action = '';
-        // like 'home/index'
+        // like 'home:index'
         if (strpos($name, $sep) > 0) {
-            $input = array_filter(explode($sep, $name));
+            $input = array_values(array_filter(explode($sep, $name)));
             list($name, $action) = \count($input) > 2 ? array_splice($input, 2) : $input;
         }
-        if ($this->isController($name)) {
-            return $this->runAction($name, $action, true);
+        $realName = $this->getRealCommandName($name);
+        if ($this->isController($realName)) {
+            return $this->runAction($realName, $action, true);
         }
         // command not found
         if (true !== self::fire(self::ON_NOT_FOUND, [$this])) {
-            $this->output->liteError("The console command '{$name}' not exists!");
-            // find similar command names by similar_text()
-            $similar = [];
+            $this->output->liteError("The command '{$name}' is not exists in the console application!");
             $commands = array_merge($this->getControllerNames(), $this->getCommandNames());
-            foreach ($commands as $command) {
-                similar_text($name, $command, $percent);
-                if (45 <= (int)$percent) {
-                    $similar[] = $command;
-                }
-            }
-            if ($similar) {
+            // find similar command names by similar_text()
+            if ($similar = Helper::findSimilar($name, $commands)) {
                 $this->write(sprintf("\nMaybe what you mean is:\n    <info>%s</info>", implode(', ', $similar)));
             } else {
                 $this->showCommandList(false);
@@ -261,6 +276,11 @@ class Application extends AbstractApplication
         /** @var \Closure|string $handler Command class */
         $handler = $this->commands[$name];
         if (\is_object($handler) && method_exists($handler, '__invoke')) {
+            if ($this->input->getSameOpt(['h', 'help'])) {
+                $des = $this->getCommandMessage($name, 'No command description message.');
+
+                return $this->output->write($des);
+            }
             $status = $handler($this->input, $this->output);
         } else {
             if (!class_exists($handler)) {

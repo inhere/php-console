@@ -23,11 +23,11 @@ final class Annotation
      * @param string $comment The comment block text
      * @return array The parsed tags
      */
-    public static function tagList($comment)
+    public static function getTags($comment)
     {
         $comment = "@description \n" . str_replace("\r", '', trim(preg_replace('/^\\s*\\**( |\\t)?/m', '', trim($comment, '/'))));
-        $parts = preg_split('/^\\s*@/m', $comment, -1, PREG_SPLIT_NO_EMPTY);
         $tags = [];
+        $parts = preg_split('/^\\s*@/m', $comment, -1, PREG_SPLIT_NO_EMPTY);
         foreach ($parts as $part) {
             if (preg_match('/^(\\w+)(.*)/ms', trim($part), $matches)) {
                 $name = $matches[1];
@@ -53,7 +53,7 @@ final class Annotation
     {
         $docLines = preg_split('~\\R~u', $comment);
         if (isset($docLines[1])) {
-            return trim($docLines[1], "\t *");
+            return trim($docLines[1], "/\t *");
         }
 
         return '';
