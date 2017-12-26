@@ -406,9 +406,14 @@ class Show
     public static function mList(array $data, array $opts = [])
     {
         $buffer = [];
+        $ignoreEmpty = $opts['ignoreEmpty'] ?? true;
         $opts['returned'] = true;
 
         foreach ($data as $title => $list) {
+            if ($ignoreEmpty && !$list) {
+                continue;
+            }
+
             $buffer[] = self::aList($list, $title, $opts);
         }
 
