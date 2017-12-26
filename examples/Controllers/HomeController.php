@@ -175,6 +175,8 @@ class HomeController extends Controller
         // end of the counter.
         $ctr->send(-1);
 
+        // $this->output->aList($data, 'runtime profile');
+
         return 0;
     }
 

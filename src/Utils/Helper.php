@@ -10,12 +10,16 @@
 
 namespace Inhere\Console\Utils;
 
+use Inhere\Console\Traits\RuntimeProfileTrait;
+
 /**
  * Class Helper
  * @package Inhere\Console\Utils
  */
 class Helper
 {
+    use RuntimeProfileTrait;
+
     /**
      * Returns true if the console is running on windows
      * @return boolean

@@ -185,20 +185,21 @@ final class FormatUtil
     {
         $info['startTime'] = $startTime;
         $info['endTime'] = microtime(true);
-        $info['endMemory'] = memory_get_usage(true);
+        $info['endMemory'] = memory_get_usage();
 
         // 计算运行时间
-        $info['runtime'] = number_format(($info['endTime'] - $startTime) * 1000, 3) . 'ms';
+        $info['runtime'] = number_format(($info['endTime'] - $startTime) * 1000, 3) . ' Ms';
 
         if ($startMem) {
             $startMem = array_sum(explode(' ', $startMem));
             $endMem = array_sum(explode(' ', $info['endMemory']));
 
-            $info['memory'] = number_format(($endMem - $startMem) / 1024, 3) . 'kb';
+            // $info['memory'] = number_format(($endMem - $startMem) / 1024, 3) . 'kb';
+            $info['memory'] = self::memoryUsage($endMem - $startMem);
         }
 
-        $peakMem = memory_get_peak_usage() / 1024 / 1024;
-        $info['peakMemory'] = number_format($peakMem, 3) . 'Mb';
+        // $peakMem = memory_get_peak_usage() / 1024 / 1024;
+        $info['peakMemory'] = self::memoryUsage(memory_get_peak_usage());
 
         return $info;
     }
@@ -213,26 +214,26 @@ final class FormatUtil
     public static function memoryUsage($memory)
     {
         if ($memory >= 1024 * 1024 * 1024) {
-            return sprintf('%.1f GiB', $memory / 1024 / 1024 / 1024);
+            return sprintf('%.2f Gb', $memory / 1024 / 1024 / 1024);
         }
 
         if ($memory >= 1024 * 1024) {
-            return sprintf('%.1f MiB', $memory / 1024 / 1024);
+            return sprintf('%.2f Mb', $memory / 1024 / 1024);
         }
 
         if ($memory >= 1024) {
-            return sprintf('%d KiB', $memory / 1024);
+            return sprintf('%.2f Kb', $memory / 1024);
         }
 
         return sprintf('%d B', $memory);
     }
 
     /**
-     * format Timestamp
+     * format timestamp to how long ago
      * @param  int $secs
      * @return string
      */
-    public static function timestamp($secs)
+    public static function howLongAgo($secs)
     {
         static $timeFormats = [
             [0, '< 1 sec'],

@@ -103,7 +103,7 @@ abstract class AbstractApplication implements ApplicationInterface
     {
         $this->meta['_stats'] = [
             'startTime' => microtime(1),
-            'startMemory' => memory_get_usage(true),
+            'startMemory' => memory_get_usage(),
         ];
 
         $this->commandName = $this->input->getCommand();
