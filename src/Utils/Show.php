@@ -1201,14 +1201,6 @@ class Show
      ***********************************************************************************/
 
     /**
-     * @return Style
-     */
-    public static function getStyle(): Style
-    {
-        return Style::create();
-    }
-
-    /**
      * Write a message to standard output stream.
      * @param string|array $messages Output message
      * @param boolean $nl True 会添加换行符, False 原样输出，不添加换行符
@@ -1264,29 +1256,43 @@ class Show
 
     /**
      * write raw data to stdout
-     * @param string|array $text
+     * @param string|array $message
      * @param bool $nl
      * @param bool|int $quit
      * @param array $opts
      * @return int
      */
-    public static function writeRaw($text, $nl = true, $quit = false, array $opts = [])
+    public static function writeRaw($message, $nl = true, $quit = false, array $opts = [])
     {
         $opts['color'] = false;
 
-        return self::write($text, $nl, $quit, $opts);
+        return self::write($message, $nl, $quit, $opts);
     }
 
     /**
      * Logs data to stdout
-     * @param string|array $text
+     * @param string|array $message
      * @param array $opts
      * @param bool|int $quit
      * @return int
      */
-    public static function writeln($text, $quit = false, array $opts = [])
+    public static function writeln($message, $quit = false, array $opts = [])
     {
-        return self::write($text, true, $quit, $opts);
+        return self::write($message, true, $quit, $opts);
+    }
+
+    /**
+     * @param string|array $message
+     * @param string $style
+     * @param bool $nl
+     * @param array $opts
+     * @return int
+     */
+    public static function writeStyle($message, $style = 'info', $nl = true, array $opts = [])
+    {
+        $quit = isset($opts['quit']) ? (bool)$opts['quit'] : false;
+
+        return self::write(Helper::wrapTag($message, $style), $nl, $quit, $opts);
     }
 
     /**
@@ -1320,5 +1326,13 @@ class Show
     public static function getBlockMethods($onlyKey = true): array
     {
         return $onlyKey ? array_keys(self::$blockMethods) : self::$blockMethods;
+    }
+
+    /**
+     * @return Style
+     */
+    public static function getStyle(): Style
+    {
+        return Style::create();
     }
 }

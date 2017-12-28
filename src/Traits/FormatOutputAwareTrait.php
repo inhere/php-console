@@ -34,6 +34,8 @@ use Inhere\Console\Utils\Show;
  * @method int liteDanger($messages, $quit = false)
  * @method int liteError($messages, $quit = false)
  *
+ * @method int writeStyle($message, $style = 'info', $nl = true, array $opts = [])
+ *
  * @method padding(array $data, string $title = null, array $opts = [])
  *
  * @method spinner($msg = '', $ended = false)
