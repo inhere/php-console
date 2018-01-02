@@ -185,6 +185,22 @@ class Show
      **************************************************************************************************/
 
     /**
+     * @param string $title
+     * @param string $char
+     * @param int $width
+     */
+    public static function splitLine(string $title, string $char = '-', int $width = 0)
+    {
+        if ($width <= 0) {
+            list($width,) = CliUtil::getScreenSize();
+        }
+
+        $length = $width - Helper::strLen($title) + 2;
+
+        self::write(str_pad('' . ucwords($title) . ' ', $length, $char, STR_PAD_BOTH));
+    }
+
+    /**
      * @param string $title The title text
      * @param array $opts
      */
@@ -201,8 +217,8 @@ class Show
         // list($sW, $sH) = Helper::getScreenSize();
         $width = (int)$opts['width'];
         $char = trim($opts['char']);
-        $indent = (int)$opts['indent'] > 0 ? $opts['indent'] : 2;
-        $indentStr = str_pad(self::CHAR_SPACE, $indent, self::CHAR_SPACE);
+        $indent = (int)$opts['indent'] >= 0 ? $opts['indent'] : 2;
+        $indentStr = Helper::strPad(self::CHAR_SPACE, $indent, self::CHAR_SPACE);
 
         $title = ucwords(trim($title));
         $tLength = Helper::strLen($title);
@@ -210,13 +226,13 @@ class Show
 
         // title position
         if ($tLength >= $width) {
-            $titleIndent = str_pad(self::CHAR_SPACE, $indent, self::CHAR_SPACE);
+            $titleIndent = Helper::strPad(self::CHAR_SPACE, $indent, self::CHAR_SPACE);
         } elseif ($opts['titlePos'] === self::POS_RIGHT) {
-            $titleIndent = str_pad(self::CHAR_SPACE, ceil($width - $tLength) + $indent, self::CHAR_SPACE);
+            $titleIndent = Helper::strPad(self::CHAR_SPACE, ceil($width - $tLength) + $indent, self::CHAR_SPACE);
         } elseif ($opts['titlePos'] === self::POS_MIDDLE) {
-            $titleIndent = str_pad(self::CHAR_SPACE, ceil(($width - $tLength) / 2) + $indent, self::CHAR_SPACE);
+            $titleIndent = Helper::strPad(self::CHAR_SPACE, ceil(($width - $tLength) / 2) + $indent, self::CHAR_SPACE);
         } else {
-            $titleIndent = str_pad(self::CHAR_SPACE, $indent, self::CHAR_SPACE);
+            $titleIndent = Helper::strPad(self::CHAR_SPACE, $indent, self::CHAR_SPACE);
         }
 
         $titleLine = "$titleIndent<bold>$title</bold>\n";
@@ -244,8 +260,8 @@ class Show
         // list($sW, $sH) = Helper::getScreenSize();
         $width = (int)$opts['width'];
         $char = trim($opts['char']);
-        $indent = (int)$opts['indent'] > 0 ? $opts['indent'] : 2;
-        $indentStr = str_pad(self::CHAR_SPACE, $indent, self::CHAR_SPACE);
+        $indent = (int)$opts['indent'] >= 0 ? $opts['indent'] : 2;
+        $indentStr = Helper::strPad(self::CHAR_SPACE, $indent, self::CHAR_SPACE);
 
         $title = ucwords(trim($title));
         $tLength = Helper::strLen($title);
@@ -253,13 +269,13 @@ class Show
 
         // title position
         if ($tLength >= $width) {
-            $titleIndent = str_pad(self::CHAR_SPACE, $indent, self::CHAR_SPACE);
+            $titleIndent = Helper::strPad(self::CHAR_SPACE, $indent, self::CHAR_SPACE);
         } elseif ($opts['titlePos'] === self::POS_RIGHT) {
             $titleIndent = str_pad(self::CHAR_SPACE, ceil($width - $tLength) + $indent, self::CHAR_SPACE);
         } elseif ($opts['titlePos'] === self::POS_MIDDLE) {
             $titleIndent = str_pad(self::CHAR_SPACE, ceil(($width - $tLength) / 2) + $indent, self::CHAR_SPACE);
         } else {
-            $titleIndent = str_pad(self::CHAR_SPACE, $indent, self::CHAR_SPACE);
+            $titleIndent = Helper::strPad(self::CHAR_SPACE, $indent, self::CHAR_SPACE);
         }
 
         $tpl = "%s\n%s%s\n%s";// title topBorder body bottomBorder
@@ -635,12 +651,54 @@ class Show
 
     /**
      * @todo un-completed
+     * ├ ─ ─
+     * └ ─
      * @param array $data
      * @param array $opts
      */
     public static function tree(array $data, array $opts = [])
     {
+        static $counter = 0;
+        static $started = 1;
 
+        if ($started) {
+            $started = 0;
+            $opts = array_merge([
+                // 'char' => Helper::supportColor() ? '─' : '-', // ——
+                'char' => '-',
+                'prefix' => Helper::supportColor() ? '├' : '|',
+                'leftPadding' => '',
+            ], $opts);
+
+            $opts['_level'] = 1;
+            $opts['_is_main'] = true;
+
+            self::startBuffer();
+        }
+
+        foreach ($data as $key => $value) {
+            if (is_scalar($value)) {
+                $counter++;
+                $leftString = $opts['leftPadding'] . str_pad($opts['prefix'], $opts['_level'] + 1, $opts['char']);
+
+                self::write($leftString . ' ' . FormatUtil::typeToString($value));
+            } elseif (\is_array($value)) {
+                $newOpts = $opts;
+                $newOpts['_is_main'] = false;
+                $newOpts['_level']++;
+
+                self::tree($value, $newOpts);
+            }
+        }
+
+        if ($opts['_is_main']) {
+            self::write('node count: ' . $counter);
+            // var_dump('f');
+            self::flushBuffer();
+
+            // reset.
+            $counter = $started = 0;
+        }
     }
 
     /**
@@ -875,12 +933,10 @@ class Show
      * show a pending message
      * ```php
      *  $total = 8000;
-     *
      *  while ($total--) {
      *      Show::pending();
      *      usleep(200);
      *  }
-     *
      *  Show::pending('Done', true);
      * ```
      * @param string $msg
@@ -914,7 +970,52 @@ class Show
     }
 
     /**
+     * show a pending message
+     * ```php
+     *  $total = 8000;
+     *  while ($total--) {
+     *      Show::pointing();
+     *      usleep(200);
+     *  }
+     *  Show::pointing('Total', true);
+     * ```
+     * @param string $msg
+     * @param bool $ended
+     * @return int
+     */
+    public static function pointing($msg = 'handling ', $ended = false)
+    {
+        static $counter = 0;
+
+        if ($ended) {
+            return printf(' %s %d', $msg ?: 'Total', $counter);
+        }
+
+        if ($counter === 0 && $msg) {
+            echo $msg;
+        }
+
+        $counter++;
+
+        return print '.';
+    }
+
+    /**
      * 与文本进度条相比，没有 total
+     * ```php
+     *  $total = 120;
+     *  $ctt = Show::counterTxt('handling ...', 'handled.');
+     *  $this->write('Counter:');
+     *
+     *  while ($total - 1) {
+     *      $ctt->send(1);
+     *      usleep(30000);
+     *      $total--;
+     *  }
+     *
+     *  // end of the counter.
+     *  $ctt->send(-1);
+     * ```
      * @param string $msg
      * @param string|null $doneMsg
      * @return \Generator
@@ -934,15 +1035,11 @@ class Show
 
             $step = yield;
 
-            if ((int)$step === self::FINISHED) {
+            if ((int)$step <= 0) {
                 $counter++;
                 $finished = true;
                 $msg = $doneMsg ?: $msg;
             } else {
-                if ((int)$step <= 0) {
-                    $step = 1;
-                }
-
                 $counter += $step;
             }
 

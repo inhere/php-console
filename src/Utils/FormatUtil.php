@@ -15,6 +15,23 @@ namespace Inhere\Console\Utils;
 final class FormatUtil
 {
     /**
+     * @param mixed $val
+     * @return string
+     */
+    public static function typeToString($val)
+    {
+        if (null === $val) {
+            return '(Null)';
+        }
+
+        if (\is_bool($val)) {
+            return $val ? '(True)' : '(False)';
+        }
+
+        return (string)$val;
+    }
+
+    /**
      * to camel
      * @param string $name
      * @return mixed|string

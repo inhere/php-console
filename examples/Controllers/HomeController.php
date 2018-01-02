@@ -163,17 +163,17 @@ class HomeController extends Controller
     public function counterCommand()
     {
         $total = 120;
-        $ctr = Show::counterTxt('handling ...', 'handled.');
+        $ctt = Show::counterTxt('handling ...', 'handled.');
         $this->write('Counter:');
 
         while ($total - 1) {
-            $ctr->send(1);
+            $ctt->send(1);
             usleep(30000);
             $total--;
         }
 
         // end of the counter.
-        $ctr->send(-1);
+        $ctt->send(-1);
 
         // $this->output->aList($data, 'runtime profile');
 
@@ -441,6 +441,34 @@ class HomeController extends Controller
         ];
 
         Show::table($data1, 'no head table show');
+    }
+
+    /**
+     * output format message: tree
+     */
+    public function treeCommand()
+    {
+        Show::tree([
+            123,
+            true,
+            false,
+            null,
+            'one-level',
+            'one-level1',
+
+            [
+                'two-level',
+                'two-level1',
+                'two-level2',
+                [
+                    'three-level',
+                    'three-level1',
+                    'three-level2',
+                ],
+            ],
+
+            'one-level99',
+        ]);
     }
 
     /**

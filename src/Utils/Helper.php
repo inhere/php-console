@@ -218,6 +218,17 @@ class Helper
     }
 
     /**
+     * @param string $string
+     * @param int $indent
+     * @param string $padStr
+     * @return string
+     */
+    public static function strPad($string, $indent, $padStr)
+    {
+        return $indent > 0 ? str_pad($string, $indent, $padStr) : $string;
+    }
+
+    /**
      * findValueByNodes
      * @param  array $data
      * @param  array $nodes
