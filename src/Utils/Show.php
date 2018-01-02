@@ -188,17 +188,23 @@ class Show
      * @param string $title
      * @param string $char
      * @param int $width
+     * @return int
      */
     public static function splitLine(string $title, string $char = '-', int $width = 0)
     {
         if ($width <= 0) {
             list($width,) = CliUtil::getScreenSize();
+            $width -= 2;
         }
 
-        $strLen = ceil(($width - Helper::strLen($title) + 2) / 2);
+        if (!$title) {
+            return self::write(str_repeat($char, $width));
+        }
+
+        $strLen = ceil(($width - Helper::strLen($title) - 2) / 2);
         $padStr = $strLen > 0 ? str_repeat($char, $strLen) : '';
 
-        self::write($padStr . ' ' . ucwords($title) . ' ' . $padStr);
+        return self::write($padStr . ' ' . ucwords($title) . ' ' . $padStr);
     }
 
     /**

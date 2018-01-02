@@ -324,9 +324,11 @@ class HomeController extends Controller
      */
     public function splitLineCommand()
     {
+        $this->output->splitLine('', '=', $this->input->getSameOpt(['w', 'width'], 0));
         $this->output->splitLine('split Line', '-', $this->input->getSameOpt(['w', 'width'], 0));
 
         $this->output->splitLine('split 中文 Line', '-', $this->input->getSameOpt(['w', 'width'], 0));
+
 
         return 0;
     }
@@ -357,12 +359,16 @@ class HomeController extends Controller
         $data = [
             'application version' => '1.2.0',
             'system version' => '5.2.3',
-            'see help' => 'please use php bin/app -h',
+            'key' => 'value ...',
             'a only value message text',
         ];
 
         Show::panel($data, 'panel show', [
             'borderChar' => '*'
+        ]);
+
+        Show::panel($data, 'panel show', [
+            'borderChar' => '='
         ]);
     }
 
