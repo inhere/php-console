@@ -10,6 +10,7 @@ namespace Inhere\Console\Base;
 
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
+use Inhere\Console\Style\Highlighter;
 use Inhere\Console\Traits\InputOutputAwareTrait;
 use Inhere\Console\Traits\SimpleEventTrait;
 use Inhere\Console\Style\Style;
@@ -243,15 +244,21 @@ ERR;
                 $tpl,
                 // $e->getCode(),
                 $e->getMessage(),
-                $e->getFile(),
-                $e->getLine(),
+                $file = $e->getFile(),
+                $line = $e->getLine(),
                 __METHOD__,
                 $e->getTraceAsString()
             );
 
+            $source = file_get_contents($file);
+            $hl = Highlighter::create();
+            $snippet = $hl->highlightSnippet($source, $line, 3, 3);
+            $message .= "\nCode View:\n$snippet";
+
             if ($this->meta['hideRootPath'] && ($rootPath = $this->meta['rootPath'])) {
                 $message = str_replace($rootPath, '{ROOT}', $message);
             }
+
 
             $this->output->write($message, false);
         } else {

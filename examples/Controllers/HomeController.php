@@ -8,6 +8,7 @@ use Inhere\Console\Components\Download;
 use Inhere\Console\Controller;
 use Inhere\Console\IO\Input;
 use Inhere\Console\Style\Highlighter;
+use Inhere\Console\Style\LiteStyle;
 use Inhere\Console\Utils\Helper;
 use Inhere\Console\Utils\Interact;
 use Inhere\Console\Utils\ProgressBar;
@@ -116,7 +117,7 @@ class HomeController extends Controller
     }
 
     /**
-     * a example for use color text output on command
+     * a example for use color text output by Style::class
      * @usage {fullCommand}
      */
     public function colorCommand()
@@ -138,11 +139,39 @@ class HomeController extends Controller
     }
 
     /**
+     * a example for use color text output by LiteStyle::class
+     */
+    public function colorLiteCommand()
+    {
+        if (!$this->output->supportColor()) {
+            $this->write('Current terminal is not support output color text.');
+
+            return -2;
+        }
+
+        $this->output->startBuffer();
+
+        foreach (array_keys(LiteStyle::STYLES) as $style) {
+            $this->output->write(LiteStyle::color("color text(style:$style)", $style));
+        }
+
+        $this->output->flush();
+
+        return 0;
+    }
+
+    /**
      * output block message text
      * @return int
      */
     public function blockMsgCommand()
     {
+        if (!$this->output->supportColor()) {
+            $this->write('Current terminal is not support output color text.');
+
+            return 0;
+        }
+
         $this->write('block message:');
 
         foreach (Show::getBlockMethods() as $type) {

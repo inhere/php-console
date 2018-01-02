@@ -269,6 +269,7 @@ abstract class AbstractCommand implements BaseCommandInterface
 
         if (\count($missingArgs) > 0) {
             $this->output->liteError(sprintf('Not enough arguments (missing: "%s").', implode(', ', $missingArgs)));
+
             return false;
         }
 
@@ -284,8 +285,19 @@ abstract class AbstractCommand implements BaseCommandInterface
 
         // check options
         $opts = $missingOpts = [];
-        //$givenLOpts = $in->getLongOpts();
+        $givenOpts = $in->getOptions();
         $defOpts = $def->getOptions();
+
+        // check unknown options
+        if ($unknown = array_diff_key($givenOpts, $defOpts)) {
+            $names = array_keys($unknown);
+            $first = array_shift($names);
+
+            throw new \InvalidArgumentException(sprintf(
+                'Input option is not exists (unknown: "%s").',
+                (isset($first[1]) ? '--' : '-') . $first
+            ));
+        }
 
         foreach ($defOpts as $name => $conf) {
             if (!$in->hasLOpt($name)) {
@@ -298,8 +310,9 @@ abstract class AbstractCommand implements BaseCommandInterface
         }
 
         if (\count($missingOpts) > 0) {
-            $this->output->liteError(sprintf('Not enough options parameters (missing: "%s").',
-                implode(', ', $missingOpts)));
+            $this->output->liteError(
+                sprintf('Not enough options parameters (missing: "%s").', implode(', ', $missingOpts))
+            );
 
             return false;
         }
@@ -319,7 +332,7 @@ abstract class AbstractCommand implements BaseCommandInterface
      * @param string $name
      * @param string $value
      */
-    protected function addAnnotationVar(string $name,  $value)
+    protected function addAnnotationVar(string $name, $value)
     {
         if (!isset($this->annotationVars[$name])) {
             $this->annotationVars[$name] = (string)$value;

@@ -29,6 +29,11 @@ class Highlighter
     /** @var Style */
     private $color;
 
+    /**
+     * @var self
+     */
+    private static $instance;
+
     /** @var array */
     private $defaultTheme = [
         self::TOKEN_STRING => 'red',
@@ -41,6 +46,18 @@ class Highlighter
     ];
 
     /**
+     * @return Highlighter
+     */
+    public static function create()
+    {
+        if (!self::$instance) {
+            self::$instance = new self();
+        }
+
+        return self::$instance;
+    }
+
+    /**
      * @param Style $color
      */
     public function __construct(Style $color = null)
@@ -50,15 +67,15 @@ class Highlighter
 
     /**
      * @param string $source
-     * @param bool $withLn with line number
+     * @param bool $withLineNumber with line number
      * @return string
      */
-    public function highlight(string $source, $withLn = false)
+    public function highlight(string $source, $withLineNumber = false)
     {
         $tokenLines = $this->getHighlightedLines($source);
         $lines = $this->colorLines($tokenLines);
 
-        if ($withLn) {
+        if ($withLineNumber) {
             return $this->lineNumbers($lines);
         }
 
@@ -237,7 +254,6 @@ class Highlighter
 
         foreach ($tokenLines as $lineCount => $tokenLine) {
             $line = '';
-            // foreach ($tokenLine as $token) {
             foreach ($tokenLine as list($tokenType, $tokenValue)) {
                 $style = $this->defaultTheme[$tokenType];
 
@@ -262,8 +278,9 @@ class Highlighter
     private function lineNumbers(array $lines, $markLine = null)
     {
         end($lines);
-        $lineStrlen = \strlen(key($lines) + 1);
+
         $snippet = '';
+        $lineLen = \strlen(key($lines) + 1);
         $lmStyle = $this->defaultTheme[self::ACTUAL_LINE_MARK];
         $lnStyle = $this->defaultTheme[self::LINE_NUMBER];
 
@@ -272,7 +289,7 @@ class Highlighter
                 $snippet .= ($markLine === $i + 1 ? $this->color->apply($lmStyle, '  > ') : '    ');
             }
 
-            $snippet .= $this->color->apply($lnStyle, str_pad($i + 1, $lineStrlen, ' ', STR_PAD_LEFT) . '| ');
+            $snippet .= $this->color->apply($lnStyle, str_pad($i + 1, $lineLen, ' ', STR_PAD_LEFT) . '| ');
             $snippet .= $line . PHP_EOL;
         }
 
