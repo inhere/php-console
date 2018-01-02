@@ -73,7 +73,7 @@ class Highlighter
      * @return string
      * @throws \InvalidArgumentException
      */
-    public function getCodeSnippet($source, $lineNumber, $linesBefore = 2, $linesAfter = 2)
+    public function highlightSnippet($source, $lineNumber, $linesBefore = 2, $linesAfter = 2)
     {
         $tokenLines = $this->getHighlightedLines($source);
 

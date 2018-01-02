@@ -40,6 +40,7 @@ class HomeController extends Controller
             'af' => 'artFont',
             'ml' => 'multiList',
             'ms' => 'multiSelect',
+            'sl' => 'splitLine',
         ];
     }
 
@@ -76,9 +77,30 @@ class HomeController extends Controller
     }
 
     /**
+     * command `defArgCommand` config
+     * @throws \LogicException
+     */
+    protected function defArgConfigure()
+    {
+        $this->createDefinition()
+            ->setDescription('the command arg/opt config use defined configure, it like symfony console: argument define by position')
+            ->addArgument('name', Input::ARG_REQUIRED, "description for the argument 'name'")
+            ->addOption('yes', 'y', Input::OPT_BOOLEAN, "description for the option 'yes'")
+            ->addOption('opt1', null, Input::OPT_REQUIRED, "description for the option 'opt1'");
+    }
+
+    /**
+     * the command arg/opt config use defined configure, it like symfony console: argument define by position
+     */
+    public function defArgCommand()
+    {
+        $this->output->dump($this->input->getArgs(), $this->input->getOpts(), $this->input->getBoolOpt('y'));
+    }
+
+    /**
      * a example for highlight code
      * @options
-     *  --ln   With line number
+     *  --ln    Display with line number
      * @param Input $in
      */
     public function highlightCommand($in)
@@ -211,6 +233,21 @@ class HomeController extends Controller
     }
 
     /**
+     * dynamic notice message show: pointing
+     */
+    public function pointingCommand()
+    {
+        $total = 100;
+
+        while ($total--) {
+            Show::pointing();
+            usleep(10000);
+        }
+
+        Show::pointing('Done', true);
+    }
+
+    /**
      * a progress bar example show, by Show::progressBar()
      * @options
      *  --type      the progress type, allow: bar,txt. <cyan>txt</cyan>
@@ -276,6 +313,20 @@ class HomeController extends Controller
     public function titleCommand()
     {
         $this->output->title('title show');
+
+        return 0;
+    }
+
+    /**
+     * output format message: splitLine
+     * @options
+     *  -w, --width WIDTH   The split line width. default is current screen width.
+     */
+    public function splitLineCommand()
+    {
+        $this->output->splitLine('split Line', '-', $this->input->getSameOpt(['w', 'width'], 0));
+
+        $this->output->splitLine('split 中文 Line', '-', $this->input->getSameOpt(['w', 'width'], 0));
 
         return 0;
     }
@@ -538,27 +589,6 @@ class HomeController extends Controller
 
         // $this->write('the Input object:');
         // var_dump($this->input);
-    }
-
-    /**
-     * command `defArgCommand` config
-     * @throws \LogicException
-     */
-    protected function defArgConfigure()
-    {
-        $this->createDefinition()
-            ->setDescription('the command arg/opt config use defined configure, it like symfony console: argument define by position')
-            ->addArgument('name', Input::ARG_REQUIRED, 'description for the argument [name]')
-            ->addOption('yes', 'y', Input::OPT_BOOLEAN, 'description for the option [yes]')
-            ->addOption('opt1', null, Input::OPT_REQUIRED, 'description for the option [opt1]');
-    }
-
-    /**
-     * the command arg/opt config use defined configure, it like symfony console: argument define by position
-     */
-    public function defArgCommand()
-    {
-        $this->output->dump($this->input->getArgs(), $this->input->getOpts(), $this->input->getBoolOpt('y'));
     }
 
     /**

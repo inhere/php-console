@@ -200,6 +200,9 @@ class Helper
      */
     public static function strUtf8Len($string)
     {
+        // strlen: one chinese is 3 char.
+        // mb_strlen: one chinese is 1 char.
+        // mb_strwidth: one chinese is 2 char.
         return mb_strlen($string, 'utf-8');
     }
 

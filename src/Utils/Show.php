@@ -195,9 +195,10 @@ class Show
             list($width,) = CliUtil::getScreenSize();
         }
 
-        $length = $width - Helper::strLen($title) + 2;
+        $strLen = ceil(($width - Helper::strLen($title) + 2) / 2);
+        $padStr = $strLen > 0 ? str_repeat($char, $strLen) : '';
 
-        self::write(str_pad('' . ucwords($title) . ' ', $length, $char, STR_PAD_BOTH));
+        self::write($padStr . ' ' . ucwords($title) . ' ' . $padStr);
     }
 
     /**
@@ -988,7 +989,7 @@ class Show
         static $counter = 0;
 
         if ($ended) {
-            return printf(' %s %d', $msg ?: 'Total', $counter);
+            return self::write(sprintf(' (%s %d)', $msg ?: 'Total', $counter));
         }
 
         if ($counter === 0 && $msg) {
@@ -1006,13 +1007,11 @@ class Show
      *  $total = 120;
      *  $ctt = Show::counterTxt('handling ...', 'handled.');
      *  $this->write('Counter:');
-     *
      *  while ($total - 1) {
      *      $ctt->send(1);
      *      usleep(30000);
      *      $total--;
      *  }
-     *
      *  // end of the counter.
      *  $ctt->send(-1);
      * ```

@@ -38,9 +38,11 @@ use Inhere\Console\Utils\Show;
  *
  * @method padding(array $data, string $title = null, array $opts = [])
  *
+ * @method splitLine(string $title, string $char = '-', int $width = 0)
  * @method spinner($msg = '', $ended = false)
  * @method loading($msg = 'Loading ', $ended = false)
  * @method pending($msg = 'Pending ', $ended = false)
+ * @method pointing($msg = 'handling ', $ended = false)
  *
  * @method \Generator counterTxt($msg = 'Pending ', $ended = false)
  */

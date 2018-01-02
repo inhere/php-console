@@ -249,8 +249,8 @@ class InputDefinition
      */
     public function addOption($name, $shortcut = null, $mode = null, $description = '', $default = null)
     {
-        if (0 === strpos($name, '--')) {
-            $name = substr($name, 2);
+        if (0 === strpos($name, '-')) {
+            $name = trim($name, '-');
         }
 
         if (empty($name)) {
@@ -267,7 +267,9 @@ class InputDefinition
             throw new \InvalidArgumentException(sprintf('Option mode "%s" is not valid.', $mode));
         }
 
-        if (($isArray = $mode === Input::OPT_IS_ARRAY) && !$this->optionIsAcceptValue($mode)) {
+        $isArray = $mode === Input::OPT_IS_ARRAY;
+
+        if ($isArray && !$this->optionIsAcceptValue($mode)) {
             throw new \InvalidArgumentException('Impossible to have an option mode VALUE_IS_ARRAY if the option does not accept a value.');
         }
 
@@ -277,7 +279,7 @@ class InputDefinition
 
         // set default value
         if (Input::OPT_BOOLEAN === (Input::OPT_BOOLEAN & $mode) && null !== $default) {
-            throw new \LogicException('Cannot set a default value when using Input::OPT_BOOLEAN mode.');
+            throw new \LogicException('Cannot set a default value when using OPT_BOOLEAN mode.');
         }
 
         if ($isArray) {
@@ -392,7 +394,7 @@ class InputDefinition
      */
     private function mergeArgOptConfig(array $map)
     {
-        return array_merge(self::$defaultArgOptConfig, $map);
+        return $map ? array_merge(self::$defaultArgOptConfig, $map) : self::$defaultArgOptConfig;
     }
 
     /**

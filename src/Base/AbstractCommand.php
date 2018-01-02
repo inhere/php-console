@@ -190,20 +190,23 @@ abstract class AbstractCommand implements BaseCommandInterface
      */
     protected function showHelp()
     {
-        // 创建了 InputDefinition , 则使用它的信息。此时不会再解析和使用命令的注释。
-        if ($def = $this->getDefinition()) {
-            $cmd = $this->input->getCommand();
-            $spt = $this->input->getScript();
-
-            $info = $def->getSynopsis();
-            $info['usage'] = "$spt $cmd " . $info['usage'];
-
-            $this->output->mList($info);
-
-            return true;
+        if (!$def = $this->getDefinition()) {
+            return false;
         }
 
-        return false;
+        // 创建了 InputDefinition , 则使用它的信息。
+        // 此时不会再解析和使用命令的注释。
+        $info = $def->getSynopsis();
+        $info['usage'] = sprintf('%s %s %s',
+            $this->input->getScript(),
+            $this->input->getCommand(),
+            $info['usage']
+        );
+
+        $this->output->mList($info, ['sepChar' => '  ']);
+
+        return true;
+
     }
 
     /**
