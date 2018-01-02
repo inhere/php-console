@@ -287,9 +287,14 @@ class Highlighter
         foreach ($lines as $i => $line) {
             if ($markLine !== null) {
                 $snippet .= ($markLine === $i + 1 ? $this->color->apply($lmStyle, '  > ') : '    ');
+                $snippet .= $this->color->apply(
+                    $markLine === $i + 1 ? $lmStyle : $lnStyle,
+                    str_pad($i + 1, $lineLen, ' ', STR_PAD_LEFT) . '| '
+                );
+            } else {
+                $snippet .= $this->color->apply($lnStyle, str_pad($i + 1, $lineLen, ' ', STR_PAD_LEFT) . '| ');
             }
 
-            $snippet .= $this->color->apply($lnStyle, str_pad($i + 1, $lineLen, ' ', STR_PAD_LEFT) . '| ');
             $snippet .= $line . PHP_EOL;
         }
 
