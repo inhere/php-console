@@ -23,7 +23,7 @@ class TextTemplateTest extends TestCase
         $tpl = <<<EOF
 test tpl on date {\$date}
 
-use array {\$map.0} {\$map.key1}
+use array {\$map.0} {\$map.key1}{* comments *}
 EOF;
         $date = date('Ymd');
 
@@ -40,6 +40,25 @@ EOF;
         $this->assertNotEmpty($ret);
         $this->assertTrue((bool)strpos($ret, $date));
         $this->assertTrue((bool)strpos($ret, 'VAL0'));
+        $this->assertStringEndsWith('VAL1', $ret);
+    }
+
+    public function testInclude()
+    {
+        $date = date('Ymd');
+        $tt = new TextTemplate([
+            'name' => 'test',
+            'date' => $date,
+            'map' => [
+                'VAL0',
+                'key1' => 'VAL1',
+            ],
+        ]);
+
+        $ret = $tt->renderFile(__DIR__ . '/files/text-1.tpl');
+        var_dump($ret);
+        $this->assertTrue((bool)strpos($ret, $date));
+        $this->assertSame(0, strpos($ret, 'VAL0'));
         $this->assertStringEndsWith('VAL1', $ret);
     }
 }
