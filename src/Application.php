@@ -267,12 +267,10 @@ class Application extends AbstractApplication
         $action = '';
 
         // like 'home:index'
-        if (strpos($name, $sep) > 0) {
-            $input = array_values(array_filter(explode($sep, $name)));
-            list($name, $action) = \count($input) > 2 ? array_splice($input, 2) : $input;
+        if (strpos($realName, $sep) > 0) {
+            $input = array_values(array_filter(explode($sep, $realName)));
+            list($realName, $action) = \count($input) > 2 ? array_splice($input, 2) : $input;
         }
-
-        $realName = $this->getRealCommandName($name);
 
         if ($this->isController($realName)) {
             return $this->runAction($realName, $action, true);

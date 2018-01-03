@@ -35,3 +35,6 @@ $app->controller('home', HomeController::class, [
 $app->controller(ProcessController::class, null, [
     'aliases' => 'prc'
 ]);
+
+// add alias for a group command.
+$app->addCommandAliases('home:test', 'h-test');
