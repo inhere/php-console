@@ -180,6 +180,16 @@ class Show
         throw new \LogicException("Call a not exists method: $method");
     }
 
+    /**
+     * @param string $text
+     * @param string $style
+     * @param bool $nl
+     */
+    public static function color(string $text, string $style = 'info', $nl = true)
+    {
+        self::write(Helper::wrapTag($text, $style), $nl);
+    }
+
     /**************************************************************************************************
      * Output Format Message(section/list/helpPanel/panel/table)
      **************************************************************************************************/
