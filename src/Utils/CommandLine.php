@@ -22,21 +22,16 @@ final class CommandLine
 
     /**
      * Parses $GLOBALS['argv'] for parameters and assigns them to an array.
-     *
      * eg:
-     *
      * ```
      * php cli.php server start name=john city=chengdu -s=test --page=23 -d -rf --debug --task=off -y=false -D -e dev -v vvv
      * ```
-     *
      * ```php
      * $result = CommandLineParse::byArgv($_SERVER['argv']);
      * ```
-     *
      * Supports args:
      * <value>
      * arg=<value>
-     *
      * Supports opts:
      * -e
      * -e <value>
@@ -44,10 +39,9 @@ final class CommandLine
      * --long-opt
      * --long-opt <value>
      * --long-opt=<value>
-     *
      * @link http://php.net/manual/zh/function.getopt.php#83414
      * @param array $params
-     * @param array $noValues List of parameters without values(bool option keys)
+     * @param array $noValues List of parameters without values(bool option keys) noVal
      * @param bool $mergeOpts Whether merge short-opts and long-opts
      * @return array
      */
@@ -62,37 +56,36 @@ final class CommandLine
 
             // is options
             if ($p{0} === '-') {
-                $isLong = false;
+                $val = true;
                 $opt = substr($p, 1);
-                $value = true;
+                $isLong = false;
 
                 // long-opt: (--<opt>)
                 if ($opt{0} === '-') {
-                    $isLong = true;
                     $opt = substr($opt, 1);
+                    $isLong = true;
 
                     // long-opt: value specified inline (--<opt>=<value>)
                     if (strpos($opt, '=') !== false) {
-                        list($opt, $value) = explode('=', $opt, 2);
+                        list($opt, $val) = explode('=', $opt, 2);
                     }
 
                     // short-opt: value specified inline (-<opt>=<value>)
-                } elseif (\strlen($opt) > 2 && $opt{1} === '=') {
-                    list($opt, $value) = explode('=', $opt, 2);
+                } elseif (isset($opt{1}) && $opt{1} === '=') {
+                    list($opt, $val) = explode('=', $opt, 2);
                 }
 
                 // check if next parameter is a descriptor or a value
-                $nxp = current($params);
+                $nxt = current($params);
 
-                // fix: allow empty string ''
-                if ($value === true && $nxp !== false && (!$nxp || $nxp{0} !== '-') && !\in_array($opt, $noValues,
-                        true)) {
-                    // list(,$value) = each($params);
-                    $value = current($params);
+                // next elem is value. fix: allow empty string ''
+                if ($val === true && self::nextIsValue($nxt) && !\in_array($opt, $noValues,true)) {
+                    // list(,$val) = each($params);
+                    $val = $nxt;
                     next($params);
 
                     // short-opt: bool opts. like -e -abc
-                } elseif (!$isLong && $value === true) {
+                } elseif (!$isLong && $val === true) {
                     foreach (str_split($opt) as $char) {
                         $sOpts[$char] = true;
                     }
@@ -101,17 +94,17 @@ final class CommandLine
                 }
 
                 if ($isLong) {
-                    $lOpts[$opt] = self::filterBool($value);
+                    $lOpts[$opt] = self::filterBool($val);
                 } else {
-                    $sOpts[$opt] = self::filterBool($value);
+                    $sOpts[$opt] = self::filterBool($val);
                 }
 
                 // arguments: param doesn't belong to any option, define it is args
             } else {
                 // value specified inline (<arg>=<value>)
                 if (strpos($p, '=') !== false) {
-                    list($name, $value) = explode('=', $p, 2);
-                    $args[$name] = self::filterBool($value);
+                    list($name, $val) = explode('=', $p, 2);
+                    $args[$name] = self::filterBool($val);
                 } else {
                     $args[] = $p;
                 }
@@ -132,7 +125,6 @@ final class CommandLine
 
     /**
      * parse custom array params
-     *
      * ```php
      * $result = CommandLine::parseByArray([
      *  'arg' => 'val',
@@ -140,7 +132,6 @@ final class CommandLine
      *  '--s' => 'val3',
      * ]);
      * ```
-     *
      * @param array $params
      * @return array
      */
@@ -148,17 +139,17 @@ final class CommandLine
     {
         $args = $sOpts = $lOpts = [];
 
-        foreach ($params as $key => $value) {
+        foreach ($params as $key => $val) {
             if ($key === '--' || $key === '-') {
                 continue;
             }
 
             if (0 === strpos($key, '--')) {
-                $lOpts[substr($key, 2)] = $value;
+                $lOpts[substr($key, 2)] = $val;
             } elseif ('-' === $key[0]) {
-                $sOpts[substr($key, 1)] = $value;
+                $sOpts[substr($key, 1)] = $val;
             } else {
-                $args[$key] = $value;
+                $args[$key] = $val;
             }
         }
 
@@ -166,7 +157,6 @@ final class CommandLine
     }
 
     /**
-     *
      * ```php
      * $result = CommandLine::parseByString('foo --bar="foobar"');
      * ```
@@ -190,14 +180,12 @@ final class CommandLine
                 return $val;
             }
 
-            $tVal = strtolower($val);
-
             // check it is a bool value.
-            if (false !== strpos(self::TRUE_WORDS, "|$tVal|")) {
+            if (false !== stripos(self::TRUE_WORDS, "|$val|")) {
                 return true;
             }
 
-            if (false !== strpos(self::FALSE_WORDS, "|$tVal|")) {
+            if (false !== stripos(self::FALSE_WORDS, "|$val|")) {
                 return false;
             }
         }
@@ -207,12 +195,31 @@ final class CommandLine
 
     /**
      * Escapes a token through escapeshellarg if it contains unsafe chars.
-     *
      * @param string $token
      * @return string
      */
     public static function escapeToken($token)
     {
         return preg_match('{^[\w-]+$}', $token) ? $token : escapeshellarg($token);
+    }
+
+    /**
+     * @param mixed $val
+     * @return bool
+     */
+    public static function nextIsValue($val)
+    {
+        // current() fetch error, will return FALSE
+        if ($val === false) {
+            return false;
+        }
+
+        // if is: '', 0
+        if (!$val) {
+            return true;
+        }
+
+        // it isn't option or named argument
+        return $val{0} !== '-' && false === strpos($val, '=');
     }
 }
