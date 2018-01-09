@@ -41,13 +41,23 @@ final class CommandLine
      * --long-opt=<value>
      * @link http://php.net/manual/zh/function.getopt.php#83414
      * @param array $params
-     * @param array $noValues List of parameters without values(bool option keys) noVal
-     * @param bool $mergeOpts Whether merge short-opts and long-opts
+     * @param array $config
      * @return array
      */
-    public static function parseByArgv(array $params, array $noValues = [], $mergeOpts = false): array
+    public static function parseByArgv(array $params, array $config = []): array
     {
+        $config = array_merge([
+            // List of parameters without values(bool option keys)
+            'noValues' => [], // ['debug', 'h']
+            // Whether merge short-opts and long-opts
+            'mergeOpts' => false,
+            // list of params allow array.
+            'arrayValues' => [], // ['names', 'status']
+        ], $config);
+
         $args = $sOpts = $lOpts = [];
+        $noValues = array_flip((array)$config['noValues']);
+        $arrayValues = array_flip((array)$config['arrayValues']);
 
         // each() will deprecated at 7.2. so,there use current and next instead it.
         // while (list(,$p) = each($params)) {
@@ -79,7 +89,7 @@ final class CommandLine
                 $nxt = current($params);
 
                 // next elem is value. fix: allow empty string ''
-                if ($val === true && self::nextIsValue($nxt) && !\in_array($opt, $noValues,true)) {
+                if ($val === true && self::nextIsValue($nxt) && !isset($noValues[$opt])) {
                     // list(,$val) = each($params);
                     $val = $nxt;
                     next($params);
@@ -93,10 +103,21 @@ final class CommandLine
                     continue;
                 }
 
+                $val = self::filterBool($val);
+                $isArray = isset($arrayValues[$opt]);
+                
                 if ($isLong) {
-                    $lOpts[$opt] = self::filterBool($val);
+                    if ($isArray) {
+                        $lOpts[$opt][] = $val;
+                    } else {
+                        $lOpts[$opt] = $val;
+                    }
                 } else {
-                    $sOpts[$opt] = self::filterBool($val);
+                    if ($isArray) {
+                        $sOpts[$opt][] = $val;
+                    } else {
+                        $sOpts[$opt] = $val;
+                    }
                 }
 
                 // arguments: param doesn't belong to any option, define it is args
@@ -111,7 +132,7 @@ final class CommandLine
             }
         }
 
-        if ($mergeOpts) {
+        if ($config['mergeOpts']) {
             return [$args, array_merge($sOpts, $lOpts)];
         }
 

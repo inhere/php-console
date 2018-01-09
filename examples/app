@@ -20,7 +20,7 @@ $app->setLogo("
                           /_/   /_/
 ", 'success');
 
-require __DIR__ . '/routes.php';
+require __DIR__ . '/commands.php';
 
 // run
 $app->run();
