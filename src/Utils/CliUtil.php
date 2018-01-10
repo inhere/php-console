@@ -69,6 +69,43 @@ final class CliUtil
     }
 
     /**
+     * @param string $command
+     * @return array
+     */
+    public static function executeCommand($command)
+    {
+        $descriptors = [
+            0 => ['pipe', 'r'], // stdin - read channel
+            1 => ['pipe', 'w'], // stdout - write channel
+            2 => ['pipe', 'w'], // stdout - error channel
+            3 => ['pipe', 'r'], // stdin - This is the pipe we can feed the password into
+        ];
+
+        $process = proc_open($command, $descriptors, $pipes);
+
+        if (!\is_resource($process)) {
+            die("Can't open resource with proc_open.");
+        }
+
+        // Nothing to push to input.
+        fclose($pipes[0]);
+
+        $output = stream_get_contents($pipes[1]);
+        fclose($pipes[1]);
+
+        $error = stream_get_contents($pipes[2]);
+        fclose($pipes[2]);
+
+        // TODO: Write passphrase in pipes[3].
+        fclose($pipes[3]);
+
+        // Close all pipes before proc_close!
+        $code = proc_close($process);
+
+        return [$output, $error, $code];
+    }
+
+    /**
      * Method to execute a command in the sys
      * Uses :
      * 1. system
