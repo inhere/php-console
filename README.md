@@ -14,7 +14,7 @@
 - 消息文本的多种颜色风格输出支持(`info`, `comment`, `success`, `danger`, `error` ... ...)
 - 丰富的特殊格式信息显示(`section`, `panel`, `padding`, `help-panel`, `table`, `title`, `list`, `multiList`, `progressBar`)
 - 常用的用户信息交互支持(`select`, `multiSelect`, `confirm`, `ask/question`, `askPassword/askHiddenInput`)
-- 命令方法注释自动解析（提取为参数 `arguments` 和 选项 `options` 等信息）
+- 命令方法注释自动解析为帮助信息（提取为参数 `arguments` 和 选项 `options` 等信息）
 - 类似 `symfony/console` 的预定义参数定义支持(按位置赋予参数值)
 - 输出是 windows,linux 兼容的，不支持颜色的环境会自动去除相关CODE
 
