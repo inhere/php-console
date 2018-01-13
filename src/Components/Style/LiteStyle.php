@@ -6,7 +6,7 @@
  * Time: 下午7:45
  */
 
-namespace Inhere\Console\Style;
+namespace Inhere\Console\Components\Style;
 
 use Inhere\Console\Utils\Helper;
 

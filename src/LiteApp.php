@@ -8,7 +8,7 @@
 
 namespace Inhere\Console;
 
-use Inhere\Console\Style\LiteStyle;
+use Inhere\Console\Components\Style\LiteStyle;
 
 /**
  * Class LiteApp - Lite Application

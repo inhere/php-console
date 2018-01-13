@@ -8,7 +8,7 @@
 
 namespace Inhere\Console\Traits;
 
-use Inhere\Console\Style\Style;
+use Inhere\Console\Components\Style\Style;
 use Inhere\Console\Utils\Helper;
 use Inhere\Console\Utils\Show;
 

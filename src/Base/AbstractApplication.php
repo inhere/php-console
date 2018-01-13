@@ -10,10 +10,10 @@ namespace Inhere\Console\Base;
 
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
-use Inhere\Console\Style\Highlighter;
+use Inhere\Console\Components\Style\Highlighter;
 use Inhere\Console\Traits\InputOutputAwareTrait;
 use Inhere\Console\Traits\SimpleEventTrait;
-use Inhere\Console\Style\Style;
+use Inhere\Console\Components\Style\Style;
 use Inhere\Console\Utils\FormatUtil;
 use Inhere\Console\Utils\Helper;
 

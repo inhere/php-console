@@ -6,11 +6,11 @@
  * Time: 15:50
  */
 
-namespace Inhere\Console\Style;
+namespace Inhere\Console\Components\Style;
 
 /**
  * Class Highlighter
- * @package Inhere\Console\Style
+ * @package Inhere\Console\Components\Style
  *
  * @see jakub-onderka/php-console-highlighter
  * @link https://github.com/JakubOnderka/PHP-Console-Highlighter/blob/master/src/Highlighter.php

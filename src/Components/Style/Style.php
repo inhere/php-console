@@ -8,13 +8,13 @@
  * file: Color.php
  */
 
-namespace Inhere\Console\Style;
+namespace Inhere\Console\Components\Style;
 
 use Inhere\Console\Utils\Helper;
 
 /**
  * Class Style
- * @package Inhere\Console\Style
+ * @package Inhere\Console\Components\Style
  * @link https://github.com/ventoviro/windwalker-IO
  *
  * @method string info(string $message)

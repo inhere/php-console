@@ -3,13 +3,13 @@
  * Created by PhpStorm.
  */
 
-namespace Inhere\Console\Style;
+namespace Inhere\Console\Components\Style;
 
 /**
  * Class Color
  * - fg unset 39
  * - bg unset 49
- * @package Inhere\Console\Style
+ * @package Inhere\Console\Components\Style
  */
 final class Color
 {

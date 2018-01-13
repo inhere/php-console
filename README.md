@@ -396,7 +396,7 @@ $output->write('hello <info>world<info>');
 - **单独使用颜色风格**
 
 ```php
-$style = Inhere\Console\Style\Style::create();
+$style = Inhere\Console\Components\Style\Style::create();
 
 echo $style->render('no color <info>color text</info>');
 
