@@ -37,6 +37,7 @@ abstract class AbstractApplication implements ApplicationInterface
         '--debug' => 'Setting the application runtime debug level',
         '--profile' => 'Display timing and memory usage information',
         '--no-color' => 'Disable color/ANSI for message output',
+        '--skip-invalid' => 'Whether ignore invalid arguments and options, when use input definition',
         '-h, --help' => 'Display this help message',
         '-V, --version' => 'Show application version information',
     ];
