@@ -365,6 +365,11 @@ abstract class AbstractCommand implements BaseCommandInterface
      */
     protected function parseAnnotationVars($str)
     {
+        // not use vars
+        if (false === strpos($str, '{')) {
+            return $str;
+        }
+
         static $map;
 
         if ($map === null) {
@@ -372,11 +377,6 @@ abstract class AbstractCommand implements BaseCommandInterface
                 $key = sprintf(self::ANNOTATION_VAR, $key);
                 $map[$key] = $value;
             }
-        }
-
-        // not use vars
-        if (false === strpos($str, '{')) {
-            return $str;
         }
 
         return $map ? strtr($str, $map) : $str;
@@ -393,6 +393,7 @@ abstract class AbstractCommand implements BaseCommandInterface
     {
         $ref = new \ReflectionClass($this);
         $name = $this->input->getCommand();
+        $isAlone = $ref->isSubclassOf(CommandInterface::class);
 
         if (!$ref->hasMethod($method)) {
             $this->write("The command [<info>$name</info>] don't exist in the group: " . static::getName());
@@ -422,6 +423,12 @@ abstract class AbstractCommand implements BaseCommandInterface
 
             $msg = trim($tags[$tag]);
             $tag = ucfirst($tag);
+
+            // for alone command
+            if (!$msg && $tag === 'description' && $isAlone) {
+                $msg = self::getDescription();
+            }
+
             $help[] = "<comment>$tag:</comment>\n $msg\n";
         }
 
