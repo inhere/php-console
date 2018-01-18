@@ -15,4 +15,9 @@ namespace Inhere\Console\IO\Input;
  */
 class InputOption extends InputItem
 {
+    /**
+     * @var string|array
+     */
+    public $shortcut;
+
 }

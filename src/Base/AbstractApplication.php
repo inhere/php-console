@@ -650,9 +650,9 @@ ERR;
     /**
      * @return string
      */
-    public function getRootPath()
+    public function getRootPath(): string
     {
-        return $this->getMeta('rootPath');
+        return $this->getMeta('rootPath', '');
     }
 
     /**

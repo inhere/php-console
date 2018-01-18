@@ -8,6 +8,8 @@
 
 namespace Inhere\Console\IO\Input;
 
+use Inhere\Console\IO\Input;
+
 /**
  * Class InputItem
  * - definition a input item(option|argument)
@@ -52,5 +54,39 @@ class InputItem
      * allow multi value
      * @var bool
      */
-    public $multi;
+    private $isArray;
+
+    /**
+     * @param string $name
+     * @param int|null $mode
+     * @param string $description
+     * @param null $default
+     * @return static
+     */
+    public static function make(string $name, int $mode = null, string $description = '', $default = null)
+    {
+        return new static($name, $mode, $description, $default);
+    }
+
+    /**
+     * class constructor.
+     * @param string $name
+     * @param int|null $mode
+     * @param string $description
+     * @param mixed $default The default value
+     *  - for InputArgument::OPTIONAL mode only
+     *  - must be null for InputOption::OPT_BOOL
+     */
+    public function __construct(string $name, int $mode = null, string $description = '', $default = null)
+    {
+        $this->isArray = $mode === Input::ARG_IS_ARRAY;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isArray(): bool
+    {
+        return $this->isArray;
+    }
 }
