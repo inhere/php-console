@@ -422,12 +422,15 @@ abstract class AbstractCommand implements BaseCommandInterface
                 continue;
             }
 
-            $msg = trim($tags[$tag]);
+            // $msg = trim($tags[$tag]);
+            $msg = $tags[$tag];
             $tag = ucfirst($tag);
 
             // for alone command
             if (!$msg && $tag === 'description' && $isAlone) {
                 $msg = self::getDescription();
+            } else {
+                $msg = preg_replace('#(\n)#', '$1 ', $msg);
             }
 
             $help[$tag . ':'] = $msg;

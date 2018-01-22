@@ -286,7 +286,7 @@ final class FormatUtil
      * @param $width
      * @return array
      */
-    public static function splitStringByWidth($string, $width)
+    public static function splitStringByWidth($string, $width): array
     {
         // str_split is not suitable for multi-byte characters, we should use preg_split to get char array properly.
         // additionally, array_slice() is not enough as some character has doubled width.
@@ -327,7 +327,7 @@ final class FormatUtil
      * @param  array $opts
      * @return string
      */
-    public static function spliceKeyValue(array $data, array $opts = [])
+    public static function spliceKeyValue(array $data, array $opts = []): string
     {
         $text = '';
         $opts = array_merge([

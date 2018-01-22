@@ -20,14 +20,15 @@ final class Annotation
 
     /**
      * Parses the comment block into tags.
-     *
      * @param string $comment The comment block text
+     * @param array $ignored
      * @return array The parsed tags
      */
-    public static function getTags($comment)
+    public static function getTags($comment, array $ignored = ['param', 'return']): array
     {
+        $comment = str_replace("\r\n", "\n", trim($comment, "/ \n"));
         $comment = "@description \n" . str_replace("\r", '',
-                trim(preg_replace('/^\s*\**( |\t)?/m', '', trim($comment, '/')))
+                trim(preg_replace('/^\s*\**( |\t)?/m', '', $comment))
             );
 
         $tags = [];
@@ -36,6 +37,10 @@ final class Annotation
         foreach ($parts as $part) {
             if (preg_match('/^(\w+)(.*)/ms', trim($part), $matches)) {
                 $name = $matches[1];
+                if (\in_array($name, $ignored, true)) {
+                    continue;
+                }
+
                 if (!isset($tags[$name])) {
                     $tags[$name] = trim($matches[2]);
                 } elseif (\is_array($tags[$name])) {

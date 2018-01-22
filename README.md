@@ -222,7 +222,7 @@ class HomeController extends Controller
   ![group-command-list](docs/screenshots/group-command-list.png)
 - 当使用 `php examples/app home:test -h` 时，可以查看到关于 `HomeController::testCommand` 更详细的信息。包括描述注释文本、`@usage` 、`@example`
 
-  ![group-command-list](docs/screenshots/group-command-help.png)
+  ![group-command-list](docs/screenshots/command-help.png)
 
 > 小提示：注释里面同样支持带颜色的文本输出 `eg: this is a command's description <info>message</info>`
 
