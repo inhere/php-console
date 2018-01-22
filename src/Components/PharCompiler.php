@@ -276,7 +276,7 @@ class PharCompiler
             unlink($pharFile);
         }
 
-        $this->pharFile = realpath($pharFile);
+        $this->pharFile = $pharFile;
         $this->pharName = $pharName = basename($this->pharFile);
 
         $this->collectInformation();

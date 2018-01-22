@@ -8,17 +8,18 @@
 
 > 无其他库依赖，可以方便的整合到任何已有项目中。
 
+- 命令行应用, 命令行的 `controller`, `command` 解析运行, 支持给命令设置别名
 - 功能全面的命令行的选项参数解析(命名参数，短选项，长选项 ...)
-- 命令行应用, 命令行的 `controller`, `command` 解析运行。(支持命令别名)
 - 命令行中功能强大的 `input`, `output` 管理、使用
+- 内置了Phar工具类，可以方便的将应用打包成 `phar` 文件(运行示例中 `php examples/app phar:pack`, 会将console库打包成一个`app.phar`)
 - 消息文本的多种颜色风格输出支持(`info`, `comment`, `success`, `danger`, `error` ... ...)
 - 丰富的特殊格式信息显示(`section`, `panel`, `padding`, `help-panel`, `table`, `title`, `list`, `multiList`, `progressBar`)
 - 常用的用户信息交互支持(`select`, `multiSelect`, `confirm`, `ask/question`, `askPassword/askHiddenInput`)
 - 命令方法注释自动解析为帮助信息（提取为参数 `arguments` 和 选项 `options` 等信息）
-- 类似 `symfony/console` 的预定义参数定义支持(按位置赋予参数值)
+- 支持类似 `symfony/console` 的预定义参数定义(按位置赋予参数值)
 - 输出是 windows,linux 兼容的，不支持颜色的环境会自动去除相关CODE
 
-> 下面所有的特性，效果都是运行 `examples/` 中的示例代码 `php examples/app` 展示出来的。下载后可以直接测试体验
+> 下面所有的特性，效果都是运行 `examples/` 中的示例代码 `php examples/app` 展示出来的。可以直接测试运行
 
 ## [EN README](./README_en.md)
 
