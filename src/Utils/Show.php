@@ -381,6 +381,7 @@ class Show
             'keyMinWidth' => 8,
             'titleStyle' => 'comment',
             'returned' => false,
+            'lastNewline' => true,
         ], $opts);
 
         // title
@@ -396,7 +397,7 @@ class Show
             return $string;
         }
 
-        return self::write($string);
+        return self::write($string, $opts['lastNewline']);
     }
 
     /**
@@ -441,6 +442,12 @@ class Show
         $buffer = [];
         $opts['returned'] = true;
         $ignoreEmpty = $opts['ignoreEmpty'] ?? true;
+        $lastNewline = true;
+
+        if (isset($opts['lastNewline'])) {
+            $lastNewline = $opts['lastNewline'];
+            unset($opts['lastNewline']);
+        }
 
         foreach ($data as $title => $list) {
             if ($ignoreEmpty && !$list) {
@@ -450,7 +457,7 @@ class Show
             $buffer[] = self::aList($list, $title, $opts);
         }
 
-        self::write(implode("\n", $buffer), $opts['lastNewline'] ?? true);
+        self::write(implode("\n", $buffer), $lastNewline);
     }
 
     /**
