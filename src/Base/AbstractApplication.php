@@ -112,6 +112,14 @@ abstract class AbstractApplication implements ApplicationInterface
         set_exception_handler([$this, 'handleException']);
     }
 
+    /**
+     * @return array
+     */
+    public static function getInternalOptions(): array
+    {
+        return self::$internalOptions;
+    }
+
     /**********************************************************
      * app run
      **********************************************************/

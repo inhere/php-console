@@ -29,9 +29,9 @@ interface BaseCommandInterface
     public function getDefinition();
 
     /**
-     * @return ApplicationInterface
+     * @return AbstractApplication
      */
-    public function getApp(): ApplicationInterface;
+    public function getApp(): AbstractApplication;
 
     /**
      * @return string

@@ -220,9 +220,7 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
         $this->output->mList([
             'Usage:' => $usage,
             //'Group Name:' => "<info>$sName</info>",
-            'Options:' => [
-                '-h, --help' => 'Show help of the command group or specified command action',
-            ],
+            'Options:' => FormatUtil::alignmentOptions(Application::getInternalOptions()),
             'Commands:' => $commands,
         ], [
             'sepChar' => '  ',

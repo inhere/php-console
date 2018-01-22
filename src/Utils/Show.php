@@ -439,8 +439,8 @@ class Show
     public static function mList(array $data, array $opts = [])
     {
         $buffer = [];
-        $ignoreEmpty = $opts['ignoreEmpty'] ?? true;
         $opts['returned'] = true;
+        $ignoreEmpty = $opts['ignoreEmpty'] ?? true;
 
         foreach ($data as $title => $list) {
             if ($ignoreEmpty && !$list) {
@@ -450,7 +450,7 @@ class Show
             $buffer[] = self::aList($list, $title, $opts);
         }
 
-        self::write(implode("\n", $buffer));
+        self::write(implode("\n", $buffer), $opts['lastNewline'] ?? true);
     }
 
     /**

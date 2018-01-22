@@ -15,6 +15,7 @@ use Inhere\Console\IO\Output;
 use Inhere\Console\Traits\InputOutputAwareTrait;
 use Inhere\Console\Traits\UserInteractAwareTrait;
 use Inhere\Console\Utils\Annotation;
+use Inhere\Console\Utils\FormatUtil;
 
 /**
  * Class AbstractCommand
@@ -413,7 +414,7 @@ abstract class AbstractCommand implements BaseCommandInterface
         $help = [];
 
         if ($aliases) {
-            $help[] = sprintf("<comment>Alias Name:</comment> %s\n", implode(',', $aliases));
+            $help['Alias Name:'] = implode(',', $aliases);
         }
 
         foreach (array_keys(self::$annotationTags) as $tag) {
@@ -429,10 +430,21 @@ abstract class AbstractCommand implements BaseCommandInterface
                 $msg = self::getDescription();
             }
 
-            $help[] = "<comment>$tag:</comment>\n $msg\n";
+            $help[$tag . ':'] = $msg;
         }
 
-        $this->output->write(implode("\n", $help), false);
+        if (isset($help['Description:'])) {
+            $description = $help['Description:'] ?: 'No description message for the command';
+            $this->write(ucfirst($description) . PHP_EOL);
+            unset($help['Description:']);
+        }
+
+        $help['Global Options:'] = FormatUtil::alignmentOptions(Application::getInternalOptions());
+
+        $this->output->mList($help, [
+            'sepChar' => '  ',
+            'lastNewline' => 0,
+        ]);
 
         return 0;
     }
@@ -525,17 +537,17 @@ abstract class AbstractCommand implements BaseCommandInterface
     }
 
     /**
-     * @return ApplicationInterface
+     * @return AbstractApplication
      */
-    public function getApp(): ApplicationInterface
+    public function getApp(): AbstractApplication
     {
         return $this->app;
     }
 
     /**
-     * @param ApplicationInterface $app
+     * @param AbstractApplication $app
      */
-    public function setApp(ApplicationInterface $app)
+    public function setApp(AbstractApplication $app)
     {
         $this->app = $app;
     }
