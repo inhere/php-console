@@ -25,15 +25,16 @@ abstract class AbstractCommand implements BaseCommandInterface
 {
     use InputOutputAwareTrait, UserInteractAwareTrait;
 
-    const OK = 0;
-    // name -> {name}
-    const ANNOTATION_VAR = '{%s}'; // '{$%s}';
-
     /**
      * command name e.g 'test' 'test:one'
      * @var string
      */
     protected static $name = '';
+
+    /**
+     * @var int Whether enabled.
+     */
+    protected static $_status = self::ENABLED;
 
     /**
      * command/controller description message
@@ -457,7 +458,7 @@ abstract class AbstractCommand implements BaseCommandInterface
     /**
      * @param string $name
      */
-    public static function setName(string $name)
+    final public static function setName(string $name)
     {
         static::$name = $name;
     }
@@ -468,6 +469,14 @@ abstract class AbstractCommand implements BaseCommandInterface
     final public static function getName(): string
     {
         return static::$name;
+    }
+
+    /**
+     * @return int
+     */
+    final public static function getStatus(): int
+    {
+        return static::$_status;
     }
 
     /**
@@ -489,7 +498,7 @@ abstract class AbstractCommand implements BaseCommandInterface
     /**
      * @return array
      */
-    public static function getAnnotationTags(): array
+    final public static function getAnnotationTags(): array
     {
         return self::$annotationTags;
     }

@@ -16,6 +16,14 @@ use Inhere\Console\IO\InputDefinition;
  */
 interface BaseCommandInterface
 {
+    const OK = 0;
+
+    const DISABLED = 1;
+    const ENABLED = 2;
+
+    // name -> {name}
+    const ANNOTATION_VAR = '{%s}'; // '{$%s}';
+
     /**
      * run command
      * @param string $command

@@ -53,6 +53,11 @@ class Application extends AbstractApplication
             throw new \InvalidArgumentException('The console controller class must is subclass of the: ' . Controller::class);
         }
 
+        // not enable
+        if ($class::getStatus() === Controller::DISABLED) {
+            return $this;
+        }
+
         $this->controllers[$name] = $class;
 
         if (!$option) {
@@ -123,12 +128,19 @@ class Application extends AbstractApplication
             if (!is_subclass_of($handler, Command::class)) {
                 throw new \InvalidArgumentException('The console command class must is subclass of the: ' . Command::class);
             }
+
+            // not enable
+            /** @var Command $handler */
+            if ($handler::getStatus() === Command::DISABLED) {
+                return $this;
+            }
         } elseif (!\is_object($handler) || !method_exists($handler, '__invoke')) {
             throw new \InvalidArgumentException(sprintf(
                 'The console command handler must is an subclass of %s OR a Closure OR a object have method __invoke()',
                 Command::class
             ));
         }
+
 
         // is an class name string
         $this->commands[$name] = $handler;
@@ -224,7 +236,7 @@ class Application extends AbstractApplication
     /**
      * @return \Closure
      */
-    protected function getFileFilter()
+    protected function getFileFilter(): callable
     {
         return function (\SplFileInfo $f) {
             $name = $f->getFilename();
