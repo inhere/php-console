@@ -50,12 +50,12 @@ abstract class Command extends AbstractCommand implements CommandInterface
     // }
 
     /**
-     * @return int
+     * @return bool
      */
-    protected function showHelp()
+    protected function showHelp(): bool
     {
         if (true === parent::showHelp()) {
-            return 0;
+            return true;
         }
 
         return $this->showHelpByMethodAnnotations('execute');

@@ -122,12 +122,12 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
     }
 
     /**
-     * @return int
+     * @return bool
      */
-    protected function showHelp()
+    protected function showHelp(): bool
     {
         if (true === parent::showHelp()) {
-            return 0;
+            return true;
         }
 
         return $this->helpCommand();
@@ -148,7 +148,7 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
      *
      * @return int
      */
-    final public function helpCommand()
+    final public function helpCommand(): int
     {
         $action = $this->action;
 
@@ -284,7 +284,7 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
      * @param string|null $name
      * @return array
      */
-    public static function getCommandAliases(string $name = null)
+    public static function getCommandAliases(string $name = null): array
     {
         if (null === self::$aliases) {
             self::$aliases = static::commandAliases();
@@ -351,7 +351,7 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getNotFoundCallback()
     {

@@ -122,6 +122,7 @@ abstract class AbstractCommand implements BaseCommandInterface
         return [
             'name' => self::getName(),
             'group' => self::getName(),
+            'workDir' => $this->input->getPwd(),
             'script' => $this->input->getScript(), // bin/app
             'command' => $this->input->getCommand(), // demo OR home:test
             'fullCommand' => $this->input->getScript() . ' ' . $this->input->getCommand(),
@@ -143,7 +144,8 @@ abstract class AbstractCommand implements BaseCommandInterface
         $this->configure();
 
         if ($this->input->sameOpt(['h', 'help'])) {
-            return $this->showHelp();
+            $this->showHelp();
+            return 0;
         }
 
         // some prepare check
@@ -155,7 +157,7 @@ abstract class AbstractCommand implements BaseCommandInterface
             return -1;
         }
 
-        $status = $this->execute($this->input, $this->output);
+        $status = (int)$this->execute($this->input, $this->output);
         $this->afterExecute();
 
         return $status;
@@ -165,7 +167,7 @@ abstract class AbstractCommand implements BaseCommandInterface
      * before command execute
      * @return boolean It MUST return TRUE to continue execute.
      */
-    protected function beforeExecute()
+    protected function beforeExecute(): bool
     {
         return true;
     }
@@ -189,14 +191,13 @@ abstract class AbstractCommand implements BaseCommandInterface
      * display help information
      * @return bool
      */
-    protected function showHelp()
+    protected function showHelp(): bool
     {
         if (!$def = $this->getDefinition()) {
             return false;
         }
 
-        // 创建了 InputDefinition , 则使用它的信息。
-        // 此时不会再解析和使用命令的注释。
+        // 创建了 InputDefinition , 则使用它的信息(此时不会再解析和使用命令的注释)
         $info = $def->getSynopsis();
         $info['usage'] = sprintf('%s %s %s',
             $this->input->getScript(),
@@ -227,12 +228,9 @@ abstract class AbstractCommand implements BaseCommandInterface
                 }
             } elseif (\function_exists('setproctitle')) {
                 setproctitle($this->processTitle);
-//            } elseif (isDebug) {
-//                $output->writeln('<comment>Install the proctitle PECL to be able to change the process title.</comment>');
             }
         }
 
-        // do validate input arg and opt
         return $this->validateInput();
     }
 
@@ -240,7 +238,7 @@ abstract class AbstractCommand implements BaseCommandInterface
      * validate input arguments and options
      * @return bool
      */
-    public function validateInput()
+    public function validateInput(): bool
     {
         if (!$def = $this->definition) {
             return true;

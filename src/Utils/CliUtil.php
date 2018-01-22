@@ -70,9 +70,10 @@ final class CliUtil
 
     /**
      * @param string $command
+     * @param string|null $cwd
      * @return array
      */
-    public static function executeCommand($command)
+    public static function run(string $command, string $cwd = null): array
     {
         $descriptors = [
             0 => ['pipe', 'r'], // stdin - read channel
@@ -81,10 +82,10 @@ final class CliUtil
             3 => ['pipe', 'r'], // stdin - This is the pipe we can feed the password into
         ];
 
-        $process = proc_open($command, $descriptors, $pipes);
+        $process = proc_open($command, $descriptors, $pipes, $cwd);
 
         if (!\is_resource($process)) {
-            die("Can't open resource with proc_open.");
+            throw new \RuntimeException("Can't open resource with proc_open.");
         }
 
         // Nothing to push to input.
@@ -102,7 +103,7 @@ final class CliUtil
         // Close all pipes before proc_close!
         $code = proc_close($process);
 
-        return [$output, $error, $code];
+        return [$code, $output, $error];
     }
 
     /**

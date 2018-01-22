@@ -8,13 +8,15 @@
 
 namespace Inhere\Console\Components;
 
+use Inhere\Console\Utils\CliUtil;
 use Inhere\Console\Utils\Helper;
+use Seld\PharUtils\Timestamps;
 
 /**
  * Class PharCompiler
  * @package Inhere\Console\Components
  */
-final class PharCompiler
+class PharCompiler
 {
     /** @var array */
     private static $supportedSignatureTypes = [
@@ -35,19 +37,36 @@ final class PharCompiler
     private $compressMode = 0;
 
     /**
+     * @var string|null The latest commit id
+     */
+    private $version;
+
+    /**
+     * @var string|null The latest tag name
+     */
+    private $branchAliasVersion = '';
+
+    /**
+     * @var \DateTime
+     */
+    private $versionDate;
+
+    /**
+     * 记录上面三个信息的文件, 相对于basePath
+     * 当里面存在下面的占位符时会自动替换为获取到的信息
+     * [
+     * 'version' => '@package_version@',
+     * 'tag' => '@package_branch_alias_version@',
+     * 'releaseDate' => '@release_date@',
+     * ]
      * @var string
      */
+    private $versionFile;
+
+    /**
+     * @var string The want to packaged project path
+     */
     private $basePath;
-
-    /**
-     * @var string Phar file path. e.g '/some/path/app.phar'
-     */
-    private $pharFile;
-
-    /**
-     * @var string Phar file name. eg 'app.phar'
-     */
-    private $pharName;
 
     /**
      * @var string|null
@@ -60,24 +79,67 @@ final class PharCompiler
     private $webIndex;
 
     /**
-     * @var array
+     * @var string|bool Set the shebang. eg '#!/usr/bin/env php'
+     */
+    private $shebang;
+
+    /**
+     * @var array Want to added files. (It is relative the $basePath)
      */
     private $files = [];
 
     /**
-     * @var array want to exclude directory name list
+     * @var array Want to exclude directory name list
      */
     private $excludes = [];
 
     /**
-     * @var array
+     * @var array The directory paths, will collect files in there.
      */
     private $directories = [];
 
-    public function __construct()
-    {
+    /**
+     * @var \Closure[] Some events. if you want to get some info on packing.
+     */
+    private $events = [
+        'add' => 1,
+        'error' => 1,
+    ];
 
-    }
+    /**
+     * @var \Closure Maybe you not want strip all files.
+     */
+    private $stripFilter;
+
+    /**
+     * @var bool Whether strip comments
+     */
+    private $stripComments = true;
+
+    /**
+     * @var bool Whether auto collect version info by git log.
+     */
+    private $collectVersionInfo = true;
+
+    // -------------------- internal props --------------------
+
+    /** @var int */
+    private $counter = 0;
+
+    /**
+     * @var string Phar file path. e.g '/some/path/app.phar'
+     */
+    private $pharFile;
+
+    /**
+     * @var string Phar file name. eg 'app.phar'
+     */
+    private $pharName;
+
+    /**
+     * @var \Closure File filter
+     */
+    private $fileFilter;
 
     /**
      * @param string $pharFile
@@ -88,34 +150,138 @@ final class PharCompiler
      */
     public static function unpack(string $pharFile, string $extractTo, $files = null, $overwrite = false): bool
     {
+        self::checkEnv();
+
         $phar = new \Phar($pharFile);
 
         return $phar->extractTo($extractTo, $files, $overwrite);
     }
 
+    private static function checkEnv()
+    {
+        if (!\class_exists(\Phar::class, false)) {
+            throw new \RuntimeException("The 'phar' extension is required for build phar package");
+        }
+
+        if (ini_get('phar.readonly')) {
+            throw new \RuntimeException("The 'phar.readonly' is 'On', build phar must setting it 'Off'");
+        }
+    }
+
     /**
-     * @param string $pharFile
+     * PharCompiler constructor.
+     * @param string $basePath
+     */
+    public function __construct(string $basePath)
+    {
+        self::checkEnv();
+
+        $this->basePath = realpath($basePath);
+
+        if (!is_dir($this->basePath)) {
+            throw new \RuntimeException("The inputted project path is not exists. DIR: {$this->basePath}");
+        }
+    }
+
+    /**
+     * @param string|array $dirs
+     * @return $this
+     */
+    public function addExclude($dirs): self
+    {
+        $this->excludes = array_merge($this->excludes, (array)$dirs);
+
+        return $this;
+    }
+
+    /**
+     * @param string|array $files
+     * @return $this
+     */
+    public function addFile($files): self
+    {
+        $this->files = array_merge($this->files, (array)$files);
+
+        return $this;
+    }
+
+    /**
+     * @param bool $value
+     * @return PharCompiler
+     */
+    public function stripComments($value): self
+    {
+        $this->stripComments = (bool)$value;
+
+        return $this;
+    }
+
+    /**
+     * @param bool $value
+     * @return PharCompiler
+     */
+    public function collectVersion($value): self
+    {
+        $this->collectVersionInfo = (bool)$value;
+
+        return $this;
+    }
+
+    /**
+     * @param \Closure $stripFilter
+     * @return PharCompiler
+     */
+    public function setStripFilter(\Closure $stripFilter): PharCompiler
+    {
+        $this->stripFilter = $stripFilter;
+
+        return $this;
+    }
+
+    /**
+     * @param bool|string $shebang
+     * @return PharCompiler
+     */
+    public function setShebang($shebang): PharCompiler
+    {
+        $this->shebang = $shebang;
+
+        return $this;
+    }
+
+    /**
+     * @param string|array $dirs
+     * @return PharCompiler
+     */
+    public function in($dirs): self
+    {
+        $this->directories = array_merge($this->directories, (array)$dirs);
+
+        return $this;
+    }
+
+    /**
+     * Compiles composer into a single phar file
+     * @param  string $pharFile The full path to the file to create
      * @param bool $refresh
      * @return string
      */
     public function pack(string $pharFile, $refresh = true): string
     {
-        if (ini_get('phar.readonly')) {
-            throw new \RuntimeException("The 'phar.readonly' is 'On', build phar must setting it 'Off'");
-        }
-
         if (!$this->directories) {
-            throw new \RuntimeException("Please setting the 'directories' want building directories");
+            throw new \RuntimeException("Please setting the 'directories' want building directories by 'in()'");
         }
 
         if ($refresh && file_exists($pharFile)) {
             unlink($pharFile);
         }
 
-        $this->pharName = $pharName = basename($pharFile);
+        $this->pharFile = realpath($pharFile);
+        $this->pharName = $pharName = basename($this->pharFile);
+
+        $this->collectInformation();
 
         $phar = new \Phar($pharFile, 0, $pharName);
-        $phar->startBuffering();
 
         if ($this->key !== null) {
             $privateKey = '';
@@ -127,25 +293,29 @@ final class PharCompiler
             $phar->setSignatureAlgorithm($this->selectSignatureType());
         }
 
-        $filter = $this->createIteratorFilter();
         $basePath = $this->basePath;
+        $phar->startBuffering();
 
+        // collect files
         foreach ($this->directories as $directory) {
-            $iterator = Helper::recursiveDirectoryIterator($directory, $filter);
-
-            foreach ($iterator as $file) {
-                $this->addFileToPhar($phar, $file);
+            foreach ($this->findFiles($directory) as $file) {
+                $this->packFile($phar, $file);
             }
         }
 
+        // add special files
         foreach ($this->files as $filename) {
             if ('/' === $filename[0] || is_file($filename = $basePath . '/' . $filename)) {
-                $this->addFileToPhar($phar, new \SplFileInfo($filename));
+                $this->packFile($phar, new \SplFileInfo($filename));
             }
         }
 
+        // add index files
+        $this->packIndexFile($phar);
 
-        $phar->setStub($this->createStub($pharName));
+        // Stubs
+        // $phar->setDefaultStub($this->cliIndex, $this->webIndex));
+        $phar->setStub($this->createStub());
 
         if ($this->compressMode) {
             $phar->compressFiles($this->compressMode);
@@ -154,60 +324,158 @@ final class PharCompiler
         $phar->stopBuffering();
         unset($phar);
 
+        // re-sign the phar with reproducible timestamp / signature
+        if (class_exists(Timestamps::class)) {
+            $util = new Timestamps($pharFile);
+            $util->updateTimestamps($this->versionDate);
+            $util->save($pharFile, \Phar::SHA1);
+        }
+
         return $pharFile;
+    }
+
+    /**
+     * @param string $directory
+     * @return \Iterator|\SplFileInfo[]
+     */
+    protected function findFiles(string $directory)
+    {
+        return Helper::directoryIterator(
+            $directory,
+            $this->createIteratorFilter(), 
+            \FilesystemIterator::KEY_AS_PATHNAME | \FilesystemIterator::CURRENT_AS_FILEINFO | \FilesystemIterator::SKIP_DOTS
+        );
     }
 
     /**
      * Add a file to the Phar.
      * @param \Phar $phar
      * @param \SplFileInfo $file
-     * @param bool $strip
      */
-    private function addFileToPhar(\Phar $phar, \SplFileInfo $file, $strip = true)
+    private function packFile(\Phar $phar, \SplFileInfo $file)
     {
-        $isPhp = $file->getExtension() === 'php';
-        $basePath = $this->basePath;
+        // skip error
+        if (!file_exists($file)) {
+            $this->reportError("File $file is not exists!");
 
-        // $path = str_replace($basePath . DIRECTORY_SEPARATOR, '', $file->getRealPath());
-        $path = substr($file->getRealPath(), \strlen($basePath) + 1);
+            return;
+        }
 
-        if ($isPhp && $strip) {
-            $content = php_strip_whitespace($file);
-        } elseif ('LICENSE' === basename($file)) {
-            $content = file_get_contents($file);
-            $content = "\n" . $content . "\n";
-        } else {
-            $content = file_get_contents($file);
+        $this->counter++;
+        $path = $this->getRelativeFilePath($file);
+        $strip = $this->stripComments;
+        $content = file_get_contents($file);
+
+        // clear php file comments
+        if ($strip && strpos($path, '.php')) {
+            $filter = $this->stripFilter;
+
+            if (!$filter || ($filter && $filter($file))) {
+                $content = $this->stripWhitespace($content);
+            }
+        }
+
+        // have versionFile
+        if ($path === $this->versionFile) {
+            $content = str_replace([
+                '@package_version@',
+                '@package_branch_alias_version@',
+                '@release_date@',
+            ], [
+                $this->version,
+                $this->branchAliasVersion,
+                $this->versionDate->format('Y-m-d H:i:s')
+            ], $content);
+        }
+
+        if ($cb = $this->events['add']) {
+            $cb($path, $this->counter);
         }
 
         $phar->addFromString($path, $content);
     }
 
-    private function packIndexFile()
+    /**
+     * @param \Phar $phar
+     */
+    private function packIndexFile(\Phar $phar)
     {
+        if ($this->cliIndex) {
+            $this->counter++;
+            $path = $this->basePath . '/' . $this->cliIndex;
+            $content = preg_replace('{^#!/usr/bin/env php\s*}', '', file_get_contents($path));
 
+            if ($cb = $this->events['add']) {
+                $cb($this->cliIndex, $this->counter);
+            }
+
+            $phar->addFromString($this->cliIndex, trim($content));
+        }
+
+        if ($this->webIndex) {
+            $this->counter++;
+            $path = $this->basePath . '/' . $this->webIndex;
+            $content = file_get_contents($path);
+
+            if ($cb = $this->events['add']) {
+                $cb($this->webIndex, $this->counter);
+            }
+
+            $phar->addFromString($this->webIndex, trim($content));
+        }
+    }
+    
+    /**
+     * @return int
+     */
+    public function getCounter(): int
+    {
+        return $this->counter;
     }
 
     /**
-     * @param string $pharName
      * @return string
      */
-    private function createStub(string $pharName): string
+    private function createStub(): string
     {
-        // Stubs
-        // return \Phar::createDefaultStub($this->cliIndex, $this->webIndex);
-
-        // 设置入口
-        return <<<EOF
+        // var_dump($this);die;
+        $date = date('Y-m-d H:i');
+        $pharName = $this->pharName;
+        $stub = <<<EOF
 <?php
+/**
+ * @date $date
+ * @author inhere <in.798@qq.com>
+ */
 
-Phar::mapPhar('{$pharName}');
+define('IN_PHAR', true);
+Phar::mapPhar('$pharName');
 
-require 'phar://{$pharName}/{$this->cliIndex}';
-
-__HALT_COMPILER(); 
 EOF;
+        // add shebang
+        if ($shebang = $this->shebang) {
+            $shebang = \is_string($shebang) ? $shebang : '#!/usr/bin/env php';
+            $stub = "$shebang\n$stub";
+        }
 
+        if ($this->cliIndex && $this->webIndex) {
+            $stub .= <<<EOF
+// for command line            
+if (PHP_SAPI === 'cli') {
+    require 'phar://$pharName/{$this->cliIndex}';
+} else {
+    require 'phar://$pharName/{$this->webIndex}';
+}
+EOF;
+        } elseif ($this->cliIndex) {
+            $stub .= "\nrequire 'phar://$pharName/{$this->cliIndex}';\n";
+        } elseif ($this->webIndex) {
+            $stub .= "\nrequire 'phar://$pharName/{$this->webIndex}';\n";
+        } else {
+            throw new \RuntimeException("'cliIndex' and 'webIndex', please set at least one");
+        }
+
+        return $stub . "\n__HALT_COMPILER();\n";
     }
 
     /**
@@ -215,26 +483,155 @@ EOF;
      */
     private function createIteratorFilter(): \Closure
     {
-        return function (\SplFileInfo $file) {
-            $name = $file->getFilename();
+        if (!$this->fileFilter) {
+            $this->fileFilter = function (\SplFileInfo $file) {
+                $name = $file->getFilename();
 
-            // Skip hidden files and directories.
-            if ($name[0] === '.') {
-                return false;
+                // Skip hidden files and directories.
+                if ($name[0] === '.') {
+                    return false;
+                }
+
+                if ($file->isDir()) {
+                    // Only recurse into intended subdirectories.
+                    return !\in_array($name, $this->excludes, true);
+                }
+
+                // if (\in_array($name, $this->options['fileInclude'], true)) {
+                //     return true;
+                // }
+
+                // Only consume files of interest.
+                return (bool)stripos($name, '.php');
+            };
+        }
+
+        return $this->fileFilter;
+    }
+
+    /**
+     * Removes whitespace from a PHP source string while preserving line numbers.
+     * @param  string $source A PHP string
+     * @return string The PHP string with the whitespace removed
+     */
+    private function stripWhitespace(string $source): string
+    {
+        if (!\function_exists('token_get_all')) {
+            return $source;
+        }
+
+        $output = '';
+        foreach (token_get_all($source) as $token) {
+            if (\is_string($token)) {
+                $output .= $token;
+            } elseif (\in_array($token[0], [T_COMMENT, T_DOC_COMMENT], true)) {
+                $output .= str_repeat("\n", substr_count($token[1], "\n"));
+            } elseif (T_WHITESPACE === $token[0]) {
+                // reduce wide spaces
+                $whitespace = preg_replace('{[ \t]+}', ' ', $token[1]);
+                // normalize newlines to \n
+                $whitespace = preg_replace('{(?:\r\n|\r|\n)}', "\n", $whitespace);
+                // trim leading spaces
+                $whitespace = preg_replace('{\n +}', "\n", $whitespace);
+                $output .= $whitespace;
+            } else {
+                $output .= $token[1];
             }
+        }
 
-            if ($file->isDir()) {
-                // Only recurse into intended subdirectories.
-                return preg_match($this->options['dirExclude'], $name);
-            }
+        return $output;
+    }
+    
+    /**
+     * auto collect project information by git log
+     */
+    private function collectInformation()
+    {
+        if (!$this->collectVersionInfo) {
+            return;
+        }
 
-            if (\in_array($name, $this->options['fileInclude'], true)) {
-                return true;
-            }
+        $basePath = $this->basePath;
+        list($code, $ret,) = CliUtil::run('git log --pretty="%H" -n1 HEAD', $basePath);
 
-            // Only consume files of interest.
-            return preg_match($this->options['fileMatch'], $name);
-        };
+        if ($code !== 0) {
+            throw new \RuntimeException(
+                'Can\'t run git log. You must ensure to run compile from git repository clone and that git binary is available.'
+            );
+        }
+
+        $this->version = trim($ret);
+
+        list($code, $ret,) = CliUtil::run('git log -n1 --pretty=%ci HEAD', $basePath);
+
+        if ($code !== 0) {
+            throw new \RuntimeException(
+                'Can\'t run git log. You must ensure to run compile from git repository clone and that git binary is available.'
+            );
+        }
+
+        $this->versionDate = new \DateTime(trim($ret));
+        $this->versionDate->setTimezone(new \DateTimeZone('UTC'));
+
+        // 获取到最新的 tag
+        list($code, $ret,) = CliUtil::run('git describe --tags --exact-match HEAD', $basePath);
+        if ($code === 0) {
+            $this->version = trim($ret);
+        } else {
+            list($code, $ret,) = CliUtil::run('git branch', $basePath);
+            $this->branchAliasVersion = $code === 0 ? trim($ret): 'UNKNOWN';
+        }
+    }
+
+    /**
+     * @param  \SplFileInfo $file
+     * @return string
+     */
+    private function getRelativeFilePath($file): string
+    {
+        $realPath = $file->getRealPath();
+        $pathPrefix = $this->basePath . DIRECTORY_SEPARATOR;
+
+        $pos = strpos($realPath, $pathPrefix);
+        $relativePath = $pos !== false ? substr_replace($realPath, '', $pos, \strlen($pathPrefix)) : $realPath;
+
+        return str_replace('\\', '/', $relativePath);
+    }
+
+    /**
+     * @param string $error
+     */
+    private function reportError($error)
+    {
+        if ($cb = $this->events['error']) {
+            $cb($error);
+        }
+    }
+
+    /**
+     * add event handler
+     * @param string $event
+     * @param \Closure $closure
+     */
+    public function on(string $event, \Closure $closure)
+    {
+        $this->events[$event] = $closure;
+    }
+
+    /**
+     * @param \Closure $onAdd
+     */
+    public function onAdd(\Closure $onAdd)
+    {
+        $this->events['add'] = $onAdd;
+    }
+
+    /**
+     * @param \Closure $onError
+     */
+    public function onError(\Closure $onError)
+    {
+        $this->events['error'] = $onError;
     }
 
     /**
@@ -262,66 +659,11 @@ EOF;
     }
 
     /**
-     * @param array $files
-     * @return PharCompiler
-     */
-    public function setFiles(array $files): self
-    {
-        $this->files = $files;
-
-        return $this;
-    }
-
-    /**
-     * @param array $files
-     * @return PharCompiler
-     */
-    public function addFiles(array $files): self
-    {
-        $this->files = $files;
-
-        return $this;
-    }
-
-    /**
      * @return array
      */
     public function getExcludes(): array
     {
         return $this->excludes;
-    }
-
-    /**
-     * @param array $excludes
-     * @return $this
-     */
-    public function setExcludes(array $excludes): self
-    {
-        $this->excludes = $excludes;
-
-        return $this;
-    }
-
-    /**
-     * @param string $dir
-     * @return $this
-     */
-    public function addExclude(string $dir): self
-    {
-        $this->excludes[] = $dir;
-
-        return $this;
-    }
-
-    /**
-     * @param array $excludes
-     * @return $this
-     */
-    public function addExcludes(array $excludes): self
-    {
-        $this->excludes = $excludes;
-
-        return $this;
     }
 
     /**
@@ -358,6 +700,71 @@ EOF;
     public function setWebIndex(string $webIndex): self
     {
         $this->webIndex = $webIndex;
+        return $this;
+    }
+
+    /**
+     * @return \Closure[]
+     */
+    public function getEvents(): array
+    {
+        return $this->events;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getVersionFile()
+    {
+        return $this->versionFile;
+    }
+
+    /**
+     * @param string $versionFile
+     * @return PharCompiler
+     */
+    public function setVersionFile(string $versionFile): PharCompiler
+    {
+        $this->versionFile = $versionFile;
+
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getVersion()
+    {
+        return $this->version;
+    }
+
+    /**
+     * @param null|string $version
+     * @return PharCompiler
+     */
+    public function setVersion(string $version): PharCompiler
+    {
+        $this->version = $version;
+
+        return $this;
+    }
+
+    /**
+     * @return null|string
+     */
+    public function getBranchAliasVersion()
+    {
+        return $this->branchAliasVersion;
+    }
+
+    /**
+     * @param null|string $branchAliasVersion
+     * @return PharCompiler
+     */
+    public function setBranchAliasVersion(string $branchAliasVersion): PharCompiler
+    {
+        $this->branchAliasVersion = $branchAliasVersion;
+
         return $this;
     }
 

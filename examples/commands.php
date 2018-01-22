@@ -11,6 +11,7 @@
 use Inhere\Console\Examples\Commands\DemoCommand;
 use Inhere\Console\Examples\Commands\TestCommand;
 use Inhere\Console\Examples\Controllers\HomeController;
+use Inhere\Console\Examples\Controllers\PharController;
 use Inhere\Console\Examples\Controllers\ProcessController;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
@@ -35,6 +36,7 @@ $app->controller('home', HomeController::class, [
 $app->controller(ProcessController::class, null, [
     'aliases' => 'prc'
 ]);
+$app->controller(PharController::class);
 
 // add alias for a group command.
 $app->addCommandAliases('home:test', 'h-test');

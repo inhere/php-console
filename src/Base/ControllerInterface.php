@@ -17,7 +17,7 @@ interface ControllerInterface
     /**
      * @return int
      */
-    public function helpCommand();
+    public function helpCommand(): int;
 
     /**
      * show command list of the controller class

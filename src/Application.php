@@ -191,7 +191,7 @@ class Application extends AbstractApplication
     public function registerCommands(string $namespace, string $basePath)
     {
         $length = \strlen($basePath) + 1;
-        $iterator = Helper::recursiveDirectoryIterator($basePath, $this->getFileFilter());
+        $iterator = Helper::directoryIterator($basePath, $this->getFileFilter());
 
         foreach ($iterator as $file) {
             $class = $namespace . '\\' . \substr($file, $length, -4);
@@ -211,7 +211,7 @@ class Application extends AbstractApplication
     public function registerGroups(string $namespace, string $basePath)
     {
         $length = \strlen($basePath) + 1;
-        $iterator = Helper::recursiveDirectoryIterator($basePath, $this->getFileFilter());
+        $iterator = Helper::directoryIterator($basePath, $this->getFileFilter());
 
         foreach ($iterator as $file) {
             $class = $namespace . '\\' . \substr($file, $length, -4);

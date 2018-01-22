@@ -70,7 +70,7 @@ class Helper
     /**
      * @return bool
      */
-    public static function isSupportColor()
+    public static function isSupportColor(): bool
     {
         return self::supportColor();
     }
@@ -81,7 +81,7 @@ class Helper
      * \Symfony\Component\Console\Output\OutputStream.
      * @return boolean
      */
-    public static function supportColor()
+    public static function supportColor(): bool
     {
         if (DIRECTORY_SEPARATOR === '\\') {
             return
@@ -103,7 +103,7 @@ class Helper
     /**
      * @return bool
      */
-    public function isSupport256Color()
+    public function isSupport256Color(): bool
     {
         return DIRECTORY_SEPARATOR === '/' && strpos(getenv('TERM'), '256color') !== false;
     }
@@ -111,7 +111,7 @@ class Helper
     /**
      * @return bool
      */
-    public static function isAnsiSupport()
+    public static function isAnsiSupport(): bool
     {
         return getenv('ANSICON') === true || getenv('ConEmuANSI') === 'ON';
     }
@@ -121,7 +121,7 @@ class Helper
      * @param  int|resource $fileDescriptor
      * @return boolean
      */
-    public static function isInteractive($fileDescriptor)
+    public static function isInteractive($fileDescriptor): bool
     {
         return \function_exists('posix_isatty') && @posix_isatty($fileDescriptor);
     }
@@ -139,18 +139,42 @@ class Helper
     }
 
     /**
+     * @param string $path
+     * @return bool
+     */
+    public static function isAbsPath(string $path): bool
+    {
+        return $path{0} === '/' || 1 === preg_match('#^[a-z]:[\/|\\\]{1}.+#i', $path);
+    }
+
+    /**
+     * @param string $dir
+     * @param int $mode
+     */
+    public static function mkdir($dir, $mode = 0775)
+    {
+        if (!file_exists($dir) && !mkdir($dir, $mode, true) && !is_dir($dir)) {
+            throw new \RuntimeException(sprintf('Directory "%s" was not created', $dir));
+        }
+    }
+
+    /**
      * @param string $srcDir
      * @param callable $filter
+     * @param int $flags
      * @return \RecursiveIteratorIterator
-     * @throws \InvalidArgumentException
      */
-    public static function recursiveDirectoryIterator(string $srcDir, callable $filter)
+    public static function directoryIterator(
+        string $srcDir,
+        callable $filter,
+        $flags = \FilesystemIterator::KEY_AS_PATHNAME | \FilesystemIterator::CURRENT_AS_FILEINFO
+    ): \RecursiveIteratorIterator
     {
         if (!$srcDir || !file_exists($srcDir)) {
             throw new \InvalidArgumentException('Please provide a exists source directory.');
         }
 
-        $directory = new \RecursiveDirectoryIterator($srcDir);
+        $directory = new \RecursiveDirectoryIterator($srcDir, $flags);
         $filterIterator = new \RecursiveCallbackFilterIterator($directory, $filter);
 
         return new \RecursiveIteratorIterator($filterIterator);
@@ -171,7 +195,7 @@ class Helper
      * @param string $tag
      * @return string
      */
-    public static function wrapTag($string, $tag)
+    public static function wrapTag($string, $tag): string
     {
         if (!$string) {
             return '';
@@ -186,19 +210,19 @@ class Helper
 
     /**
      * clear Ansi Code
-     * @param $string
-     * @return mixed
+     * @param string $string
+     * @return string
      */
-    public static function stripAnsiCode($string)
+    public static function stripAnsiCode($string): string
     {
-        return preg_replace('/\033\[[\d;?]*\w/', '', $string);
+        return (string)preg_replace('/\033\[[\d;?]*\w/', '', $string);
     }
 
     /**
      * @param $string
      * @return int
      */
-    public static function strUtf8Len($string)
+    public static function strUtf8Len($string): int
     {
         // strlen: one chinese is 3 char.
         // mb_strlen: one chinese is 1 char.
@@ -211,7 +235,7 @@ class Helper
      * @param $string
      * @return int
      */
-    public static function strLen($string)
+    public static function strLen($string): int
     {
         if (false === $encoding = mb_detect_encoding($string, null, true)) {
             return \strlen($string);
@@ -226,7 +250,7 @@ class Helper
      * @param string $padStr
      * @return string
      */
-    public static function strPad($string, $indent, $padStr)
+    public static function strPad(string $string, $indent, $padStr): string
     {
         return $indent > 0 ? str_pad($string, $indent, $padStr) : $string;
     }
@@ -261,14 +285,14 @@ class Helper
      * @param int $similarPercent
      * @return array
      */
-    public static function findSimilar($need, $iterator, $similarPercent = 45)
+    public static function findSimilar($need, $iterator, $similarPercent = 45): array
     {
+        if (!$need) {
+            return [];
+        }
+
         // find similar command names by similar_text()
         $similar = [];
-
-        if (!$need) {
-            return $similar;
-        }
 
         foreach ($iterator as $name) {
             similar_text($need, $name, $percent);
@@ -292,7 +316,7 @@ class Helper
      * @param bool $expectInt
      * @return int
      */
-    public static function getKeyMaxWidth(array $data, $expectInt = false)
+    public static function getKeyMaxWidth(array $data, $expectInt = false): int
     {
         $keyMaxWidth = 0;
 
@@ -312,7 +336,7 @@ class Helper
      * @param array ...$args
      * @return string
      */
-    public static function dumpVars(...$args)
+    public static function dumpVars(...$args): string
     {
         ob_start();
         var_dump(...$args);
@@ -326,7 +350,7 @@ class Helper
      * @param array ...$args
      * @return string
      */
-    public static function printVars(...$args)
+    public static function printVars(...$args): string
     {
         $string = '';
 
