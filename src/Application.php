@@ -54,7 +54,7 @@ class Application extends AbstractApplication
         }
 
         // not enable
-        if ($class::isEnabled()) {
+        if (!$class::isEnabled()) {
             return $this;
         }
 
@@ -131,7 +131,7 @@ class Application extends AbstractApplication
 
             // not enable
             /** @var Command $handler */
-            if ($handler::isEnabled()) {
+            if (!$handler::isEnabled()) {
                 return $this;
             }
         } elseif (!\is_object($handler) || !method_exists($handler, '__invoke')) {
