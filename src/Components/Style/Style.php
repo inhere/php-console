@@ -66,10 +66,10 @@ class Style
     protected static $noColor = false;
 
     /**
-     * Array of Style objects
-     * @var array
+     * Array of Color objects
+     * @var Color[]
      */
-    protected $styles = [];
+    private $styles = [];
 
     /**
      * @return Style
@@ -169,17 +169,17 @@ class Style
     }
 
     /**
-     * @param $text
+     * @param string $text
      * @return mixed|string
      */
-    public function format($text)
+    public function format(string $text)
     {
         if (!$text || false === strpos($text, '<')) {
             return $text;
         }
 
         // if don't support output color text, clear color tag.
-        if (!Helper::isSupportColor() || self::isNoColor()) {
+        if (!Helper::supportColor() || self::isNoColor()) {
             return static::stripColor($text);
         }
 
@@ -188,14 +188,14 @@ class Style
         }
 
         foreach ((array)$matches[0] as $i => $m) {
-            if (array_key_exists($matches[1][$i], $this->styles)) {
-                $text = $this->replaceColor($text, $matches[1][$i], $matches[2][$i],
-                    (string)$this->styles[$matches[1][$i]]);
+            $key = $matches[1][$i];
 
-                // Custom style format @see Style::makeByString()
-            } elseif (strpos($matches[1][$i], '=')) {
-                $text = $this->replaceColor($text, $matches[1][$i], $matches[2][$i],
-                    (string)Color::makeByString($matches[1][$i]));
+            if (array_key_exists($key, $this->styles)) {
+                $text = $this->replaceColor($text, $key, $matches[2][$i], (string)$this->styles[$key]);
+
+                /** Custom style format @see Color::makeByString() */
+            } elseif (strpos($key, '=')) {
+                $text = $this->replaceColor($text, $key, $matches[2][$i], (string)Color::makeByString($key));
             }
         }
 
@@ -220,10 +220,10 @@ class Style
 
     /**
      * Strip color tags from a string.
-     * @param $string
+     * @param string $string
      * @return mixed
      */
-    public static function stripColor($string)
+    public static function stripColor(string $string)
     {
         // $text = strip_tags($text);
         return preg_replace(self::STRIP_TAG, '', $string);

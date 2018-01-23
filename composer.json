@@ -27,6 +27,7 @@
   },
   "suggest": {
     "symfony/process": "php process operation",
+    "padraic/phar-updater": "A thing to make PHAR self-updating easy and secure.",
     "text/template": "Single-Class string template engine for PHP5/7 supporting if/loops/filters"
   }
 }

@@ -146,6 +146,7 @@ abstract class AbstractCommand implements BaseCommandInterface
 
         if ($this->input->sameOpt(['h', 'help'])) {
             $this->showHelp();
+
             return 0;
         }
 
@@ -194,22 +195,22 @@ abstract class AbstractCommand implements BaseCommandInterface
      */
     protected function showHelp(): bool
     {
-        if (!$def = $this->getDefinition()) {
+        if (!$definition = $this->getDefinition()) {
             return false;
         }
 
         // 创建了 InputDefinition , 则使用它的信息(此时不会再解析和使用命令的注释)
-        $info = $def->getSynopsis();
-        $info['usage'] = sprintf('%s %s %s',
-            $this->input->getScript(),
-            $this->input->getCommand(),
-            $info['usage']
-        );
+        $help = $definition->getSynopsis();
+        $help['usage'] = sprintf('%s %s %s', $this->input->getScript(), $this->input->getCommand(), $help['usage']);
+        $help['global options:'] = FormatUtil::alignmentOptions(Application::getInternalOptions());
 
-        $this->output->mList($info, ['sepChar' => '  ']);
+        if (empty($help['description']) && $this->isAloneCommand()) {
+            $help['description'] = self::getDefinition();
+        }
+
+        $this->output->mList($help, ['sepChar' => '  ']);
 
         return true;
-
     }
 
     /**
@@ -363,7 +364,7 @@ abstract class AbstractCommand implements BaseCommandInterface
      * @param string $str
      * @return string
      */
-    protected function parseAnnotationVars($str)
+    protected function parseAnnotationVars(string $str): string
     {
         // not use vars
         if (false === strpos($str, '{')) {
@@ -383,13 +384,21 @@ abstract class AbstractCommand implements BaseCommandInterface
     }
 
     /**
+     * @return bool
+     */
+    public function isAloneCommand(): bool
+    {
+        return $this instanceof CommandInterface;
+    }
+
+    /**
      * show help by parse method annotations
      * @param string $method
      * @param null|string $action
      * @param array $aliases
      * @return int
      */
-    protected function showHelpByMethodAnnotations($method, $action = null, array $aliases = [])
+    protected function showHelpByMethodAnnotations(string $method, string $action = null, array $aliases = []): int
     {
         $ref = new \ReflectionClass($this);
         $name = $this->input->getCommand();

@@ -7,11 +7,11 @@
  * @var Inhere\Console\Application $app
  */
 
-// use Inhere\Console\BuiltIn\PharController;
+use Inhere\Console\BuiltIn\PharController;
+use Inhere\Console\BuiltIn\SelfUpdateCommand;
 use Inhere\Console\Examples\Commands\DemoCommand;
 use Inhere\Console\Examples\Commands\TestCommand;
 use Inhere\Console\Examples\Controllers\HomeController;
-use Inhere\Console\Examples\Controllers\PharController;
 use Inhere\Console\Examples\Controllers\ProcessController;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
@@ -25,6 +25,10 @@ $app->command('exam', function (Input $in, Output $out) {
 
 $app->command('test', TestCommand::class, [
     'aliases' => ['t']
+]);
+
+$app->command(SelfUpdateCommand::class, null, [
+    'aliases' => ['selfUpdate']
 ]);
 
 // $app->controller(PharController::class);

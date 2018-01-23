@@ -6,7 +6,7 @@
  * Time: 11:55
  */
 
-namespace Inhere\Console\Examples\Controllers;
+namespace Inhere\Console\BuiltIn;
 
 use Inhere\Console\Components\PharCompiler;
 use Inhere\Console\Controller;
@@ -15,7 +15,7 @@ use Inhere\Console\Utils\Show;
 
 /**
  * Class PharController
- * @package Inhere\Console\Examples\Controllers
+ * @package Inhere\Console\BuiltIn
  */
 class PharController extends Controller
 {
@@ -41,35 +41,7 @@ class PharController extends Controller
         $dir = $in->getOpt('dir') ?: $workDir;
         $pharFile = $workDir . '/' . $in->getOpt('output', 'app.phar');
 
-        $cpr = new PharCompiler($dir);
-
-        // config
-        $cpr
-            // ->stripComments(false)
-            ->setShebang(true)
-            ->addExclude([
-                'demo',
-                'tests',
-                'tmp',
-            ])
-            ->addFile([
-                'LICENSE',
-                'composer.json',
-                'README.md',
-                'tests/boot.php',
-            ])
-            ->setCliIndex('examples/app')
-            // ->setWebIndex('web/index.php')
-            // ->setVersionFile('config/config.php')
-            ->in($dir)
-        ;
-
-        $cpr->setStripFilter(function ($file) {
-            /** @var \SplFileInfo $file */
-            $name = $file->getFilename();
-
-            return false === strpos($name, 'Command.php') && false === strpos($name, 'Controller.php');
-        });
+        $cpr = $this->configCompiler($dir);
 
         $counter = null;
         $refresh = $in->boolOpt('refresh');
@@ -114,6 +86,46 @@ class PharController extends Controller
         ]);
 
         return 0;
+    }
+
+    /**
+     * @param string $dir
+     * @return PharCompiler
+     */
+    protected function configCompiler(string $dir): PharCompiler
+    {
+        $cpr = new PharCompiler($dir);
+
+        // config
+        $cpr
+            // ->stripComments(false)
+            ->setShebang(true)
+            ->addExclude([
+                'demo',
+                'tests',
+                'tmp',
+            ])
+            ->addFile([
+                'LICENSE',
+                'composer.json',
+                'README.md',
+                'tests/boot.php',
+            ])
+            ->setCliIndex('examples/app')
+            // ->setWebIndex('web/index.php')
+            // ->setVersionFile('config/config.php')
+            ->in($dir)
+        ;
+
+        // Command Controller 命令类不去除注释，注释上是命令帮助信息
+        $cpr->setStripFilter(function ($file) {
+            /** @var \SplFileInfo $file */
+            $name = $file->getFilename();
+
+            return false === strpos($name, 'Command.php') && false === strpos($name, 'Controller.php');
+        });
+
+        return $cpr;
     }
 
     /**

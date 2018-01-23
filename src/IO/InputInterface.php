@@ -19,7 +19,7 @@ interface InputInterface
     const ARG_OPTIONAL = 2;
     const ARG_IS_ARRAY = 4;
 
-    const OPT_BOOLEAN = 1;
+    const OPT_BOOLEAN = 1; // eq symfony InputOption::VALUE_NONE
     const OPT_REQUIRED = 2;
     const OPT_OPTIONAL = 4;
     const OPT_IS_ARRAY = 8;

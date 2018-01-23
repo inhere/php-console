@@ -29,7 +29,7 @@ abstract class AbstractApplication implements ApplicationInterface
     protected static $internalCommands = [
         'version' => 'Show application version information',
         'help' => 'Show application help information',
-        'list' => 'List all group and independent commands',
+        'list' => 'List all group and alone commands',
     ];
 
     /** @var array */
@@ -328,11 +328,11 @@ ERR;
         $pattern = $isGroup ? '/^[a-z][\w-]+$/' : '/^[a-z][\w-]*:?([a-z][\w-]+)?$/';
 
         if (1 !== preg_match($pattern, $name)) {
-            throw new \InvalidArgumentException('The command name is must match: ' . $pattern);
+            throw new \InvalidArgumentException("The command name '$name' is must match: $pattern");
         }
 
         if ($this->isInternalCommand($name)) {
-            throw new \InvalidArgumentException("The command name [$name] is not allowed. It is a built in command.");
+            throw new \InvalidArgumentException("The command name '$name' is not allowed. It is a built in command.");
         }
     }
 

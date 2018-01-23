@@ -23,6 +23,7 @@ class InputDefinition
     ];
 
     private $example;
+    /** @var string */
     private $description;
 
     /**
@@ -450,8 +451,6 @@ class InputDefinition
             $elements[] = $element;
             $args[$name] = $des;
         }
-
-        $opts['-h, --help'] = 'Show help information for the command';
 
         return [
             'description' => $this->description,
