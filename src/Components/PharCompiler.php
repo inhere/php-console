@@ -164,7 +164,9 @@ class PharCompiler
         }
 
         if (ini_get('phar.readonly')) {
-            throw new \RuntimeException("The 'phar.readonly' is 'On', build phar must setting it 'Off'");
+            throw new \RuntimeException(
+                "The 'phar.readonly' is 'On', build phar must setting it 'Off' or exec with 'php -d phar.readonly=0'"
+            );
         }
     }
 
