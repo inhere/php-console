@@ -32,11 +32,6 @@ abstract class AbstractCommand implements BaseCommandInterface
     protected static $name = '';
 
     /**
-     * @var int Whether enabled.
-     */
-    protected static $_status = self::ENABLED;
-
-    /**
      * command/controller description message
      * please use the property setting current controller/command description
      * @var string
@@ -67,6 +62,15 @@ abstract class AbstractCommand implements BaseCommandInterface
 
     /** @var array */
     private $annotationVars;
+
+    /**
+     * Whether enabled
+     * @return bool
+     */
+    public static function isEnabled(): bool
+    {
+        return true;
+    }
 
     /**
      * Command constructor.
@@ -481,17 +485,9 @@ abstract class AbstractCommand implements BaseCommandInterface
     }
 
     /**
-     * @return int
-     */
-    final public static function getStatus(): int
-    {
-        return static::$_status;
-    }
-
-    /**
      * @return string
      */
-    final public static function getDescription()
+    public static function getDescription()
     {
         return static::$description;
     }

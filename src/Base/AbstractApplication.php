@@ -268,11 +268,11 @@ ERR;
                 $message = str_replace($rootPath, '{ROOT}', $message);
             }
 
-
             $this->output->write($message, false);
         } else {
             // simple output
-            $this->output->error('An error occurred! MESSAGE: ' . $e->getMessage() . '. you can use --debug to see error details.');
+            $this->output->error('An error occurred! MESSAGE: ' . $e->getMessage());
+            $this->output->write("\nYou can use '--debug' to see error details.");
         }
     }
 
