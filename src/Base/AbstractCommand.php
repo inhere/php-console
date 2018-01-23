@@ -182,7 +182,7 @@ abstract class AbstractCommand implements BaseCommandInterface
      * do execute
      * @param  Input $input
      * @param  Output $output
-     * @return int
+     * @return int|mixed
      */
     abstract protected function execute($input, $output);
 
@@ -401,6 +401,7 @@ abstract class AbstractCommand implements BaseCommandInterface
      * @param null|string $action
      * @param array $aliases
      * @return int
+     * @throws \ReflectionException
      */
     protected function showHelpByMethodAnnotations(string $method, string $action = null, array $aliases = []): int
     {

@@ -19,15 +19,17 @@
 - 支持类似 `symfony/console` 的预定义参数定义(按位置赋予参数值, 需要严格限制参数选项时推荐使用)
 - 输出是 `windows` , `linux` 兼容的，不支持颜色的环境会自动去除相关CODE
 
-> 下面所有的特性，效果都是运行 `examples/` 中的示例代码 `php examples/app` 展示出来的。可以直接测试运行
 
 **内置的有趣工具**
 
-- 内置了Phar工具类，可以方便的将应用打包成`phar`文件(运行示例 `php examples/app phar:pack`,会将console库打包成一个`app.phar`)
+- `PharCompiler::class` 内置Phar工具类，可以方便的将应用打包成`phar`文件。方便分发和使用
+  - 运行示例中的命令 `php examples/app phar:pack`,会将此console库打包成一个`app.phar`
 - `ArtFont::class` 支持 ansi 图案字体显示（运行 `php examples/app -V` 可以看到效果）
 - `Download::class` 内置的简单的文件下载工具类，带有进度条
 - `Terminal::class` 简单的Terminal屏幕、光标控制操作类
 - **TODO** 快速的为当前应用生成 `bash/zsh` 环境下的自动补全脚本
+
+> 下面所有的特性，效果都是运行 `examples/` 中的示例代码 `php examples/app` 展示出来的。基本上涵盖了所有功能，可以直接测试运行
 
 ## [EN README](./README_en.md)
 
@@ -147,10 +149,10 @@ class TestCommand extends Command
     /**
      * @usage usage message
      * @arguments 
-     * arg     some message ...
+     *  arg     some message ...
      *  
      * @options 
-     * -o, --opt     some message ...
+     *  -o, --opt     some message ...
      *  
      * @param  Inhere\Console\IO\Input $input
      * @param  Inhere\Console\IO\Output $output
@@ -277,7 +279,7 @@ $ php examples/app home:useArg status=2 name=john arg0 -s=test --page=23 --id=15
 - `on|yes|true` -- `true`
 - `off|no|false` -- `false`
 
-### 获取命令基本信息:
+### 获取基本信息
 
 ```php
 echo $input->getScript();   // 'examples/app' 执行的入口脚本文件
@@ -285,7 +287,7 @@ echo $input->getCommand(); // 'home:useArg' 解析到的第一个参数将会被
 echo $input->getFullScript(); // 命令行输入的原样字符串
 ```
 
-### 获取解析后的参数信息
+### 获取参数信息
 
 > 通常的参数如 `arg0` 只能根据 index key 来获取值。但是提供以等号(`=`)连接的方式来指定参数名(eg: `status=2`)
 
@@ -354,7 +356,8 @@ $test = $input->boolOpt('test') // False
 
 $d = $input->boolOpt('d') // True
 $d = $input->sBoolOpt('d') // True
-$showHelp = $input->sameOpt(['h','help']) // 获取到一个值就返回，适合同一个含义的选项
+// 获取到一个值就返回，对同一个含义的选项选项非常有用
+$showHelp = $input->sameOpt(['h','help']) 
 ```
 
 ### 读取用户输入
