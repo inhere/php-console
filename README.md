@@ -6,20 +6,28 @@
 
 简洁、功能全面的php命令行应用库。提供控制台参数解析, 命令运行，颜色风格输出, 用户信息交互, 特殊格式信息显示。
 
-> 无其他库依赖，可以方便的整合到任何已有项目中。
+> 使用方便简单。无其他库依赖，可以方便的整合到任何已有项目中。
 
 - 命令行应用, 命令行的 `controller`, `command` 解析运行, 支持给命令设置别名
 - 功能全面的命令行的选项参数解析(命名参数，短选项，长选项 ...)
 - 命令行中功能强大的 `input`, `output` 管理、使用
-- 内置了Phar工具类，可以方便的将应用打包成 `phar` 文件(运行示例中 `php examples/app phar:pack`, 会将console库打包成一个`app.phar`)
-- 消息文本的多种颜色风格输出支持(`info`, `comment`, `success`, `danger`, `error` ... ...)
-- 丰富的特殊格式信息显示(`section`, `panel`, `padding`, `help-panel`, `table`, `title`, `list`, `multiList`, `progressBar`)
+- 命令方法注释自动解析为帮助信息（默认提取 `@usage` `@arguments` `@options` `@example` 等信息）
+- 支持输出多种颜色风格的消息文本(`info`, `comment`, `success`, `warning`, `danger`, `error` ... )
+- 常用的特殊格式信息显示(`section`, `panel`, `padding`, `helpPanel`, `table`, `tree`, `title`, `list`, `multiList`)
+- 丰富的动态信息显示(`pending/loading`, `pointing`, `spinner`, `counterTxt`, `progressTxt`, `progressBar`)
 - 常用的用户信息交互支持(`select`, `multiSelect`, `confirm`, `ask/question`, `askPassword/askHiddenInput`)
-- 命令方法注释自动解析为帮助信息（提取为参数 `arguments` 和 选项 `options` 等信息）
-- 支持类似 `symfony/console` 的预定义参数定义(按位置赋予参数值)
-- 输出是 windows,linux 兼容的，不支持颜色的环境会自动去除相关CODE
+- 支持类似 `symfony/console` 的预定义参数定义(按位置赋予参数值, 需要严格限制参数选项时推荐使用)
+- 输出是 `windows` , `linux` 兼容的，不支持颜色的环境会自动去除相关CODE
 
 > 下面所有的特性，效果都是运行 `examples/` 中的示例代码 `php examples/app` 展示出来的。可以直接测试运行
+
+**内置的有趣工具**
+
+- 内置了Phar工具类，可以方便的将应用打包成`phar`文件(运行示例 `php examples/app phar:pack`,会将console库打包成一个`app.phar`)
+- `ArtFont::class` 支持 ansi 图案字体显示（运行 `php examples/app -V` 可以看到效果）
+- `Download::class` 内置的简单的文件下载工具类，带有进度条
+- `Terminal::class` 简单的Terminal屏幕、光标控制操作类
+- **TODO** 快速的为当前应用生成 `bash/zsh` 环境下的自动补全脚本
 
 ## [EN README](./README_en.md)
 
@@ -77,6 +85,7 @@ $meta = [
 ];
 $input = new Input;
 $output = new Output;
+// 通常无需传入 $input $output ，会自动创建
 $app = new Application($meta, $input, $output);
 
 // add command routes
@@ -95,9 +104,7 @@ $app->run();
 
 !['app-command-list'](docs/screenshots/app-command-list.png)
 
-> `Independent Commands` 中的 demo 就是我们上面添加的命令
-
-- `[alias: ...]` 命令最后的alias 表明了此命令拥有的别名。 
+> `Alone Commands` 中的 demo 就是我们上面添加的命令
 
 ## 添加命令
 
@@ -135,7 +142,7 @@ class TestCommand extends Command
     // 命令描述
     protected static $description = 'this is a test independent command';
 
-    // 注释中的 @usage @arguments @options 在使用 帮助命令时，会被解析并显示出来
+    // 注释中的 @usage @arguments @options @example 在使用 帮助命令时，会被解析并显示出来
 
     /**
      * @usage usage message
@@ -156,18 +163,9 @@ class TestCommand extends Command
 }
 ```
 
-- 注册命令
-
- 在 `$app->run()` 之前通过 `$app->command('test', TestCommand::class)` 注册独立命令。
-
-```php
-$app->command(TestCommand::class);
-// OR 设置了命令名称，将会覆盖类里面设置的
-// $app->command('test1', TestCommand::class);
-```
-
 ### 命令组
 
+当一些命令相关性较大时，写在同一个文件里更方便阅读和管理。
 通过继承 `Inhere\Console\Controller` 添加一组命令. 即是命令行的控制器
 
 ```php
@@ -178,7 +176,9 @@ use Inhere\Console\Controller;
  */
 class HomeController extends Controller
 {
+    // 命令组名称
     protected static $name = 'home';
+    // 命令组描述
     protected static $description = 'default command controller. there are some command usage examples';
 
     /**
@@ -211,13 +211,37 @@ class HomeController extends Controller
 }
 ```
 
-注册命令，在 `$app->run()` 之前通过 `$app->controller(HomeController::class)` 注册命令组。
+### 注册命令
 
-**说明：**
+ 在 `$app->run()` 之前
+ 
+- 通过 `$app->command(TestCommand::class)` 注册独立命令。
+- 通过 `$app->controller(HomeController::class)` 注册命令组。
 
-命令组(eg `HomeController`) 中的命令(eg: `indexCommand`)上注释是可被解析的。
+```php
+$app->command(TestCommand::class);
+// OR 设置了命令名称，将会覆盖类里面设置的
+// $app->command('test1', TestCommand::class);
+```
 
-- 支持的tag有 `@usage` `@arguments` `@options` `@example`
+- 自动扫描注册
+
+手动注册太麻烦！ 可以配置命名空间和对应的路径来，将会自动扫描并注册命令。
+
+```php
+// 独立命令
+$app->registerCommands('App\\Console\\Commands', dirname(__DIR__) . '/Commands');
+// 命令组
+$app->registerGroups('App\\Console\\Controllers', dirname(__DIR__) . '/Controllers');
+```
+
+**一些说明：**
+
+命令上的注释是可被解析的
+
+- 注释中的 `@usage` `@arguments` `@options` `@example` 在使用帮助命令时，会被解析并显示出来
+- 注释里面同样支持带颜色的文本输出 `eg: this is a command's description <info>message</info>`
+- 上诉tag注释里，支持变量替换（例如： `{command}` 会自动替换为当前输入的命令）
 - 当你使用 `php examples/app home -h` 时，可以查看到 `HomeController` 的所有命令描述注释信息
   
   ![group-command-list](docs/screenshots/group-command-list.png)
@@ -225,19 +249,9 @@ class HomeController extends Controller
 
   ![group-command-list](docs/screenshots/command-help.png)
 
-> 小提示：注释里面同样支持带颜色的文本输出 `eg: this is a command's description <info>message</info>`
-
+- 看到一些命令最后的 `[alias: ...]` 了吗，那是此命令拥有的别名. 即用别名也可以访问它，当一个命令太长时可以加别名方便使用
 
 更多请查看 [examples](./examples) 中的示例代码和在目录下运行示例 `php examples/app` 来查看效果
-
-### 自动扫描注册
-
-可以配置命名空间和对应的路径来，自动扫描并注册命令。
-
-```php
-$app->registerCommands('App\\Console\\Commands', get_path('app/Console/Commands'));
-$app->registerGroups('App\\Console\\Controllers', get_path('app/Console/Controllers'));
-```
 
 ## 输入
 
