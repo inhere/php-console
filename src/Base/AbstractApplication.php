@@ -427,7 +427,7 @@ ERR;
         }
 
         if (!$hasGroup) {
-            $controllerArr[] = '... No register any group command(controller)';
+            $controllerArr[] = '... Not register any group command(controller)';
         }
 
         // all independent commands, Independent, Single, Alone
@@ -456,7 +456,7 @@ ERR;
         }
 
         if (!$hasCommand) {
-            $commandArr[] = '... No register any group command(controller)';
+            $commandArr[] = '... Not register any alone command';
         }
 
         // built in commands

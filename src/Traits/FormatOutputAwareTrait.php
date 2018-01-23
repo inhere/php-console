@@ -220,11 +220,15 @@ trait FormatOutputAwareTrait
     /**
      * @param mixed $data
      * @param bool $echo
+     * @param int $flags
      * @return int|string
      */
-    public function json($data, $echo = true)
-    {
-        $string = json_encode($data, JSON_PRETTY_PRINT);
+    public function json(
+        $data,
+        $echo = true,
+        int $flags = JSON_PRETTY_PRINT|JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES
+    ) {
+        $string = json_encode($data, $flags);
 
         if ($echo) {
             return Show::write($string);
