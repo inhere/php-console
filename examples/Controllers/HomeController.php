@@ -289,7 +289,7 @@ class HomeController extends Controller
      * @param Input $input
      * @return int
      */
-    public function progressCommand($input)
+    public function progressCommand($input): int
     {
         $i = 0;
         $total = 120;

@@ -18,7 +18,20 @@ final class CliUtil
      * get bash is available
      * @return bool
      */
-    public static function bashIsAvailable()
+    public static function shIsAvailable(): bool
+    {
+        // $checkCmd = "/usr/bin/env bash -c 'echo OK'";
+        // $shell = 'echo $0';
+        $checkCmd = "sh -c 'echo OK'";
+
+        return self::runCommand($checkCmd, false) === 'OK';
+    }
+
+    /**
+     * get bash is available
+     * @return bool
+     */
+    public static function bashIsAvailable(): bool
     {
         // $checkCmd = "/usr/bin/env bash -c 'echo OK'";
         // $shell = 'echo $0';
@@ -30,7 +43,7 @@ final class CliUtil
     /**
      * @return string
      */
-    public static function getNullDevice()
+    public static function getNullDevice(): string
     {
         if (Helper::isUnix()) {
             return '/dev/null';
@@ -69,44 +82,6 @@ final class CliUtil
     }
 
     /**
-     * @param string $command
-     * @param string|null $cwd
-     * @return array
-     */
-    public static function run(string $command, string $cwd = null): array
-    {
-        $descriptors = [
-            0 => ['pipe', 'r'], // stdin - read channel
-            1 => ['pipe', 'w'], // stdout - write channel
-            2 => ['pipe', 'w'], // stdout - error channel
-            3 => ['pipe', 'r'], // stdin - This is the pipe we can feed the password into
-        ];
-
-        $process = proc_open($command, $descriptors, $pipes, $cwd);
-
-        if (!\is_resource($process)) {
-            throw new \RuntimeException("Can't open resource with proc_open.");
-        }
-
-        // Nothing to push to input.
-        fclose($pipes[0]);
-
-        $output = stream_get_contents($pipes[1]);
-        fclose($pipes[1]);
-
-        $error = stream_get_contents($pipes[2]);
-        fclose($pipes[2]);
-
-        // TODO: Write passphrase in pipes[3].
-        fclose($pipes[3]);
-
-        // Close all pipes before proc_close!
-        $code = proc_close($process);
-
-        return [$code, $output, $error];
-    }
-
-    /**
      * Method to execute a command in the sys
      * Uses :
      * 1. system
@@ -119,25 +94,25 @@ final class CliUtil
      */
     public static function runCommand($command, $returnStatus = true)
     {
-        $return_var = 1;
+        $status = 1;
 
         //system
         if (\function_exists('system')) {
             ob_start();
-            system($command, $return_var);
+            system($command, $status);
             $output = ob_get_contents();
             ob_end_clean();
 
             // passthru
         } elseif (\function_exists('passthru')) {
             ob_start();
-            passthru($command, $return_var);
+            passthru($command, $status);
             $output = ob_get_contents();
             ob_end_clean();
             //exec
         } else {
             if (\function_exists('exec')) {
-                exec($command, $output, $return_var);
+                exec($command, $output, $status);
                 $output = implode("\n", $output);
 
                 //shell_exec
@@ -146,13 +121,13 @@ final class CliUtil
                     $output = shell_exec($command);
                 } else {
                     $output = 'Command execution not possible on this system';
-                    $return_var = 0;
+                    $status = 0;
                 }
             }
         }
 
         if ($returnStatus) {
-            return ['output' => trim($output), 'status' => $return_var];
+            return ['output' => trim($output), 'status' => $status];
         }
 
         return trim($output);
@@ -161,7 +136,7 @@ final class CliUtil
     /**
      * @return string
      */
-    public static function getTempDir()
+    public static function getTempDir(): string
     {
         // @codeCoverageIgnoreStart
         if (\function_exists('sys_get_temp_dir')) {
@@ -265,6 +240,4 @@ final class CliUtil
 
         return $info;
     }
-
-
 }

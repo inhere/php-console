@@ -174,7 +174,7 @@ abstract class AbstractApplication implements ApplicationInterface
      * @param string $command A command name
      * @return int|mixed
      */
-    abstract protected function dispatch($command);
+    abstract protected function dispatch(string $command);
 
     /**
      * run a independent command
@@ -287,7 +287,7 @@ ERR;
     /**
      * @param $command
      */
-    protected function filterSpecialCommand($command)
+    protected function filterSpecialCommand(string $command)
     {
         if (!$command) {
             if ($this->input->getSameOpt(['V', 'version'])) {
@@ -484,7 +484,7 @@ ERR;
     /**
      * @param string $name
      * @param string $default
-     * @return string
+     * @return string|null
      */
     public function getCommandMessage($name, $default = null)
     {
@@ -529,7 +529,7 @@ ERR;
      * @param string $name
      * @return string
      */
-    protected function getRealCommandName(string $name)
+    protected function getRealCommandName(string $name): string
     {
         return $this->commandAliases[$name] ?? $name;
     }
@@ -541,7 +541,7 @@ ERR;
     /**
      * @return array
      */
-    public function getControllerNames()
+    public function getControllerNames(): array
     {
         return array_keys($this->controllers);
     }
@@ -549,7 +549,7 @@ ERR;
     /**
      * @return array
      */
-    public function getCommandNames()
+    public function getCommandNames(): array
     {
         return array_keys($this->commands);
     }
@@ -581,7 +581,7 @@ ERR;
      * @param $name
      * @return bool
      */
-    public function isController($name)
+    public function isController(string $name): bool
     {
         return isset($this->controllers[$name]);
     }
@@ -613,7 +613,7 @@ ERR;
      * @param $name
      * @return bool
      */
-    public function isCommand($name)
+    public function isCommand(string $name): bool
     {
         return isset($this->commands[$name]);
     }
@@ -683,7 +683,7 @@ ERR;
     /**
      * @return string
      */
-    public function getName()
+    public function getName(): string
     {
         return $this->meta['name'];
     }
@@ -705,7 +705,7 @@ ERR;
      * @param null|string $default
      * @return array|string
      */
-    public function getMeta($name = null, $default = null)
+    public function getMeta(string $name = null, $default = null)
     {
         if (!$name) {
             return $this->meta;
@@ -727,7 +727,7 @@ ERR;
      * is profile
      * @return boolean
      */
-    public function isProfile()
+    public function isProfile(): bool
     {
         return (bool)$this->input->getOpt('profile', $this->getMeta('profile'));
     }

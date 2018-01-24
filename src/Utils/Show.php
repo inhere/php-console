@@ -87,7 +87,7 @@ class Show
      * @param int|boolean $quit If is int, setting it is exit code.
      * @return int
      */
-    public static function block($messages, $type = 'MESSAGE', $style = Style::NORMAL, $quit = false)
+    public static function block($messages, $type = 'MESSAGE', string $style = Style::NORMAL, $quit = false): int
     {
         $messages = \is_array($messages) ? array_values($messages) : array($messages);
 
@@ -113,7 +113,7 @@ class Show
      * @param int|boolean $quit If is int, setting it is exit code.
      * @return int
      */
-    public static function liteBlock($messages, $type = 'MESSAGE', $style = Style::NORMAL, $quit = false)
+    public static function liteBlock($messages, $type = 'MESSAGE', string $style = Style::NORMAL, $quit = false): int
     {
         $messages = \is_array($messages) ? array_values($messages) : array($messages);
 
@@ -180,16 +180,6 @@ class Show
         throw new \LogicException("Call a not exists method: $method");
     }
 
-    /**
-     * @param string $text
-     * @param string $style
-     * @param bool $nl
-     */
-    public static function color(string $text, string $style = 'info', $nl = true)
-    {
-        self::write(Helper::wrapTag($text, $style), $nl);
-    }
-
     /**************************************************************************************************
      * Output Format Message(section/list/helpPanel/panel/table)
      **************************************************************************************************/
@@ -200,7 +190,7 @@ class Show
      * @param int $width
      * @return int
      */
-    public static function splitLine(string $title, string $char = '-', int $width = 0)
+    public static function splitLine(string $title, string $char = '-', int $width = 0): int
     {
         if ($width <= 0) {
             list($width,) = CliUtil::getScreenSize();
@@ -221,7 +211,7 @@ class Show
      * @param string $title The title text
      * @param array $opts
      */
-    public static function title($title, array $opts = [])
+    public static function title(string $title, array $opts = [])
     {
         $opts = array_merge([
             'width' => 80,
@@ -263,7 +253,7 @@ class Show
      * @param string|array $body The section body message
      * @param array $opts
      */
-    public static function section($title, $body, array $opts = [])
+    public static function section(string $title, $body, array $opts = [])
     {
         $opts = array_merge([
             'width' => 80,
@@ -371,7 +361,7 @@ class Show
      * @param array $opts More {@see FormatUtil::spliceKeyValue()}
      * @return int|string
      */
-    public static function aList($data, $title = null, array $opts = [])
+    public static function aList($data, string $title = null, array $opts = [])
     {
         $string = '';
         $opts = array_merge([
@@ -404,7 +394,7 @@ class Show
      * @see Show::aList()
      * {@inheritdoc}
      */
-    public static function sList($data, $title = null, array $opts = [])
+    public static function sList($data, string $title = null, array $opts = [])
     {
         return self::aList($data, $title, $opts);
     }
@@ -571,7 +561,7 @@ class Show
      * @param  array $opts
      * @return int
      */
-    public static function panel($data, $title = 'Information Panel', array $opts = []): int
+    public static function panel($data, string $title = 'Information Panel', array $opts = []): int
     {
         if (!$data) {
             self::write('<info>No data to display!</info>');
@@ -753,7 +743,7 @@ class Show
      * ```
      * @return int
      */
-    public static function table(array $data, $title = 'Data Table', array $opts = []): int
+    public static function table(array $data, string $title = 'Data Table', array $opts = []): int
     {
         if (!$data) {
             return -404;
@@ -915,7 +905,7 @@ class Show
      * @param string $msg
      * @param bool $ended
      */
-    public static function spinner($msg = '', $ended = false)
+    public static function spinner(string $msg = '', $ended = false)
     {
         static $chars = '-\|/';
         static $counter = 0;
@@ -948,7 +938,7 @@ class Show
      * @param string $msg
      * @param bool $ended
      */
-    public static function loading($msg = 'Loading ', $ended = false)
+    public static function loading(string $msg = 'Loading ', $ended = false)
     {
         self::pending($msg, $ended);
     }
@@ -966,7 +956,7 @@ class Show
      * @param string $msg
      * @param bool $ended
      */
-    public static function pending($msg = 'Pending ', $ended = false)
+    public static function pending(string $msg = 'Pending ', $ended = false)
     {
         static $counter = 0;
         static $lastTime = null;
@@ -1005,9 +995,9 @@ class Show
      * ```
      * @param string $msg
      * @param bool $ended
-     * @return int
+     * @return int|mixed
      */
-    public static function pointing($msg = 'handling ', $ended = false)
+    public static function pointing(string $msg = 'handling ', $ended = false)
     {
         static $counter = 0;
 
@@ -1042,7 +1032,7 @@ class Show
      * @param string|null $doneMsg
      * @return \Generator
      */
-    public static function counterTxt($msg, $doneMsg = null)
+    public static function counterTxt(string $msg, $doneMsg = null)
     {
         $counter = 0;
         $finished = false;
@@ -1082,7 +1072,7 @@ class Show
      * @param string|null $doneMsg
      * @return \Generator
      */
-    public static function progressTxt($total, $msg, $doneMsg = null)
+    public static function progressTxt(int $total, string $msg, string $doneMsg = null)
     {
         $current = 0;
         $finished = false;
@@ -1145,7 +1135,7 @@ class Show
      * @internal int $current
      * @return \Generator
      */
-    public static function progressBar($total, array $opts = [])
+    public static function progressBar(int $total, array $opts = [])
     {
         $current = 0;
         $finished = false;
@@ -1221,7 +1211,7 @@ class Show
      * @return ProgressBar
      * @throws \LogicException
      */
-    public static function createProgressBar($max = 0, $start = true)
+    public static function createProgressBar($max = 0, $start = true): ProgressBar
     {
         $bar = new ProgressBar(null, $max);
 
@@ -1247,7 +1237,7 @@ class Show
     /**
      * @return string
      */
-    public static function getBuffer()
+    public static function getBuffer(): string
     {
         return self::$buffer;
     }
@@ -1381,7 +1371,7 @@ class Show
      * @param array $opts
      * @return int
      */
-    public static function writeRaw($message, $nl = true, $quit = false, array $opts = [])
+    public static function writeRaw($message, $nl = true, $quit = false, array $opts = []): int
     {
         $opts['color'] = false;
 
@@ -1395,7 +1385,7 @@ class Show
      * @param bool|int $quit
      * @return int
      */
-    public static function writeln($message, $quit = false, array $opts = [])
+    public static function writeln($message, $quit = false, array $opts = []): int
     {
         return self::write($message, true, $quit, $opts);
     }
@@ -1407,7 +1397,7 @@ class Show
      * @param array $opts
      * @return int
      */
-    public static function writeStyle($message, $style = 'info', $nl = true, array $opts = [])
+    public static function color($message, string $style = 'info', $nl = true, array $opts = []): int
     {
         $quit = isset($opts['quit']) ? (bool)$opts['quit'] : false;
 

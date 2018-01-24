@@ -66,9 +66,9 @@ class FixedInput extends Input
 
     private function collectPreParsed(array $tokens)
     {
-        foreach ($this->preParsed as $name => $hasVal) {
-
-        }
+        // foreach ($this->preParsed as $name => $hasVal) {
+        //
+        // }
     }
 
     /**

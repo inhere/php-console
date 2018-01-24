@@ -47,7 +47,7 @@ class InputDefinition
      * @param array $options
      * @return InputDefinition
      */
-    public static function make(array $arguments = [], array $options = [])
+    public static function make(array $arguments = [], array $options = []): InputDefinition
     {
         return new self($arguments, $options);
     }
@@ -68,7 +68,7 @@ class InputDefinition
      * @param array $arguments
      * @return InputDefinition
      */
-    public function setArguments(array $arguments)
+    public function setArguments(array $arguments): InputDefinition
     {
         $this->arguments = [];
 
@@ -160,7 +160,7 @@ class InputDefinition
      * @return array
      * @throws \InvalidArgumentException
      */
-    public function getArgument($name)
+    public function getArgument($name): array
     {
         if (!$this->hasArgument($name)) {
             throw new \InvalidArgumentException(sprintf('The "%s" argument does not exist.', $name));
@@ -175,7 +175,7 @@ class InputDefinition
      * @param string|int $name The argument name or position
      * @return bool true if the InputArgument object exists, false otherwise
      */
-    public function hasArgument($name)
+    public function hasArgument($name): bool
     {
         $arguments = \is_int($name) ? array_values($this->arguments) : $this->arguments;
 
@@ -185,7 +185,7 @@ class InputDefinition
     /**
      * @return array[]
      */
-    public function getArguments()
+    public function getArguments(): array
     {
         return $this->arguments;
     }
@@ -194,7 +194,7 @@ class InputDefinition
      * Returns the number of arguments.
      * @return int
      */
-    public function getArgumentCount()
+    public function getArgumentCount(): int
     {
         return \count($this->arguments);
     }
@@ -202,7 +202,7 @@ class InputDefinition
     /**
      * @return int
      */
-    public function getArgumentRequiredCount()
+    public function getArgumentRequiredCount(): int
     {
         return $this->requiredCount;
     }
@@ -239,7 +239,7 @@ class InputDefinition
      * Adds an option.
      *
      * @param string|bool $name The option name, must is a string
-     * @param string|array $shortcut The shortcut (can be null)
+     * @param string|array|null $shortcut The shortcut (can be null)
      * @param int $mode The option mode: One of the Input::OPT_* constants
      * @param string $description A description text
      * @param mixed $default The default value (must be null for InputOption::OPT_BOOL)
@@ -248,7 +248,7 @@ class InputDefinition
      * @throws \InvalidArgumentException
      * @throws \LogicException
      */
-    public function addOption($name, $shortcut = null, $mode = null, $description = '', $default = null)
+    public function addOption(string $name, string $shortcut = null, $mode = null, $description = '', $default = null)
     {
         if (0 === strpos($name, '-')) {
             $name = trim($name, '-');
@@ -328,7 +328,7 @@ class InputDefinition
      * @return array
      * @throws \InvalidArgumentException
      */
-    public function getOption($name)
+    public function getOption($name): array
     {
         if (!$this->hasOption($name)) {
             throw new \InvalidArgumentException(sprintf('The "--%s" option does not exist.', $name));
@@ -341,7 +341,7 @@ class InputDefinition
      * @param string $name
      * @return bool
      */
-    public function hasOption($name)
+    public function hasOption($name): bool
     {
         return isset($this->options[$name]);
     }
@@ -351,7 +351,7 @@ class InputDefinition
      *
      * @return array[]
      */
-    public function getOptions()
+    public function getOptions(): array
     {
         return $this->options;
     }
@@ -360,7 +360,7 @@ class InputDefinition
      * @param string $name The InputOption shortcut
      * @return bool
      */
-    public function hasShortcut($name)
+    public function hasShortcut(string $name): bool
     {
         return isset($this->shortcuts[$name]);
     }
@@ -370,7 +370,7 @@ class InputDefinition
      * @param string $shortcut the Shortcut name
      * @return array
      */
-    public function getOptionByShortcut($shortcut)
+    public function getOptionByShortcut(string $shortcut): array
     {
         return $this->getOption($this->shortcutToName($shortcut));
     }
@@ -380,7 +380,7 @@ class InputDefinition
      * @return mixed
      * @throws \InvalidArgumentException
      */
-    private function shortcutToName($shortcut)
+    private function shortcutToName(string $shortcut)
     {
         if (!isset($this->shortcuts[$shortcut])) {
             throw new \InvalidArgumentException(sprintf('The "-%s" option does not exist.', $shortcut));
@@ -393,7 +393,7 @@ class InputDefinition
      * @param array $map
      * @return array
      */
-    private function mergeArgOptConfig(array $map)
+    private function mergeArgOptConfig(array $map): array
     {
         return $map ? array_merge(self::$defaultArgOptConfig, $map) : self::$defaultArgOptConfig;
     }
@@ -403,7 +403,7 @@ class InputDefinition
      * @param bool $short 简化版显示
      * @return array
      */
-    public function getSynopsis($short = false)
+    public function getSynopsis(bool $short = false): array
     {
         $elements = $args = $opts = [];
 
@@ -465,7 +465,7 @@ class InputDefinition
      * @param string $name
      * @return bool
      */
-    public function argumentIsRequired($name)
+    public function argumentIsRequired($name): bool
     {
         if (isset($this->arguments[$name])) {
             return $this->arguments[$name]['mode'] === Input::ARG_REQUIRED;
@@ -478,7 +478,7 @@ class InputDefinition
      * @param int $mode
      * @return bool
      */
-    protected function argumentIsAcceptValue($mode)
+    protected function argumentIsAcceptValue($mode): bool
     {
         return $mode === Input::ARG_REQUIRED || $mode === Input::ARG_OPTIONAL;
     }
@@ -487,7 +487,7 @@ class InputDefinition
      * @param int $mode
      * @return bool
      */
-    protected function optionIsAcceptValue($mode)
+    protected function optionIsAcceptValue($mode): bool
     {
         return $mode === Input::OPT_REQUIRED || $mode === Input::OPT_OPTIONAL;
     }
@@ -512,7 +512,7 @@ class InputDefinition
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getDescription()
     {
@@ -523,7 +523,7 @@ class InputDefinition
      * @param string $description
      * @return $this
      */
-    public function setDescription($description)
+    public function setDescription(string $description)
     {
         $this->description = $description;
 

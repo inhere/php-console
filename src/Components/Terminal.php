@@ -120,7 +120,7 @@ final class Terminal
         'scrollDown' => '%dT',
     ];
 
-    public static function make()
+    public static function make(): Terminal
     {
         if (!self::$instance) {
             self::$instance = new self;
@@ -141,7 +141,7 @@ final class Terminal
      * @param string $type
      * @return string
      */
-    public static function build($format, $type = 'm')
+    public static function build($format, $type = 'm'): string
     {
         $format = null === $format ? '' : implode(';', (array)$format);
 
@@ -191,7 +191,7 @@ final class Terminal
      * @param null $arg
      * @return $this
      */
-    public function screen($typeName, $arg = null)
+    public function screen(string $typeName, $arg = null)
     {
         if (!isset(self::$ctrlScreenCodes[$typeName])) {
             Show::error("The [$typeName] is not supported cursor control.", __LINE__);
@@ -217,7 +217,7 @@ final class Terminal
     /**
      * @return array
      */
-    public static function supportedCursorCtrl()
+    public static function supportedCursorCtrl(): array
     {
         return array_keys(self::$ctrlCursorCodes);
     }
@@ -225,7 +225,7 @@ final class Terminal
     /**
      * @return array
      */
-    public static function supportedScreenCtrl()
+    public static function supportedScreenCtrl(): array
     {
         return array_keys(self::$ctrlScreenCodes);
     }

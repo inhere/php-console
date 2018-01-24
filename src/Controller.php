@@ -45,7 +45,7 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
 
     /**
      * define command alias map
-     * @return array
+     * @return array|mixed
      */
     protected static function commandAliases()
     {
@@ -58,8 +58,9 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
     /**
      * @param string $command
      * @return int
+     * @throws \ReflectionException
      */
-    public function run($command = '')
+    public function run(string $command = ''): int
     {
         $this->action = $this->getRealCommandName(trim($command, $this->delimiter));
 
@@ -89,6 +90,7 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
      * @param  Input $input
      * @param  Output $output
      * @return mixed
+     * @throws \ReflectionException
      */
     protected function execute($input, $output)
     {
@@ -123,6 +125,7 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
 
     /**
      * @return bool
+     * @throws \ReflectionException
      */
     protected function showHelp(): bool
     {
@@ -147,6 +150,7 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
      *  {script} {name} index
      *
      * @return int
+     * @throws \ReflectionException
      */
     final public function helpCommand(): int
     {
@@ -168,6 +172,7 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
 
     /**
      * show command list of the controller class
+     * @throws \ReflectionException
      */
     final public function showCommandList()
     {

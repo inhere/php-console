@@ -27,6 +27,7 @@
 - `ArtFont::class` 支持 ansi 图案字体显示（运行 `php examples/app -V` 可以看到效果）
 - `Download::class` 内置的简单的文件下载工具类，带有进度条
 - `Terminal::class` 简单的Terminal屏幕、光标控制操作类
+- `ProcessUtil::class` 简单的进程操作使用类（fork,run,stop,wait ... 等）
 - **TODO** 快速的为当前应用生成 `bash/zsh` 环境下的自动补全脚本
 
 > 下面所有的特性，效果都是运行 `examples/` 中的示例代码 `php examples/app` 展示出来的。基本上涵盖了所有功能，可以直接测试运行
@@ -241,17 +242,17 @@ $app->registerGroups('App\\Console\\Controllers', dirname(__DIR__) . '/Controlle
 
 命令上的注释是可被解析的
 
-- 注释中的 `@usage` `@arguments` `@options` `@example` 在使用帮助命令时，会被解析并显示出来
-- 注释里面同样支持带颜色的文本输出 `eg: this is a command's description <info>message</info>`
-- 上述注释tag里，支持变量替换（例如： `{command}` 会自动替换为当前输入的命令）
 - 当你使用 `php examples/app home -h` 时，可以查看到 `HomeController` 的所有命令描述注释信息
   
   ![group-command-list](docs/screenshots/group-command-list.png)
+- 看到一些命令最后的 `[alias: ...]` 了吗，那是此命令拥有的别名. 
+  - 即用别名也可以访问它，当一个命令太长时可以加别名以方便使用。一个命令可以拥有多个别名
 - 当使用 `php examples/app home:test -h` 时，可以查看到关于 `HomeController::testCommand` 更详细的信息
 
   ![group-command-list](docs/screenshots/command-help.png)
-
-- 看到一些命令最后的 `[alias: ...]` 了吗，那是此命令拥有的别名. 即用别名也可以访问它，当一个命令太长时可以加别名方便使用
+- 注释中的 `@usage` `@arguments` `@options` `@example` 在使用帮助命令时，会被解析并显示出来
+- 注释里面同样支持带颜色的文本输出 `eg: this is a command's description <info>message</info>`
+- 上述注释tag里，支持变量替换（例如： `{command}` 会自动替换为当前输入的命令）
 
 更多请查看 [examples](./examples) 中的示例代码和在目录下运行示例 `php examples/app home` 来查看效果
 

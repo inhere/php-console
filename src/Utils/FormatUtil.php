@@ -18,7 +18,7 @@ final class FormatUtil
      * @param mixed $val
      * @return string
      */
-    public static function typeToString($val)
+    public static function typeToString($val): string
     {
         if (null === $val) {
             return '(Null)';
@@ -34,9 +34,9 @@ final class FormatUtil
     /**
      * to camel
      * @param string $name
-     * @return mixed|string
+     * @return string
      */
-    public static function camelCase($name)
+    public static function camelCase(string $name): string
     {
         $name = trim($name, '-_');
 
@@ -55,7 +55,7 @@ final class FormatUtil
      * @param string $indentChar
      * @return string
      */
-    public static function applyIndent(string $string, int $indent = 2, string $indentChar = ' ')
+    public static function applyIndent(string $string, int $indent = 2, string $indentChar = ' '): string
     {
         if (!$string || $indent <= 0) {
             return $string;
@@ -92,7 +92,7 @@ final class FormatUtil
      * @return string the wrapped text.
      * @from yii2
      */
-    public static function wrapText($text, $indent = 0, $width = 0)
+    public static function wrapText($text, $indent = 0, $width = 0): string
     {
         if (!$text) {
             return $text;
@@ -163,7 +163,7 @@ final class FormatUtil
      * @param array $options
      * @return array
      */
-    public static function alignmentOptions(array $options)
+    public static function alignmentOptions(array $options): array
     {
         // e.g '-h, --help'
         $hasShort = (bool)strpos(implode(array_keys($options), ''), ',');
@@ -198,7 +198,7 @@ final class FormatUtil
      * @param array $info
      * @return array
      */
-    public static function runtime($startTime, $startMem, array $info = [])
+    public static function runtime($startTime, $startMem, array $info = []): array
     {
         $info['startTime'] = $startTime;
         $info['endTime'] = microtime(true);
@@ -228,7 +228,7 @@ final class FormatUtil
      * FormatUtil::memoryUsage(memory_get_usage(true));
      * ```
      */
-    public static function memoryUsage($memory)
+    public static function memoryUsage($memory): string
     {
         if ($memory >= 1024 * 1024 * 1024) {
             return sprintf('%.2f Gb', $memory / 1024 / 1024 / 1024);
@@ -250,7 +250,7 @@ final class FormatUtil
      * @param  int $secs
      * @return string
      */
-    public static function howLongAgo($secs)
+    public static function howLongAgo(int $secs): string
     {
         static $timeFormats = [
             [0, '< 1 sec'],
@@ -282,11 +282,11 @@ final class FormatUtil
     }
 
     /**
-     * @param $string
-     * @param $width
+     * @param string $string
+     * @param int $width
      * @return array
      */
-    public static function splitStringByWidth($string, $width): array
+    public static function splitStringByWidth(string $string, int $width): array
     {
         // str_split is not suitable for multi-byte characters, we should use preg_split to get char array properly.
         // additionally, array_slice() is not enough as some character has doubled width.
@@ -367,7 +367,7 @@ final class FormatUtil
                 /** @var array $value */
                 foreach ($value as $k => $val) {
                     if (\is_bool($val)) {
-                        $val = $val ? 'True' : 'False';
+                        $val = $val ? '(True)' : '(False)';
                     } else {
                         $val = is_scalar($val) ? (string)$val : \gettype($val);
                     }
@@ -378,7 +378,7 @@ final class FormatUtil
                 $value = rtrim($temp, ' ,');
             } else {
                 if (\is_bool($value)) {
-                    $value = $value ? 'True' : 'False';
+                    $value = $value ? '(True)' : '(False)';
                 } else {
                     $value = (string)$value;
                 }

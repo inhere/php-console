@@ -135,7 +135,7 @@ class LiteApp
      * @param \Throwable $e
      * @return int
      */
-    protected function handleException(\Throwable $e)
+    protected function handleException(\Throwable $e): int
     {
         $code = $e->getCode() !== 0 ? $e->getCode() : 133;
 

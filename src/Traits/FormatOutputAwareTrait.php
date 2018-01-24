@@ -64,7 +64,7 @@ trait FormatOutputAwareTrait
      * @inheritdoc
      * @see Show::writeln()
      */
-    public function writeln($text, $quit = false, array $opts = [])
+    public function writeln($text, $quit = false, array $opts = []): int
     {
         return Show::writeln($text, $quit, $opts);
     }
@@ -73,7 +73,7 @@ trait FormatOutputAwareTrait
      * @inheritdoc
      * @see Show::writeRaw()
      */
-    public function writeRaw($text, $nl = true, $quit = false, array $opts = [])
+    public function writeRaw($text, $nl = true, $quit = false, array $opts = []): int
     {
         return Show::writeRaw($text, $nl, $quit, $opts);
     }
@@ -82,7 +82,7 @@ trait FormatOutputAwareTrait
      * @inheritdoc
      * @see Show::block()
      */
-    public function block($messages, $type = 'MESSAGE', $style = Style::NORMAL, $quit = false)
+    public function block($messages, $type = 'MESSAGE', $style = Style::NORMAL, $quit = false): int
     {
         return Show::block($messages, $type, $style, $quit);
     }
@@ -91,7 +91,7 @@ trait FormatOutputAwareTrait
      * @inheritdoc
      * @see Show::liteBlock()
      */
-    public function liteBlock($messages, $type = 'MESSAGE', $style = Style::NORMAL, $quit = false)
+    public function liteBlock($messages, $type = 'MESSAGE', $style = Style::NORMAL, $quit = false): int
     {
         return Show::liteBlock($messages, $type, $style, $quit);
     }
@@ -173,7 +173,7 @@ trait FormatOutputAwareTrait
      * @inheritdoc
      * @see Show::progressBar()
      */
-    public function progressTxt($total, $msg, $doneMsg = '')
+    public function progressTxt($total, $msg, $doneMsg = ''): \Generator
     {
         return Show::progressTxt($total, $msg, $doneMsg);
     }
@@ -182,7 +182,7 @@ trait FormatOutputAwareTrait
      * @inheritdoc
      * @see Show::progressBar()
      */
-    public function progressBar($total, array $opts = [])
+    public function progressBar($total, array $opts = []): \Generator
     {
         return Show::progressBar($total, $opts);
     }

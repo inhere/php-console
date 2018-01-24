@@ -47,7 +47,7 @@ final class Download
      * @param string $type
      * @return Download
      */
-    public static function down(string $url, string $saveAs, string $type = self::PROGRESS_TEXT)
+    public static function down(string $url, string $saveAs, string $type = self::PROGRESS_TEXT): Download
     {
         $d = new self($url, $saveAs, $type);
 

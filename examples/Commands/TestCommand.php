@@ -22,11 +22,11 @@ class TestCommand extends Command
      * test text
      * @usage {name} test message
      * @arguments
-     * arg1  argument description 1
-     * arg2  argument description 2
+     *  arg1        argument description 1
+     *  arg2        argument description 2
      * @options
-     * --long,-s option description 1
-     * --opt    option description 2
+     *  --long,-s   option description 1
+     *  --opt       option description 2
      * @param $input
      * @param $output
      */

@@ -15,11 +15,67 @@ namespace Inhere\Console\Utils;
 class ProcessUtil
 {
     /**
+     * @var array
+     */
+    public static $signalMap = [
+        SIGINT => 'SIGINT(Ctrl+C)',
+        SIGTERM => 'SIGTERM',
+        SIGKILL => 'SIGKILL',
+    ];
+
+    /**
      * @return bool
      */
-    public static function isSupported()
+    public static function isSupported(): bool
     {
         return !Helper::isWindows() && \function_exists('pcntl_fork');
+    }
+
+    /**
+     * @return bool
+     */
+    public static function signalIsEnabled(): bool
+    {
+        return self::isSupported();
+    }
+
+    /**
+     * run a command. it is support windows
+     * @param string $command
+     * @param string|null $cwd
+     * @return array
+     */
+    public static function run(string $command, string $cwd = null): array
+    {
+        $descriptors = [
+            0 => ['pipe', 'r'], // stdin - read channel
+            1 => ['pipe', 'w'], // stdout - write channel
+            2 => ['pipe', 'w'], // stdout - error channel
+            3 => ['pipe', 'r'], // stdin - This is the pipe we can feed the password into
+        ];
+
+        $process = proc_open($command, $descriptors, $pipes, $cwd);
+
+        if (!\is_resource($process)) {
+            throw new \RuntimeException("Can't open resource with proc_open.");
+        }
+
+        // Nothing to push to input.
+        fclose($pipes[0]);
+
+        $output = stream_get_contents($pipes[1]);
+        fclose($pipes[1]);
+
+        $error = stream_get_contents($pipes[2]);
+        fclose($pipes[2]);
+
+        // TODO: Write passphrase in pipes[3].
+        fclose($pipes[3]);
+
+        // Close all pipes before proc_close!
+        $code = proc_close($process);
+
+        return [$code, $output, $error];
     }
 
     /**
@@ -27,7 +83,7 @@ class ProcessUtil
      * @param \Closure|null $beforeQuit
      * @return int Return new process PID
      */
-    public static function daemonRun(\Closure $beforeQuit = null)
+    public static function daemonRun(\Closure $beforeQuit = null): int
     {
         if (!self::isSupported()) {
             return 0;
@@ -68,7 +124,7 @@ class ProcessUtil
      * @param string $cmd
      * @return int|string
      */
-    public static function runInBackground($cmd)
+    public static function runInBackground(string $cmd)
     {
         if (Helper::isWindows()) {
             $ret = pclose(popen('start /B ' . $cmd, 'r'));
@@ -175,7 +231,7 @@ class ProcessUtil
      * @param  callable $onExit
      * @return bool
      */
-    public static function wait(callable $onExit)
+    public static function wait(callable $onExit): bool
     {
         if (!self::isSupported()) {
             return false;
@@ -183,12 +239,12 @@ class ProcessUtil
 
         $status = null;
 
-        //pid<0：子进程都没了
-        //pid>0：捕获到一个子进程退出的情况
-        //pid=0：没有捕获到退出的子进程
+        // pid < 0：子进程都没了
+        // pid > 0：捕获到一个子进程退出的情况
+        // pid = 0：没有捕获到退出的子进程
         while (($pid = pcntl_waitpid(-1, $status, WNOHANG)) >= 0) {
             if ($pid) {
-                // ... (callback, pid, exitCode, status)
+                // handler(pid, exitCode, status)
                 $onExit($pid, pcntl_wexitstatus($status), $status);
             } else {
                 usleep(50000);
@@ -219,7 +275,7 @@ class ProcessUtil
      * ]
      * @return bool
      */
-    public static function stopChildren(array $children, $signal = SIGTERM, array $events = [])
+    public static function stopWorkers(array $children, int $signal = SIGTERM, array $events = []): bool
     {
         if (!$children) {
             return false;
@@ -233,14 +289,9 @@ class ProcessUtil
             'beforeStops' => null,
             'beforeStop' => null,
         ], $events);
-        $signals = [
-            SIGINT => 'SIGINT(Ctrl+C)',
-            SIGTERM => 'SIGTERM',
-            SIGKILL => 'SIGKILL',
-        ];
 
         if ($cb = $events['beforeStops']) {
-            $cb($signal, $signals[$signal]);
+            $cb($signal, self::$signalMap[$signal]);
         }
 
         foreach ($children as $pid => $child) {
@@ -266,7 +317,7 @@ class ProcessUtil
      * @param int $timeout
      * @return bool
      */
-    public static function kill($pid, $force = false, $timeout = 3)
+    public static function kill(int $pid, $force = false, int $timeout = 3): bool
     {
         return self::sendSignal($pid, $force ? SIGKILL : SIGTERM, $timeout);
     }
@@ -280,7 +331,9 @@ class ProcessUtil
      * @param string $name
      * @return bool
      */
-    public static function killAndWait($pid, $signal = SIGTERM, $waitTime = 30, &$error = null, $name = 'process')
+    public static function killAndWait(
+        int $pid, int $signal = SIGTERM, int $waitTime = 10, &$error = null, $name = 'process'
+    ): bool
     {
         // $opts = array_merge([], $opts);
         // do stop
@@ -298,7 +351,7 @@ class ProcessUtil
         }
 
         $startTime = time();
-        Show::write('Stopping .', false);
+        echo 'Stopping .';
 
         // wait exit
         while (true) {
@@ -311,10 +364,15 @@ class ProcessUtil
                 break;
             }
 
-            Show::write('.', false);
+            echo '.';
             sleep(1);
         }
 
+        if ($error) {
+            return false;
+        }
+
+        Show::write(' OK');
         return true;
     }
 
@@ -324,7 +382,7 @@ class ProcessUtil
      * @param int $sigNo
      * @return string
      */
-    public static function killByName($name, $sigNo = 9)
+    public static function killByName(string $name, int $sigNo = 9): string
     {
         $cmd = 'ps -eaf |grep "' . $name . '" | grep -v "grep"| awk "{print $2}"|xargs kill -' . $sigNo;
 
@@ -336,7 +394,7 @@ class ProcessUtil
      * @param int $pid
      * @return bool
      */
-    public static function isRunning($pid)
+    public static function isRunning(int $pid): bool
     {
         return ($pid > 0) && @posix_kill($pid, 0);
     }
@@ -361,13 +419,9 @@ class ProcessUtil
      * @param int $timeout
      * @return bool
      */
-    public static function sendSignal($pid, $signal, $timeout = 0)
+    public static function sendSignal(int $pid, int $signal, int $timeout = 0): bool
     {
-        if ($pid <= 0) {
-            return false;
-        }
-
-        if (!self::isSupported()) {
+        if ($pid <= 0 || !self::isSupported()) {
             return false;
         }
 
@@ -382,7 +436,6 @@ class ProcessUtil
         }
 
         // failed, try again ...
-
         $timeout = $timeout > 0 && $timeout < 10 ? $timeout : 3;
         $startTime = time();
 
@@ -412,7 +465,7 @@ class ProcessUtil
      * @param  callable $handler
      * @return bool
      */
-    public static function installSignal($signal, callable $handler)
+    public static function installSignal($signal, callable $handler): bool
     {
         return pcntl_signal($signal, $handler, false);
     }
@@ -421,7 +474,7 @@ class ProcessUtil
      * dispatch signal
      * @return bool
      */
-    public static function dispatchSignal()
+    public static function dispatchSignal(): bool
     {
         // receive and dispatch sig
         return pcntl_signal_dispatch();
@@ -435,7 +488,7 @@ class ProcessUtil
      * get current process id
      * @return int
      */
-    public static function getPid()
+    public static function getPid(): int
     {
         return getmypid();// or use posix_getpid()
     }
@@ -446,7 +499,7 @@ class ProcessUtil
      * @param bool $checkLive
      * @return int
      */
-    public static function getPidByFile($file, $checkLive = false)
+    public static function getPidByFile(string $file, $checkLive = false): int
     {
         if ($file && file_exists($file)) {
             $pid = (int)file_get_contents($file);
@@ -466,7 +519,7 @@ class ProcessUtil
      * Get unix user of current process.
      * @return array
      */
-    public static function getCurrentUser()
+    public static function getCurrentUser(): array
     {
         return posix_getpwuid(posix_getuid());
     }
@@ -475,10 +528,9 @@ class ProcessUtil
      * @param int $seconds
      * @param callable $handler
      */
-    public static function afterDo($seconds, callable $handler)
+    public static function afterDo(int $seconds, callable $handler)
     {
-        /*
-        self::signal(SIGALRM, function () {
+        /* self::signal(SIGALRM, function () {
             static $i = 0;
             echo "#{$i}\talarm\n";
             $i++;
@@ -497,7 +549,7 @@ class ProcessUtil
      * @param string $title
      * @return bool
      */
-    public static function setName($title)
+    public static function setName(string $title): bool
     {
         return self::setTitle($title);
     }
@@ -507,14 +559,14 @@ class ProcessUtil
      * @param string $title
      * @return bool
      */
-    public static function setTitle($title)
+    public static function setTitle(string $title): bool
     {
         if (Helper::isMac()) {
             return false;
         }
 
         if (\function_exists('cli_set_process_title')) {
-            cli_set_process_title($title);
+            return cli_set_process_title($title);
         }
 
         return true;
@@ -526,7 +578,7 @@ class ProcessUtil
      * @param string $group
      * @throws \RuntimeException
      */
-    public static function changeScriptOwner($user, $group = '')
+    public static function changeScriptOwner(string $user, string $group = '')
     {
         $uInfo = posix_getpwnam($user);
 

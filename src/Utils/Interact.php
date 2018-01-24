@@ -66,7 +66,7 @@ class Interact extends Show
      * @param  bool $allowExit 有退出选项 默认 true
      * @return string
      */
-    public static function select($description, $options, $default = null, $allowExit = true)
+    public static function select($description, $options, $default = null, $allowExit = true): string
     {
         return self::choice($description, $options, $default, $allowExit);
     }
@@ -79,7 +79,7 @@ class Interact extends Show
      * @param bool $allowExit
      * @return string
      */
-    public static function choice($description, $options, $default = null, $allowExit = true)
+    public static function choice($description, $options, $default = null, $allowExit = true): string
     {
         if (!$description = trim($description)) {
             self::error('Please provide a description text!', 1);
@@ -128,7 +128,7 @@ class Interact extends Show
      * @param bool $allowExit
      * @return array
      */
-    public static function checkbox(string $description, $options, $default = null, $allowExit = true)
+    public static function checkbox(string $description, $options, $default = null, $allowExit = true): array
     {
         return self::multiSelect($description, $options, $default, $allowExit);
     }
@@ -140,7 +140,7 @@ class Interact extends Show
      * @param bool $allowExit
      * @return array
      */
-    public static function multiSelect(string $description, $options, $default = null, $allowExit = true)
+    public static function multiSelect(string $description, $options, $default = null, $allowExit = true): array
     {
         if (!$description = trim($description)) {
             self::error('Please provide a description text!', 1);
@@ -199,7 +199,7 @@ class Interact extends Show
      * @param bool $default Default value
      * @return bool
      */
-    public static function confirm($question, $default = true): bool
+    public static function confirm(string $question, $default = true): bool
     {
         if (!$question = trim($question)) {
             self::warning('Please provide a question message!', 1);
@@ -234,9 +234,9 @@ class Interact extends Show
      * @param string $question 问题
      * @param null|string $default 默认值
      * @param \Closure $validator The validate callback. It must return bool.
-     * @return string
+     * @return string|null
      */
-    public static function ask($question, $default = null, \Closure $validator = null)
+    public static function ask(string $question, $default = null, \Closure $validator = null)
     {
         return self::question($question, $default, $validator);
     }
@@ -348,9 +348,9 @@ class Interact extends Show
      * } );
      * ```
      * @param int $times Allow input times
-     * @return string
+     * @return string|null
      */
-    public static function limitedAsk($question, $default = null, \Closure $validator = null, $times = 3)
+    public static function limitedAsk(string $question, $default = null, \Closure $validator = null, $times = 3)
     {
         if (!$question = trim($question)) {
             self::error('Please provide a question text!', 1);
@@ -422,7 +422,7 @@ class Interact extends Show
      * @link http://www.sitepoint.com/blogs/2009/05/01/interactive-cli-password-prompt-in-php
      * @throws \RuntimeException
      */
-    public static function promptSilent(string $prompt = 'Enter Password:')
+    public static function promptSilent(string $prompt = 'Enter Password:'): string
     {
         $prompt = $prompt ? addslashes($prompt) : 'Enter:';
 
@@ -436,7 +436,6 @@ class Interact extends Show
             $password = CliUtil::runCommand($command, false);
 
             echo "\n";
-
             return $password;
         }
 
@@ -462,7 +461,7 @@ class Interact extends Show
      * @return string
      * @throws \RuntimeException
      */
-    public static function askHiddenInput(string $prompt = 'Enter Password:')
+    public static function askHiddenInput(string $prompt = 'Enter Password:'): string
     {
         return self::promptSilent($prompt);
     }
@@ -473,7 +472,7 @@ class Interact extends Show
      * @return string
      * @throws \RuntimeException
      */
-    public static function askPassword(string $prompt = 'Enter Password:')
+    public static function askPassword(string $prompt = 'Enter Password:'): string
     {
         return self::promptSilent($prompt);
     }

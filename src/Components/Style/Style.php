@@ -153,7 +153,7 @@ class Style
      * @param $text
      * @return string
      */
-    public function apply(string $style, $text)
+    public function apply(string $style, $text): string
     {
         return $this->format(Helper::wrapTag($text, $style));
     }

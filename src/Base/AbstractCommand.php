@@ -121,7 +121,7 @@ abstract class AbstractCommand implements BaseCommandInterface
      * 为命令注解提供可解析解析变量. 可以在命令的注释中使用
      * @return array
      */
-    public function annotationVars()
+    public function annotationVars(): array
     {
         // e.g: `more info see {name}:index`
         return [
@@ -143,7 +143,7 @@ abstract class AbstractCommand implements BaseCommandInterface
      * @param string $command
      * @return int
      */
-    public function run($command = '')
+    public function run(string $command = ''): int
     {
         // load input definition configure
         $this->configure();
@@ -209,7 +209,7 @@ abstract class AbstractCommand implements BaseCommandInterface
         $help['global options:'] = FormatUtil::alignmentOptions(Application::getInternalOptions());
 
         if (empty($help['description']) && $this->isAlone()) {
-            $help['description'] = self::getDefinition();
+            $help['description'] = self::getDescription();
         }
 
         $this->output->mList($help, ['sepChar' => '  ']);
@@ -488,7 +488,7 @@ abstract class AbstractCommand implements BaseCommandInterface
     /**
      * @return string
      */
-    public static function getDescription()
+    public static function getDescription(): string
     {
         return static::$description;
     }
@@ -529,7 +529,7 @@ abstract class AbstractCommand implements BaseCommandInterface
     }
 
     /**
-     * @return InputDefinition
+     * @return InputDefinition|null
      */
     public function getDefinition()
     {

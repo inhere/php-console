@@ -264,7 +264,7 @@ class Application extends AbstractApplication
      * @inheritdoc
      * @throws \InvalidArgumentException
      */
-    protected function dispatch($name)
+    protected function dispatch(string $name)
     {
         $sep = $this->delimiter ?: ':';
 
@@ -357,6 +357,7 @@ class Application extends AbstractApplication
      * @param bool $standAlone
      * @return mixed
      * @throws \InvalidArgumentException
+     * @throws \ReflectionException
      */
     public function runAction($name, $action, $believable = false, $standAlone = false)
     {

@@ -84,7 +84,7 @@ final class AryBuffer
     /**
      * @return string
      */
-    public function toString()
+    public function toString(): string
     {
         return implode($this->delimiter, $this->body);
     }

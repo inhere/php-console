@@ -105,7 +105,7 @@ final class CommandLine
 
                 $val = self::filterBool($val);
                 $isArray = isset($arrayValues[$opt]);
-                
+
                 if ($isLong) {
                     if ($isArray) {
                         $lOpts[$opt][] = $val;
@@ -156,7 +156,7 @@ final class CommandLine
      * @param array $params
      * @return array
      */
-    public static function parseByArray(array $params)
+    public static function parseByArray(array $params): array
     {
         $args = $sOpts = $lOpts = [];
 
@@ -215,20 +215,10 @@ final class CommandLine
     }
 
     /**
-     * Escapes a token through escapeshellarg if it contains unsafe chars.
-     * @param string $token
-     * @return string
-     */
-    public static function escapeToken($token)
-    {
-        return preg_match('{^[\w-]+$}', $token) ? $token : escapeshellarg($token);
-    }
-
-    /**
      * @param mixed $val
      * @return bool
      */
-    public static function nextIsValue($val)
+    public static function nextIsValue($val): bool
     {
         // current() fetch error, will return FALSE
         if ($val === false) {
@@ -242,5 +232,15 @@ final class CommandLine
 
         // it isn't option or named argument
         return $val{0} !== '-' && false === strpos($val, '=');
+    }
+
+    /**
+     * Escapes a token through escapeshellarg if it contains unsafe chars.
+     * @param string $token
+     * @return string
+     */
+    public static function escapeToken($token): string
+    {
+        return preg_match('{^[\w-]+$}', $token) ? $token : escapeshellarg($token);
     }
 }

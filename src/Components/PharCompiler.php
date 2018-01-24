@@ -8,7 +8,7 @@
 
 namespace Inhere\Console\Components;
 
-use Inhere\Console\Utils\CliUtil;
+use Inhere\Console\Utils\ProcessUtil;
 use Inhere\Console\Utils\Helper;
 use Seld\PharUtils\Timestamps;
 
@@ -361,7 +361,7 @@ class PharCompiler
     {
         return Helper::directoryIterator(
             $directory,
-            $this->createIteratorFilter(), 
+            $this->createIteratorFilter(),
             \FilesystemIterator::KEY_AS_PATHNAME | \FilesystemIterator::CURRENT_AS_FILEINFO | \FilesystemIterator::SKIP_DOTS
         );
     }
@@ -443,7 +443,7 @@ class PharCompiler
             $phar->addFromString($this->webIndex, trim($content));
         }
     }
-    
+
     /**
      * @return int
      */
@@ -565,7 +565,7 @@ EOF;
 
         return $output;
     }
-    
+
     /**
      * auto collect project information by git log
      */
@@ -576,7 +576,7 @@ EOF;
         }
 
         $basePath = $this->basePath;
-        list($code, $ret,) = CliUtil::run('git log --pretty="%H" -n1 HEAD', $basePath);
+        list($code, $ret,) = ProcessUtil::run('git log --pretty="%H" -n1 HEAD', $basePath);
 
         if ($code !== 0) {
             throw new \RuntimeException(
@@ -586,7 +586,7 @@ EOF;
 
         $this->version = trim($ret);
 
-        list($code, $ret,) = CliUtil::run('git log -n1 --pretty=%ci HEAD', $basePath);
+        list($code, $ret,) = ProcessUtil::run('git log -n1 --pretty=%ci HEAD', $basePath);
 
         if ($code !== 0) {
             throw new \RuntimeException(
@@ -598,11 +598,11 @@ EOF;
         $this->versionDate->setTimezone(new \DateTimeZone('UTC'));
 
         // 获取到最新的 tag
-        list($code, $ret,) = CliUtil::run('git describe --tags --exact-match HEAD', $basePath);
+        list($code, $ret,) = ProcessUtil::run('git describe --tags --exact-match HEAD', $basePath);
         if ($code === 0) {
             $this->version = trim($ret);
         } else {
-            list($code, $ret,) = CliUtil::run('git branch', $basePath);
+            list($code, $ret,) = ProcessUtil::run('git branch', $basePath);
             $this->branchAliasVersion = $code === 0 ? trim($ret, '* '): 'UNKNOWN';
         }
     }

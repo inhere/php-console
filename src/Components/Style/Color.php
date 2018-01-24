@@ -85,7 +85,7 @@ final class Color
      * @param bool $extra
      * @return Color
      */
-    public static function make($fg = '', $bg = '', array $options = [], $extra = false)
+    public static function make($fg = '', $bg = '', array $options = [], $extra = false): Color
     {
         return new self($fg, $bg, $options, $extra);
     }
@@ -218,7 +218,7 @@ final class Color
      * @param bool $onlyName
      * @return array
      */
-    public function getKnownColors($onlyName = true)
+    public function getKnownColors($onlyName = true): array
     {
         return (bool)$onlyName ? array_keys(static::$knownColors) : static::$knownColors;
     }
@@ -228,7 +228,7 @@ final class Color
      * @param bool $onlyName
      * @return array
      */
-    public function getKnownOptions($onlyName = true)
+    public function getKnownOptions($onlyName = true): array
     {
         return (bool)$onlyName ? array_keys(static::$knownOptions) : static::$knownOptions;
     }

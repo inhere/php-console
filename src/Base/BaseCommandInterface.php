@@ -26,10 +26,10 @@ interface BaseCommandInterface
      * @param string $command
      * @return int
      */
-    public function run($command = '');
+    public function run(string $command = ''): int;
 
     /**
-     * @return InputDefinition
+     * @return InputDefinition|null
      */
     public function getDefinition();
 
@@ -46,5 +46,5 @@ interface BaseCommandInterface
     /**
      * @return string
      */
-    public static function getDescription();
+    public static function getDescription(): string;
 }

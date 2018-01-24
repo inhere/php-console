@@ -48,7 +48,7 @@ class Highlighter
     /**
      * @return Highlighter
      */
-    public static function create()
+    public static function create(): Highlighter
     {
         if (!self::$instance) {
             self::$instance = new self();
@@ -70,7 +70,7 @@ class Highlighter
      * @param bool $withLineNumber with line number
      * @return string
      */
-    public function highlight(string $source, $withLineNumber = false)
+    public function highlight(string $source, $withLineNumber = false): string
     {
         $tokenLines = $this->getHighlightedLines($source);
         $lines = $this->colorLines($tokenLines);
@@ -90,7 +90,7 @@ class Highlighter
      * @return string
      * @throws \InvalidArgumentException
      */
-    public function highlightSnippet($source, $lineNumber, $linesBefore = 2, $linesAfter = 2)
+    public function highlightSnippet($source, $lineNumber, $linesBefore = 2, $linesAfter = 2): string
     {
         $tokenLines = $this->getHighlightedLines($source);
 
@@ -108,7 +108,7 @@ class Highlighter
      * @return string
      * @throws \InvalidArgumentException
      */
-    public function getWholeFile($source)
+    public function getWholeFile($source): string
     {
         $tokenLines = $this->getHighlightedLines($source);
         $lines = $this->colorLines($tokenLines);
@@ -121,7 +121,7 @@ class Highlighter
      * @return string
      * @throws \InvalidArgumentException
      */
-    public function getWholeFileWithLineNumbers($source)
+    public function getWholeFileWithLineNumbers($source): string
     {
         $tokenLines = $this->getHighlightedLines($source);
         $lines = $this->colorLines($tokenLines);
@@ -133,7 +133,7 @@ class Highlighter
      * @param string $source
      * @return array
      */
-    private function getHighlightedLines($source)
+    private function getHighlightedLines($source): array
     {
         $source = str_replace(array("\r\n", "\r"), "\n", $source);
         $tokens = $this->tokenize($source);
@@ -145,7 +145,7 @@ class Highlighter
      * @param string $source
      * @return array
      */
-    private function tokenize($source)
+    private function tokenize(string $source): array
     {
         $buffer = '';
         $output = [];
@@ -222,7 +222,7 @@ class Highlighter
      * @param array $tokens
      * @return array
      */
-    private function splitToLines(array $tokens)
+    private function splitToLines(array $tokens): array
     {
         $lines = $line = [];
 
@@ -248,7 +248,7 @@ class Highlighter
      * @return array
      * @throws \InvalidArgumentException
      */
-    private function colorLines(array $tokenLines)
+    private function colorLines(array $tokenLines): array
     {
         $lines = [];
 
@@ -275,7 +275,7 @@ class Highlighter
      * @param null|int $markLine
      * @return string
      */
-    private function lineNumbers(array $lines, $markLine = null)
+    private function lineNumbers(array $lines, $markLine = null): string
     {
         end($lines);
 

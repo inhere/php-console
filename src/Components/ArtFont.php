@@ -86,9 +86,9 @@ class ArtFont
      * display the internal art font
      * @param string $name
      * @param array $opts
-     * @return bool
+     * @return int
      */
-    public function showInternal(string $name, array $opts = [])
+    public function showInternal(string $name, array $opts = []): int
     {
         return $this->show($name, self::INTERNAL_GROUP, $opts);
     }
@@ -96,9 +96,10 @@ class ArtFont
     /**
      * @param string $name
      * @param string $group
-     * @return string
+     * @param array $opts
+     * @return int
      */
-    public function showItalic(string $name, string $group = null, array $opts = [])
+    public function showItalic(string $name, string $group = null, array $opts = []): int
     {
         $opts['type'] = 'italic';
 
@@ -114,9 +115,9 @@ class ArtFont
      * - type => '', // 'italic'
      * - indent => 2,
      * - style => '', // 'info' 'error'
-     * @return bool
+     * @return int
      */
-    public function show(string $name, string $group = null, array $opts = [])
+    public function show(string $name, string $group = null, array $opts = []): int
     {
         $opts = array_merge([
             'type' => '',
@@ -153,7 +154,7 @@ class ArtFont
             return Show::write(Helper::wrapTag($txt, $opts['style']));
         }
 
-        return false;
+        return 0;
     }
 
     /**
@@ -161,11 +162,10 @@ class ArtFont
      * @param string $group
      * @return string
      */
-    public function font(string $name, string $group = null)
+    public function font(string $name, string $group = null): string
     {
         return '';
     }
-
 
     /**
      * @param string $group

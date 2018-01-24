@@ -51,6 +51,7 @@ abstract class Command extends AbstractCommand implements CommandInterface
 
     /**
      * @return bool
+     * @throws \ReflectionException
      */
     protected function showHelp(): bool
     {
