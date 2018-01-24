@@ -55,9 +55,9 @@ class PharCompiler
      * 记录上面三个信息的文件, 相对于basePath
      * 当里面存在下面的占位符时会自动替换为获取到的信息
      * [
-     * 'version' => '@package_version@',
-     * 'tag' => '@package_branch_alias_version@',
-     * 'releaseDate' => '@release_date@',
+     * 'version' => '{@package_version}',
+     * 'tag' => '{@package_branch_alias_version}',
+     * 'releaseDate' => '{@release_date}',
      * ]
      * @var string
      */
@@ -87,6 +87,11 @@ class PharCompiler
      * @var array Want to added files. (It is relative the $basePath)
      */
     private $files = [];
+
+    /**
+     * @var array Want to include files suffix name list
+     */
+    private $suffixes = ['.php'];
 
     /**
      * @var array Want to exclude directory name list
@@ -186,6 +191,17 @@ class PharCompiler
     }
 
     /**
+     * @param string|array $suffixes
+     * @return $this
+     */
+    public function addSuffix($suffixes): self
+    {
+        $this->suffixes = array_merge($this->suffixes, (array)$suffixes);
+
+        return $this;
+    }
+
+    /**
      * @param string|array $dirs
      * @return $this
      */
@@ -280,6 +296,7 @@ class PharCompiler
 
         $this->pharFile = $pharFile;
         $this->pharName = $pharName = basename($this->pharFile);
+        $this->excludes = array_flip($this->excludes);
 
         $this->collectInformation();
 
@@ -380,9 +397,9 @@ class PharCompiler
         // have versionFile
         if ($path === $this->versionFile) {
             $content = str_replace([
-                '@package_version@',
-                '@package_branch_alias_version@',
-                '@release_date@',
+                '{@package_version}',
+                '{@package_branch_alias_version}',
+                '{@release_date}',
             ], [
                 $this->version,
                 $this->branchAliasVersion,
@@ -494,17 +511,22 @@ EOF;
                     return false;
                 }
 
+                // skip exclude directories.
                 if ($file->isDir()) {
-                    // Only recurse into intended subdirectories.
-                    return !\in_array($name, $this->excludes, true);
+                    return !isset($this->excludes[$name]);
                 }
 
-                // if (\in_array($name, $this->options['fileInclude'], true)) {
-                //     return true;
-                // }
+                if ($this->suffixes) {
+                    foreach ($this->suffixes as $suffix) {
+                        if (stripos($name, $suffix)) {
+                            return true;
+                        }
+                    }
 
-                // Only consume files of interest.
-                return (bool)stripos($name, '.php');
+                    return false;
+                }
+
+                return true;
             };
         }
 
@@ -581,7 +603,7 @@ EOF;
             $this->version = trim($ret);
         } else {
             list($code, $ret,) = CliUtil::run('git branch', $basePath);
-            $this->branchAliasVersion = $code === 0 ? trim($ret): 'UNKNOWN';
+            $this->branchAliasVersion = $code === 0 ? trim($ret, '* '): 'UNKNOWN';
         }
     }
 

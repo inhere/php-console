@@ -208,7 +208,7 @@ abstract class AbstractCommand implements BaseCommandInterface
         $help['usage'] = sprintf('%s %s %s', $this->input->getScript(), $this->input->getCommand(), $help['usage']);
         $help['global options:'] = FormatUtil::alignmentOptions(Application::getInternalOptions());
 
-        if (empty($help['description']) && $this->isAloneCommand()) {
+        if (empty($help['description']) && $this->isAlone()) {
             $help['description'] = self::getDefinition();
         }
 
@@ -390,7 +390,7 @@ abstract class AbstractCommand implements BaseCommandInterface
     /**
      * @return bool
      */
-    public function isAloneCommand(): bool
+    public function isAlone(): bool
     {
         return $this instanceof CommandInterface;
     }

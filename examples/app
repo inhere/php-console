@@ -1,5 +1,10 @@
 #!/usr/bin/env php
 <?php
+/**
+ * @version {@package_version}
+ * @branch {@package_branch_alias_version}
+ * @release-date {@release_date}
+ */
 
 define('BASE_PATH', dirname(__DIR__));
 
