@@ -237,23 +237,23 @@ $app->registerCommands('App\\Console\\Commands', dirname(__DIR__) . '/Commands')
 $app->registerGroups('App\\Console\\Controllers', dirname(__DIR__) . '/Controllers');
 ```
 
-**一些说明：**
+### 一些说明
 
 命令上的注释是可被解析的
 
 - 注释中的 `@usage` `@arguments` `@options` `@example` 在使用帮助命令时，会被解析并显示出来
 - 注释里面同样支持带颜色的文本输出 `eg: this is a command's description <info>message</info>`
-- 上诉tag注释里，支持变量替换（例如： `{command}` 会自动替换为当前输入的命令）
+- 上述注释tag里，支持变量替换（例如： `{command}` 会自动替换为当前输入的命令）
 - 当你使用 `php examples/app home -h` 时，可以查看到 `HomeController` 的所有命令描述注释信息
   
   ![group-command-list](docs/screenshots/group-command-list.png)
-- 当使用 `php examples/app home:test -h` 时，可以查看到关于 `HomeController::testCommand` 更详细的信息。包括描述注释文本、`@usage` 、`@example`
+- 当使用 `php examples/app home:test -h` 时，可以查看到关于 `HomeController::testCommand` 更详细的信息
 
   ![group-command-list](docs/screenshots/command-help.png)
 
 - 看到一些命令最后的 `[alias: ...]` 了吗，那是此命令拥有的别名. 即用别名也可以访问它，当一个命令太长时可以加别名方便使用
 
-更多请查看 [examples](./examples) 中的示例代码和在目录下运行示例 `php examples/app` 来查看效果
+更多请查看 [examples](./examples) 中的示例代码和在目录下运行示例 `php examples/app home` 来查看效果
 
 ## 输入
 
