@@ -79,7 +79,6 @@ git clone https://github.com/inhere/php-console.git // github
 // file: examples/app
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
-use Inhere\Console\Application;
 
 $meta = [
     'name' => 'My Console App',
@@ -88,7 +87,7 @@ $meta = [
 $input = new Input;
 $output = new Output;
 // 通常无需传入 $input $output ，会自动创建
-$app = new Application($meta, $input, $output);
+$app = new \Inhere\Console\Application($meta, $input, $output);
 
 // add command routes
 $app->command('demo', function (Input $in, Output $out) {
@@ -112,7 +111,7 @@ $app->run();
 
 添加命令的方式有三种
 
-### 使用闭包
+### 1. 使用闭包
 
 如上所示，使用闭包可以快速的添加一个简单的命令
 
@@ -124,7 +123,7 @@ $app->command('demo', function (Input $in, Output $out) {
 }, 'this is message for the command');
 ```
 
-### 独立命令
+### 2. 独立命令
 
 通过继承 `Inhere\Console\Command` 添加独立命令
 
@@ -165,9 +164,10 @@ class TestCommand extends Command
 }
 ```
 
-### 命令组
+### 3. 命令组
 
 当一些命令相关性较大时，写在同一个文件里更方便阅读和管理。
+
 通过继承 `Inhere\Console\Controller` 添加一组命令. 即是命令行的控制器
 
 ```php
@@ -213,7 +213,7 @@ class HomeController extends Controller
 }
 ```
 
-### 注册命令
+## 注册命令
 
  在 `$app->run()` 之前
  
