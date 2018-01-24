@@ -19,7 +19,7 @@ use Inhere\Console\IO\Output;
 class DemoCommand extends Command
 {
     protected static $name = 'demo';
-    protected static $description = 'this is a demo independent command. but config use configure(), it like symfony console: argument define by position';
+    protected static $description = 'this is a demo alone command. but config use configure(), like symfony console: argument define by position';
 
     /**
      * {@inheritDoc}
