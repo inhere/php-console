@@ -53,6 +53,20 @@ final class CliUtil
     }
 
     /**
+     * @return string
+     */
+    public static function getOutsideIP(): string
+    {
+        list($code, $output) = ProcessUtil::run('ip addr | grep eth0');
+
+        if ($code === 0 && $output && preg_match('#inet (.*)\/#', $output, $ms)) {
+            return $ms[1];
+        }
+
+        return 'unknown';
+    }
+
+    /**
      * @param string $command
      * @param null|string $logfile
      * @param null|string $user

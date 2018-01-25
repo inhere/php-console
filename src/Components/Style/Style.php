@@ -142,6 +142,7 @@ class Style
             ->add('blue', ['fg' => 'blue'])
             ->add('cyan', ['fg' => 'cyan'])
             ->add('magenta', ['fg' => 'magenta'])
+            ->add('mga', ['fg' => 'magenta'])
             ->add('red', ['fg' => 'red'])
             ->add('darkGray', ['fg' => 'black', 'extra' => true])
             ->add('yellow', ['fg' => 'yellow']);

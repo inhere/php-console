@@ -26,7 +26,7 @@ class ProcessUtil
     /**
      * @return bool
      */
-    public static function isSupported(): bool
+    public static function pcntlIsEnabled(): bool
     {
         return !Helper::isWindows() && \function_exists('pcntl_fork');
     }
@@ -34,9 +34,9 @@ class ProcessUtil
     /**
      * @return bool
      */
-    public static function signalIsEnabled(): bool
+    public static function posixIsEnabled(): bool
     {
-        return self::isSupported();
+        return !Helper::isWindows() && \function_exists('posix_kill');
     }
 
     /**
@@ -72,7 +72,7 @@ class ProcessUtil
         // TODO: Write passphrase in pipes[3].
         fclose($pipes[3]);
 
-        // Close all pipes before proc_close!
+        // Close all pipes before proc_close! $code === 0 is success.
         $code = proc_close($process);
 
         return [$code, $output, $error];
@@ -85,7 +85,7 @@ class ProcessUtil
      */
     public static function daemonRun(\Closure $beforeQuit = null): int
     {
-        if (!self::isSupported()) {
+        if (!self::pcntlIsEnabled()) {
             return 0;
         }
 
@@ -160,7 +160,7 @@ class ProcessUtil
             return false;
         }
 
-        if (!self::isSupported()) {
+        if (!self::pcntlIsEnabled()) {
             return false;
         }
 
@@ -195,7 +195,7 @@ class ProcessUtil
      */
     public static function fork(callable $onStart = null, callable $onError = null, $id = 0)
     {
-        if (!self::isSupported()) {
+        if (!self::pcntlIsEnabled()) {
             return false;
         }
 
@@ -233,7 +233,7 @@ class ProcessUtil
      */
     public static function wait(callable $onExit): bool
     {
-        if (!self::isSupported()) {
+        if (!self::pcntlIsEnabled()) {
             return false;
         }
 
@@ -281,7 +281,7 @@ class ProcessUtil
             return false;
         }
 
-        if (!self::isSupported()) {
+        if (!self::pcntlIsEnabled()) {
             return false;
         }
 
@@ -317,27 +317,26 @@ class ProcessUtil
      * @param int $timeout
      * @return bool
      */
-    public static function kill(int $pid, $force = false, int $timeout = 3): bool
+    public static function kill(int $pid, bool $force = false, int $timeout = 3): bool
     {
         return self::sendSignal($pid, $force ? SIGKILL : SIGTERM, $timeout);
     }
 
     /**
      * Do shutdown process and wait it exit.
-     * @param  int $pid Master Pid
-     * @param int $signal
+     * @param int $pid Master Pid
+     * @param bool $force
      * @param int $waitTime
      * @param null $error
      * @param string $name
      * @return bool
      */
     public static function killAndWait(
-        int $pid, int $signal = SIGTERM, int $waitTime = 10, &$error = null, $name = 'process'
+        int $pid, &$error = null, $name = 'process', bool $force = false, int $waitTime = 10
     ): bool
     {
-        // $opts = array_merge([], $opts);
         // do stop
-        if (!self::kill($signal)) {
+        if (!self::kill($pid, $force)) {
             $error = "Send stop signal to the $name(PID:$pid) failed!";
 
             return false;
@@ -372,7 +371,7 @@ class ProcessUtil
             return false;
         }
 
-        Show::write(' OK');
+        Show::color(' OK');
         return true;
     }
 
@@ -421,7 +420,7 @@ class ProcessUtil
      */
     public static function sendSignal(int $pid, int $signal, int $timeout = 0): bool
     {
-        if ($pid <= 0 || !self::isSupported()) {
+        if ($pid <= 0 || !self::posixIsEnabled()) {
             return false;
         }
 
@@ -467,6 +466,10 @@ class ProcessUtil
      */
     public static function installSignal($signal, callable $handler): bool
     {
+        if (!self::pcntlIsEnabled()) {
+            return false;
+        }
+
         return pcntl_signal($signal, $handler, false);
     }
 
@@ -476,6 +479,10 @@ class ProcessUtil
      */
     public static function dispatchSignal(): bool
     {
+        if (!self::pcntlIsEnabled()) {
+            return false;
+        }
+
         // receive and dispatch sig
         return pcntl_signal_dispatch();
     }
@@ -527,9 +534,14 @@ class ProcessUtil
     /**
      * @param int $seconds
      * @param callable $handler
+     * @return bool|int
      */
     public static function afterDo(int $seconds, callable $handler)
     {
+        if (!self::pcntlIsEnabled()) {
+            return false;
+        }
+
         /* self::signal(SIGALRM, function () {
             static $i = 0;
             echo "#{$i}\talarm\n";
@@ -541,7 +553,7 @@ class ProcessUtil
         self::installSignal(SIGALRM, $handler);
 
         // self::alarm($seconds);
-        pcntl_alarm($seconds);
+        return pcntl_alarm($seconds);
     }
 
     /**

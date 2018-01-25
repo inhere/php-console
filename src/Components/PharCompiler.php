@@ -104,6 +104,11 @@ class PharCompiler
     private $directories = [];
 
     /**
+     * @var array|\Iterator The modifies files list. if not empty, will skip find dirs.
+     */
+    private $modifies;
+
+    /**
      * @var \Closure[] Some events. if you want to get some info on packing.
      */
     private $events = [
@@ -279,6 +284,17 @@ class PharCompiler
     }
 
     /**
+     * @param array|\Iterator $modifies
+     * @return PharCompiler
+     */
+    public function setModifies($modifies): self
+    {
+        $this->modifies = $modifies;
+
+        return $this;
+    }
+
+    /**
      * Compiles composer into a single phar file
      * @param  string $pharFile The full path to the file to create
      * @param bool $refresh
@@ -290,7 +306,9 @@ class PharCompiler
             throw new \RuntimeException("Please setting the 'directories' want building directories by 'in()'");
         }
 
-        if ($refresh && file_exists($pharFile)) {
+        $exists = file_exists($pharFile);
+
+        if ($refresh && $exists) {
             unlink($pharFile);
         }
 
@@ -315,10 +333,19 @@ class PharCompiler
         $basePath = $this->basePath;
         $phar->startBuffering();
 
-        // collect files
-        foreach ($this->directories as $directory) {
-            foreach ($this->findFiles($directory) as $file) {
-                $this->packFile($phar, $file);
+        // only build modifies
+        if (!$refresh && $exists && $this->modifies) {
+            foreach ($this->modifies as $file) {
+                if ('/' === $file[0] || is_file($file = $basePath . '/' . $file)) {
+                    $this->packFile($phar, new \SplFileInfo($file));
+                }
+            }
+        } else {
+            // collect files in there are dirs.
+            foreach ($this->directories as $directory) {
+                foreach ($this->findFiles($directory) as $file) {
+                    $this->packFile($phar, $file);
+                }
             }
         }
 
@@ -351,6 +378,36 @@ class PharCompiler
         }
 
         return $pharFile;
+    }
+
+    /**
+     * find changed or new created files by git status.
+     * @return \Generator
+     */
+    public function findChangedByGit()
+    {
+        list(, $output, ) = ProcessUtil::run('git status -s', $this->basePath);
+
+        // 'D some.file'    deleted
+        // ' M some.file'   modified
+        // '?? some.file'   new file
+        foreach (explode("\n", trim($output)) as $file) {
+            $file = trim($file);
+
+            // only php file.
+            if (!strpos($file, '.php')) {
+                continue;
+            }
+
+            // modified files
+            if (strpos($file, 'M ') === 0) {
+                yield substr($file, 2);
+
+                // new files
+            } elseif (strpos($file,'?? ') === 0) {
+                yield substr($file, 3);
+            }
+        }
     }
 
     /**
@@ -819,5 +876,4 @@ EOF;
     {
         return $this->pharFile;
     }
-
 }
