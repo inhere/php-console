@@ -16,7 +16,7 @@ use Inhere\Console\Utils\Show;
  *
  * 2K 清除本行
  * \x0D = \r = 13 回车，回到行首
- * ESC = \x1B = 27
+ * ESC = \x1B = \033 = 27
  */
 final class Terminal
 {

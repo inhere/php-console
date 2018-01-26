@@ -21,6 +21,7 @@ class ProcessUtil
         SIGINT => 'SIGINT(Ctrl+C)',
         SIGTERM => 'SIGTERM',
         SIGKILL => 'SIGKILL',
+        SIGSTOP => 'SIGSTOP',
     ];
 
     /**

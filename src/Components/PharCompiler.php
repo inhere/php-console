@@ -386,7 +386,8 @@ class PharCompiler
      */
     public function findChangedByGit()
     {
-        list(, $output, ) = ProcessUtil::run('git status -s', $this->basePath);
+        // -u expand dir's files
+        list(, $output, ) = ProcessUtil::run('git status -s -u', $this->basePath);
 
         // 'D some.file'    deleted
         // ' M some.file'   modified
