@@ -367,7 +367,7 @@ class Helper
         var_dump(...$args);
         $string = ob_get_clean();
 
-        return preg_replace("/=>\n\s+/", '=> ', $string);
+        return preg_replace("/=>\n\s+/", '=> ', trim($string));
     }
 
     /**
@@ -383,6 +383,6 @@ class Helper
             $string .= print_r($arg, 1) . PHP_EOL;
         }
 
-        return preg_replace("/Array\n\s+\(/", 'Array (', $string);
+        return preg_replace("/Array\n\s+\(/", 'Array (', trim($string));
     }
 }

@@ -55,7 +55,7 @@ class Interact extends Show
     /**
      * alias of the `select()`
      * @param  string $description 说明
-     * @param  mixed $options 选项数据
+     * @param  string|array $options 选项数据
      * e.g
      * [
      *    // option => value
@@ -66,7 +66,7 @@ class Interact extends Show
      * @param  bool $allowExit 有退出选项 默认 true
      * @return string
      */
-    public static function select($description, $options, $default = null, $allowExit = true): string
+    public static function select(string $description, $options, $default = null, $allowExit = true): string
     {
         return self::choice($description, $options, $default, $allowExit);
     }
@@ -79,7 +79,7 @@ class Interact extends Show
      * @param bool $allowExit
      * @return string
      */
-    public static function choice($description, $options, $default = null, $allowExit = true): string
+    public static function choice(string $description, $options, $default = null, $allowExit = true): string
     {
         if (!$description = trim($description)) {
             self::error('Please provide a description text!', 1);
@@ -278,7 +278,7 @@ class Interact extends Show
      * @param \Closure|null $validator Validator, must return bool.
      * @return null|string
      */
-    public static function question($question, $default = null, \Closure $validator = null)
+    public static function question(string $question, $default = null, \Closure $validator = null)
     {
         if (!$question = trim($question)) {
             self::error('Please provide a question text!', 1);
@@ -350,7 +350,7 @@ class Interact extends Show
      * @param int $times Allow input times
      * @return string|null
      */
-    public static function limitedAsk(string $question, $default = null, \Closure $validator = null, $times = 3)
+    public static function limitedAsk(string $question, $default = null, \Closure $validator = null, int $times = 3)
     {
         if (!$question = trim($question)) {
             self::error('Please provide a question text!', 1);
@@ -360,7 +360,7 @@ class Interact extends Show
         $answer = '';
         $question = ucfirst($question);
         $hasDefault = null !== $default;
-        $back = $times = ((int)$times > 6 || $times < 1) ? 3 : (int)$times;
+        $back = $times = ($times > 6 || $times < 1) ? 3 : $times;
 
         if ($hasDefault) {
             $message = "<comment>{$question}</comment>(default: <info>$default</info>) ";
@@ -402,7 +402,11 @@ class Interact extends Show
                 return $default;
             }
 
-            self::write("\n  You've entered incorrectly <danger>$back</danger> times in a row. exit!", true, 1);
+            self::write(
+                "\n  You've entered incorrectly <danger>$back</danger> times in a row. exit!",
+                true,
+                1
+            );
         }
 
         return $answer;
@@ -430,9 +434,9 @@ class Interact extends Show
         // $shell = 'echo $0';
 
         // linux, unix, git-bash
-        if (CliUtil::bashIsAvailable()) {
-            // COMMAND: bash -c 'read -p "Enter Password:" -s user_input && echo $user_input'
-            $command = sprintf('bash -c "read -p \'%s\' -s user_input && echo $user_input"', $prompt);
+        if (CliUtil::shIsAvailable()) {
+            // COMMAND: sh -c 'read -p "Enter Password:" -s user_input && echo $user_input'
+            $command = sprintf('sh -c "read -p \'%s\' -s user_input && echo $user_input"', $prompt);
             $password = CliUtil::runCommand($command, false);
 
             echo "\n";
