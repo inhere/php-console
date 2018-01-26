@@ -9,6 +9,7 @@
 
 use Inhere\Console\BuiltIn\PharController;
 use Inhere\Console\BuiltIn\SelfUpdateCommand;
+use Inhere\Console\Examples\Commands\CorCommand;
 use Inhere\Console\Examples\Commands\DemoCommand;
 use Inhere\Console\Examples\Commands\TestCommand;
 use Inhere\Console\Examples\Controllers\HomeController;
@@ -31,7 +32,7 @@ $app->command(SelfUpdateCommand::class, null, [
     'aliases' => ['selfUpdate']
 ]);
 
-// $app->controller(PharController::class);
+$app->command(CorCommand::class);
 
 $app->controller('home', HomeController::class, [
     'aliases' => ['h']

@@ -58,6 +58,11 @@ class Application extends AbstractApplication
             return $this;
         }
 
+        // allow define aliases in Command class by Controller::aliases()
+        if ($aliases = $class::aliases()) {
+            $option['aliases'] = isset($option['aliases']) ? array_merge($option['aliases'], $aliases) : $aliases;
+        }
+        
         $this->controllers[$name] = $class;
 
         if (!$option) {
@@ -134,13 +139,17 @@ class Application extends AbstractApplication
             if (!$handler::isEnabled()) {
                 return $this;
             }
+
+            // allow define aliases in Command class by Command::aliases()
+            if ($aliases = $handler::aliases()) {
+                $option['aliases'] = isset($option['aliases']) ? array_merge($option['aliases'], $aliases) : $aliases;
+            }
         } elseif (!\is_object($handler) || !method_exists($handler, '__invoke')) {
             throw new \InvalidArgumentException(sprintf(
                 'The console command handler must is an subclass of %s OR a Closure OR a object have method __invoke()',
                 Command::class
             ));
         }
-
 
         // is an class name string
         $this->commands[$name] = $handler;

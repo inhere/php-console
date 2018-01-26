@@ -11,6 +11,7 @@
 namespace Inhere\Console\Utils;
 
 use Inhere\Console\Traits\RuntimeProfileTrait;
+use Swoole\Coroutine;
 
 /**
  * Class Helper
@@ -65,6 +66,26 @@ class Helper
         }
 
         return getmyuid() === 0;
+    }
+
+    /**
+     * @return bool
+     */
+    public static function isSupportCoroutine(): bool
+    {
+        return class_exists(Coroutine::class, false);
+    }
+
+    /**
+     * @return bool
+     */
+    public static function inCoroutine(): bool
+    {
+        if (self::isSupportCoroutine()) {
+            return Coroutine::getuid() > 0;
+        }
+
+        return false;
     }
 
     /**

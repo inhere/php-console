@@ -23,7 +23,7 @@ use Inhere\Console\Utils\Annotation;
 abstract class Controller extends AbstractCommand implements ControllerInterface
 {
     /** @var array */
-    private static $aliases;
+    private static $commandAliases;
 
     /** @var string */
     private $action;
@@ -291,15 +291,15 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
      */
     public static function getCommandAliases(string $name = null): array
     {
-        if (null === self::$aliases) {
-            self::$aliases = static::commandAliases();
+        if (null === self::$commandAliases) {
+            self::$commandAliases = static::commandAliases();
         }
 
         if ($name) {
-            return self::$aliases ? array_keys(self::$aliases, $name, true) : [];
+            return self::$commandAliases ? array_keys(self::$commandAliases, $name, true) : [];
         }
 
-        return self::$aliases;
+        return self::$commandAliases;
     }
 
     /**

@@ -11,7 +11,6 @@ use Inhere\Console\Components\Style\Highlighter;
 use Inhere\Console\Components\Style\LiteStyle;
 use Inhere\Console\Utils\Helper;
 use Inhere\Console\Utils\Interact;
-use Inhere\Console\Utils\ProcessUtil;
 use Inhere\Console\Utils\ProgressBar;
 use Inhere\Console\Utils\Show;
 

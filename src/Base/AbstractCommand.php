@@ -16,6 +16,8 @@ use Inhere\Console\Traits\InputOutputAwareTrait;
 use Inhere\Console\Traits\UserInteractAwareTrait;
 use Inhere\Console\Utils\Annotation;
 use Inhere\Console\Utils\FormatUtil;
+use Inhere\Console\Utils\Helper;
+use Swoole\Coroutine;
 
 /**
  * Class AbstractCommand
@@ -37,6 +39,11 @@ abstract class AbstractCommand implements BaseCommandInterface
      * @var string
      */
     protected static $description = '';
+
+    /**
+     * @var bool Whether enable coroutine. It is require swoole extension.
+     */
+    protected static $coroutine = false;
 
     /**
      * Allow display message tags in the command annotation
@@ -70,6 +77,16 @@ abstract class AbstractCommand implements BaseCommandInterface
     public static function isEnabled(): bool
     {
         return true;
+    }
+
+    /**
+     * Setting current command/group name aliases
+     * @return string[]
+     */
+    public static function aliases(): array
+    {
+        // return ['alias1', 'alias2'];
+        return [];
     }
 
     /**
@@ -150,7 +167,6 @@ abstract class AbstractCommand implements BaseCommandInterface
 
         if ($this->input->sameOpt(['h', 'help'])) {
             $this->showHelp();
-
             return 0;
         }
 
@@ -159,12 +175,29 @@ abstract class AbstractCommand implements BaseCommandInterface
             return -1;
         }
 
-        if (true !== $this->beforeExecute()) {
+        // return False to deny go on
+        if (false === $this->beforeExecute()) {
             return -1;
         }
 
-        $status = (int)$this->execute($this->input, $this->output);
-        $this->afterExecute();
+        $ok = false;
+        $status = 0;
+
+        // if enable coroutine
+        if (self::isCoroutine() && Helper::isSupportCoroutine()) {
+            $ok = Coroutine::create(function () {
+                $status = (int)$this->execute($this->input, $this->output);
+
+                $this->afterExecute();
+                $this->getApp()->stop($status);
+            });
+        }
+
+        // when not enable coroutine OR coroutine create fail.
+        if (!$ok){
+            $status = (int)$this->execute($this->input, $this->output);
+            $this->afterExecute();
+        }
 
         return $status;
     }
@@ -499,6 +532,22 @@ abstract class AbstractCommand implements BaseCommandInterface
     public static function setDescription(string $description)
     {
         static::$description = $description;
+    }
+
+    /**
+     * @return bool
+     */
+    public static function isCoroutine(): bool
+    {
+        return self::$coroutine;
+    }
+
+    /**
+     * @param bool $coroutine
+     */
+    public static function setCoroutine($coroutine)
+    {
+        self::$coroutine = (bool)$coroutine;
     }
 
     /**
