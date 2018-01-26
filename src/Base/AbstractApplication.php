@@ -146,14 +146,14 @@ abstract class AbstractApplication implements ApplicationInterface
         $this->filterSpecialCommand($command);
 
         // call 'onBeforeRun' service, if it is registered.
-        self::fire(self::ON_BEFORE_RUN, [$this]);
+        $this->fire(self::ON_BEFORE_RUN, [$this]);
         $this->beforeRun();
 
         // do run ...
         try {
             $returnCode = $this->dispatch($command);
         } catch (\Throwable $e) {
-            self::fire(self::ON_RUN_ERROR, [$e, $this]);
+            $this->fire(self::ON_RUN_ERROR, [$e, $this]);
             $returnCode = $e->getCode() === 0 ? $e->getLine() : $e->getCode();
             $this->handleException($e);
         }
@@ -161,7 +161,7 @@ abstract class AbstractApplication implements ApplicationInterface
         $this->meta['_stats']['endTime'] = microtime(1);
 
         // call 'onAfterRun' service, if it is registered.
-        self::fire(self::ON_AFTER_RUN, [$this]);
+        $this->fire(self::ON_AFTER_RUN, [$this]);
         $this->afterRun();
 
         if ($exit) {
@@ -206,7 +206,7 @@ abstract class AbstractApplication implements ApplicationInterface
     public function stop($code = 0)
     {
         // call 'onAppStop' service, if it is registered.
-        self::fire(self::ON_STOP_RUN, [$this]);
+        $this->fire(self::ON_STOP_RUN, [$this]);
 
         exit((int)$code);
     }

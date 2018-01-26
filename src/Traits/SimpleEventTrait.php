@@ -45,7 +45,7 @@ trait SimpleEventTrait
      * @param callable $handler
      * @param bool $once
      */
-    public static function on($event, callable $handler, $once = false)
+    public function on(string $event, callable $handler, $once = false)
     {
         if (self::isSupportedEvent($event)) {
             self::$eventHandlers[$event][] = $handler;
@@ -61,9 +61,9 @@ trait SimpleEventTrait
      * @param $event
      * @param callable $handler
      */
-    public static function once($event, callable $handler)
+    public function once(string $event, callable $handler)
     {
-        self::on($event, $handler, true);
+        $this->on($event, $handler, true);
     }
 
     /**
@@ -72,7 +72,7 @@ trait SimpleEventTrait
      * @param array $args
      * @return bool
      */
-    public static function fire($event, array $args = [])
+    public function fire(string $event, array $args = []): bool
     {
         if (!isset(self::$events[$event])) {
             return false;
@@ -88,7 +88,7 @@ trait SimpleEventTrait
 
         // is a once event, remove it
         if (self::$events[$event]) {
-            return self::off($event);
+            return $this->off($event);
         }
 
         return true;
@@ -99,9 +99,9 @@ trait SimpleEventTrait
      * @param $event
      * @return bool
      */
-    public static function off($event)
+    public function off(string $event): bool
     {
-        if (self::hasEvent($event)) {
+        if ($this->hasEvent($event)) {
             unset(self::$events[$event], self::$eventHandlers[$event]);
 
             return true;
@@ -114,7 +114,7 @@ trait SimpleEventTrait
      * @param $event
      * @return bool
      */
-    public static function hasEvent($event)
+    public function hasEvent(string $event): bool
     {
         return isset(self::$events[$event]);
     }
@@ -123,9 +123,9 @@ trait SimpleEventTrait
      * @param $event
      * @return bool
      */
-    public static function isOnce($event)
+    public function isOnce(string $event): bool
     {
-        if (self::hasEvent($event)) {
+        if ($this->hasEvent($event)) {
             return self::$events[$event];
         }
 
@@ -134,10 +134,10 @@ trait SimpleEventTrait
 
     /**
      * check $name is a supported event name
-     * @param $event
+     * @param string $event
      * @return bool
      */
-    public static function isSupportedEvent($event)
+    public static function isSupportedEvent(string $event): bool
     {
         if (!$event || !preg_match('/[a-zA-z][\w-]+/', $event)) {
             return false;
@@ -153,7 +153,7 @@ trait SimpleEventTrait
     /**
      * @return array
      */
-    public static function getSupportEvents()
+    public static function getSupportEvents(): array
     {
         return self::$supportedEvents;
     }
@@ -169,7 +169,7 @@ trait SimpleEventTrait
     /**
      * @return array
      */
-    public static function getEvents()
+    public static function getEvents(): array
     {
         return self::$events;
     }
@@ -177,7 +177,7 @@ trait SimpleEventTrait
     /**
      * @return int
      */
-    public static function countEvents()
+    public static function countEvents(): int
     {
         return \count(self::$events);
     }

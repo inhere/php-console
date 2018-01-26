@@ -9,32 +9,50 @@
 namespace Inhere\Console\Utils;
 
 /**
- * Class EmojiSymbol
+ * Class Emoji
  * @package Inhere\Console\Utils
  */
-class EmojiSymbol
+final class Emoji
 {
     const KEY = '🔑';
     const BOX = '📦';
     const GIFT = '🎁';
     const CLOCK = '⏰';
     const FLAG = '🚩';
+    const TOOL = '🔧';
+    const GUN = '🔫';
 
     const DOC = '📄';
     const DIR = '📂';
     const BOOK = '📔';
+    const RECYCLE = '♻';
 
-    const TOOL = '🔧';
-    const GUN = '🔫';
+    const EDIT = '✍';
+    const SMILE = '😊';
+    const LAUGH = '😆';
+    const LIKE = '😍';
+    const ANGER = '😡';
+    const HAPPY = '😀';
+    const DOZE = '😴';
 
-    const UP = '👍';
-    const DOWN = '👎';
+    const OK = '👌';
+    const YES = '✌';
+    const NO = '✋';
+    const PRAISE = '👍';
+    const TREAD = '👎';
+    const STEP = '🐾';
+
+    const UP = '👆';
+    const DOWN = '👇';
+    const LEFT = '👈';
+    const RIGHT = '👉';
 
     const FIRE = '🔥';
     const SNOW = '❄';
     const WATER = '💧';
     const FLASH = '⚡';
 
+    const EYE = '👀';
     const HEART = '💖';
 
     const SUC = '✅';
@@ -55,6 +73,7 @@ class EmojiSymbol
     const SUN = '🌞';
     const STAR = '⭐';
     const MOON = '🌜';
+    const EARTH = '🌏';
 
     /**
      * @return array

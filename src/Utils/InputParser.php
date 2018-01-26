@@ -9,10 +9,10 @@
 namespace Inhere\Console\Utils;
 
 /**
- * Class CommandLine - console argument and option parse
+ * Class InputParser - console argument and option parse
  * @package Inhere\Console\Utils
  */
-final class CommandLine
+final class InputParser
 {
     /**
      * These words will be as a Boolean value
@@ -27,7 +27,7 @@ final class CommandLine
      * php cli.php server start name=john city=chengdu -s=test --page=23 -d -rf --debug --task=off -y=false -D -e dev -v vvv
      * ```
      * ```php
-     * $result = CommandLineParse::byArgv($_SERVER['argv']);
+     * $result = InputParser::fromArgv($_SERVER['argv']);
      * ```
      * Supports args:
      * <value>
@@ -44,7 +44,7 @@ final class CommandLine
      * @param array $config
      * @return array
      */
-    public static function parseByArgv(array $params, array $config = []): array
+    public static function fromArgv(array $params, array $config = []): array
     {
         $config = array_merge([
             // List of parameters without values(bool option keys)
@@ -89,7 +89,7 @@ final class CommandLine
                 $nxt = current($params);
 
                 // next elem is value. fix: allow empty string ''
-                if ($val === true && self::nextIsValue($nxt) && !isset($noValues[$opt])) {
+                if ($val === true && !isset($noValues[$opt]) && self::nextIsValue($nxt)) {
                     // list(,$val) = each($params);
                     $val = $nxt;
                     next($params);
@@ -139,7 +139,7 @@ final class CommandLine
         return [$args, $sOpts, $lOpts];
     }
 
-    public static function parseByDefinition(array $tokens, array $allowArray = [], array $noValues = [])
+    public static function fromDefinition(array $tokens, array $allowArray = [], array $noValues = [])
     {
 
     }
@@ -147,7 +147,7 @@ final class CommandLine
     /**
      * parse custom array params
      * ```php
-     * $result = CommandLine::parseByArray([
+     * $result = InputParser::fromArray([
      *  'arg' => 'val',
      *  '--lp' => 'val2',
      *  '--s' => 'val3',
@@ -156,7 +156,7 @@ final class CommandLine
      * @param array $params
      * @return array
      */
-    public static function parseByArray(array $params): array
+    public static function fromArray(array $params): array
     {
         $args = $sOpts = $lOpts = [];
 
@@ -179,12 +179,12 @@ final class CommandLine
 
     /**
      * ```php
-     * $result = CommandLine::parseByString('foo --bar="foobar"');
+     * $result = InputParser::fromString('foo --bar="foobar"');
      * ```
      * @todo ...
      * @param string $string
      */
-    public static function parseByString(string $string)
+    public static function fromString(string $string)
     {
 
     }

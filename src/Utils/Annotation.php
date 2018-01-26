@@ -14,8 +14,8 @@ namespace Inhere\Console\Utils;
  */
 final class Annotation
 {
-    /*
-     * 以下三个方法来自 yii2 console/Controller.php
+    /**
+     * 以下三个方法来自 yii2 console/Controller.php 做了一些调整
      */
 
     /**
