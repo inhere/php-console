@@ -26,11 +26,12 @@ class PharController extends Controller
      * pack project to a phar package
      * @usage {fullCommand} [--dir DIR] [--output FILE]
      * @options
-     *  --dir STRING        Setting the directory for packing.
-     *                      - default is current work-dir.(<comment>{workDir}</comment>)
-     *  --fast BOOL         Fast build. only add modified files by <cyan>git status -s</cyan>
-     *  --output STRING     Setting the output file name(<comment>app.phar</comment>)
-     *  --refresh BOOL      Whether build vendor folder files on phar file exists(<comment>False</comment>)
+     *  --dir STRING            Setting the project directory for packing.
+     *                          - default is current work-dir.(<comment>{workDir}</comment>)
+     *  --fast BOOL             Fast build. only add modified files by <cyan>git status -s</cyan>
+     *  -c, --config STRING     Use the defined config for build phar.
+     *  --output STRING         Setting the output file name(<comment>app.phar</comment>)
+     *  --refresh BOOL          Whether build vendor folder files on phar file exists(<comment>False</comment>)
      * @param  \Inhere\Console\IO\Input $in
      * @param  \Inhere\Console\IO\Output $out
      * @return int
@@ -101,8 +102,21 @@ class PharController extends Controller
     protected function configCompiler(string $dir): PharCompiler
     {
         // config
-        $cpr = new PharCompiler($dir);
-        $cpr
+        $compiler = new PharCompiler($dir);
+
+        // if set config file.
+        $configFile = $this->input->getSameOpt(['c', 'config']) ?: $dir . '/phar.build.inc';
+
+        if ($configFile && is_file($configFile)) {
+            require $configFile;
+
+            $compiler->in($dir);
+
+            return $compiler;
+        }
+
+        // you can also extend this controller, then config in the sub-class.
+        $compiler
             // ->stripComments(false)
             ->setShebang(true)
             ->addExclude([
@@ -123,14 +137,14 @@ class PharController extends Controller
         ;
 
         // Command Controller 命令类不去除注释，注释上是命令帮助信息
-        $cpr->setStripFilter(function ($file) {
+        $compiler->setStripFilter(function ($file) {
             /** @var \SplFileInfo $file */
             $name = $file->getFilename();
 
             return false === strpos($name, 'Command.php') && false === strpos($name, 'Controller.php');
         });
 
-        return $cpr;
+        return $compiler;
     }
 
     /**

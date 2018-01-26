@@ -1,5 +1,19 @@
 # CHANGELOG
 
+## v2.3.2
+
+> publish at: 2018.01.26
+
+- now can disable a controller or command by method `isEnabled()`
+- fixed: should not display 'isAlone' command in a controller
+- format codes, add more param type define
+- some update for process util
+- phar compiler can only pack changed files(by git status)
+- group/command allow define alias by aliases() in class
+- support run command by coroutine, base on swoole.
+- update demo classes. add changelog file
+- Update README.md
+
 ## v2.3.1
 
 - fixed for alone command description message dispaly on use `-h`
@@ -7,7 +21,7 @@
 - method annotation format update
 - complete phar package tool. add a example controller for pack phar
     - you can run: `php examples/app phar:pack` to see demo
-   
+
    
 ## v2.3.0
 
