@@ -186,11 +186,15 @@ abstract class AbstractCommand implements BaseCommandInterface
         // if enable coroutine
         if (self::isCoroutine() && Helper::isSupportCoroutine()) {
             $ok = Coroutine::create(function () {
-                $status = (int)$this->execute($this->input, $this->output);
-
+                $this->execute($this->input, $this->output);
                 $this->afterExecute();
-                $this->getApp()->stop($status);
+                // $this->getApp()->stop($status);
             });
+
+            // if open debug, output a tips
+            if (!$ok && $this->input->boolOpt('debug')) {
+                $this->output->warning('The coroutine create failed!');
+            }
         }
 
         // when not enable coroutine OR coroutine create fail.
@@ -539,7 +543,7 @@ abstract class AbstractCommand implements BaseCommandInterface
      */
     public static function isCoroutine(): bool
     {
-        return self::$coroutine;
+        return static::$coroutine;
     }
 
     /**
@@ -547,7 +551,7 @@ abstract class AbstractCommand implements BaseCommandInterface
      */
     public static function setCoroutine($coroutine)
     {
-        self::$coroutine = (bool)$coroutine;
+        static::$coroutine = (bool)$coroutine;
     }
 
     /**

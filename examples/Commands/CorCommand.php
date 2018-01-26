@@ -38,6 +38,10 @@ class CorCommand extends Command
      */
     protected function execute($input, $output)
     {
-        $output->dump(Helper::isSupportCoroutine(), Helper::inCoroutine());
+        $output->aList([
+            'support coroutine?' => Helper::isSupportCoroutine() ? 'Y' : 'N',
+            'open coroutine running?' => self::isCoroutine() ? 'Y' : 'N',
+            'running in coroutine?' => Helper::inCoroutine() ? 'Y' : 'N',
+        ], 'some information');
     }
 }

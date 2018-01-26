@@ -205,7 +205,7 @@ final class FormatUtil
         $info['endMemory'] = memory_get_usage();
 
         // 计算运行时间
-        $info['runtime'] = number_format(($info['endTime'] - $startTime) * 1000, 3) . ' Ms';
+        $info['runtime'] = number_format(($info['endTime'] - $startTime) * 1000, 3) . ' ms';
 
         if ($startMem) {
             $startMem = array_sum(explode(' ', $startMem));

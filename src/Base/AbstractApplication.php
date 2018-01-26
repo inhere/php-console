@@ -105,7 +105,9 @@ abstract class AbstractApplication implements ApplicationInterface
     {
         $this->meta['_stats'] = [
             'startTime' => microtime(1),
+            'endTime' => 0,
             'startMemory' => memory_get_usage(),
+            'endMemory' => 0,
         ];
 
         $this->commandName = $this->input->getCommand();
@@ -190,14 +192,6 @@ abstract class AbstractApplication implements ApplicationInterface
 
     protected function afterRun()
     {
-        // display runtime info
-        if ($this->isProfile()) {
-            $title = '---------- Runtime Stats(profile=true) ----------';
-            $stats = $this->meta['_stats'];
-            $this->meta['_stats'] = FormatUtil::runtime($stats['startTime'], $stats['startMemory'], $stats);
-            $this->output->write('');
-            $this->output->aList($this->meta['_stats'], $title);
-        }
     }
 
     /**
@@ -207,6 +201,15 @@ abstract class AbstractApplication implements ApplicationInterface
     {
         // call 'onAppStop' service, if it is registered.
         $this->fire(self::ON_STOP_RUN, [$this]);
+
+        // display runtime info
+        if ($this->isProfile()) {
+            $title = '------ Runtime Stats(use --profile) ------';
+            $stats = $this->meta['_stats'];
+            $this->meta['_stats'] = FormatUtil::runtime($stats['startTime'], $stats['startMemory'], $stats);
+            $this->output->write('');
+            $this->output->aList($this->meta['_stats'], $title);
+        }
 
         exit((int)$code);
     }
