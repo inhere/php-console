@@ -282,6 +282,7 @@ class Application extends AbstractApplication
         if (strpos($realName, $sep) > 0) {
             $input = array_values(array_filter(explode($sep, $realName)));
             list($realName, $action) = \count($input) > 2 ? array_splice($input, 2) : $input;
+            $realName = $this->getRealCommandName($realName);
         }
 
         if ($this->isController($realName)) {

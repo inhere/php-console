@@ -11,6 +11,7 @@ use Inhere\Console\Components\Style\Highlighter;
 use Inhere\Console\Components\Style\LiteStyle;
 use Inhere\Console\Utils\Helper;
 use Inhere\Console\Utils\Interact;
+use Inhere\Console\Utils\ProcessUtil;
 use Inhere\Console\Utils\ProgressBar;
 use Inhere\Console\Utils\Show;
 
@@ -54,7 +55,7 @@ class HomeController extends Controller
 
     protected function afterExecute()
     {
-        $this->write('after command execute');
+        // $this->write('after command execute');
     }
 
     /**
@@ -99,6 +100,14 @@ class HomeController extends Controller
     }
 
     /**
+     * dump current env information
+     */
+    public function dumpEnvCommand()
+    {
+        $this->output->aList($_SERVER, '$_SERVER data');
+    }
+
+    /**
      * a example for highlight code
      * @options
      *  --ln    Display with line number
@@ -136,6 +145,25 @@ class HomeController extends Controller
         }
 
         return 0;
+    }
+
+    /**
+     * check color support for current env.
+     */
+    public function colorCheckCommand()
+    {
+        // $char= '❤';
+        // $ret = ProcessUtil::run('echo ❤');
+        // var_dump($ret, trim($ret[1]), $char === trim($ret[1]));
+        //
+        // die;
+
+        $this->output->aList([
+            'basic color output?' => Helper::supportColor() ? '<info>Y</info>' : 'N',
+            'ansi char output?' => Helper::isAnsiSupport() ? 'Y' : 'N',
+            '256 color output?' => Helper::isSupport256Color() ? 'Y' : 'N',
+            'font symbol output?' => Helper::isSupport256Color() ? 'Y' : 'N',
+        ], 'color support check');
     }
 
     /**

@@ -103,7 +103,7 @@ class Helper
     /**
      * @return bool
      */
-    public function isSupport256Color(): bool
+    public static function isSupport256Color(): bool
     {
         return DIRECTORY_SEPARATOR === '/' && strpos(getenv('TERM'), '256color') !== false;
     }
@@ -113,7 +113,11 @@ class Helper
      */
     public static function isAnsiSupport(): bool
     {
-        return getenv('ANSICON') === true || getenv('ConEmuANSI') === 'ON';
+        if (DIRECTORY_SEPARATOR === '\\') {
+            return getenv('ANSICON') === true || getenv('ConEmuANSI') === 'ON';
+        }
+
+        return true;
     }
 
     /**

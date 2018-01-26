@@ -28,6 +28,7 @@ class PharController extends Controller
      * @options
      *  --dir STRING        Setting the directory for packing.
      *                      - default is current work-dir.(<comment>{workDir}</comment>)
+     *  --fast BOOL         Fast build. only add modified files by <cyan>git status -s</cyan>
      *  --output STRING     Setting the output file name(<comment>app.phar</comment>)
      *  --refresh BOOL      Whether build vendor folder files on phar file exists(<comment>False</comment>)
      * @param  \Inhere\Console\IO\Input $in
@@ -38,13 +39,19 @@ class PharController extends Controller
     {
         $time = microtime(1);
         $workDir = $in->getPwd();
-        $dir = $in->getOpt('dir') ?: $workDir;
-        $pharFile = $workDir . '/' . $in->getOpt('output', 'app.phar');
 
+        $dir = $in->getOpt('dir') ?: $workDir;
         $cpr = $this->configCompiler($dir);
 
         $counter = null;
         $refresh = $in->boolOpt('refresh');
+        $pharFile = $workDir . '/' . $in->getOpt('output', 'app.phar');
+
+        // use fast build
+        if ($this->input->boolOpt('fast')) {
+            $cpr->setModifies($cpr->findChangedByGit());
+            $this->output->liteNote('Use fast build, will only pack changed or new files(from git status)');
+        }
 
         $out->liteInfo(
             "Now, will begin building phar package.\n from path: <comment>$workDir</comment>\n" .
@@ -52,7 +59,6 @@ class PharController extends Controller
         );
 
         $out->info('Pack file to Phar: ');
-
         $cpr->onError(function ($error) {
             $this->output->warning($error);
         });
@@ -63,7 +69,6 @@ class PharController extends Controller
             });
         } else {
             $counter = Show::counterTxt('Handling ...', 'Done.');
-
             $cpr->onAdd(function () use($counter) {
                 $counter->send(1);
             });
@@ -72,6 +77,7 @@ class PharController extends Controller
         // packing ...
         $cpr->pack($pharFile, $refresh);
 
+        // end
         if ($counter) {
             $counter->send(-1);
         }
@@ -94,9 +100,8 @@ class PharController extends Controller
      */
     protected function configCompiler(string $dir): PharCompiler
     {
-        $cpr = new PharCompiler($dir);
-
         // config
+        $cpr = new PharCompiler($dir);
         $cpr
             // ->stripComments(false)
             ->setShebang(true)

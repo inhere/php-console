@@ -73,6 +73,8 @@ class ProcessController extends Controller
 
             echo "command returned $retVal\n";
         }
+
+        ProcessUtil::run();
     }
 
     /**
