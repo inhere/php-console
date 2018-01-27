@@ -9,6 +9,7 @@
 namespace Inhere\Console\BuiltIn;
 
 use Inhere\Console\Command;
+use Inhere\Console\Utils\CliUtil;
 
 /**
  * Class DevServerCommand
@@ -17,7 +18,7 @@ use Inhere\Console\Command;
 class DevServerCommand extends Command
 {
     protected static $name = 'dev:server';
-    protected static $description = 'Start a php built-in server for development';
+    protected static $description = 'Start a php built-in http server for development';
 
     public static function aliases(): array
     {
@@ -25,16 +26,16 @@ class DevServerCommand extends Command
     }
 
     /**
-     * start a php built-in server for development
+     * start a php built-in http server for development
      * @usage
      *  {command} [-S HOST:PORT]
      *  {command} [-H HOST] [-p PORT]
      *  {command} [-S HOST:PORT] [file=]web/index.php
      * @options
-     *  -S STRING           The server address. e.g 127.0.0.1:8552
+     *  -S STRING           The http server address. e.g 127.0.0.1:8552
      *  -t STRING           The document root dir for server(<comment>web</comment>)
      *  -H,--host STRING    The server host address(<comment>127.0.0.1</comment>)
-     *  -p,--port INTEGER   The server port address(<comment>8552</comment>)
+     *  -p,--port INTEGER   The server port number(<comment>8552</comment>)
      * @arguments
      *  file=STRING         The entry file for server. e.g web/index.php
      * @example
