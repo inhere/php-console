@@ -238,6 +238,7 @@ abstract class AbstractApplication implements ApplicationInterface
      */
     public function handleException($e)
     {
+        $class = \get_class($e);
         $type = $e instanceof \Error ? 'Error' : 'Exception';
         $title = ":( OO ... An $type Occurred!";
         $this->logError($e);
@@ -249,6 +250,7 @@ abstract class AbstractApplication implements ApplicationInterface
 
 Message   <magenta>%s</magenta>
 At File   <cyan>%s</cyan> line <cyan>%d</cyan>
+Exception $class
 Catch by  %s()\n
 Code Trace:\n%s\n
 ERR;

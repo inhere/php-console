@@ -11,7 +11,6 @@ namespace Inhere\Console\Components\Style;
 /**
  * Class Highlighter
  * @package Inhere\Console\Components\Style
- *
  * @see jakub-onderka/php-console-highlighter
  * @link https://github.com/JakubOnderka/PHP-Console-Highlighter/blob/master/src/Highlighter.php
  */
@@ -45,6 +44,9 @@ class Highlighter
         self::LINE_NUMBER => 'darkGray',
     ];
 
+    /** @var bool */
+    private $hasTokenFunc;
+
     /**
      * @return Highlighter
      */
@@ -63,6 +65,7 @@ class Highlighter
     public function __construct(Style $color = null)
     {
         $this->color = $color ?: Style::create();
+        $this->hasTokenFunc = \function_exists('token_get_all');
     }
 
     /**
@@ -98,6 +101,7 @@ class Highlighter
         $offset = max($offset, 0);
         $length = $linesAfter + $linesBefore + 1;
         $tokenLines = \array_slice($tokenLines, $offset, $length, $preserveKeys = true);
+
         $lines = $this->colorLines($tokenLines);
 
         return $this->lineNumbers($lines, $lineNumber);
@@ -135,10 +139,15 @@ class Highlighter
      */
     private function getHighlightedLines($source): array
     {
-        $source = str_replace(array("\r\n", "\r"), "\n", $source);
-        $tokens = $this->tokenize($source);
+        $source = str_replace(["\r\n", "\r"], "\n", $source);
 
-        return $this->splitToLines($tokens);
+        if ($this->hasTokenFunc) {
+            $tokens = $this->tokenize($source);
+            return $this->splitToLines($tokens);
+        }
+
+        // if no func: token_get_all
+        return explode("\n", $source);
     }
 
     /**
@@ -250,6 +259,10 @@ class Highlighter
      */
     private function colorLines(array $tokenLines): array
     {
+        if (!$this->hasTokenFunc) {
+            return $tokenLines;
+        }
+
         $lines = [];
 
         foreach ($tokenLines as $lineCount => $tokenLine) {
