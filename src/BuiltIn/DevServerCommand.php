@@ -22,7 +22,7 @@ class DevServerCommand extends Command
 
     public static function aliases(): array
     {
-        return ['dev-server'];
+        return ['devServer', 'dev-server'];
     }
 
     /**
