@@ -59,6 +59,6 @@ abstract class Command extends AbstractCommand implements CommandInterface
             return true;
         }
 
-        return $this->showHelpByMethodAnnotations('execute');
+        return $this->showHelpByMethodAnnotations('execute', null, static::aliases());
     }
 }

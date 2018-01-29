@@ -464,7 +464,8 @@ abstract class AbstractCommand implements BaseCommandInterface
         $help = [];
 
         if ($aliases) {
-            $help['Alias Name:'] = implode(',', $aliases);
+            $realName = $action ?: self::getName();
+            $help['Command:'] = sprintf('%s(alias: <info>%s</info>)', $realName, implode(',', $aliases));
         }
 
         foreach (array_keys(self::$annotationTags) as $tag) {
