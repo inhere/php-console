@@ -2,7 +2,7 @@
 
 <phpunit backupGlobals="false"
          backupStaticAttributes="false"
-         bootstrap="./tests/boot.php"
+         bootstrap="test/boot.php"
          colors="false"
          convertErrorsToExceptions="true"
          convertNoticesToExceptions="true"
@@ -12,13 +12,13 @@
 >
     <testsuites>
         <testsuite name="Php Console Test Suite">
-            <directory>./tests/</directory>
+            <directory>test</directory>
         </testsuite>
     </testsuites>
 
     <filter>
         <whitelist>
-            <directory suffix=".php">./src</directory>
+            <directory suffix=".php">src</directory>
         </whitelist>
     </filter>
 </phpunit>

@@ -45,13 +45,24 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
 
     /**
      * define command alias map
-     * @return array|mixed
+     * @return array
      */
-    protected static function commandAliases()
+    protected static function commandAliases(): array
     {
         return [
             // alias => command
             // 'i'  => 'install',
+        ];
+    }
+
+    /**
+     * define disabled command list.
+     * @return array
+     */
+    protected function disabledCommands(): array
+    {
+        return [
+            // 'command1', 'command2'
         ];
     }
 

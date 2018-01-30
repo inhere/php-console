@@ -877,4 +877,12 @@ EOF;
     {
         return $this->pharFile;
     }
+
+    /**
+     * @return bool
+     */
+    public function hasDirectory(): bool
+    {
+        return !empty($this->directories);
+    }
 }

@@ -1,17 +1,24 @@
 #!/usr/env/php
 <?php
+/**
+ * only run a controller.
+ */
 
 use Inhere\Console\Examples\Controllers\HomeController;
 
 define('BASE_PATH', dirname(__DIR__));
 
-require dirname(__DIR__) . '/tests/boot.php';
+require dirname(__DIR__) . '/test/boot.php';
 
 $in = new \Inhere\Console\IO\Input();
 $ctrl = new HomeController($in, new \Inhere\Console\IO\Output());
 $ctrl->setStandAlone();
 
-exit($ctrl->run($in->getCommand()));
+try {
+  exit($ctrl->run($in->getCommand()));
+} catch (ReflectionException $e) {
+  // ...
+}
 
 // can also:
 

@@ -8,7 +8,7 @@
 
 define('BASE_PATH', dirname(__DIR__));
 
-require dirname(__DIR__) . '/tests/boot.php';
+require dirname(__DIR__) . '/test/boot.php';
 
 // create app instance
 $app = new \Inhere\Console\Application([

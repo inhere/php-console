@@ -24,51 +24,51 @@ class Input implements InputInterface
     /**
      * @var string
      */
-    private $pwd;
-
-    /**
-     * eg `./examples/app home:useArg status=2 name=john arg0 -s=test --page=23`
-     * @var string
-     */
-    private $fullScript;
+    protected $pwd;
 
     /**
      * the script name
      * e.g `./bin/app` OR `bin/cli.php`
      * @var string
      */
-    private $script;
+    protected $script;
 
     /**
      * the command name(Is first argument)
      * e.g `start` OR `start`
      * @var string
      */
-    private $command;
+    protected $command;
+
+    /**
+     * eg `./examples/app home:useArg status=2 name=john arg0 -s=test --page=23`
+     * @var string
+     */
+    protected $fullScript;
 
     /**
      * raw argv data
      * @var array
      */
-    private $tokens;
+    protected $tokens;
 
     /**
      * Input args data
      * @var array
      */
-    private $args = [];
+    protected $args = [];
 
     /**
      * Input short-opts data
      * @var array
      */
-    private $sOpts = [];
+    protected $sOpts = [];
 
     /**
      * Input long-opts data
      * @var array
      */
-    private $lOpts = [];
+    protected $lOpts = [];
 
     /**
      * Input constructor.

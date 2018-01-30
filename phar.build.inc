@@ -14,14 +14,14 @@ $compiler
   ->setShebang(true)
   ->addExclude([
     'demo',
-    'tests',
+    'test',
     'tmp',
   ])
   ->addFile([
     'LICENSE',
     'composer.json',
     'README.md',
-    'tests/boot.php',
+    'test/boot.php',
   ])
   ->setCliIndex('examples/app')
   // ->setWebIndex('web/index.php')

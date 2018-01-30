@@ -22,7 +22,7 @@ class ProcessController extends Controller
 
     protected static $description = 'Some simple process to create and use examples';
 
-    protected static function commandAliases()
+    protected static function commandAliases(): array
     {
         return [
             'cpr' => 'childProcess',

@@ -103,8 +103,6 @@ class PharController extends Controller
     {
         // config
         $compiler = new PharCompiler($dir);
-
-        // if set config file.
         $configFile = $this->input->getSameOpt(['c', 'config']) ?: $dir . '/phar.build.inc';
 
         if ($configFile && is_file($configFile)) {
@@ -115,36 +113,7 @@ class PharController extends Controller
             return $compiler;
         }
 
-        // you can also extend this controller, then config in the sub-class.
-        $compiler
-            // ->stripComments(false)
-            ->setShebang(true)
-            ->addExclude([
-                'demo',
-                'tests',
-                'tmp',
-            ])
-            ->addFile([
-                'LICENSE',
-                'composer.json',
-                'README.md',
-                'tests/boot.php',
-            ])
-            ->setCliIndex('examples/app')
-            // ->setWebIndex('web/index.php')
-            // ->setVersionFile('config/config.php')
-            ->in($dir)
-        ;
-
-        // Command Controller 命令类不去除注释，注释上是命令帮助信息
-        $compiler->setStripFilter(function ($file) {
-            /** @var \SplFileInfo $file */
-            $name = $file->getFilename();
-
-            return false === strpos($name, 'Command.php') && false === strpos($name, 'Controller.php');
-        });
-
-        return $compiler;
+        throw new \RuntimeException("The phar build config file not exists! File: $configFile");
     }
 
     /**

@@ -9,6 +9,7 @@
 namespace Inhere\Console\Examples\Commands;
 
 use Inhere\Console\Command;
+use Inhere\Console\IO\Output;
 
 /**
  * Class Test
@@ -16,6 +17,7 @@ use Inhere\Console\Command;
  */
 class TestCommand extends Command
 {
+    protected static $name = 'test';
     protected static $description = 'this is a test independent command';
 
     /**
@@ -28,7 +30,7 @@ class TestCommand extends Command
      *  --long,-s   option description 1
      *  --opt       option description 2
      * @param $input
-     * @param $output
+     * @param Output $output
      */
     public function execute($input, $output)
     {

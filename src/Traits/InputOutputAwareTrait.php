@@ -9,7 +9,9 @@
 namespace Inhere\Console\Traits;
 
 use Inhere\Console\IO\Input;
+use Inhere\Console\IO\InputInterface;
 use Inhere\Console\IO\Output;
+use Inhere\Console\IO\OutputInterface;
 
 /**
  * Class InputOutputAwareTrait
@@ -18,12 +20,12 @@ use Inhere\Console\IO\Output;
 trait InputOutputAwareTrait
 {
     /**
-     * @var Input
+     * @var Input|InputInterface
      */
     protected $input;
 
     /**
-     * @var Output
+     * @var Output|OutputInterface
      */
     protected $output;
 
@@ -122,33 +124,33 @@ trait InputOutputAwareTrait
     }
 
     /**
-     * @return Input
+     * @return Output|InputInterface
      */
-    public function getInput(): Input
+    public function getInput(): InputInterface
     {
         return $this->input;
     }
 
     /**
-     * @param Input $input
+     * @param InputInterface $input
      */
-    public function setInput(Input $input)
+    public function setInput(InputInterface $input)
     {
         $this->input = $input;
     }
 
     /**
-     * @return Output
+     * @return OutputInterface
      */
-    public function getOutput(): Output
+    public function getOutput(): OutputInterface
     {
         return $this->output;
     }
 
     /**
-     * @param Output $output
+     * @param Output|OutputInterface $output
      */
-    public function setOutput(Output $output)
+    public function setOutput(OutputInterface $output)
     {
         $this->output = $output;
     }

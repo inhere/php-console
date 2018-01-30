@@ -26,7 +26,7 @@ class HomeController extends Controller
     /**
      * @return array
      */
-    protected static function commandAliases()
+    protected static function commandAliases(): array
     {
         return [
             // now, 'home:i' is equals to 'home:index'
@@ -96,6 +96,32 @@ class HomeController extends Controller
     public function defArgCommand()
     {
         $this->output->dump($this->input->getArgs(), $this->input->getOpts(), $this->input->getBoolOpt('y'));
+    }
+
+    /**
+     * a command for test throw exception
+     */
+    public function exCommand()
+    {
+        throw new \RuntimeException('oo, this is a runtime exception!');
+    }
+
+    /**
+     * a command for test trigger error
+     */
+    public function errorCommand()
+    {
+        trigger_error('oo, this is a runtime error!', E_USER_ERROR);
+    }
+
+    /**
+     * will run other command in the command.
+     */
+    public function subRunCommand()
+    {
+        $this->writeln('hello this is: ' . __METHOD__);
+
+        $this->getApp()->subRun('test', $this->input, $this->output);
     }
 
     /**

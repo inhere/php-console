@@ -9,8 +9,10 @@
 namespace Inhere\Console\Base;
 
 use Inhere\Console\IO\Input;
+use Inhere\Console\IO\InputInterface;
 use Inhere\Console\IO\Output;
 use Inhere\Console\Components\Style\Highlighter;
+use Inhere\Console\IO\OutputInterface;
 use Inhere\Console\Traits\InputOutputAwareTrait;
 use Inhere\Console\Traits\SimpleEventTrait;
 use Inhere\Console\Components\Style\Style;
@@ -111,7 +113,8 @@ abstract class AbstractApplication implements ApplicationInterface
         ];
 
         $this->commandName = $this->input->getCommand();
-        set_exception_handler([$this, 'handleException']);
+
+        $this->registerErrorHandle();
     }
 
     /**
@@ -214,6 +217,21 @@ abstract class AbstractApplication implements ApplicationInterface
         exit((int)$code);
     }
 
+    /**
+     * @param string $command
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     * @return int|mixed
+     */
+    public function subRun(string $command, InputInterface $input, OutputInterface $output)
+    {
+        $app = clone $this;
+        $app->setInput($input);
+        $app->setOutput($output);
+
+        return $app->dispatch($command);
+    }
+
     /**********************************************************
      * helper method for the application
      **********************************************************/
@@ -233,41 +251,65 @@ abstract class AbstractApplication implements ApplicationInterface
     }
 
     /**
+     * register error handle
+     */
+    protected function registerErrorHandle()
+    {
+        set_error_handler([$this, 'handleError']);
+        set_exception_handler([$this, 'handleException']);
+
+        register_shutdown_function(function () {
+            if ($e = error_get_last()) {
+                $this->handleError($e['type'], $e['message'], $e['file'], $e['line']);
+            }
+        });
+    }
+
+    /**
+     * 运行异常处理
+     * @param int $num
+     * @param string $str
+     * @param string $file
+     * @param int $line
+     */
+    public function handleError(int $num, string $str, string $file, int $line)
+    {
+        $this->handleException(new \ErrorException($str, 0, $num, $file, $line));
+        $this->stop(-1);
+    }
+
+    /**
      * 运行异常处理
      * @param \Exception|\Throwable $e
      */
     public function handleException($e)
     {
         $class = \get_class($e);
-        $type = $e instanceof \Error ? 'Error' : 'Exception';
-        $title = ":( OO ... An $type Occurred!";
         $this->logError($e);
 
         // open debug, throw exception
         if ($this->isDebug()) {
             $tpl = <<<ERR
-    <danger>$title</danger>
+\n<error> Error </error> <mga>%s</mga>
 
-Message   <magenta>%s</magenta>
-At File   <cyan>%s</cyan> line <cyan>%d</cyan>
+At File <cyan>%s</cyan> line <bold>%d</bold>
 Exception $class
-Catch by  %s()\n
-Code Trace:\n%s\n
+<comment>Code View:</comment>\n\n%s
+<comment>Code Trace:</comment>\n\n%s\n
 ERR;
+            $line = $e->getLine();
+            $file = $e->getFile();
+            $snippet = Highlighter::create()->highlightSnippet(file_get_contents($file), $line, 3, 3);
             $message = sprintf(
                 $tpl,
                 // $e->getCode(),
                 $e->getMessage(),
-                $file = $e->getFile(),
-                $line = $e->getLine(),
-                __METHOD__,
-                $e->getTraceAsString()
+                $file,
+                $line,
+                // __METHOD__,
+                $snippet,
+                str_replace('):', "):\n  -", $e->getTraceAsString())
             );
-
-            $source = file_get_contents($file);
-            $hl = Highlighter::create();
-            $snippet = $hl->highlightSnippet($source, $line, 3, 3);
-            $message .= "\nCode View:\n$snippet";
 
             if ($this->meta['hideRootPath'] && ($rootPath = $this->meta['rootPath'])) {
                 $message = str_replace($rootPath, '{ROOT}', $message);
@@ -537,6 +579,19 @@ ERR;
     protected function getRealCommandName(string $name): string
     {
         return $this->commandAliases[$name] ?? $name;
+    }
+
+    /**
+     * @param string $name
+     * @return mixed|null
+     */
+    public function findCommand(string $name)
+    {
+        if (isset($this->commands[$name])) {
+            return $this->commands[$name];
+        }
+
+        return $this->controllers[$name] ?? null;
     }
 
     /**********************************************************

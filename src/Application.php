@@ -62,7 +62,7 @@ class Application extends AbstractApplication
         if ($aliases = $class::aliases()) {
             $option['aliases'] = isset($option['aliases']) ? array_merge($option['aliases'], $aliases) : $aliases;
         }
-        
+
         $this->controllers[$name] = $class;
 
         if (!$option) {
@@ -299,7 +299,7 @@ class Application extends AbstractApplication
         }
 
         // command not found
-        if (true !== self::fire(self::ON_NOT_FOUND, [$this])) {
+        if (true !== $this->fire(self::ON_NOT_FOUND, [$this])) {
             $this->output->liteError("The command '{$name}' is not exists in the console application!");
 
             $commands = array_merge($this->getControllerNames(), $this->getCommandNames());
@@ -361,8 +361,8 @@ class Application extends AbstractApplication
     }
 
     /**
-     * @param string $name Controller name
-     * @param string $action Command
+     * @param string $name group name
+     * @param string $action Command method, no suffix
      * @param bool $believable The `$name` is believable
      * @param bool $standAlone
      * @return mixed
