@@ -40,9 +40,9 @@ class DevServerCommand extends Command
      *  file=STRING         The entry file for server. e.g web/index.php
      * @example
      *  {command} -S 127.0.0.1:8552 web/index.php
-     *
      * @param  \Inhere\Console\IO\Input $in
      * @param  \Inhere\Console\IO\Output $out
+     * @return int|mixed|void
      */
     public function execute($in, $out)
     {

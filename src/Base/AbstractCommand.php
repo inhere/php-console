@@ -130,7 +130,7 @@ abstract class AbstractCommand implements BaseCommandInterface
     /**
      * @return InputDefinition
      */
-    protected function createDefinition()
+    protected function createDefinition(): InputDefinition
     {
         if (!$this->definition) {
             $this->definition = new InputDefinition();
