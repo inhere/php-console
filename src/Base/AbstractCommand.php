@@ -45,6 +45,11 @@ abstract class AbstractCommand implements BaseCommandInterface
      */
     protected static $coroutine = false;
 
+    /** @var array */
+    protected static $commandOptions = [
+        '--skip-invalid' => 'Whether ignore invalid arguments and options, when use input definition',
+    ];
+
     /**
      * Allow display message tags in the command annotation
      * @var array
@@ -104,9 +109,9 @@ abstract class AbstractCommand implements BaseCommandInterface
             $this->definition = $definition;
         }
 
-        $this->init();
-
         $this->annotationVars = $this->annotationVars();
+
+        $this->init();
     }
 
     protected function init()
@@ -493,7 +498,7 @@ abstract class AbstractCommand implements BaseCommandInterface
             unset($help['Description:']);
         }
 
-        $help['Global Options:'] = FormatUtil::alignmentOptions(Application::getInternalOptions());
+        $help['Global Options:'] = FormatUtil::alignmentOptions(array_merge(Application::getInternalOptions(),static::$commandOptions));
 
         $this->output->mList($help, [
             'sepChar' => '  ',

@@ -25,7 +25,12 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
     /** @var array */
     private static $commandAliases;
 
-    /** @var string */
+    /** @var array */
+    protected static $globalOptions = [
+        '--show-disabled' => 'Whether display disabled commands',
+    ];
+
+    /** @var string Action name, no suffix. */
     private $action;
 
     /** @var string */
@@ -44,6 +49,11 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
     protected $notFoundCallback = 'notFound';
 
     /**
+     * @var array From disabledCommands()
+     */
+    protected $disabledCommands = [];
+
+    /**
      * define command alias map
      * @return array
      */
@@ -53,6 +63,16 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
             // alias => command
             // 'i'  => 'install',
         ];
+    }
+
+    protected function init()
+    {
+        $list = $this->disabledCommands();
+        $this->disabledCommands = $list ? array_flip($list) : [];
+
+        if (!$this->actionSuffix) {
+            $this->actionSuffix = 'Command';
+        }
     }
 
     /**
@@ -106,15 +126,38 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
     protected function execute($input, $output)
     {
         $action = FormatUtil::camelCase(trim($this->action ?: $this->defaultAction, $this->delimiter));
+
+        if ($this->isDisabled($action)) {
+            $output->liteError(sprintf(
+                "Sorry, The command '$action' is invalid in the group '%s'!",
+                static::getName()
+            ));
+
+            return -1;
+        }
+
         $method = $this->actionSuffix ? $action . ucfirst($this->actionSuffix) : $action;
 
         // the action method exists and only allow access public method.
-        if (method_exists($this, $method) && (($rfm = new \ReflectionMethod($this, $method)) && $rfm->isPublic())) {
+        if (\method_exists($this, $method) && (($rfm = new \ReflectionMethod($this, $method)) && $rfm->isPublic())) {
+            // before
+            if (\method_exists($this, $before = 'before' . ucfirst($action))) {
+                $this->$before($input, $output);
+            }
+
             // run action
             $status = $this->$method($input, $output);
 
-            // if you defined the method '$this->notFoundCallback' , will call it
-        } elseif (($notFoundCallback = $this->notFoundCallback) && method_exists($this, $notFoundCallback)) {
+            // after
+            if (\method_exists($this, $after = 'after' . ucfirst($action))) {
+                $this->$after($input, $output);
+            }
+
+            return (int)$status;
+        }
+
+        // if you defined the method '$this->notFoundCallback' , will call it
+        if (($notFoundCallback = $this->notFoundCallback) && method_exists($this, $notFoundCallback)) {
             $status = $this->{$notFoundCallback}($action);
         } else {
             $group = static::getName();
@@ -181,12 +224,19 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
         return $this->showHelpByMethodAnnotations($method, $action, $aliases);
     }
 
+    protected function beforeShowCommandList()
+    {
+        // do something ...
+    }
+    
     /**
      * show command list of the controller class
      * @throws \ReflectionException
      */
     final public function showCommandList()
     {
+        $this->beforeShowCommandList();
+
         $ref = new \ReflectionClass($this);
         $sName = lcfirst(self::getName() ?: $ref->getShortName());
 
@@ -195,21 +245,32 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
         }
 
         $commands = [];
-        $defCommandDes = 'No description message';
+        $showDisabled = (bool)$this->getOpt('show-disabled', false);
+        $defaultDes = 'No description message';
 
         foreach ($this->getAllCommandMethods($ref) as $cmd => $m) {
-            $desc = Annotation::firstLine($m->getDocComment()) ?: $defCommandDes;
+            if (!$cmd) {
+                continue;
+            }
+
+            $desc = Annotation::firstLine($m->getDocComment()) ?: $defaultDes;
 
             // is a annotation tag
             if ($desc[0] === '@') {
-                $desc = $defCommandDes;
+                $desc = $defaultDes;
             }
 
-            if ($cmd) {
-                $aliases = self::getCommandAliases($cmd);
-                $extra = $aliases ? Helper::wrapTag(' [alias: ' . implode(',', $aliases) . ']', 'info') : '';
-                $commands[$cmd] = $desc . $extra;
+            if ($this->isDisabled($cmd)) {
+                if (!$showDisabled) {
+                    continue;
+                }
+
+                $desc .= '[<red>DISABLED</red>]';
             }
+
+            $aliases = self::getCommandAliases($cmd);
+            $desc .= $aliases ? Helper::wrapTag(' [alias: ' . implode(',', $aliases) . ']', 'info') : '';
+            $commands[$cmd] = $desc;
         }
 
         // sort commands
@@ -236,7 +297,7 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
         $this->output->mList([
             'Usage:' => $usage,
             //'Group Name:' => "<info>$sName</info>",
-            'Options:' => FormatUtil::alignmentOptions(Application::getInternalOptions()),
+            'Options:' => FormatUtil::alignmentOptions(array_merge(Application::getInternalOptions(), static::$globalOptions)),
             'Commands:' => $commands,
         ], [
             'sepChar' => '  ',
@@ -292,9 +353,26 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
         return $map[$name] ?? $name;
     }
 
+    /**
+     * @param string $name
+     * @return bool
+     */
+    public function isDisabled(string $name): bool
+    {
+        return isset($this->disabledCommands[$name]);
+    }
+
     /**************************************************************************
      * getter/setter methods
      **************************************************************************/
+
+    /**
+     * @return array
+     */
+    public function getDisabledCommands(): array
+    {
+        return $this->disabledCommands;
+    }
 
     /**
      * @param string|null $name
@@ -345,7 +423,7 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
     /**
      * @param string $defaultAction
      */
-    public function setDefaultAction($defaultAction)
+    public function setDefaultAction(string $defaultAction)
     {
         $this->defaultAction = $defaultAction;
     }
@@ -361,7 +439,7 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
     /**
      * @param string $actionSuffix
      */
-    public function setActionSuffix($actionSuffix)
+    public function setActionSuffix(string $actionSuffix)
     {
         $this->actionSuffix = $actionSuffix;
     }
@@ -377,7 +455,7 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
     /**
      * @param string $notFoundCallback
      */
-    public function setNotFoundCallback($notFoundCallback)
+    public function setNotFoundCallback(string $notFoundCallback)
     {
         $this->notFoundCallback = $notFoundCallback;
     }

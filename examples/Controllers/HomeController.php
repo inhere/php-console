@@ -52,6 +52,11 @@ class HomeController extends Controller
         $this->addAnnotationVar('internalFonts', implode(',', ArtFont::getInternalFonts()));
     }
 
+    protected function disabledCommands(): array
+    {
+         return ['disabled'];
+    }
+
     protected function afterExecute()
     {
         // $this->write('after command execute');
@@ -73,6 +78,14 @@ class HomeController extends Controller
      *  the second line example
      */
     public function testCommand()
+    {
+        $this->write('hello, welcome!! this is ' . __METHOD__);
+    }
+
+    /**
+     * this is a disabled command. please see 'disabledCommands()'
+     */
+    public function disabledCommand()
     {
         $this->write('hello, welcome!! this is ' . __METHOD__);
     }
@@ -675,8 +688,11 @@ class HomeController extends Controller
         $this->write('input options:');
         echo Helper::dumpVars($this->input->getOpts());
 
-        // $this->write('the Input object:');
-        // var_dump($this->input);
+        $this->write('raw argv:');
+        $this->output->dump($this->input->getTokens());
+
+        $this->write('raw argv(string):');
+        $this->output->dump($this->input->getFullScript());
     }
 
     /**
