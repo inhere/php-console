@@ -661,7 +661,7 @@ EOF;
             $this->version = trim($ret);
         } else {
             list($code, $ret,) = ProcessUtil::run('git branch', $basePath);
-            $this->branchAliasVersion = $code === 0 ? trim($ret, '* '): 'UNKNOWN';
+            $this->branchAliasVersion = $code === 0 ? trim($ret, "* \n"): 'UNKNOWN';
         }
     }
 
