@@ -53,7 +53,7 @@ class LiteApp
     /**
      * @param bool $exit
      */
-    public function run($exit = true)
+    public function run(bool $exit = true)
     {
         $this->parseCliArgv();
 
@@ -68,7 +68,7 @@ class LiteApp
     /**
      * @param bool $exit
      */
-    public function dispatch($exit = true)
+    public function dispatch(bool $exit = true)
     {
         if (!$command = $this->command) {
             $this->showCommands();
@@ -100,12 +100,12 @@ class LiteApp
     }
 
     /**
-     * @param $command
+     * @param string $command
      * @param $handler
      * @return mixed
      * @throws \InvalidArgumentException
      */
-    public function runHandler($command, $handler)
+    public function runHandler(string $command, $handler)
     {
         if (\is_string($handler)) {
             // function name
@@ -192,7 +192,7 @@ class LiteApp
      * @param string $description
      * @throws \InvalidArgumentException
      */
-    public function addCommand($command, $handler, $description = '')
+    public function addCommand(string $command, $handler, $description = '')
     {
         if (!$command || !$handler) {
             throw new \InvalidArgumentException('Invalid arguments');

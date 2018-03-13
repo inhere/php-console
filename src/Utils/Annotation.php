@@ -24,7 +24,7 @@ final class Annotation
      * @param array $ignored
      * @return array The parsed tags
      */
-    public static function getTags($comment, array $ignored = ['param', 'return']): array
+    public static function getTags(string $comment, array $ignored = ['param', 'return']): array
     {
         $comment = str_replace("\r\n", "\n", trim($comment, "/ \n"));
         $comment = "@description \n" . str_replace("\r", '',
@@ -57,10 +57,10 @@ final class Annotation
     /**
      * Returns the first line of docBlock.
      *
-     * @param  $comment
+     * @param string $comment
      * @return string
      */
-    public static function firstLine($comment): string
+    public static function firstLine(string $comment): string
     {
         $docLines = preg_split('~\R~u', $comment);
 
@@ -75,10 +75,10 @@ final class Annotation
      * Returns full description from the doc-block.
      * If have multi line text, will return multi line.
      *
-     * @param  $comment
+     * @param string $comment
      * @return string
      */
-    public static function description($comment): string
+    public static function description(string $comment): string
     {
         $comment = str_replace("\r", '', trim(preg_replace('/^\s*\**( |\t)?/m', '', trim($comment, '/'))));
 

@@ -104,7 +104,7 @@ class Application extends AbstractApplication
      * @param string|Command $name
      * @param string|\Closure|Command $handler
      * @param null|array|string $option
-     * @return $this
+     * @return $this|mixed
      * @throws \InvalidArgumentException
      */
     public function command(string $name, $handler = null, $option = null)
@@ -393,7 +393,7 @@ class Application extends AbstractApplication
         $object::setName($name);
         $object->setApp($this);
         $object->setDelimiter($this->delimiter);
-        $object->setStandAlone($standAlone);
+        $object->setExecutionAlone($standAlone);
 
         return $object->run($action);
     }

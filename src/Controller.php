@@ -36,8 +36,8 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
     /** @var string */
     private $delimiter = ':'; // '/' ':'
 
-    /** @var bool */
-    private $standAlone = false;
+    /** @var bool Execution alone */
+    private $executionAlone = false;
 
     /** @var string */
     private $defaultAction = 'help';
@@ -228,7 +228,7 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
     {
         // do something ...
     }
-    
+
     /**
      * show command list of the controller class
      * @throws \ReflectionException
@@ -284,7 +284,7 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
 
         $script = $this->getScriptName();
 
-        if ($this->standAlone) {
+        if ($this->executionAlone) {
             $name = $sName . ' ';
             $usage = "$script <info>{command}</info> [arguments ...] [options ...]";
         } else {
@@ -305,7 +305,7 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
 
         $this->write(sprintf(
             "More information about a command, please use: <cyan>$script $name{command} -h</cyan>",
-            $this->standAlone ? ' ' . $name : ''
+            $this->executionAlone ? ' ' . $name : ''
         ));
         $this->output->flush();
     }
@@ -403,7 +403,7 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
      * @param string $action
      * @return $this
      */
-    public function setAction(string $action)
+    public function setAction(string $action): self
     {
         if ($action) {
             $this->action = FormatUtil::camelCase($action);
@@ -463,17 +463,17 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
     /**
      * @return bool
      */
-    public function isStandAlone(): bool
+    public function isExecutionAlone(): bool
     {
-        return $this->standAlone;
+        return $this->executionAlone;
     }
 
     /**
-     * @param bool $standAlone
+     * @param bool $executionAlone
      */
-    public function setStandAlone($standAlone = true)
+    public function setExecutionAlone($executionAlone = true)
     {
-        $this->standAlone = (bool)$standAlone;
+        $this->executionAlone = (bool)$executionAlone;
     }
 
     /**

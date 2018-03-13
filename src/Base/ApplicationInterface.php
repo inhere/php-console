@@ -69,7 +69,7 @@ interface ApplicationInterface
      * array:
      *  - aliases     The command aliases
      *  - description The description message
-     * @return $this
+     * @return mixed
      * @throws \InvalidArgumentException
      */
     public function command(string $name, $handler = null, $option = null);

@@ -261,9 +261,10 @@ abstract class AbstractCommand implements BaseCommandInterface
 
     /**
      * prepare run
+     * @throws \InvalidArgumentException
      * @throws \RuntimeException
      */
-    protected function prepare()
+    protected function prepare(): bool
     {
         if ($this->processTitle) {
             if (\function_exists('cli_set_process_title')) {
@@ -285,6 +286,7 @@ abstract class AbstractCommand implements BaseCommandInterface
     /**
      * validate input arguments and options
      * @return bool
+     * @throws \InvalidArgumentException
      */
     public function validateInput(): bool
     {
@@ -398,11 +400,11 @@ abstract class AbstractCommand implements BaseCommandInterface
 
     /**
      * @param string $name
-     * @param string $value
+     * @param string|array $value
      */
     protected function setAnnotationVar(string $name, $value)
     {
-        $this->annotationVars[$name] = (string)$value;
+        $this->annotationVars[$name] = \is_array($value) ? \implode(',', $value) : (string)$value;
     }
 
     /**

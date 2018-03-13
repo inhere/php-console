@@ -12,7 +12,7 @@ require dirname(__DIR__) . '/test/boot.php';
 
 $in = new \Inhere\Console\IO\Input();
 $ctrl = new HomeController($in, new \Inhere\Console\IO\Output());
-$ctrl->setStandAlone();
+$ctrl->setExecutionAlone();
 
 try {
   exit($ctrl->run($in->getCommand()));
