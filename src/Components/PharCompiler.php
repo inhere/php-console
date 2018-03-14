@@ -112,8 +112,8 @@ class PharCompiler
      * @var \Closure[] Some events. if you want to get some info on packing.
      */
     private $events = [
-        'add' => 1,
-        'error' => 1,
+        'add' => 0,
+        'error' => 0,
     ];
 
     /**
