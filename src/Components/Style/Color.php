@@ -140,6 +140,7 @@ final class Color
      * @param string $bg Background color.  e.g 'black'
      * @param array $options Style options. e.g ['bold', 'underscore']
      * @param bool $extra
+     * @throws \InvalidArgumentException
      */
     public function __construct($fg = '', $bg = '', array $options = [], $extra = false)
     {
@@ -194,7 +195,7 @@ final class Color
     /**
      * Get the translated color code.
      */
-    public function toStyle()
+    public function toStyle(): string
     {
         $values = [];
 

@@ -117,7 +117,7 @@ class Output implements OutputInterface
      * @param boolean $nl True (default) to append a new line at the end of the output string.
      * @return $this
      */
-    public function stderr($text = '', $nl = true)
+    public function stderr($text = '', $nl = true): self
     {
         $text = $this->getStyle()->format($text);
 
@@ -163,7 +163,7 @@ class Output implements OutputInterface
      * @param $outStream
      * @return $this
      */
-    public function setOutputStream($outStream)
+    public function setOutputStream($outStream): self
     {
         $this->outputStream = $outStream;
 
@@ -183,7 +183,7 @@ class Output implements OutputInterface
      * @param $errorStream
      * @return $this
      */
-    public function setErrorStream($errorStream)
+    public function setErrorStream($errorStream): self
     {
         $this->errorStream = $errorStream;
 

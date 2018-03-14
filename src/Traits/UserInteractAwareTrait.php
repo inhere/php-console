@@ -31,7 +31,7 @@ trait UserInteractAwareTrait
      * @inheritdoc
      * @see Interact::choice()
      */
-    public function select($description, $options, $default = null, $allowExit = true)
+    public function select($description, $options, $default = null, $allowExit = true): string
     {
         return $this->choice($description, $options, $default, $allowExit);
     }
@@ -40,7 +40,7 @@ trait UserInteractAwareTrait
      * @inheritdoc
      * @see Interact::choice()
      */
-    public function choice($description, $options, $default = null, $allowExit = true)
+    public function choice($description, $options, $default = null, $allowExit = true): string
     {
         return Interact::choice($description, $options, $default, $allowExit);
     }
@@ -49,7 +49,7 @@ trait UserInteractAwareTrait
      * @inheritdoc
      * @see Interact::confirm()
      */
-    public function confirm($question, $default = true)
+    public function confirm($question, $default = true): bool
     {
         return Interact::confirm($question, $default);
     }

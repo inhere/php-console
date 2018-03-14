@@ -44,7 +44,7 @@ class PharCompiler
     /**
      * @var string|null The latest tag name
      */
-    private $branchAliasVersion = '';
+    private $branchAliasVersion = 'UNKNOWN';
 
     /**
      * @var \DateTime
@@ -157,6 +157,9 @@ class PharCompiler
      * @param string|array|null $files Only fetch the listed files
      * @param bool $overwrite
      * @return bool
+     * @throws \UnexpectedValueException
+     * @throws \BadMethodCallException
+     * @throws \RuntimeException
      */
     public static function unpack(string $pharFile, string $extractTo, $files = null, $overwrite = false): bool
     {
@@ -167,6 +170,10 @@ class PharCompiler
         return $phar->extractTo($extractTo, $files, $overwrite);
     }
 
+    /**
+     *
+     * @throws \RuntimeException
+     */
     private static function checkEnv()
     {
         if (!\class_exists(\Phar::class, false)) {
@@ -183,6 +190,7 @@ class PharCompiler
     /**
      * PharCompiler constructor.
      * @param string $basePath
+     * @throws \RuntimeException
      */
     public function __construct(string $basePath)
     {
@@ -299,6 +307,9 @@ class PharCompiler
      * @param  string $pharFile The full path to the file to create
      * @param bool $refresh
      * @return string
+     * @throws \UnexpectedValueException
+     * @throws \BadMethodCallException
+     * @throws \RuntimeException
      */
     public function pack(string $pharFile, $refresh = true): string
     {
@@ -512,6 +523,7 @@ class PharCompiler
 
     /**
      * @return string
+     * @throws \RuntimeException
      */
     private function createStub(): string
     {
@@ -626,6 +638,7 @@ EOF;
 
     /**
      * auto collect project information by git log
+     * @throws \RuntimeException
      */
     private function collectInformation()
     {
@@ -660,8 +673,11 @@ EOF;
         if ($code === 0) {
             $this->version = trim($ret);
         } else {
-            list($code, $ret,) = ProcessUtil::run('git branch', $basePath);
-            $this->branchAliasVersion = $code === 0 ? trim($ret, "* \n"): 'UNKNOWN';
+            list($code1, $ret,) = ProcessUtil::run('git branch', $basePath);
+
+            if ($code1 === 0) {
+                $this->branchAliasVersion = \explode("\n", trim($ret, "* \n"), 2)[0];
+            }
         }
     }
 

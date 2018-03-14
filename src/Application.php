@@ -185,7 +185,7 @@ class Application extends AbstractApplication
      * @return $this
      * @throws \InvalidArgumentException
      */
-    public function addCommand(string $name, $handler = null)
+    public function addCommand(string $name, $handler = null): self
     {
         return $this->command($name, $handler);
     }
@@ -209,7 +209,7 @@ class Application extends AbstractApplication
      * @return $this
      * @throws \InvalidArgumentException
      */
-    public function registerCommands(string $namespace, string $basePath)
+    public function registerCommands(string $namespace, string $basePath): self
     {
         $length = \strlen($basePath) + 1;
         $iterator = Helper::directoryIterator($basePath, $this->getFileFilter());
@@ -229,7 +229,7 @@ class Application extends AbstractApplication
      * @return $this
      * @throws \InvalidArgumentException
      */
-    public function registerGroups(string $namespace, string $basePath)
+    public function registerGroups(string $namespace, string $basePath): self
     {
         $length = \strlen($basePath) + 1;
         $iterator = Helper::directoryIterator($basePath, $this->getFileFilter());
@@ -271,6 +271,7 @@ class Application extends AbstractApplication
 
     /**
      * @inheritdoc
+     * @throws \ReflectionException
      * @throws \InvalidArgumentException
      */
     protected function dispatch(string $name)

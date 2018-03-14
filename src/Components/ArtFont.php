@@ -172,7 +172,7 @@ class ArtFont
      * @param string $path
      * @return $this
      */
-    public function addGroup(string $group, string $path)
+    public function addGroup(string $group, string $path): self
     {
         $group = trim($group, '_');
 
@@ -192,7 +192,7 @@ class ArtFont
      * @param string $path
      * @return $this
      */
-    public function setGroup(string $group, string $path)
+    public function setGroup(string $group, string $path): self
     {
         $group = trim($group, '_');
 
@@ -211,7 +211,7 @@ class ArtFont
      * @param string|null $group
      * @return $this
      */
-    public function addFont(string $name, string $file, string $group = null)
+    public function addFont(string $name, string $file, string $group = null): self
     {
         $group = $group ?: self::DEFAULT_GROUP;
 
@@ -230,7 +230,7 @@ class ArtFont
      * @param string $content
      * @return $this
      */
-    public function addFontContent(string $name, string $content)
+    public function addFontContent(string $name, string $content): self
     {
         if ($name && ($content = trim($content))) {
             $this->fontContents[$name] = $content;

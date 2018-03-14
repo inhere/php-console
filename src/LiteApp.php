@@ -67,6 +67,7 @@ class LiteApp
 
     /**
      * @param bool $exit
+     * @throws \InvalidArgumentException
      */
     public function dispatch(bool $exit = true)
     {

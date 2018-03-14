@@ -155,7 +155,7 @@ final class Terminal
      * @param null $arg2
      * @return $this
      */
-    public function cursor($typeName, $arg1 = 1, $arg2 = null)
+    public function cursor($typeName, $arg1 = 1, $arg2 = null): self
     {
         if (!isset(self::$ctrlCursorCodes[$typeName])) {
             Show::error("The [$typeName] is not supported cursor control.", __LINE__);
@@ -191,7 +191,7 @@ final class Terminal
      * @param null $arg
      * @return $this
      */
-    public function screen(string $typeName, $arg = null)
+    public function screen(string $typeName, $arg = null): self
     {
         if (!isset(self::$ctrlScreenCodes[$typeName])) {
             Show::error("The [$typeName] is not supported cursor control.", __LINE__);

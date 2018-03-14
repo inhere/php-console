@@ -175,6 +175,7 @@ class Helper
     /**
      * @param string $dir
      * @param int $mode
+     * @throws \RuntimeException
      */
     public static function mkdir($dir, $mode = 0775)
     {
@@ -188,6 +189,7 @@ class Helper
      * @param callable $filter
      * @param int $flags
      * @return \RecursiveIteratorIterator
+     * @throws \InvalidArgumentException
      */
     public static function directoryIterator(
         string $srcDir,

@@ -57,6 +57,8 @@ class InputDefinition
      *
      * @param array $arguments
      * @param array $options
+     * @throws \LogicException
+     * @throws \InvalidArgumentException
      */
     public function __construct(array $arguments = [], array $options = [])
     {
@@ -67,6 +69,7 @@ class InputDefinition
     /**
      * @param array $arguments
      * @return InputDefinition
+     * @throws \LogicException
      */
     public function setArguments(array $arguments): InputDefinition
     {
@@ -80,7 +83,7 @@ class InputDefinition
      * @return $this
      * @throws \LogicException
      */
-    public function addArguments(array $arguments)
+    public function addArguments(array $arguments): self
     {
         foreach ($arguments as $name => $arg) {
             $arg = $this->mergeArgOptConfig($arg);
@@ -100,7 +103,7 @@ class InputDefinition
      * @return $this
      * @throws \LogicException
      */
-    public function addArgument($name, $mode = null, $description = '', $default = null)
+    public function addArgument($name, $mode = null, $description = '', $default = null): self
     {
         if (null === $mode) {
             $mode = Input::ARG_OPTIONAL;
@@ -248,7 +251,7 @@ class InputDefinition
      * @throws \InvalidArgumentException
      * @throws \LogicException
      */
-    public function addOption(string $name, string $shortcut = null, $mode = null, $description = '', $default = null)
+    public function addOption(string $name, string $shortcut = null, $mode = null, $description = '', $default = null): self
     {
         if (0 === strpos($name, '-')) {
             $name = trim($name, '-');
@@ -369,6 +372,7 @@ class InputDefinition
      * Gets an option info array
      * @param string $shortcut the Shortcut name
      * @return array
+     * @throws \InvalidArgumentException
      */
     public function getOptionByShortcut(string $shortcut): array
     {
@@ -504,7 +508,7 @@ class InputDefinition
      * @param string|array $example
      * @return $this
      */
-    public function setExample($example)
+    public function setExample($example): self
     {
         $this->example = $example;
 
@@ -523,7 +527,7 @@ class InputDefinition
      * @param string $description
      * @return $this
      */
-    public function setDescription(string $description)
+    public function setDescription(string $description): self
     {
         $this->description = $description;
 

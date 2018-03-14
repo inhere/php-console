@@ -38,6 +38,7 @@ trait RuntimeProfileTrait
      * @param $name
      * @param array $context
      * @param string $category
+     * @throws \InvalidArgumentException
      */
     public static function profile($name, array $context = [], $category = 'application')
     {
@@ -99,7 +100,7 @@ trait RuntimeProfileTrait
      * @param string $category
      * @return array
      */
-    public static function getProfileData($name = null, $category = 'application')
+    public static function getProfileData($name = null, $category = 'application'): array
     {
         if ($name) {
             return self::$profiles[$category][$name] ?? [];

@@ -71,7 +71,7 @@ final class Download
      * start download
      * @return $this
      */
-    public function start()
+    public function start(): self
     {
         if (!$this->url || !$this->saveAs) {
             Show::liteError("Please the property 'url' and 'saveAs'.", 1);
@@ -155,7 +155,7 @@ final class Download
      * @param $transferredBytes
      * @return string
      */
-    public function showProgressByType($transferredBytes)
+    public function showProgressByType($transferredBytes): string
     {
         if ($transferredBytes <= 0) {
             return '';

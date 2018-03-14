@@ -245,6 +245,7 @@ class ProgressBar
 
     /**
      * @return mixed
+     * @throws \RuntimeException
      */
     protected function buildLine()
     {

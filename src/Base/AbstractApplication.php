@@ -141,6 +141,7 @@ abstract class AbstractApplication implements ApplicationInterface
     /**
      * run app
      * @param bool $exit
+     * @throws \InvalidArgumentException
      */
     public function run($exit = true)
     {
@@ -251,6 +252,7 @@ abstract class AbstractApplication implements ApplicationInterface
 
     /**
      * register error handle
+     * @throws \InvalidArgumentException
      */
     protected function registerErrorHandle()
     {
@@ -270,6 +272,7 @@ abstract class AbstractApplication implements ApplicationInterface
      * @param string $str
      * @param string $file
      * @param int $line
+     * @throws \InvalidArgumentException
      */
     public function handleError(int $num, string $str, string $file, int $line)
     {
@@ -280,6 +283,7 @@ abstract class AbstractApplication implements ApplicationInterface
     /**
      * 运行异常处理
      * @param \Exception|\Throwable $e
+     * @throws \InvalidArgumentException
      */
     public function handleException($e)
     {
@@ -542,7 +546,7 @@ ERR;
      * @param string $message
      * @return $this
      */
-    public function addCommandMessage($name, $message)
+    public function addCommandMessage($name, $message): self
     {
         if ($name && $message) {
             $this->commandMessages[$name] = $message;
@@ -556,7 +560,7 @@ ERR;
      * @param string|array $aliases
      * @return $this
      */
-    public function addCommandAliases(string $name, $aliases)
+    public function addCommandAliases(string $name, $aliases): self
     {
         if (!$name || !$aliases) {
             return $this;

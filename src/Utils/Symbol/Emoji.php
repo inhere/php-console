@@ -77,6 +77,7 @@ final class Emoji
 
     /**
      * @return array
+     * @throws \ReflectionException
      */
     public static function getConstants(): array
     {

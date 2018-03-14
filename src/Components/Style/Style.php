@@ -244,7 +244,7 @@ class Style
      * @param bool $extra
      * @return $this
      */
-    public function add(string $name, $fg = '', $bg = '', array $options = [], $extra = false)
+    public function add(string $name, $fg = '', $bg = '', array $options = [], $extra = false): self
     {
         if (\is_array($fg)) {
             return $this->addByArray($name, $fg);
@@ -272,7 +272,7 @@ class Style
      * ]
      * @return $this
      */
-    public function addByArray(string $name, array $styleConfig)
+    public function addByArray(string $name, array $styleConfig): self
     {
         $style = [
             'fg' => '',
