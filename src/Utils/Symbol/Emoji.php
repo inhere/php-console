@@ -6,11 +6,11 @@
  * Time: 9:33
  */
 
-namespace Inhere\Console\Utils;
+namespace Inhere\Console\Utils\Symbol;
 
 /**
  * Class Emoji
- * @package Inhere\Console\Utils
+ * @package Inhere\Console\Utils\Symbol
  */
 final class Emoji
 {

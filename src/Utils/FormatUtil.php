@@ -201,15 +201,15 @@ final class FormatUtil
     public static function runtime($startTime, $startMem, array $info = []): array
     {
         $info['startTime'] = $startTime;
-        $info['endTime'] = microtime(true);
-        $info['endMemory'] = memory_get_usage();
+        $info['endTime'] = \microtime(true);
+        $info['endMemory'] = \memory_get_usage();
 
         // 计算运行时间
-        $info['runtime'] = number_format(($info['endTime'] - $startTime) * 1000, 3) . ' ms';
+        $info['runtime'] = \number_format(($info['endTime'] - $startTime) * 1000, 3) . ' ms';
 
         if ($startMem) {
-            $startMem = array_sum(explode(' ', $startMem));
-            $endMem = array_sum(explode(' ', $info['endMemory']));
+            $startMem = \array_sum(explode(' ', $startMem));
+            $endMem = \array_sum(explode(' ', $info['endMemory']));
 
             // $info['memory'] = number_format(($endMem - $startMem) / 1024, 3) . 'kb';
             $info['memory'] = self::memoryUsage($endMem - $startMem);
@@ -231,18 +231,18 @@ final class FormatUtil
     public static function memoryUsage($memory): string
     {
         if ($memory >= 1024 * 1024 * 1024) {
-            return sprintf('%.2f Gb', $memory / 1024 / 1024 / 1024);
+            return \sprintf('%.2f Gb', $memory / 1024 / 1024 / 1024);
         }
 
         if ($memory >= 1024 * 1024) {
-            return sprintf('%.2f Mb', $memory / 1024 / 1024);
+            return \sprintf('%.2f Mb', $memory / 1024 / 1024);
         }
 
         if ($memory >= 1024) {
-            return sprintf('%.2f Kb', $memory / 1024);
+            return \sprintf('%.2f Kb', $memory / 1024);
         }
 
-        return sprintf('%d B', $memory);
+        return \sprintf('%d B', $memory);
     }
 
     /**
@@ -266,19 +266,19 @@ final class FormatUtil
 
         foreach ($timeFormats as $index => $format) {
             if ($secs >= $format[0]) {
-                if ((isset($timeFormats[$index + 1]) && $secs < $timeFormats[$index + 1][0])
-                    || $index === \count($timeFormats) - 1
-                ) {
+                $next = $timeFormats[$index + 1] ?? false;
+
+                if (($next && $secs < $next[0]) || $index === \count($timeFormats) - 1) {
                     if (2 === \count($format)) {
                         return $format[1];
                     }
 
-                    return floor($secs / $format[2]) . ' ' . $format[1];
+                    return \floor($secs / $format[2]) . ' ' . $format[1];
                 }
             }
         }
 
-        return date('Y-m-d H:i:s', $secs);
+        return \date('Y-m-d H:i:s', $secs);
     }
 
     /**
@@ -291,16 +291,16 @@ final class FormatUtil
         // str_split is not suitable for multi-byte characters, we should use preg_split to get char array properly.
         // additionally, array_slice() is not enough as some character has doubled width.
         // we need a function to split string not by character count but by string width
-        if (false === $encoding = mb_detect_encoding($string, null, true)) {
-            return str_split($string, $width);
+        if (false === $encoding = \mb_detect_encoding($string, null, true)) {
+            return \str_split($string, $width);
         }
 
-        $utf8String = mb_convert_encoding($string, 'utf8', $encoding);
-        $lines = array();
+        $utf8String = \mb_convert_encoding($string, 'utf8', $encoding);
+        $lines = [];
         $line = '';
-        foreach (preg_split('//u', $utf8String) as $char) {
+        foreach (\preg_split('//u', $utf8String) as $char) {
             // test if $char could be appended to current line
-            if (mb_strwidth($line . $char, 'utf8') <= $width) {
+            if (\mb_strwidth($line . $char, 'utf8') <= $width) {
                 $line .= $char;
                 continue;
             }
@@ -309,10 +309,10 @@ final class FormatUtil
             $line = $char;
         }
         if ('' !== $line) {
-            $lines[] = \count($lines) ? str_pad($line, $width) : $line;
+            $lines[] = \count($lines) ? \str_pad($line, $width) : $line;
         }
 
-        mb_convert_variables($encoding, 'utf8', $lines);
+        \mb_convert_variables($encoding, 'utf8', $lines);
 
         return $lines;
     }
@@ -330,7 +330,7 @@ final class FormatUtil
     public static function spliceKeyValue(array $data, array $opts = []): string
     {
         $text = '';
-        $opts = array_merge([
+        $opts = \array_merge([
             'leftChar' => '',   // e.g '  ', ' * '
             'sepChar' => ' ',  // e.g ' | ' OUT: key | value
             'keyStyle' => '',   // e.g 'info','comment'
@@ -340,7 +340,7 @@ final class FormatUtil
             'ucFirst' => true,  // upper first char
         ], $opts);
 
-        if (!is_numeric($opts['keyMaxWidth'])) {
+        if (!\is_numeric($opts['keyMaxWidth'])) {
             $opts['keyMaxWidth'] = Helper::getKeyMaxWidth($data);
         }
 
@@ -349,14 +349,14 @@ final class FormatUtil
             $opts['keyMaxWidth'] = $opts['keyMinWidth'];
         }
 
-        $keyStyle = trim($opts['keyStyle']);
+        $keyStyle = \trim($opts['keyStyle']);
 
         foreach ($data as $key => $value) {
             $hasKey = !\is_int($key);
             $text .= $opts['leftChar'];
 
             if ($hasKey && $opts['keyMaxWidth']) {
-                $key = str_pad($key, $opts['keyMaxWidth'], ' ');
+                $key = \str_pad($key, $opts['keyMaxWidth'], ' ');
                 $text .= Helper::wrapTag($key, $keyStyle) . $opts['sepChar'];
             }
 
@@ -369,13 +369,13 @@ final class FormatUtil
                     if (\is_bool($val)) {
                         $val = $val ? '(True)' : '(False)';
                     } else {
-                        $val = is_scalar($val) ? (string)$val : \gettype($val);
+                        $val = \is_scalar($val) ? (string)$val : \gettype($val);
                     }
 
-                    $temp .= (!is_numeric($k) ? "$k: " : '') . "$val, ";
+                    $temp .= (!\is_numeric($k) ? "$k: " : '') . "$val, ";
                 }
 
-                $value = rtrim($temp, ' ,');
+                $value = \rtrim($temp, ' ,');
             } else {
                 if (\is_bool($value)) {
                     $value = $value ? '(True)' : '(False)';
@@ -384,7 +384,7 @@ final class FormatUtil
                 }
             }
 
-            $value = $hasKey && $opts['ucFirst'] ? ucfirst($value) : $value;
+            $value = $hasKey && $opts['ucFirst'] ? \ucfirst($value) : $value;
             $text .= Helper::wrapTag($value, $opts['valStyle']) . "\n";
         }
 

@@ -84,6 +84,7 @@ final class Color
      * @param array $options
      * @param bool $extra
      * @return Color
+     * @throws \InvalidArgumentException
      */
     public static function make($fg = '', $bg = '', array $options = [], $extra = false): Color
     {
@@ -95,6 +96,7 @@ final class Color
      *
      * @param string $string e.g 'fg=white;bg=black;options=bold,underscore;extra=1'
      * @return static
+     * @throws \InvalidArgumentException
      * @throws \RuntimeException
      */
     public static function makeByString($string)
@@ -233,5 +235,4 @@ final class Color
     {
         return (bool)$onlyName ? array_keys(static::$knownOptions) : static::$knownOptions;
     }
-
 }

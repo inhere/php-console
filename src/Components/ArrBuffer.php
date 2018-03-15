@@ -9,10 +9,10 @@
 namespace Inhere\Console\Components;
 
 /**
- * Class AryBuffer
+ * Class ArrBuffer
  * @package Inhere\Console\Components
  */
-final class AryBuffer
+final class ArrBuffer
 {
     /**
      * @var string[]

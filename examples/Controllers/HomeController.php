@@ -9,6 +9,8 @@ use Inhere\Console\Controller;
 use Inhere\Console\IO\Input;
 use Inhere\Console\Components\Style\Highlighter;
 use Inhere\Console\Components\Style\LiteStyle;
+use Inhere\Console\Utils\Symbol\Char;
+use Inhere\Console\Utils\Symbol\Emoji;
 use Inhere\Console\Utils\Helper;
 use Inhere\Console\Utils\Interact;
 use Inhere\Console\Utils\ProgressBar;
@@ -113,6 +115,7 @@ class HomeController extends Controller
 
     /**
      * a command for test throw exception
+     * @throws \RuntimeException
      */
     public function exCommand()
     {
@@ -166,8 +169,9 @@ class HomeController extends Controller
     /**
      * a example for use color text output by Style::class
      * @usage {fullCommand}
+     * @return int
      */
-    public function colorCommand()
+    public function colorCommand(): int
     {
         if (!$this->output->supportColor()) {
             $this->write('Current terminal is not support output color text.');
@@ -207,7 +211,7 @@ class HomeController extends Controller
     /**
      * a example for use color text output by LiteStyle::class
      */
-    public function colorLiteCommand()
+    public function colorLiteCommand(): int
     {
         if (!$this->output->supportColor()) {
             $this->write('Current terminal is not support output color text.');
@@ -230,7 +234,7 @@ class HomeController extends Controller
      * output block message text
      * @return int
      */
-    public function blockMsgCommand()
+    public function blockMsgCommand(): int
     {
         if (!$this->output->supportColor()) {
             $this->write('Current terminal is not support output color text.');
@@ -255,7 +259,7 @@ class HomeController extends Controller
      *  --style   Set the art font style.
      * @return int
      */
-    public function artFontCommand()
+    public function artFontCommand(): int
     {
         $name = $this->input->getLongOpt('font', '404');
 
@@ -272,12 +276,40 @@ class HomeController extends Controller
     }
 
     /**
+     * display some special chars
+     * @return int
+     * @throws \ReflectionException
+     */
+    public function charCommand(): int
+    {
+        $this->output->aList(Char::getConstants(), 'some special char', [
+            'ucFirst' => false,
+        ]);
+
+        return 0;
+    }
+
+    /**
+     * display some special emoji chars
+     * @return int
+     * @throws \ReflectionException
+     */
+    public function emojiCommand(): int
+    {
+        $this->output->aList(Emoji::getConstants(), 'some emoji char', [
+            'ucFirst' => false,
+        ]);
+
+        return 0;
+    }
+
+    /**
      * dynamic notice message show: counterTxt. It is like progress txt, but no max value.
      * @example
      *  {script} {command}
      * @return int
      */
-    public function counterCommand()
+    public function counterCommand(): int
     {
         $total = 120;
         $ctt = Show::counterTxt('handling ...', 'handled.');
@@ -417,7 +449,7 @@ class HomeController extends Controller
      * @options
      *  -w, --width WIDTH   The split line width. default is current screen width.
      */
-    public function splitLineCommand()
+    public function splitLineCommand(): int
     {
         $this->output->splitLine('', '=', $this->input->getSameOpt(['w', 'width'], 0));
         $this->output->splitLine('split Line', '-', $this->input->getSameOpt(['w', 'width'], 0));
@@ -431,7 +463,7 @@ class HomeController extends Controller
     /**
      * output format message: section
      */
-    public function sectionCommand()
+    public function sectionCommand(): int
     {
         $body = 'If screen size could not be detected, or the indentation is greater than the screen size, the text will not be wrapped.' .
             'Word wrap text with indentation to fit the screen size,' .
