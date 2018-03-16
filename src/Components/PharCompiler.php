@@ -497,7 +497,7 @@ class PharCompiler
                 $cb($this->cliIndex, $this->counter);
             }
 
-            $phar->addFromString($this->cliIndex, trim($content));
+            $phar->addFromString($this->cliIndex, $content);
         }
 
         if ($this->webIndex) {
@@ -509,7 +509,7 @@ class PharCompiler
                 $cb($this->webIndex, $this->counter);
             }
 
-            $phar->addFromString($this->webIndex, trim($content));
+            $phar->addFromString($this->webIndex, $content);
         }
     }
 
