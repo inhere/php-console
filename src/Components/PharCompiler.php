@@ -94,6 +94,11 @@ class PharCompiler
     private $suffixes = ['.php'];
 
     /**
+     * @var array Want to exclude file name list
+     */
+    private $notNames = [];
+
+    /**
      * @var array Want to exclude directory name list
      */
     private $excludes = [];
@@ -180,7 +185,7 @@ class PharCompiler
             throw new \RuntimeException("The 'phar' extension is required for build phar package");
         }
 
-        if (ini_get('phar.readonly')) {
+        if (\ini_get('phar.readonly')) {
             throw new \RuntimeException(
                 "The 'phar.readonly' is 'On', build phar must setting it 'Off' or exec with 'php -d phar.readonly=0'"
             );
@@ -196,9 +201,9 @@ class PharCompiler
     {
         self::checkEnv();
 
-        $this->basePath = realpath($basePath);
+        $this->basePath = \realpath($basePath);
 
-        if (!is_dir($this->basePath)) {
+        if (!\is_dir($this->basePath)) {
             throw new \RuntimeException("The inputted project path is not exists. DIR: {$this->basePath}");
         }
     }
@@ -209,7 +214,18 @@ class PharCompiler
      */
     public function addSuffix($suffixes): self
     {
-        $this->suffixes = array_merge($this->suffixes, (array)$suffixes);
+        $this->suffixes = \array_merge($this->suffixes, (array)$suffixes);
+
+        return $this;
+    }
+
+    /**
+     * @param string|array $filename
+     * @return $this
+     */
+    public function notName($filename): self
+    {
+        $this->notNames = \array_merge($this->notNames, (array)$filename);
 
         return $this;
     }
@@ -220,7 +236,7 @@ class PharCompiler
      */
     public function addExclude($dirs): self
     {
-        $this->excludes = array_merge($this->excludes, (array)$dirs);
+        $this->excludes = \array_merge($this->excludes, (array)$dirs);
 
         return $this;
     }
@@ -231,7 +247,7 @@ class PharCompiler
      */
     public function addFile($files): self
     {
-        $this->files = array_merge($this->files, (array)$files);
+        $this->files = \array_merge($this->files, (array)$files);
 
         return $this;
     }
@@ -286,7 +302,7 @@ class PharCompiler
      */
     public function in($dirs): self
     {
-        $this->directories = array_merge($this->directories, (array)$dirs);
+        $this->directories = \array_merge($this->directories, (array)$dirs);
 
         return $this;
     }
@@ -317,15 +333,15 @@ class PharCompiler
             throw new \RuntimeException("Please setting the 'directories' want building directories by 'in()'");
         }
 
-        $exists = file_exists($pharFile);
+        $exists = \file_exists($pharFile);
 
         if ($refresh && $exists) {
-            unlink($pharFile);
+            \unlink($pharFile);
         }
 
         $this->pharFile = $pharFile;
-        $this->pharName = $pharName = basename($this->pharFile);
-        $this->excludes = array_flip($this->excludes);
+        $this->pharName = $pharName = \basename($this->pharFile);
+        $this->excludes = \array_flip($this->excludes);
 
         $this->collectInformation();
 
@@ -333,10 +349,10 @@ class PharCompiler
 
         if ($this->key !== null) {
             $privateKey = '';
-            openssl_pkey_export($this->key, $privateKey);
+            \openssl_pkey_export($this->key, $privateKey);
             $phar->setSignatureAlgorithm(\Phar::OPENSSL, $privateKey);
-            $keyDetails = openssl_pkey_get_details($this->key);
-            file_put_contents($pharFile . '.pubkey', $keyDetails['key']);
+            $keyDetails = \openssl_pkey_get_details($this->key);
+            \file_put_contents($pharFile . '.pubkey', $keyDetails['key']);
         } else {
             $phar->setSignatureAlgorithm($this->selectSignatureType());
         }
@@ -347,7 +363,7 @@ class PharCompiler
         // only build modifies
         if (!$refresh && $exists && $this->modifies) {
             foreach ($this->modifies as $file) {
-                if ('/' === $file[0] || is_file($file = $basePath . '/' . $file)) {
+                if ('/' === $file[0] || \is_file($file = $basePath . '/' . $file)) {
                     $this->packFile($phar, new \SplFileInfo($file));
                 }
             }
@@ -362,7 +378,7 @@ class PharCompiler
 
         // add special files
         foreach ($this->files as $filename) {
-            if ('/' === $filename[0] || is_file($filename = $basePath . '/' . $filename)) {
+            if ('/' === $filename[0] || \is_file($filename = $basePath . '/' . $filename)) {
                 $this->packFile($phar, new \SplFileInfo($filename));
             }
         }
@@ -382,7 +398,7 @@ class PharCompiler
         unset($phar);
 
         // re-sign the phar with reproducible timestamp / signature
-        if (class_exists(Timestamps::class)) {
+        if (\class_exists(Timestamps::class)) {
             $util = new Timestamps($pharFile);
             $util->updateTimestamps($this->versionDate);
             $util->save($pharFile, \Phar::SHA1);
@@ -403,21 +419,21 @@ class PharCompiler
         // 'D some.file'    deleted
         // ' M some.file'   modified
         // '?? some.file'   new file
-        foreach (explode("\n", trim($output)) as $file) {
-            $file = trim($file);
+        foreach (\explode("\n", \trim($output)) as $file) {
+            $file = \trim($file);
 
             // only php file.
-            if (!strpos($file, '.php')) {
+            if (!\strpos($file, '.php')) {
                 continue;
             }
 
             // modified files
-            if (strpos($file, 'M ') === 0) {
-                yield substr($file, 2);
+            if (\strpos($file, 'M ') === 0) {
+                yield \substr($file, 2);
 
                 // new files
-            } elseif (strpos($file,'?? ') === 0) {
-                yield substr($file, 3);
+            } elseif (\strpos($file,'?? ') === 0) {
+                yield \substr($file, 3);
             }
         }
     }
@@ -443,7 +459,7 @@ class PharCompiler
     private function packFile(\Phar $phar, \SplFileInfo $file)
     {
         // skip error
-        if (!file_exists($file)) {
+        if (!\file_exists($file)) {
             $this->reportError("File $file is not exists!");
 
             return;
@@ -452,10 +468,10 @@ class PharCompiler
         $this->counter++;
         $path = $this->getRelativeFilePath($file);
         $strip = $this->stripComments;
-        $content = file_get_contents($file);
+        $content = \file_get_contents($file);
 
         // clear php file comments
-        if ($strip && strpos($path, '.php')) {
+        if ($strip && \strpos($path, '.php')) {
             $filter = $this->stripFilter;
 
             if (!$filter || ($filter && $filter($file))) {
@@ -465,7 +481,7 @@ class PharCompiler
 
         // have versionFile
         if ($path === $this->versionFile) {
-            $content = str_replace([
+            $content = \str_replace([
                 '{@package_version}',
                 '{@package_branch_alias_version}',
                 '{@release_date}',
@@ -491,7 +507,7 @@ class PharCompiler
         if ($this->cliIndex) {
             $this->counter++;
             $path = $this->basePath . '/' . $this->cliIndex;
-            $content = preg_replace('{^#!/usr/bin/env php\s*}', '', file_get_contents($path));
+            $content = \preg_replace('{^#!/usr/bin/env php\s*}', '', \file_get_contents($path));
 
             if ($cb = $this->events['add']) {
                 $cb($this->cliIndex, $this->counter);
@@ -503,7 +519,7 @@ class PharCompiler
         if ($this->webIndex) {
             $this->counter++;
             $path = $this->basePath . '/' . $this->webIndex;
-            $content = file_get_contents($path);
+            $content = \file_get_contents($path);
 
             if ($cb = $this->events['add']) {
                 $cb($this->webIndex, $this->counter);
@@ -528,7 +544,7 @@ class PharCompiler
     private function createStub(): string
     {
         // var_dump($this);die;
-        $date = date('Y-m-d H:i');
+        $date = \date('Y-m-d H:i');
         $pharName = $this->pharName;
         $stub = <<<EOF
 <?php
@@ -586,9 +602,14 @@ EOF;
                     return !isset($this->excludes[$name]);
                 }
 
+                // skip exclude files.
+                if ($this->notNames && \in_array($name, $this->notNames, true)) {
+                    return false;
+                }
+
                 if ($this->suffixes) {
                     foreach ($this->suffixes as $suffix) {
-                        if (stripos($name, $suffix)) {
+                        if (\stripos($name, $suffix)) {
                             return true;
                         }
                     }
