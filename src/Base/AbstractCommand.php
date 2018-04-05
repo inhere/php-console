@@ -129,6 +129,8 @@ abstract class AbstractCommand implements BaseCommandInterface
 
     /**
      * @return InputDefinition
+     * @throws \LogicException
+     * @throws \InvalidArgumentException
      */
     protected function createDefinition(): InputDefinition
     {
@@ -164,6 +166,8 @@ abstract class AbstractCommand implements BaseCommandInterface
      * run command
      * @param string $command
      * @return int
+     * @throws \RuntimeException
+     * @throws \InvalidArgumentException
      */
     public function run(string $command = ''): int
     {
@@ -269,14 +273,14 @@ abstract class AbstractCommand implements BaseCommandInterface
         if ($this->processTitle) {
             if (\function_exists('cli_set_process_title')) {
                 if (false === @cli_set_process_title($this->processTitle)) {
-                    $error = error_get_last();
+                    $error = \error_get_last();
 
                     if ($error && 'Darwin' !== PHP_OS) {
                         throw new \RuntimeException($error['message']);
                     }
                 }
             } elseif (\function_exists('setproctitle')) {
-                setproctitle($this->processTitle);
+                \setproctitle($this->processTitle);
             }
         }
 
@@ -306,18 +310,18 @@ abstract class AbstractCommand implements BaseCommandInterface
         }
 
         if (\count($errArgs) > 0) {
-            $this->output->liteError(sprintf('Unknown arguments (error: "%s").', implode(', ', $errArgs)));
+            $this->output->liteError(\sprintf('Unknown arguments (error: "%s").', \implode(', ', $errArgs)));
 
             return false;
         }
 
         $defArgs = $def->getArguments();
-        $missingArgs = array_filter(array_keys($defArgs), function ($name, $key) use ($def, $givenArgs) {
-            return !array_key_exists($key, $givenArgs) && $def->argumentIsRequired($name);
+        $missingArgs = \array_filter(\array_keys($defArgs), function ($name, $key) use ($def, $givenArgs) {
+            return !\array_key_exists($key, $givenArgs) && $def->argumentIsRequired($name);
         }, ARRAY_FILTER_USE_BOTH);
 
         if (\count($missingArgs) > 0) {
-            $this->output->liteError(sprintf('Not enough arguments (missing: "%s").', implode(', ', $missingArgs)));
+            $this->output->liteError(\sprintf('Not enough arguments (missing: "%s").', \implode(', ', $missingArgs)));
 
             return false;
         }
@@ -338,9 +342,9 @@ abstract class AbstractCommand implements BaseCommandInterface
         $defOpts = $def->getOptions();
 
         // check unknown options
-        if ($unknown = array_diff_key($givenOpts, $defOpts)) {
-            $names = array_keys($unknown);
-            $first = array_shift($names);
+        if ($unknown = \array_diff_key($givenOpts, $defOpts)) {
+            $names = \array_keys($unknown);
+            $first = \array_shift($names);
 
             throw new \InvalidArgumentException(sprintf(
                 'Input option is not exists (unknown: "%s").',
@@ -360,7 +364,7 @@ abstract class AbstractCommand implements BaseCommandInterface
 
         if (\count($missingOpts) > 0) {
             $this->output->liteError(
-                sprintf('Not enough options parameters (missing: "%s").', implode(', ', $missingOpts))
+                \sprintf('Not enough options parameters (missing: "%s").', implode(', ', $missingOpts))
             );
 
             return false;
@@ -415,7 +419,7 @@ abstract class AbstractCommand implements BaseCommandInterface
     protected function parseAnnotationVars(string $str): string
     {
         // not use vars
-        if (false === strpos($str, '{')) {
+        if (false === \strpos($str, '{')) {
             return $str;
         }
 
@@ -423,12 +427,12 @@ abstract class AbstractCommand implements BaseCommandInterface
 
         if ($map === null) {
             foreach ($this->annotationVars as $key => $value) {
-                $key = sprintf(self::ANNOTATION_VAR, $key);
+                $key = \sprintf(self::ANNOTATION_VAR, $key);
                 $map[$key] = $value;
             }
         }
 
-        return $map ? strtr($str, $map) : $str;
+        return $map ? \strtr($str, $map) : $str;
     }
 
     /**
@@ -451,7 +455,6 @@ abstract class AbstractCommand implements BaseCommandInterface
     {
         $ref = new \ReflectionClass($this);
         $name = $this->input->getCommand();
-        $isAlone = $ref->isSubclassOf(CommandInterface::class);
 
         if (!$ref->hasMethod($method)) {
             $this->write("The command [<info>$name</info>] don't exist in the group: " . static::getName());
@@ -468,6 +471,7 @@ abstract class AbstractCommand implements BaseCommandInterface
 
         $doc = $ref->getMethod($method)->getDocComment();
         $tags = Annotation::getTags($this->parseAnnotationVars($doc));
+        $isAlone = $ref->isSubclassOf(CommandInterface::class);
         $help = [];
 
         if ($aliases) {
@@ -475,20 +479,30 @@ abstract class AbstractCommand implements BaseCommandInterface
             $help['Command:'] = sprintf('%s(alias: <info>%s</info>)', $realName, implode(',', $aliases));
         }
 
-        foreach (array_keys(self::$annotationTags) as $tag) {
+        foreach (\array_keys(self::$annotationTags) as $tag) {
             if (empty($tags[$tag]) || !\is_string($tags[$tag])) {
+                // for alone command
+                if ($tag === 'description' && $isAlone) {
+                    $help['Description:'] = self::getDescription();
+                    continue;
+                }
+
+                if ($tag === 'usage') {
+                    $help['Usage:'] = $this->annotationVars['fullCommand'] . ' [arguments ...] [options ...]';
+                }
+
                 continue;
             }
 
             // $msg = trim($tags[$tag]);
             $msg = $tags[$tag];
-            $tag = ucfirst($tag);
+            $tag = \ucfirst($tag);
 
             // for alone command
             if (!$msg && $tag === 'description' && $isAlone) {
                 $msg = self::getDescription();
             } else {
-                $msg = preg_replace('#(\n)#', '$1 ', $msg);
+                $msg = \preg_replace('#(\n)#', '$1 ', $msg);
             }
 
             $help[$tag . ':'] = $msg;
@@ -500,7 +514,7 @@ abstract class AbstractCommand implements BaseCommandInterface
             unset($help['Description:']);
         }
 
-        $help['Global Options:'] = FormatUtil::alignmentOptions(array_merge(Application::getInternalOptions(),static::$commandOptions));
+        $help['Global Options:'] = FormatUtil::alignmentOptions(\array_merge(Application::getInternalOptions(),static::$commandOptions));
 
         $this->output->mList($help, [
             'sepChar' => '  ',

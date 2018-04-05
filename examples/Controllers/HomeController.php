@@ -3,14 +3,14 @@
 namespace Inhere\Console\Examples\Controllers;
 
 use Inhere\Console\Components\Terminal;
-use Inhere\Console\Components\ArtFont;
+use Inhere\Console\Components\Symbol\ArtFont;
 use Inhere\Console\Components\Download;
 use Inhere\Console\Controller;
 use Inhere\Console\IO\Input;
 use Inhere\Console\Components\Style\Highlighter;
 use Inhere\Console\Components\Style\LiteStyle;
-use Inhere\Console\Utils\Symbol\Char;
-use Inhere\Console\Utils\Symbol\Emoji;
+use Inhere\Console\Components\Symbol\Char;
+use Inhere\Console\Components\Symbol\Emoji;
 use Inhere\Console\Utils\Helper;
 use Inhere\Console\Utils\Interact;
 use Inhere\Console\Utils\ProgressBar;

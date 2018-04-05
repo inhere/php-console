@@ -36,7 +36,7 @@
 ## 项目地址
 
 - **github** https://github.com/inhere/php-console.git
-- **git@osc** https://gitee.com/inhere/php-console.git
+- **gitee** https://gitee.com/inhere/php-console.git
 
 **注意：**
 

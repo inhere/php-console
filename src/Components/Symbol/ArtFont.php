@@ -6,14 +6,14 @@
  * Time: 9:23
  */
 
-namespace Inhere\Console\Components;
+namespace Inhere\Console\Components\Symbol;
 
 use Inhere\Console\Utils\Helper;
 use Inhere\Console\Utils\Show;
 
 /**
  * Class ArtFont art fonts Manager
- * @package Inhere\Console\Components
+ * @package Inhere\Console\Components\Symbol
  */
 class ArtFont
 {

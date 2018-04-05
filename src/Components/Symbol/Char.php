@@ -6,12 +6,12 @@
  * Time: 9:33
  */
 
-namespace Inhere\Console\Utils\Symbol;
+namespace Inhere\Console\Components\Symbol;
 
 /**
  * Class FontSymbol
  * - 字体符号
- * @package Inhere\Console\Utils\Symbol
+ * @package Inhere\Console\Components\Symbol
  */
 final class Char
 {

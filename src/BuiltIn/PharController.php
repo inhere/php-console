@@ -24,21 +24,24 @@ class PharController extends Controller
 
     /**
      * pack project to a phar package
-     * @usage {fullCommand} [--dir DIR] [--output FILE]
+     * @usage {fullCommand} [--dir DIR] [--output FILE] [...]
      * @options
-     *  --dir STRING            Setting the project directory for packing.
-     *                          - default is current work-dir.(<comment>{workDir}</comment>)
-     *  --fast BOOL             Fast build. only add modified files by <cyan>git status -s</cyan>
+     *  -d, --dir STRING        Setting the project directory for packing.
+     *                          default is current work-dir.(<comment>{workDir}</comment>)
      *  -c, --config STRING     Use the defined config for build phar.
-     *  --output STRING         Setting the output file name(<comment>app.phar</comment>)
+     *  -o, --output STRING     Setting the output file name(<comment>app.phar</comment>)
+     *  --fast BOOL             Fast build. only add modified files by <cyan>git status -s</cyan>
      *  --refresh BOOL          Whether build vendor folder files on phar file exists(<comment>False</comment>)
      * @param  \Inhere\Console\IO\Input $in
      * @param  \Inhere\Console\IO\Output $out
      * @return int
+     * @throws \UnexpectedValueException
+     * @throws \RuntimeException
+     * @throws \BadMethodCallException
      */
     public function packCommand($in, $out): int
     {
-        $time = microtime(1);
+        $time = \microtime(1);
         $workDir = $in->getPwd();
 
         $dir = $in->getOpt('dir') ?: $workDir;
