@@ -16,4 +16,11 @@ namespace Inhere\Console\Components\Formatter;
 class HelpPanel extends Formatter
 {
 
+    /**
+     * @return string
+     */
+    public function toString(): string
+    {
+        return '';
+    }
 }

@@ -2,17 +2,17 @@
 /**
  * Created by PhpStorm.
  * User: inhere
- * Date: 2018-01-02
- * Time: 11:38
+ * Date: 2018/5/4
+ * Time: 上午11:54
  */
 
 namespace Inhere\Console\Components\Formatter;
 
 /**
- * Class Tree
+ * Class Alert
  * @package Inhere\Console\Components\Formatter
  */
-class Tree extends Formatter
+class Alert extends Formatter
 {
     /**
      * @return string

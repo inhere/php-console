@@ -56,9 +56,8 @@ composer require inhere/console
 编辑 `composer.json`，在 `require` 添加
 
 ```
-"inhere/console": "dev-master",
-
-// "inhere/console": "^2.0", // 指定稳定版本
+"inhere/console": "^2.0", // 指定稳定版本
+"inhere/console": "dev-master", // latest code
 // "inhere/console": "dev-php5", // for php5
 ```
 
@@ -67,7 +66,7 @@ composer require inhere/console
 - 直接拉取
 
 ```
-git clone https://git.oschina.net/inhere/php-console.git // git@osc
+git clone https://gitee/inhere/php-console.git // gitee
 git clone https://github.com/inhere/php-console.git // github
 ```
 
