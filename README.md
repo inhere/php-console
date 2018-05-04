@@ -9,8 +9,7 @@
 > 使用方便简单。可以方便的整合到任何已有项目中。
 
 - 命令行应用, 命令行的 `controller`, `command` 解析运行, 支持给命令设置别名
-- 功能全面的命令行的选项参数解析(命名参数，短选项，长选项 ...)
-- 命令行中功能强大的 `input`, `output` 管理、使用
+- 功能全面的命令行的选项参数解析(命名参数，短选项，长选项 ...)。命令行的 `input`, `output` 管理、使用
 - 命令方法注释自动解析为帮助信息（默认提取 `@usage` `@arguments` `@options` `@example` 等信息）
 - 支持输出多种颜色风格的消息文本(`info`, `comment`, `success`, `warning`, `danger`, `error` ... )
 - 常用的特殊格式信息显示(`section`, `panel`, `padding`, `helpPanel`, `table`, `tree`, `title`, `list`, `multiList`)
@@ -25,6 +24,7 @@
   - 运行示例中的命令 `php examples/app phar:pack`,会将此console库打包成一个`app.phar`
 - `ArtFont::class` 支持 ansi 图案字体显示（运行 `php examples/app -V` 可以看到效果）
 - `Download::class` 内置的简单的文件下载工具类，带有进度条
+- `Highlighter::class` 命令行的php代码高亮支持（来自于`jakub-onderka/php-console-highlighter`并做了一些调整）
 - `Terminal::class` 简单的Terminal屏幕、光标控制操作类
 - `ProcessUtil::class` 简单的进程操作使用类（fork,run,stop,wait ... 等）
 - **TODO** 快速的为当前应用生成 `bash/zsh` 环境下的自动补全脚本
