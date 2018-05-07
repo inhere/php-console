@@ -12,6 +12,7 @@ use Inhere\Console\Components\Style\Style;
 use Inhere\Console\Traits\FormatOutputAwareTrait;
 use Inhere\Console\Utils\Helper;
 use Inhere\Console\Utils\Show;
+use Toolkit\Cli\Cli;
 
 /**
  * Class Output
@@ -147,7 +148,7 @@ class Output implements OutputInterface
      */
     public function supportColor(): bool
     {
-        return Helper::isSupportColor();
+        return Cli::isSupportColor();
     }
 
     /**

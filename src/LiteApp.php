@@ -8,7 +8,7 @@
 
 namespace Inhere\Console;
 
-use Inhere\Console\Components\Style\LiteStyle;
+use Toolkit\Cli\Color;
 
 /**
  * Class LiteApp - Lite Application
@@ -52,6 +52,7 @@ class LiteApp
 
     /**
      * @param bool $exit
+     * @throws \InvalidArgumentException
      */
     public function run(bool $exit = true)
     {
@@ -205,6 +206,7 @@ class LiteApp
 
     /**
      * @param array $commands
+     * @throws \InvalidArgumentException
      */
     public function commands(array $commands)
     {
@@ -231,7 +233,7 @@ class LiteApp
     public function showCommands($err = '')
     {
         if ($err) {
-            echo LiteStyle::color("<red>ERROR</red>: $err\n\n");
+            echo Color::render("<red>ERROR</red>: $err\n\n");
         }
 
         $commandWidth = 12;
@@ -243,7 +245,7 @@ class LiteApp
             $help .= "  $command   $desc\n";
         }
 
-        echo LiteStyle::color($help) . PHP_EOL;
+        echo Color::render($help) . PHP_EOL;
         exit(0);
     }
 

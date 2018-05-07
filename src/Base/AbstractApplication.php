@@ -11,13 +11,13 @@ namespace Inhere\Console\Base;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\InputInterface;
 use Inhere\Console\IO\Output;
-use Inhere\Console\Components\Style\Highlighter;
 use Inhere\Console\IO\OutputInterface;
 use Inhere\Console\Traits\InputOutputAwareTrait;
 use Inhere\Console\Traits\SimpleEventTrait;
 use Inhere\Console\Components\Style\Style;
 use Inhere\Console\Utils\FormatUtil;
 use Inhere\Console\Utils\Helper;
+use Toolkit\Cli\Highlighter;
 
 /**
  * Class AbstractApplication
@@ -90,6 +90,7 @@ abstract class AbstractApplication implements ApplicationInterface
      * @param array $meta
      * @param Input $input
      * @param Output $output
+     * @throws \InvalidArgumentException
      */
     public function __construct(array $meta = [], Input $input = null, Output $output = null)
     {
@@ -102,6 +103,10 @@ abstract class AbstractApplication implements ApplicationInterface
         $this->init();
     }
 
+    /**
+     *
+     * @throws \InvalidArgumentException
+     */
     protected function init()
     {
         $this->meta['_stats'] = [
@@ -282,7 +287,7 @@ abstract class AbstractApplication implements ApplicationInterface
 
     /**
      * 运行异常处理
-     * @param \Exception|\Throwable $e
+     * @param \Throwable $e
      * @throws \InvalidArgumentException
      */
     public function handleException($e)

@@ -9,8 +9,8 @@
 namespace Inhere\Console\Examples\Controllers;
 
 use Inhere\Console\Controller;
-use Inhere\Console\Utils\CliUtil;
-use Inhere\Console\Utils\ProcessUtil;
+use Toolkit\Sys\ProcessUtil;
+use Toolkit\Sys\Sys;
 
 /**
  * Class ProcessController
@@ -74,7 +74,6 @@ class ProcessController extends Controller
             echo "command returned $retVal\n";
         }
 
-        ProcessUtil::run();
     }
 
     /**
@@ -95,6 +94,7 @@ class ProcessController extends Controller
 
     /**
      * simple process example for daemon run
+     * @throws \RuntimeException
      */
     public function daemonRunCommand()
     {
@@ -102,7 +102,7 @@ class ProcessController extends Controller
             $this->output->info("will running background by new process: $pid");
         });
 
-        if ($ret === false) {
+        if ($ret === 0) {
             $this->output->liteError('current env is not support process create.');
         }
     }
@@ -113,7 +113,7 @@ class ProcessController extends Controller
     public function runInBackgroundCommand()
     {
         $script = '<?php print_r($_SERVER); ?>';
-        $ret = ProcessUtil::runInBackground("php $script");
+        $ret = Sys::execInBackground("php $script");
 
         if ($ret === false) {
             $this->output->liteError('current env is not support process create.');

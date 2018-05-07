@@ -22,53 +22,6 @@ class Helper
     use RuntimeProfileTrait;
 
     /**
-     * Returns true if the console is running on windows
-     * @return boolean
-     */
-    public static function isOnWindows(): bool
-    {
-        return DIRECTORY_SEPARATOR === '\\';
-    }
-
-    /**
-     * @return bool
-     */
-    public static function isMac(): bool
-    {
-        return stripos(PHP_OS, 'Darwin') !== false;
-    }
-
-    /**
-     * @return bool
-     */
-    public static function isWindows(): bool
-    {
-        return stripos(PHP_OS, 'WIN') !== false;
-    }
-
-    /**
-     * @return bool
-     */
-    public static function isUnix(): bool
-    {
-        $uNames = ['CYG', 'DAR', 'FRE', 'HP-', 'IRI', 'LIN', 'NET', 'OPE', 'SUN', 'UNI'];
-
-        return \in_array(strtoupper(substr(PHP_OS, 0, 3)), $uNames, true);
-    }
-
-    /**
-     * @return bool
-     */
-    public static function isRoot(): bool
-    {
-        if (\function_exists('posix_getuid')) {
-            return posix_getuid() === 0;
-        }
-
-        return getmyuid() === 0;
-    }
-
-    /**
      * @return bool
      */
     public static function isSupportCoroutine(): bool
@@ -86,69 +39,6 @@ class Helper
         }
 
         return false;
-    }
-
-    /**
-     * @return bool
-     */
-    public static function isSupportColor(): bool
-    {
-        return self::supportColor();
-    }
-
-    /**
-     * Returns true if STDOUT supports colorization.
-     * This code has been copied and adapted from
-     * \Symfony\Component\Console\Output\OutputStream.
-     * @return boolean
-     */
-    public static function supportColor(): bool
-    {
-        if (DIRECTORY_SEPARATOR === '\\') {
-            return
-                '10.0.10586' === PHP_WINDOWS_VERSION_MAJOR . '.' . PHP_WINDOWS_VERSION_MINOR . '.' . PHP_WINDOWS_VERSION_BUILD ||
-                // 0 == strpos(PHP_WINDOWS_VERSION_MAJOR . '.' . PHP_WINDOWS_VERSION_MINOR . PHP_WINDOWS_VERSION_BUILD, '10.') ||
-                false !== getenv('ANSICON') ||
-                'ON' === getenv('ConEmuANSI') ||
-                'xterm' === getenv('TERM')// || 'cygwin' === getenv('TERM')
-                ;
-        }
-
-        if (!\defined('STDOUT')) {
-            return false;
-        }
-
-        return self::isInteractive(STDOUT);
-    }
-
-    /**
-     * @return bool
-     */
-    public static function isSupport256Color(): bool
-    {
-        return DIRECTORY_SEPARATOR === '/' && strpos(getenv('TERM'), '256color') !== false;
-    }
-
-    /**
-     * @return bool
-     */
-    public static function isAnsiSupport(): bool
-    {
-        if (DIRECTORY_SEPARATOR === '\\') {
-            return getenv('ANSICON') === true || getenv('ConEmuANSI') === 'ON';
-        }
-
-        return true;
-    }
-
-    /**
-     * Returns if the file descriptor is an interactive terminal or not.
-     * @param  int|resource $fileDescriptor
-     * @return boolean
-     */
-    public static function isInteractive($fileDescriptor): bool
-    {
-        return \function_exists('posix_isatty') && @posix_isatty($fileDescriptor);
     }
 
     /**

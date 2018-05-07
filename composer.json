@@ -13,7 +13,9 @@
     }
   ],
   "require": {
-    "php": ">=7.0.0"
+    "php": ">=7.0.0",
+    "toolkit/cli-utils": "~1.0",
+    "toolkit/sys-utils": "~1.0"
   },
   "autoload": {
     "psr-4": {

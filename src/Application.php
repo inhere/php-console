@@ -333,7 +333,7 @@ class Application extends AbstractApplication
         /** @var \Closure|string $handler Command class */
         $handler = $this->commands[$name];
 
-        if (\is_object($handler) && method_exists($handler, '__invoke')) {
+        if (\is_object($handler) && \method_exists($handler, '__invoke')) {
             if ($this->input->getSameOpt(['h', 'help'])) {
                 $des = $this->getCommandMessage($name, 'No command description message.');
 
@@ -342,7 +342,7 @@ class Application extends AbstractApplication
 
             $status = $handler($this->input, $this->output);
         } else {
-            if (!class_exists($handler)) {
+            if (!\class_exists($handler)) {
                 throw new \InvalidArgumentException("The console command class [$handler] not exists!");
             }
 

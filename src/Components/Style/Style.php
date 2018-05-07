@@ -11,6 +11,7 @@
 namespace Inhere\Console\Components\Style;
 
 use Inhere\Console\Utils\Helper;
+use Toolkit\Cli\Cli;
 
 /**
  * Class Style
@@ -180,7 +181,7 @@ class Style
         }
 
         // if don't support output color text, clear color tag.
-        if (!Helper::supportColor() || self::isNoColor()) {
+        if (!Cli::isSupportColor() || self::isNoColor()) {
             return static::stripColor($text);
         }
 
@@ -315,7 +316,7 @@ class Style
 
     /**
      * @param $name
-     * @return Style|null
+     * @return Color|null
      */
     public function getStyle($name)
     {

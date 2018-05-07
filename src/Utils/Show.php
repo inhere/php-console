@@ -10,6 +10,8 @@ namespace Inhere\Console\Utils;
 
 use Inhere\Console\Components\StrBuffer;
 use Inhere\Console\Components\Style\Style;
+use Toolkit\Cli\Cli;
+use Toolkit\Sys\Sys;
 
 /**
  * Class Show
@@ -193,7 +195,7 @@ class Show
     public static function splitLine(string $title, string $char = '-', int $width = 0): int
     {
         if ($width <= 0) {
-            list($width,) = CliUtil::getScreenSize();
+            list($width,) = Sys::getScreenSize();
             $width -= 2;
         }
 
@@ -678,9 +680,9 @@ class Show
         if ($started) {
             $started = 0;
             $opts = array_merge([
-                // 'char' => Helper::supportColor() ? '─' : '-', // ——
+                // 'char' => Cli::isSupportColor() ? '─' : '-', // ——
                 'char' => '-',
-                'prefix' => Helper::supportColor() ? '├' : '|',
+                'prefix' => Cli::isSupportColor() ? '├' : '|',
                 'leftPadding' => '',
             ], $opts);
 
@@ -911,7 +913,7 @@ class Show
         static $counter = 0;
         static $lastTime = null;
 
-        $tpl = (Helper::supportColor() ? "\x0D\x1B[2K" : "\x0D\r") . '%s';
+        $tpl = (Cli::isSupportColor() ? "\x0D\x1B[2K" : "\x0D\r") . '%s';
 
         if ($ended) {
             printf($tpl, $msg);
@@ -962,7 +964,7 @@ class Show
         static $lastTime = null;
         static $chars = ['', '.', '..', '...'];
 
-        $tpl = (Helper::supportColor() ? "\x0D\x1B[2K" : "\x0D\r") . '%s';
+        $tpl = (Cli::isSupportColor() ? "\x0D\x1B[2K" : "\x0D\r") . '%s';
 
         if ($ended) {
             printf($tpl, $msg);
@@ -1036,7 +1038,7 @@ class Show
     {
         $counter = 0;
         $finished = false;
-        $tpl = (Helper::supportColor() ? "\x0D\x1B[2K" : "\x0D\r") . '%d %s';
+        $tpl = (Cli::isSupportColor() ? "\x0D\x1B[2K" : "\x0D\r") . '%d %s';
         $msg = self::getStyle()->render($msg);
         $doneMsg = $doneMsg ? self::getStyle()->render($doneMsg) : null;
 
@@ -1076,7 +1078,7 @@ class Show
     {
         $current = 0;
         $finished = false;
-        $tpl = (Helper::supportColor() ? "\x0D\x1B[2K" : "\x0D\r") . "%' 3d%% %s";
+        $tpl = (Cli::isSupportColor() ? "\x0D\x1B[2K" : "\x0D\r") . "%' 3d%% %s";
         $msg = self::getStyle()->render($msg);
         $doneMsg = $doneMsg ? self::getStyle()->render($doneMsg) : null;
 
@@ -1139,7 +1141,7 @@ class Show
     {
         $current = 0;
         $finished = false;
-        $tplPrefix = Helper::supportColor() ? "\x0D\x1B[2K" : "\x0D\r";
+        $tplPrefix = Cli::isSupportColor() ? "\x0D\x1B[2K" : "\x0D\r";
         $opts = array_merge([
             'doneChar' => '=',
             'waitChar' => ' ',

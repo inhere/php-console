@@ -9,7 +9,7 @@
 namespace Inhere\Console\BuiltIn;
 
 use Inhere\Console\Command;
-use Inhere\Console\Utils\CliUtil;
+use Toolkit\Sys\Sys;
 
 /**
  * Class DevServerCommand
@@ -79,6 +79,6 @@ class DevServerCommand extends Command
 
         $this->write("<cyan>></cyan> <darkGray>$command</darkGray>");
 
-        CliUtil::runCommand($command);
+        Sys::execute($command);
     }
 }

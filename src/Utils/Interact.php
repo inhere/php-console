@@ -10,6 +10,8 @@
 
 namespace Inhere\Console\Utils;
 
+use Toolkit\Sys\Sys;
+
 /**
  * Class Interact
  * @package Inhere\Console\Utils
@@ -434,18 +436,18 @@ class Interact extends Show
         // $shell = 'echo $0';
 
         // linux, unix, git-bash
-        if (CliUtil::shIsAvailable()) {
+        if (Sys::shIsAvailable()) {
             // COMMAND: sh -c 'read -p "Enter Password:" -s user_input && echo $user_input'
             $command = sprintf('sh -c "read -p \'%s\' -s user_input && echo $user_input"', $prompt);
-            $password = CliUtil::runCommand($command, false);
+            $password = Sys::execute($command,false);
 
             echo "\n";
             return $password;
         }
 
         // at windows cmd.
-        if (Helper::isWindows()) {
-            $vbScript = CliUtil::getTempDir() . '/hidden_prompt_input.vbs';
+        if (Sys::isWindows()) {
+            $vbScript = Sys::getTempDir() . '/hidden_prompt_input.vbs';
 
             file_put_contents($vbScript, 'wscript.echo(InputBox("' . $prompt . '", "", "password here"))');
 

@@ -8,9 +8,9 @@
 
 namespace Inhere\Console\Components;
 
-use Inhere\Console\Utils\ProcessUtil;
 use Inhere\Console\Utils\Helper;
 use Seld\PharUtils\Timestamps;
+use Toolkit\Sys\Sys;
 
 /**
  * Class PharCompiler
@@ -414,7 +414,7 @@ class PharCompiler
     public function findChangedByGit()
     {
         // -u expand dir's files
-        list(, $output, ) = ProcessUtil::run('git status -s -u', $this->basePath);
+        list(, $output, ) = Sys::run('git status -s -u', $this->basePath);
 
         // 'D some.file'    deleted
         // ' M some.file'   modified
@@ -668,7 +668,7 @@ EOF;
         }
 
         $basePath = $this->basePath;
-        list($code, $ret,) = ProcessUtil::run('git log --pretty="%H" -n1 HEAD', $basePath);
+        list($code, $ret,) = Sys::run('git log --pretty="%H" -n1 HEAD', $basePath);
 
         if ($code !== 0) {
             throw new \RuntimeException(
@@ -678,7 +678,7 @@ EOF;
 
         $this->version = trim($ret);
 
-        list($code, $ret,) = ProcessUtil::run('git log -n1 --pretty=%ci HEAD', $basePath);
+        list($code, $ret,) = Sys::run('git log -n1 --pretty=%ci HEAD', $basePath);
 
         if ($code !== 0) {
             throw new \RuntimeException(
@@ -690,11 +690,11 @@ EOF;
         $this->versionDate->setTimezone(new \DateTimeZone('UTC'));
 
         // 获取到最新的 tag
-        list($code, $ret,) = ProcessUtil::run('git describe --tags --exact-match HEAD', $basePath);
+        list($code, $ret,) = Sys::run('git describe --tags --exact-match HEAD', $basePath);
         if ($code === 0) {
             $this->version = trim($ret);
         } else {
-            list($code1, $ret,) = ProcessUtil::run('git branch', $basePath);
+            list($code1, $ret,) = Sys::run('git branch', $basePath);
 
             if ($code1 === 0) {
                 $this->branchAliasVersion = \explode("\n", trim($ret, "* \n"), 2)[0];

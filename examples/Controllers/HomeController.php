@@ -2,13 +2,14 @@
 
 namespace Inhere\Console\Examples\Controllers;
 
-use Inhere\Console\Components\Terminal;
+use Toolkit\Cli\Cli;
+use Toolkit\Cli\Terminal;
 use Inhere\Console\Components\Symbol\ArtFont;
-use Inhere\Console\Components\Download;
+use Toolkit\Cli\Color;
+use Toolkit\Cli\Download;
+use Toolkit\Cli\Highlighter;
 use Inhere\Console\Controller;
 use Inhere\Console\IO\Input;
-use Inhere\Console\Components\Style\Highlighter;
-use Inhere\Console\Components\Style\LiteStyle;
 use Inhere\Console\Components\Symbol\Char;
 use Inhere\Console\Components\Symbol\Emoji;
 use Inhere\Console\Utils\Helper;
@@ -160,8 +161,7 @@ class HomeController extends Controller
         $file = $this->app->getRootPath() . '/src/Utils/Show.php';
         $src = file_get_contents($file);
 
-        $hl = new Highlighter();
-        $code = $hl->highlight($src, $in->getBoolOpt('ln'));
+        $code = Highlighter::create()->highlight($src, $in->getBoolOpt('ln'));
 
         $this->output->writeRaw($code);
     }
@@ -201,10 +201,10 @@ class HomeController extends Controller
         // die;
 
         $this->output->aList([
-            'basic color output?' => Helper::supportColor() ? '<info>Y</info>' : 'N',
-            'ansi char output?' => Helper::isAnsiSupport() ? 'Y' : 'N',
-            '256 color output?' => Helper::isSupport256Color() ? 'Y' : 'N',
-            'font symbol output?' => Helper::isSupport256Color() ? 'Y' : 'N',
+            'basic color output?' => Cli::isSupportColor() ? '<info>Y</info>' : 'N',
+            'ansi char output?' => Cli::isAnsiSupport() ? 'Y' : 'N',
+            '256 color output?' => Cli::isSupport256Color() ? 'Y' : 'N',
+            'font symbol output?' => Cli::isSupport256Color() ? 'Y' : 'N',
         ], 'color support check');
     }
 
@@ -221,8 +221,8 @@ class HomeController extends Controller
 
         $this->output->startBuffer();
 
-        foreach (array_keys(LiteStyle::STYLES) as $style) {
-            $this->output->write(LiteStyle::color("color text(style:$style)", $style));
+        foreach (Color::getStyles() as $style) {
+            $this->output->write(Color::render("color text(style:$style)", $style));
         }
 
         $this->output->flush();
@@ -863,7 +863,7 @@ class HomeController extends Controller
             return 0;
         }
 
-        Download::down($url, $saveAs, $type);
+        Download::file($url, $saveAs, $type);
         // $d = Download::down($url, $saveAs, $type);
         // echo Helper::dumpVars($d);
 

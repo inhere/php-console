@@ -8,6 +8,8 @@
 
 namespace Inhere\Console\Utils;
 
+use Toolkit\Sys\Sys;
+
 /**
  * Class FormatUtil
  * @package Inhere\Console\Utils
@@ -99,7 +101,7 @@ final class FormatUtil
         }
 
         if ((int)$width <= 0) {
-            $size = CliUtil::getScreenSize();
+            $size = Sys::getScreenSize();
 
             if ($size === false || $size[0] <= $indent) {
                 return $text;
