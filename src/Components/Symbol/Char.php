@@ -40,13 +40,26 @@ final class Char
     const CLOUD = '☁';
 
     /**
+     * @var array
+     * [
+     *  key => value,
+     *  ...
+     * ]
+     */
+    private static $constants;
+
+    /**
      * @return array
      * @throws \ReflectionException
      */
     public static function getConstants(): array
     {
-        $objClass = new \ReflectionClass(__CLASS__);
+        if (!self::$constants) {
+            $objClass = new \ReflectionClass(__CLASS__);
 
-        return $objClass->getConstants();
+            self::$constants = $objClass->getConstants();
+        }
+
+        return self::$constants;
     }
 }

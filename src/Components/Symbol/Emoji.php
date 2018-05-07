@@ -14,6 +14,7 @@ namespace Inhere\Console\Components\Symbol;
  */
 final class Emoji
 {
+    const ID = '🆔';
     const KEY = '🔑';
     const BOX = '📦';
     const GIFT = '🎁';
@@ -21,6 +22,8 @@ final class Emoji
     const FLAG = '🚩';
     const TOOL = '🔧';
     const GUN = '🔫';
+    const DING = '📌';
+    const STOP = '🚫';
 
     const DOC = '📄';
     const DIR = '📂';
@@ -54,10 +57,12 @@ final class Emoji
 
     const EYE = '👀';
     const HEART = '💖';
+    const HEARTBREAK = '💔';
 
     const SUC = '✅';
     const FAIL = '❌';
     const WAN = '❗';
+    const QUESTION = '❓';
 
     const CAR = '🚕';
 
@@ -76,15 +81,28 @@ final class Emoji
     const EARTH = '🌏';
 
     /**
+     * @var array
+     * [
+     *  key => value,
+     *  ...
+     * ]
+     */
+    private static $constants;
+
+    /**
      * @return array
      * @throws \ReflectionException
      */
     public static function getConstants(): array
     {
-        $objClass = new \ReflectionClass(__CLASS__);
+        if (!self::$constants) {
+            $objClass = new \ReflectionClass(__CLASS__);
 
-        // 此处获取类中定义的全部常量 返回的是 [key=>value,...] 的数组
-        // key是常量名 value是常量值
-        return $objClass->getConstants();
+            // 此处获取类中定义的全部常量 返回的是 [key=>value,...] 的数组
+            // key是常量名 value是常量值
+            self::$constants = $objClass->getConstants();
+        }
+
+        return self::$constants;
     }
 }

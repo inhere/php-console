@@ -28,9 +28,7 @@ class Highlighter
     /** @var Style */
     private $color;
 
-    /**
-     * @var self
-     */
+    /** @var self */
     private static $instance;
 
     /** @var array */
@@ -69,11 +67,12 @@ class Highlighter
     }
 
     /**
+     * highlight a full php file content
      * @param string $source
      * @param bool $withLineNumber with line number
      * @return string
      */
-    public function highlight(string $source, $withLineNumber = false): string
+    public function highlight(string $source, bool $withLineNumber = false): string
     {
         $tokenLines = $this->getHighlightedLines($source);
         $lines = $this->colorLines($tokenLines);
@@ -83,6 +82,19 @@ class Highlighter
         }
 
         return implode(PHP_EOL, $lines);
+    }
+
+    /**
+     * @param string $source
+     * @param int $lineNumber
+     * @param int $linesBefore
+     * @param int $linesAfter
+     * @return string
+     * @throws \InvalidArgumentException
+     */
+    public function snippet(string $source, int $lineNumber, int $linesBefore = 2, int $linesAfter = 2): string
+    {
+        return $this->highlightSnippet($source, $lineNumber, $linesBefore, $linesAfter);
     }
 
     /**
@@ -109,37 +121,11 @@ class Highlighter
 
     /**
      * @param string $source
-     * @return string
-     * @throws \InvalidArgumentException
-     */
-    public function getWholeFile($source): string
-    {
-        $tokenLines = $this->getHighlightedLines($source);
-        $lines = $this->colorLines($tokenLines);
-
-        return implode(PHP_EOL, $lines);
-    }
-
-    /**
-     * @param string $source
-     * @return string
-     * @throws \InvalidArgumentException
-     */
-    public function getWholeFileWithLineNumbers($source): string
-    {
-        $tokenLines = $this->getHighlightedLines($source);
-        $lines = $this->colorLines($tokenLines);
-
-        return $this->lineNumbers($lines);
-    }
-
-    /**
-     * @param string $source
      * @return array
      */
-    private function getHighlightedLines($source): array
+    private function getHighlightedLines(string $source): array
     {
-        $source = str_replace(["\r\n", "\r"], "\n", $source);
+        $source = \str_replace(["\r\n", "\r"], "\n", $source);
 
         if ($this->hasTokenFunc) {
             $tokens = $this->tokenize($source);
@@ -147,7 +133,7 @@ class Highlighter
         }
 
         // if no func: token_get_all
-        return explode("\n", $source);
+        return \explode("\n", $source);
     }
 
     /**
@@ -158,7 +144,7 @@ class Highlighter
     {
         $buffer = '';
         $output = [];
-        $tokens = token_get_all($source);
+        $tokens = \token_get_all($source);
         $newType = $currentType = null;
 
         foreach ($tokens as $token) {
@@ -244,6 +230,7 @@ class Highlighter
                 if ($tokenLine === '') {
                     continue;
                 }
+
                 $line[] = [$token[0], $tokenLine];
             }
         }

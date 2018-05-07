@@ -15,6 +15,30 @@ namespace Inhere\Console\Components\Formatter;
  */
 class Table extends Formatter
 {
+    /**
+     * @var array
+     */
+    public $data = [];
+
+    /**
+     * @var array
+     */
+    public $columns = [];
+
+    /** @var string|array */
+    public $body;
+
+    /** @var string  */
+    public $title = '';
+
+    /** @var string  */
+    public $titleBorder = '-';
+
+    /** @var string  */
+    public $titleStyle = '-';
+
+    /** @var string */
+    public $titleAlign = self::ALIGN_LEFT;
 
     /**
      * @return string
