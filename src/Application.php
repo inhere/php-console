@@ -85,9 +85,9 @@ class Application extends AbstractApplication
      * @see Application::controller()
      * @throws \InvalidArgumentException
      */
-    public function addController(string $name, string $class = null)
+    public function addController(string $name, string $class = null, $option = null)
     {
-        return $this->controller($name, $class);
+        return $this->controller($name, $class, $option);
     }
 
     /**
@@ -160,10 +160,10 @@ class Application extends AbstractApplication
 
         // have option information
         if (\is_string($option)) {
-            $this->addCommandMessage($name, $option);
+            $this->setCommandMetaValue($name, 'description', $option);
         } elseif (\is_array($option)) {
             $this->addCommandAliases($name, $option['aliases'] ?? null);
-            $this->addCommandMessage($name, $option['description'] ?? null);
+            $this->setCommandMeta($name, $option);
         }
 
         return $this;
@@ -182,24 +182,26 @@ class Application extends AbstractApplication
      * addCommand
      * @param string $name
      * @param mixed $handler
+     * @param null|string|array $option
      * @return $this
      * @throws \InvalidArgumentException
      */
-    public function addCommand(string $name, $handler = null): self
+    public function addCommand(string $name, $handler = null, $option = null): self
     {
-        return $this->command($name, $handler);
+        return $this->command($name, $handler, $option);
     }
 
     /**
      * addGroup
      * @param string $name
      * @param string|null $controller
+     * @param null|string|array $option
      * @return static
      * @throws \InvalidArgumentException
      */
-    public function addGroup(string $name, string $controller = null)
+    public function addGroup(string $name, string $controller = null, $option = null)
     {
-        return $this->controller($name, $controller);
+        return $this->controller($name, $controller, $option);
     }
 
     /**
@@ -335,7 +337,7 @@ class Application extends AbstractApplication
 
         if (\is_object($handler) && \method_exists($handler, '__invoke')) {
             if ($this->input->getSameOpt(['h', 'help'])) {
-                $des = $this->getCommandMessage($name, 'No command description message.');
+                $des = $this->getCommandMetaValue($name, 'description', 'No command description message.');
 
                 return $this->output->write($des);
             }

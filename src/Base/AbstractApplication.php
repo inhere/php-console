@@ -73,6 +73,9 @@ abstract class AbstractApplication implements ApplicationInterface
     /** @var string Current command name */
     private $commandName;
 
+    /** @var array Some metadata for command */
+    private $commandsMeta = [];
+
     /** @var array Some message for command */
     private $commandMessages = [];
 
@@ -261,11 +264,11 @@ abstract class AbstractApplication implements ApplicationInterface
      */
     protected function registerErrorHandle()
     {
-        set_error_handler([$this, 'handleError']);
-        set_exception_handler([$this, 'handleException']);
+        \set_error_handler([$this, 'handleError']);
+        \set_exception_handler([$this, 'handleException']);
 
-        register_shutdown_function(function () {
-            if ($e = error_get_last()) {
+        \register_shutdown_function(function () {
+            if ($e = \error_get_last()) {
                 $this->handleError($e['type'], $e['message'], $e['file'], $e['line']);
             }
         });
@@ -316,11 +319,11 @@ ERR;
                 $line,
                 // __METHOD__,
                 $snippet,
-                str_replace('):', "):\n  -", $e->getTraceAsString())
+                \str_replace('):', "):\n  -", $e->getTraceAsString())
             );
 
             if ($this->meta['hideRootPath'] && ($rootPath = $this->meta['rootPath'])) {
-                $message = str_replace($rootPath, '{ROOT}', $message);
+                $message = \str_replace($rootPath, '{ROOT}', $message);
             }
 
             $this->output->write($message, false);
@@ -382,7 +385,7 @@ ERR;
     {
         $pattern = $isGroup ? '/^[a-z][\w-]+$/' : '/^[a-z][\w-]*:?([a-z][\w-]+)?$/';
 
-        if (1 !== preg_match($pattern, $name)) {
+        if (1 !== \preg_match($pattern, $name)) {
             throw new \InvalidArgumentException("The command name '$name' is must match: $pattern");
         }
 
@@ -495,9 +498,9 @@ ERR;
             $hasCommand = true;
 
             /** @var AbstractCommand $command */
-            if (is_subclass_of($command, CommandInterface::class)) {
+            if (\is_subclass_of($command, CommandInterface::class)) {
                 $desc = $command::getDescription() ?: $desPlaceholder;
-            } elseif ($msg = $this->getCommandMessage($name)) {
+            } elseif ($msg = $this->getCommandMetaValue($name, 'description')) {
                 $desc = $msg;
             } elseif (\is_string($command)) {
                 $desc = 'A handler : ' . $command;
@@ -506,7 +509,7 @@ ERR;
             }
 
             $aliases = $this->getCommandAliases($name);
-            $extra = $aliases ? Helper::wrapTag(' [alias: ' . implode(',', $aliases) . ']', 'info') : '';
+            $extra = $aliases ? Helper::wrapTag(' [alias: ' . \implode(',', $aliases) . ']', 'info') : '';
             $commandArr[$name] = $desc . $extra;
         }
 
@@ -525,7 +528,7 @@ ERR;
             'Usage:' => "$script <info>{command}</info> [arg0 arg1=value1 arg2=value2 ...] [--opt -v -h ...]",
             'Options:' => $internalOptions,
             'Internal Commands:' => $internalCommands,
-            'Available Commands:' => array_merge($controllerArr, $commandArr),
+            'Available Commands:' => \array_merge($controllerArr, $commandArr),
         ], [
             'sepChar' => '  ',
         ]);
@@ -611,7 +614,7 @@ ERR;
      */
     public function getControllerNames(): array
     {
-        return array_keys($this->controllers);
+        return \array_keys($this->controllers);
     }
 
     /**
@@ -619,7 +622,7 @@ ERR;
      */
     public function getCommandNames(): array
     {
-        return array_keys($this->commands);
+        return \array_keys($this->commands);
     }
 
     /**
@@ -801,22 +804,6 @@ ERR;
     }
 
     /**
-     * @return array
-     */
-    public function getCommandMessages(): array
-    {
-        return $this->commandMessages;
-    }
-
-    /**
-     * @param array $commandMessages
-     */
-    public function setCommandMessages(array $commandMessages)
-    {
-        $this->commandMessages = $commandMessages;
-    }
-
-    /**
      * @param null|string $name
      * @return array
      */
@@ -826,7 +813,7 @@ ERR;
             return $this->commandAliases;
         }
 
-        return array_keys($this->commandAliases, $name, true);
+        return \array_keys($this->commandAliases, $name, true);
     }
 
     /**
@@ -835,5 +822,60 @@ ERR;
     public function setCommandAliases(array $commandAliases)
     {
         $this->commandAliases = $commandAliases;
+    }
+
+    /**
+     * @return array
+     */
+    public function getCommandsMeta(): array
+    {
+        return $this->commandsMeta;
+    }
+
+    /**
+     * @param string $command
+     * @param array $meta
+     */
+    public function setCommandMeta(string $command, array $meta)
+    {
+        if (isset($this->commandsMeta[$command])) {
+            $this->commandsMeta[$command] = \array_merge($this->commandsMeta[$command], $meta);
+        } else {
+            $this->commandsMeta[$command] = $meta;
+        }
+    }
+
+    /**
+     * @param string $command
+     * @return array
+     */
+    public function getCommandMeta(string $command): array
+    {
+        return $this->commandsMeta[$command] ?? [];
+    }
+
+    /**
+     * @param string $command
+     * @param string $key
+     * @param $value
+     */
+    public function setCommandMetaValue(string $command, string $key, $value)
+    {
+        $this->commandsMeta[$command][$key] = $value;
+    }
+
+    /**
+     * @param string $command
+     * @param string $key
+     * @param mixed $default
+     * @return mixed
+     */
+    public function getCommandMetaValue(string $command, string $key, $default = null)
+    {
+        if (isset($this->commandsMeta[$command][$key])) {
+            return $this->commandsMeta[$command][$key];
+        }
+
+        return $default;
     }
 }
