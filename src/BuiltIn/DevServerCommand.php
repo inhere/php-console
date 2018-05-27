@@ -32,10 +32,11 @@ class DevServerCommand extends Command
      *  {command} [-H HOST] [-p PORT]
      *  {command} [-S HOST:PORT] [file=]web/index.php
      * @options
-     *  -S STRING           The http server address. e.g 127.0.0.1:8552
-     *  -t STRING           The document root dir for server(<comment>web</comment>)
-     *  -H,--host STRING    The server host address(<comment>127.0.0.1</comment>)
-     *  -p,--port INTEGER   The server port number(<comment>8552</comment>)
+     *  -S STRING               The http server address. e.g 127.0.0.1:8552
+     *  -t STRING               The document root dir for server(<comment>web</comment>)
+     *  -H,--host STRING        The server host address(<comment>127.0.0.1</comment>)
+     *  -p,--port INTEGER       The server port number(<comment>8552</comment>)
+     *  -b,--php-bin STRING     The php binary file(<comment>php</comment>)
      * @arguments
      *  file=STRING         The entry file for server. e.g web/index.php
      * @example
@@ -61,7 +62,7 @@ class DevServerCommand extends Command
         $docRoot = $docDir ? $workDir . '/' . $docDir : $workDir;
 
         $this->write([
-            "PHP $version Development Server started\nServer listening on <info>$server</info>",
+            "PHP $version Development Server started\nServer listening on http://<info>$server</info>",
             "Document root is <comment>$docRoot</comment>",
             'You can use <comment>CTRL + C</comment> to stop run.',
         ]);
