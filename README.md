@@ -254,6 +254,10 @@ $app->registerGroups('App\\Console\\Controllers', dirname(__DIR__) . '/Controlle
 
 更多请查看 [examples](./examples) 中的示例代码和在目录下运行示例 `php examples/app home` 来查看效果
 
+## 错误/异常捕获
+
+<img src="docs/screenshots/error-catch.jpg" alt="error-catch" style="width: 500px">
+
 ## 输入
 
 > 输入对象是 `Inhere\Console\IO\Input` 的实例
