@@ -22,16 +22,23 @@ class PharController extends Controller
     protected static $name = 'phar';
     protected static $description = 'Pack a project directory to phar or unpack phar to directory';
 
+    protected function init()
+    {
+        parent::init();
+
+        $this->addAnnotationVar('defaultPkgName', \basename($this->input->getPwd()));
+    }
+
     /**
      * pack project to a phar package
      * @usage {fullCommand} [--dir DIR] [--output FILE] [...]
      * @options
      *  -d, --dir STRING        Setting the project directory for packing.
-     *                          default is current work-dir.(<comment>{workDir}</comment>)
-     *  -c, --config STRING     Use the defined config for build phar.
-     *  -o, --output STRING     Setting the output file name(<comment>app.phar</comment>)
+     *                          default is current work-dir.(<cyan>{workDir}</cyan>)
+     *  -c, --config STRING     Use the custom config file for build phar(<cyan>./phar.build.inc</cyan>)
+     *  -o, --output STRING     Setting the output file name(<cyan>{defaultPkgName}.phar</cyan>)
      *  --fast BOOL             Fast build. only add modified files by <cyan>git status -s</cyan>
-     *  --refresh BOOL          Whether build vendor folder files on phar file exists(<comment>False</comment>)
+     *  --refresh BOOL          Whether build vendor folder files on phar file exists(<cyan>False</cyan>)
      * @param  \Inhere\Console\IO\Input $in
      * @param  \Inhere\Console\IO\Output $out
      * @return int
@@ -49,7 +56,7 @@ class PharController extends Controller
 
         $counter = null;
         $refresh = $in->boolOpt('refresh');
-        $pharFile = $workDir . '/' . $in->getOpt('output', 'app.phar');
+        $pharFile = $workDir . '/' . $in->sameOpt(['o', 'output'], \basename($workDir) . '.phar');
 
         // use fast build
         if ($this->input->boolOpt('fast')) {
