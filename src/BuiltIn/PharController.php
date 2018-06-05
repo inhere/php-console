@@ -22,6 +22,11 @@ class PharController extends Controller
     protected static $name = 'phar';
     protected static $description = 'Pack a project directory to phar or unpack phar to directory';
 
+    /**
+     * @var \Closure
+     */
+    private $compilerConfiger;
+
     protected function init()
     {
         parent::init();
@@ -80,7 +85,7 @@ class PharController extends Controller
             });
         } else {
             $counter = Show::counterTxt('Handling ...', 'Done.');
-            $cpr->onAdd(function () use($counter) {
+            $cpr->onAdd(function () use ($counter) {
                 $counter->send(1);
             });
         }
@@ -111,19 +116,34 @@ class PharController extends Controller
      */
     protected function configCompiler(string $dir): PharCompiler
     {
-        // config
+        // create compiler
         $compiler = new PharCompiler($dir);
+
+        // use function config
+        if ($configer = $this->compilerConfiger) {
+            $configer($compiler);
+
+            return $compiler->in($dir);
+        }
+
+        // use config file
         $configFile = $this->input->getSameOpt(['c', 'config']) ?: $dir . '/phar.build.inc';
 
         if ($configFile && is_file($configFile)) {
             require $configFile;
 
-            $compiler->in($dir);
-
-            return $compiler;
+            return $compiler->in($dir);
         }
 
         throw new \RuntimeException("The phar build config file not exists! File: $configFile");
+    }
+
+    /**
+     * @param \Closure $compilerConfiger
+     */
+    public function setCompilerConfiger(\Closure $compilerConfiger)
+    {
+        $this->compilerConfiger = $compilerConfiger;
     }
 
     /**
