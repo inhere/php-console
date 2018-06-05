@@ -10,14 +10,18 @@ define('BASE_PATH', dirname(__DIR__));
 
 require dirname(__DIR__) . '/test/boot.php';
 
-$in = new \Inhere\Console\IO\Input();
-$ctrl = new HomeController($in, new \Inhere\Console\IO\Output());
+$input = new \Inhere\Console\IO\Input();
+$ctrl = new HomeController($input, new \Inhere\Console\IO\Output());
 $ctrl->setExecutionAlone();
 
 try {
-  exit($ctrl->run($in->getCommand()));
-} catch (ReflectionException $e) {
-  // ...
+    exit($ctrl->run($input->getCommand()));
+} catch (\Exception $e) {
+    $message = \Toolkit\Cli\Color::apply('error', $e->getMessage());
+
+    echo sprintf("%s\nFile %s:%d\nTrace:\n%s\n",
+        $message, $e->getFile(), $e->getLine(), $e->getTraceAsString()
+    );
 }
 
 // can also:
