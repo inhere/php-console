@@ -38,10 +38,7 @@
 - **github** https://github.com/inhere/php-console.git
 - **gitee** https://gitee.com/inhere/php-console.git
 
-**注意：**
-
-- master 分支是要求 `php >= 7` 的(推荐使用)。
-- php5 分支是支持 php5 `php >= 5.5` 的代码分支。
+> **注意：** master 分支是要求 `php7+` 的(推荐使用)。php5 分支是支持 `php5.5+` 的代码分支。
 
 ## 安装
 
