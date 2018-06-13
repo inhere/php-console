@@ -83,14 +83,14 @@ class Input implements InputInterface
 
         $this->pwd = $this->getPwd();
         $this->tokens = $argv;
-        $this->script = array_shift($argv);
-        $this->fullScript = implode(' ', $argv);
+        $this->script = \array_shift($argv);
+        $this->fullScript = \implode(' ', $argv);
 
         if ($parsing) {
             list($this->args, $this->sOpts, $this->lOpts) = InputParser::fromArgv($argv);
 
             // collect command. it is first argument.
-            $this->command = isset($this->args[0]) ? array_shift($this->args) : null;
+            $this->command = isset($this->args[0]) ? \array_shift($this->args) : null;
         }
     }
 
@@ -99,8 +99,8 @@ class Input implements InputInterface
      */
     public function __toString()
     {
-        $tokens = array_map(function ($token) {
-            if (preg_match('{^(-[^=]+=)(.+)}', $token, $match)) {
+        $tokens = \array_map(function ($token) {
+            if (\preg_match('{^(-[^=]+=)(.+)}', $token, $match)) {
                 return $match[1] . InputParser::escapeToken($match[2]);
             }
 
@@ -111,7 +111,7 @@ class Input implements InputInterface
             return $token;
         }, $this->tokens);
 
-        return implode(' ', $tokens);
+        return \implode(' ', $tokens);
     }
 
     /**

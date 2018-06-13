@@ -50,7 +50,7 @@ class FixedInput extends Input
         $copy = $argv;
 
         // command name
-        if (!empty($copy[1]) && $copy[1][0] !== '-' && false === strpos($copy[1], '=')) {
+        if (!empty($copy[1]) && $copy[1][0] !== '-' && false === \strpos($copy[1], '=')) {
             $this->setCommand($copy[1]);
 
             // unset command
@@ -58,7 +58,7 @@ class FixedInput extends Input
         }
 
         // pop script name
-        array_shift($copy);
+        \array_shift($copy);
 
         $this->cleanedTokens = $copy;
         $this->collectPreParsed($copy);
@@ -78,7 +78,7 @@ class FixedInput extends Input
     public function parseTokens(array $allowArray = [], array $noValues = [])
     {
         $params = $this->getTokens();
-        array_shift($params); // pop script name
+        \array_shift($params); // pop script name
     }
 
     /**
