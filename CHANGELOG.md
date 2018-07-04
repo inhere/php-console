@@ -4,7 +4,12 @@
 
 > publish at: 2018.07.03
 
-
+- **update deps**: add dep toolkit/cli-utils and toolkit/sys-utils
+- fix: no des when display alone command help
+- add new interactive method: `Interact::answerIsYes()`
+- update PharCompiler.php, some bug fixed
+- adjust help information display
+- remove some invalid classes
 
 ## v2.3.3
 
