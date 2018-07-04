@@ -27,14 +27,14 @@ class ArrayInput extends Input
         parent::__construct([], false);
 
         $this->tokens = $argv;
-        $this->script = array_shift($argv);
-        $this->fullScript = implode(' ', $argv);
+        $this->script = \array_shift($argv);
+        $this->fullScript = \implode(' ', $argv);
 
         if ($parsing && $argv) {
             list($this->args, $this->sOpts, $this->lOpts) = InputParser::fromArray($argv);
 
             // collect command. it is first argument.
-            $this->command = isset($this->args[0]) ? array_shift($this->args) : null;
+            $this->command = isset($this->args[0]) ? \array_shift($this->args) : null;
         }
     }
 

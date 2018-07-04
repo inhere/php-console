@@ -488,7 +488,7 @@ abstract class AbstractCommand implements BaseCommandInterface
                 }
 
                 if ($tag === 'usage') {
-                    $help['Usage:'] = $this->annotationVars['fullCommand'] . ' [arguments ...] [options ...]';
+                    $help['Usage:'] = $this->annotationVars['fullCommand'] . ' [--options ...] [arguments ...]';
                 }
 
                 continue;

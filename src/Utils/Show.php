@@ -117,11 +117,11 @@ class Show
      */
     public static function liteBlock($messages, $type = 'MESSAGE', string $style = Style::NORMAL, $quit = false): int
     {
-        $messages = \is_array($messages) ? array_values($messages) : array($messages);
+        $messages = \is_array($messages) ? \array_values($messages) : array($messages);
 
         // add type
         if (null !== $type) {
-            $type = sprintf('[%s]', strtoupper($type));
+            $type = sprintf('[%s]', \strtoupper($type));
         }
 
         $text = implode(PHP_EOL, $messages);
@@ -1327,7 +1327,7 @@ class Show
     public static function write($messages, $nl = true, $quit = false, array $opts = []): int
     {
         if (\is_array($messages)) {
-            $messages = implode($nl ? PHP_EOL : '', $messages);
+            $messages = \implode($nl ? PHP_EOL : '', $messages);
         }
 
         $messages = (string)$messages;
@@ -1436,7 +1436,7 @@ class Show
      */
     public static function getBlockMethods($onlyKey = true): array
     {
-        return $onlyKey ? array_keys(self::$blockMethods) : self::$blockMethods;
+        return $onlyKey ? \array_keys(self::$blockMethods) : self::$blockMethods;
     }
 
     /**

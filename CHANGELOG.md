@@ -1,5 +1,34 @@
 # CHANGELOG
 
+## v2.4.0
+
+> publish at: 2018.07.03
+
+
+
+## v2.3.3
+
+> publish at: 2018.03.15
+
+**update**
+
+- prompt password input use sh instead bash
+- command help display modify
+- modify error display
+- Update README.md
+- add more param type declare 
+
+**new**
+
+- add running sub-command support
+- add disable command support in controller
+- add a built in command for run php dev server
+
+**bug fixed**
+
+- token_get_all not exist for Highlighter
+- fix some errors for phar build
+
 ## v2.3.2
 
 > publish at: 2018.01.26

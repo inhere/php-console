@@ -19,17 +19,6 @@ use Toolkit\Sys\Sys;
 class Interact extends Show
 {
     /**
-     * 读取输入信息
-     * @param  mixed $message 若不为空，则先输出文本
-     * @param  bool $nl true 会添加换行符 false 原样输出，不添加换行符
-     * @return string
-     */
-    public static function readRow($message = null, $nl = false): string
-    {
-        return self::read($message, $nl);
-    }
-
-    /**
      * read CLI input
      * @param mixed $message
      * @param bool $nl
@@ -47,7 +36,34 @@ class Interact extends Show
 
         $stream = $opts['stream'] ?? \STDIN;
 
-        return trim(fgets($stream));
+        return \trim(fgets($stream));
+    }
+
+    /**
+     * 读取输入信息
+     * @param  mixed $message 若不为空，则先输出文本
+     * @param  bool $nl true 会添加换行符 false 原样输出，不添加换行符
+     * @return string
+     */
+    public static function readRow($message = null, $nl = false): string
+    {
+        return self::read($message, $nl);
+    }
+
+    /**
+     * @param null|mixed $message
+     * @param bool $nl
+     * @return string
+     */
+    public static function readFirst($message = null, $nl = false): string
+    {
+        $input = self::read($message, $nl);
+
+        if ($input && ($f = $input[0])) {
+            return $f;
+        }
+
+        return '';
     }
 
     /**************************************************************************************************
@@ -110,7 +126,7 @@ class Interact extends Show
         $r = self::read("Your choice{$defaultText} : ");
 
         // error, allow try again once.
-        if (!array_key_exists($r, $options)) {
+        if (!\array_key_exists($r, $options)) {
             goto beginChoice;
         }
 
@@ -144,12 +160,12 @@ class Interact extends Show
      */
     public static function multiSelect(string $description, $options, $default = null, $allowExit = true): array
     {
-        if (!$description = trim($description)) {
+        if (!$description = \trim($description)) {
             self::error('Please provide a description text!', 1);
         }
 
         $sep = ','; // ',' ' '
-        $options = \is_array($options) ? $options : explode(',', $options);
+        $options = \is_array($options) ? $options : \explode(',', $options);
 
         // If default option is error
         if (null !== $default && !isset($options[$default])) {
@@ -173,7 +189,7 @@ class Interact extends Show
 
         beginChoice:
         $r = self::read("Your choice{$defaultText} : ");
-        $r = $r !== '' ? str_replace(' ', '', trim($r, $sep)) : '';
+        $r = $r !== '' ? \str_replace(' ', '', trim($r, $sep)) : '';
 
         // empty
         if ($r === '') {
@@ -185,7 +201,7 @@ class Interact extends Show
             self::write("\n  Quit,ByeBye.", true, true);
         }
 
-        $rs = strpos($r, $sep) ? array_filter(explode($sep, $r), $filter) : [$r];
+        $rs = \strpos($r, $sep) ? \array_filter(\explode($sep, $r), $filter) : [$r];
 
         // error, try again
         if (!$rs) {
@@ -203,11 +219,11 @@ class Interact extends Show
      */
     public static function confirm(string $question, $default = true): bool
     {
-        if (!$question = trim($question)) {
+        if (!$question = \trim($question)) {
             self::warning('Please provide a question message!', 1);
         }
 
-        $question = ucfirst(trim($question, '?'));
+        $question = \ucfirst(\trim($question, '?'));
         $default = (bool)$default;
         $defaultText = $default ? 'yes' : 'no';
         $message = "<comment>$question ?</comment>\nPlease confirm (yes|no)[default:<info>$defaultText</info>]: ";
@@ -219,16 +235,52 @@ class Interact extends Show
                 return $default;
             }
 
-            if (0 === stripos($answer, 'y')) {
+            if (0 === \stripos($answer, 'y')) {
                 return true;
             }
 
-            if (0 === stripos($answer, 'n')) {
+            if (0 === \stripos($answer, 'n')) {
                 return false;
             }
         }
 
         return false;
+    }
+
+    /**
+     * usage:
+     * ```php
+     *  echo "are you ok?";
+     *  $ok = Interact::answerIsYes();
+     * ```
+     * @param bool|null $default
+     * @return bool
+     */
+    public static function answerIsYes(bool $default = true): bool
+    {
+        $mark = ' [yes|no]: ';
+
+        if ($default !== null) {
+            $defText = $default ? 'yes' : 'no';
+            $mark = \sprintf(' [yes|no](default <cyan>%s</cyan>): ', $defText);
+        }
+
+        if ($answer = self::readFirst($mark)) {
+            $answer = \strtolower($answer);
+
+            if ($answer === 'y') {
+                return true;
+            }
+
+            if ($answer === 'n') {
+                return false;
+            }
+        } elseif($default !== null) {
+            return $default;
+        }
+
+        print 'Please try again';
+        return self::answerIsYes($default);
     }
 
     /**
@@ -282,12 +334,12 @@ class Interact extends Show
      */
     public static function question(string $question, $default = null, \Closure $validator = null)
     {
-        if (!$question = trim($question)) {
+        if (!$question = \trim($question)) {
             self::error('Please provide a question text!', 1);
         }
 
         $defText = null !== $default ? "(default: <info>$default</info>)" : '';
-        $message = '<comment>' . ucfirst($question) . "</comment>$defText ";
+        $message = '<comment>' . \ucfirst($question) . "</comment>$defText ";
 
         askQuestion:
         $answer = self::read($message);
@@ -354,7 +406,7 @@ class Interact extends Show
      */
     public static function limitedAsk(string $question, $default = null, \Closure $validator = null, int $times = 3)
     {
-        if (!$question = trim($question)) {
+        if (!$question = \trim($question)) {
             self::error('Please provide a question text!', 1);
         }
 
@@ -430,7 +482,7 @@ class Interact extends Show
      */
     public static function promptSilent(string $prompt = 'Enter Password:'): string
     {
-        $prompt = $prompt ? addslashes($prompt) : 'Enter:';
+        $prompt = $prompt ? \addslashes($prompt) : 'Enter:';
 
         // $checkCmd = "/usr/bin/env bash -c 'echo OK'";
         // $shell = 'echo $0';

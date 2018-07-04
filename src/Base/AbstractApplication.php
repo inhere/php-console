@@ -418,7 +418,7 @@ ERR;
         $sep = $this->delimiter;
 
         $this->output->helpPanel([
-            'usage' => "$script <info>{command}</info> [arg0 arg1=value1 arg2=value2 ...] [--opt -v -h ...]",
+            'usage' => "$script <info>{command}</info> [--opt -v -h ...] [arg0 arg1 arg2=value2 ...]",
             'example' => [
                 "$script test (run a independent command)",
                 "$script home{$sep}index (run a command of the group)",
@@ -471,27 +471,29 @@ ERR;
         $desPlaceholder = 'No description of the command';
 
         // all console controllers
-        $controllerArr[] = PHP_EOL . '- <bold>Group Commands</bold>';
-        $controllers = $this->controllers;
-        ksort($controllers);
+        if ($controllers = $this->controllers) {
+            \ksort($controllers);
+            $controllerArr[] = PHP_EOL . '- <bold>Group Commands</bold>';
+        }
 
         foreach ($controllers as $name => $controller) {
             $hasGroup = true;
             /** @var AbstractCommand $controller */
             $desc = $controller::getDescription() ?: $desPlaceholder;
             $aliases = $this->getCommandAliases($name);
-            $extra = $aliases ? Helper::wrapTag(' [alias: ' . implode(',', $aliases) . ']', 'info') : '';
+            $extra = $aliases ? Helper::wrapTag(' [alias: ' . \implode(',', $aliases) . ']', 'info') : '';
             $controllerArr[$name] = $desc . $extra;
         }
 
-        if (!$hasGroup) {
+        if (!$hasGroup && $this->isDebug()) {
             $controllerArr[] = '... Not register any group command(controller)';
         }
 
         // all independent commands, Independent, Single, Alone
-        $commands = $this->commands;
-        $commandArr[] = PHP_EOL . '- <bold>Alone Commands</bold>';
-        ksort($commands);
+        if ($commands = $this->commands) {
+            $commandArr[] = PHP_EOL . '- <bold>Alone Commands</bold>';
+            \ksort($commands);
+        }
 
         foreach ($commands as $name => $command) {
             $desc = $desPlaceholder;
@@ -513,13 +515,13 @@ ERR;
             $commandArr[$name] = $desc . $extra;
         }
 
-        if (!$hasCommand) {
+        if (!$hasCommand && $this->isDebug()) {
             $commandArr[] = '... Not register any alone command';
         }
 
         // built in commands
         $internalCommands = static::$internalCommands;
-        ksort($internalCommands);
+        \ksort($internalCommands);
 
         // built in options
         $internalOptions = FormatUtil::alignmentOptions(self::$internalOptions);

@@ -238,7 +238,7 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
         $this->beforeShowCommandList();
 
         $ref = new \ReflectionClass($this);
-        $sName = lcfirst(self::getName() ?: $ref->getShortName());
+        $sName = \lcfirst(self::getName() ?: $ref->getShortName());
 
         if (!($classDes = self::getDescription())) {
             $classDes = Annotation::description($ref->getDocComment()) ?: 'No description for the console controller';
@@ -274,7 +274,7 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
         }
 
         // sort commands
-        ksort($commands);
+        \ksort($commands);
 
         // move 'help' to last.
         if ($helpCmd = $commands['help'] ?? null) {
@@ -286,10 +286,10 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
 
         if ($this->executionAlone) {
             $name = $sName . ' ';
-            $usage = "$script <info>{command}</info> [arguments ...] [options ...]";
+            $usage = "$script <info>{command}</info> [--options ...] [arguments ...]";
         } else {
             $name = $sName . $this->delimiter;
-            $usage = "$script {$name}<info>{command}</info> [arguments ...] [options ...]";
+            $usage = "$script {$name}<info>{command}</info> [--options ...] [arguments ...]";
         }
 
         $this->output->startBuffer();
@@ -297,8 +297,8 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
         $this->output->mList([
             'Usage:' => $usage,
             //'Group Name:' => "<info>$sName</info>",
-            'Options:' => FormatUtil::alignmentOptions(array_merge(Application::getInternalOptions(), static::$globalOptions)),
-            'Commands:' => $commands,
+            'Global Options:' => FormatUtil::alignmentOptions(array_merge(Application::getInternalOptions(), static::$globalOptions)),
+            'Available Commands:' => $commands,
         ], [
             'sepChar' => '  ',
         ]);

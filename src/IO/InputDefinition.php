@@ -22,21 +22,19 @@ class InputDefinition
         'default' => null,
     ];
 
+    /** @var string|array */
     private $example;
+
     /** @var string */
     private $description;
 
-    /**
-     * @var array[]
-     */
+    /** @var array[] */
     private $arguments;
     private $requiredCount = 0;
     private $hasOptional = false;
     private $hasAnArrayArgument = false;
 
-    /**
-     * @var array[]
-     */
+    /** @var array[] */
     private $options;
 
     /** @var array */

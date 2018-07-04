@@ -291,9 +291,9 @@ class Application extends AbstractApplication
         $action = '';
 
         // like 'home:index'
-        if (strpos($realName, $sep) > 0) {
-            $input = array_values(array_filter(explode($sep, $realName)));
-            list($realName, $action) = \count($input) > 2 ? array_splice($input, 2) : $input;
+        if (\strpos($realName, $sep) > 0) {
+            $input = \array_values(\array_filter(\explode($sep, $realName)));
+            list($realName, $action) = \count($input) > 2 ? \array_splice($input, 2) : $input;
             $realName = $this->getRealCommandName($realName);
         }
 
@@ -305,17 +305,17 @@ class Application extends AbstractApplication
         if (true !== $this->fire(self::ON_NOT_FOUND, [$this])) {
             $this->output->liteError("The command '{$name}' is not exists in the console application!");
 
-            $commands = array_merge($this->getControllerNames(), $this->getCommandNames());
+            $commands = \array_merge($this->getControllerNames(), $this->getCommandNames());
 
             // find similar command names by similar_text()
             if ($similar = Helper::findSimilar($name, $commands)) {
-                $this->write(sprintf("\nMaybe what you mean is:\n    <info>%s</info>", implode(', ', $similar)));
+                $this->write(\sprintf("\nMaybe what you mean is:\n    <info>%s</info>", implode(', ', $similar)));
             } else {
                 $this->showCommandList(false);
             }
         }
 
-        return 404;
+        return 2;
     }
 
     /**
