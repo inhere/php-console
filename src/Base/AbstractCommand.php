@@ -153,6 +153,7 @@ abstract class AbstractCommand implements BaseCommandInterface
             'group' => self::getName(),
             'workDir' => $this->input->getPwd(),
             'script' => $this->input->getScript(), // bin/app
+            'binName' => $this->input->getScript(), // bin/app
             'command' => $this->input->getCommand(), // demo OR home:test
             'fullCommand' => $this->input->getScript() . ' ' . $this->input->getCommand(),
         ];
@@ -251,11 +252,11 @@ abstract class AbstractCommand implements BaseCommandInterface
 
         // 创建了 InputDefinition , 则使用它的信息(此时不会再解析和使用命令的注释)
         $help = $definition->getSynopsis();
-        $help['usage'] = sprintf('%s %s %s', $this->input->getScript(), $this->input->getCommand(), $help['usage']);
+        $help['usage:'] = \sprintf('%s %s %s', $this->input->getScript(), $this->input->getCommand(), $help['usage:']);
         $help['global options:'] = FormatUtil::alignmentOptions(Application::getInternalOptions());
 
-        if (empty($help['description']) && $this->isAlone()) {
-            $help['description'] = self::getDescription();
+        if (empty($help[0]) && $this->isAlone()) {
+            $help[0] = self::getDescription();
         }
 
         $this->output->mList($help, ['sepChar' => '  ']);

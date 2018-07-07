@@ -78,7 +78,7 @@ class Input implements InputInterface
     public function __construct($argv = null, $parsing = true)
     {
         if (null === $argv) {
-            $argv = $_SERVER['argv'];
+            $argv = (array)$_SERVER['argv'];
         }
 
         $this->pwd = $this->getPwd();
@@ -596,6 +596,14 @@ class Input implements InputInterface
      * @return string
      */
     public function getScriptName(): string
+    {
+        return $this->script;
+    }
+
+    /**
+     * @return string
+     */
+    public function getBinName(): string
     {
         return $this->script;
     }

@@ -527,7 +527,7 @@ ERR;
         $internalOptions = FormatUtil::alignmentOptions(self::$internalOptions);
 
         $this->output->mList([
-            'Usage:' => "$script <info>{command}</info> [arg0 arg1=value1 arg2=value2 ...] [--opt -v -h ...]",
+            'Usage:' => "$script <info>{command}</info> [--opt -v -h ...] [arg0 arg1 arg2=value2 ...]",
             'Options:' => $internalOptions,
             'Internal Commands:' => $internalCommands,
             'Available Commands:' => \array_merge($controllerArr, $commandArr),

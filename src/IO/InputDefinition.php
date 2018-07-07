@@ -64,6 +64,10 @@ class InputDefinition
         $this->setOptions($options);
     }
 
+    /***************************************************************************
+     * some methods for the arguments
+     ***************************************************************************/
+
     /**
      * @param array $arguments
      * @return InputDefinition
@@ -92,6 +96,19 @@ class InputDefinition
     }
 
     /**
+     * alias of the addArgument
+     * @param string $name
+     * @param int|null $mode
+     * @param string $description
+     * @param null $default
+     * @return InputDefinition
+     */
+    public function addArg(string $name, int $mode = null, string $description = '', $default = null): self
+    {
+        return $this->addArgument($name, $mode, $description, $default);
+    }
+
+    /**
      * Adds an argument.
      *
      * @param string $name The argument name
@@ -101,7 +118,7 @@ class InputDefinition
      * @return $this
      * @throws \LogicException
      */
-    public function addArgument($name, $mode = null, $description = '', $default = null): self
+    public function addArgument(string $name, int $mode = null, string $description = '', $default = null): self
     {
         if (null === $mode) {
             $mode = Input::ARG_OPTIONAL;
@@ -158,16 +175,17 @@ class InputDefinition
 
     /**
      * @param int|string $name
-     * @return array
-     * @throws \InvalidArgumentException
+     * @param null $default
+     * @return string|int|null
      */
-    public function getArgument($name): array
+    public function getArgument($name, $default = null)
     {
-        if (!$this->hasArgument($name)) {
-            throw new \InvalidArgumentException(sprintf('The "%s" argument does not exist.', $name));
-        }
+        $arguments = \is_int($name) ? \array_values($this->arguments) : $this->arguments;
 
-        $arguments = \is_int($name) ? array_values($this->arguments) : $this->arguments;
+        if (!isset($arguments[$name])) {
+            return $default;
+            // throw new \InvalidArgumentException(sprintf('The "%s" argument does not exist.', $name));
+        }
 
         return $arguments[$name];
     }
@@ -178,7 +196,7 @@ class InputDefinition
      */
     public function hasArgument($name): bool
     {
-        $arguments = \is_int($name) ? array_values($this->arguments) : $this->arguments;
+        $arguments = \is_int($name) ? \array_values($this->arguments) : $this->arguments;
 
         return isset($arguments[$name]);
     }
@@ -207,6 +225,10 @@ class InputDefinition
     {
         return $this->requiredCount;
     }
+
+    /***************************************************************************
+     * some methods for the options
+     ***************************************************************************/
 
     /**
      * Sets the options
@@ -237,6 +259,16 @@ class InputDefinition
     }
 
     /**
+     * alias of the addOption
+     * {@inheritdoc}
+     * @return InputDefinition
+     */
+    public function addOpt(string $name, string $shortcut = null, int $mode = null, string $description = '', $default = null): self
+    {
+        return $this->addOption($name, $shortcut, $mode, $description, $default);
+    }
+
+    /**
      * Adds an option.
      *
      * @param string|bool $name The option name, must is a string
@@ -249,10 +281,10 @@ class InputDefinition
      * @throws \InvalidArgumentException
      * @throws \LogicException
      */
-    public function addOption(string $name, string $shortcut = null, $mode = null, $description = '', $default = null): self
+    public function addOption(string $name, string $shortcut = null, int $mode = null, string $description = '', $default = null): self
     {
-        if (0 === strpos($name, '-')) {
-            $name = trim($name, '-');
+        if (0 === \strpos($name, '-')) {
+            $name = \trim($name, '-');
         }
 
         if (empty($name)) {
@@ -329,7 +361,7 @@ class InputDefinition
      * @return array
      * @throws \InvalidArgumentException
      */
-    public function getOption($name): array
+    public function getOption(string $name): array
     {
         if (!$this->hasOption($name)) {
             throw new \InvalidArgumentException(sprintf('The "--%s" option does not exist.', $name));
@@ -342,7 +374,7 @@ class InputDefinition
      * @param string $name
      * @return bool
      */
-    public function hasOption($name): bool
+    public function hasOption(string $name): bool
     {
         return isset($this->options[$name]);
     }
@@ -397,7 +429,7 @@ class InputDefinition
      */
     private function mergeArgOptConfig(array $map): array
     {
-        return $map ? array_merge(self::$defaultArgOptConfig, $map) : self::$defaultArgOptConfig;
+        return $map ? \array_merge(self::$defaultArgOptConfig, $map) : self::$defaultArgOptConfig;
     }
 
     /**
@@ -416,16 +448,16 @@ class InputDefinition
                 $value = '';
 
                 if ($this->optionIsAcceptValue($option['mode'])) {
-                    $value = sprintf(
+                    $value = \sprintf(
                         ' %s%s%s',
                         $option['optional'] ? '[' : '',
-                        strtoupper($name),
+                        \strtoupper($name),
                         $option['optional'] ? ']' : ''
                     );
                 }
 
-                $shortcut = $option['shortcut'] ? sprintf('-%s, ', $option['shortcut']) : '';
-                $elements[] = sprintf('[%s--%s%s]', $shortcut, $name, $value);
+                $shortcut = $option['shortcut'] ? \sprintf('-%s, ', $option['shortcut']) : '    ';
+                $elements[] = \sprintf('[%s--%s%s]', $shortcut, $name, $value);
 
                 $key = "{$shortcut}--{$name}";
                 $opts[$key] = ($option['required'] ? '<red>*</red>' : '') . $option['description'];
@@ -455,11 +487,12 @@ class InputDefinition
         }
 
         return [
-            'description' => $this->description,
-            'usage' => implode(' ', $elements),
-            'arguments' => $args,
-            'options' => $opts,
-            'example' => $this->example,
+            $this->description,
+            'usage:' => \implode(' ', $elements),
+            'options:' => $opts,
+            'arguments:' => $args,
+            'example:' => $this->example,
+            'global options:' => '',
         ];
     }
 
@@ -480,7 +513,7 @@ class InputDefinition
      * @param int $mode
      * @return bool
      */
-    protected function argumentIsAcceptValue($mode): bool
+    protected function argumentIsAcceptValue(int $mode): bool
     {
         return $mode === Input::ARG_REQUIRED || $mode === Input::ARG_OPTIONAL;
     }
@@ -489,7 +522,7 @@ class InputDefinition
      * @param int $mode
      * @return bool
      */
-    protected function optionIsAcceptValue($mode): bool
+    protected function optionIsAcceptValue(int $mode): bool
     {
         return $mode === Input::OPT_REQUIRED || $mode === Input::OPT_OPTIONAL;
     }

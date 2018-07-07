@@ -256,7 +256,7 @@ class Interact extends Show
      * @param bool|null $default
      * @return bool
      */
-    public static function answerIsYes(bool $default = true): bool
+    public static function answerIsYes(bool $default = null): bool
     {
         $mark = ' [yes|no]: ';
 
@@ -280,7 +280,7 @@ class Interact extends Show
         }
 
         print 'Please try again';
-        return self::answerIsYes($default);
+        return self::answerIsYes();
     }
 
     /**
