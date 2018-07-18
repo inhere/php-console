@@ -14,7 +14,7 @@
 - 命令方法注释自动解析为帮助信息（默认提取 `@usage` `@arguments` `@options` `@example` 等信息）
 - 支持输出多种颜色风格的消息文本(`info`, `comment`, `success`, `warning`, `danger`, `error` ... )
 - 常用的特殊格式信息显示(`section`, `panel`, `padding`, `helpPanel`, `table`, `tree`, `title`, `list`, `multiList`)
-- 丰富的动态信息显示(`pending/loading`, `pointing`, `spinner`, `counterTxt`, `progressTxt`, `progressBar`)
+- 丰富的动态信息显示(`pending/loading`, `pointing`, `spinner`, `counterTxt`, `dynamicText`, `progressTxt`, `progressBar`)
 - 常用的用户信息交互支持(`select`, `multiSelect`, `confirm`, `ask/question`, `askPassword/askHiddenInput`)
 - 支持类似 `symfony/console` 的预定义参数定义(按位置赋予参数值, 需要严格限制参数选项时推荐使用)
 - 输出是 `windows` , `linux` 兼容的，不支持颜色的环境会自动去除相关CODE
@@ -440,6 +440,18 @@ public static function title(string $title, array $opts = [])
 public static function section(string $title, string|array $body, array $opts = [])
 ```
 
+### 自定义的动态文本输出
+
+使用 `Show::dynamicTxt()/$output->dynamicTxt()`
+
+![show-progress-txt](docs/screenshots/show-dynamic-text.gif)
+
+### 简单的文本进度输出
+
+使用 `Show::progressTxt()/$output->progressTxt()`
+
+![show-progress-txt](docs/screenshots/show-progress-txt.gif)
+
 ### 简单的进度条输出
 
 使用 `Show::progressBar()/$output->progressBar()`
@@ -451,7 +463,6 @@ public static function progressBar(int $total, array $opts = [])
 示例代码：
 
 ```php
-
 $total = 120;
 $bar = Show::progressBar($total, [
     'msg' => 'Msg Text',
@@ -467,7 +478,7 @@ while ($i <= $total) {
 }
 ```
 
-![show-progress](docs/screenshots/progress-demo.png)
+![show-progress-bar](docs/screenshots/show-progress-bar.gif)
 
 ### 列表数据展示输出 
 

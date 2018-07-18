@@ -331,14 +331,14 @@ class HomeController extends Controller
     }
 
     /**
-     * dynamic notice message show: spinner
+     * dynamic spinner message, by Show::spinner()
      */
     public function spinnerCommand()
     {
         $total = 5000;
 
         while ($total--) {
-            Show::spinner();
+            Show::spinner('Data handling ');
             usleep(100);
         }
 

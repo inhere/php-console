@@ -1073,6 +1073,16 @@ class Show
      * @param string|null $fixMsg
      * @return \Generator
      */
+    public static function dynamicTxt(string $doneMsg, string $fixMsg = null)
+    {
+        return self::dynamicText($doneMsg, $fixMsg);
+    }
+
+    /**
+     * @param string $doneMsg
+     * @param string|null $fixMsg
+     * @return \Generator
+     */
     public static function dynamicText(string $doneMsg, string $fixMsg = null)
     {
         $counter = 0;
