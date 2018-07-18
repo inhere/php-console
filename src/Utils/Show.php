@@ -1069,6 +1069,49 @@ class Show
     }
 
     /**
+     * @param string $doneMsg
+     * @param string|null $fixMsg
+     * @return \Generator
+     */
+    public static function dynamicText(string $doneMsg, string $fixMsg = null)
+    {
+        $counter = 0;
+        $finished = false;
+        // $tpl = Cli::isSupportColor() ? "\x0D\x1B[2K" : "\x0D\r";
+        $tpl = Cli::isSupportColor() ? "\x0D\x1B[2K" : "\x0D";
+
+        if ($fixMsg) {
+            $tpl .= self::getStyle()->render($fixMsg);
+        }
+
+        $tpl .= '%s';
+        $doneMsg = $doneMsg ? self::getStyle()->render($doneMsg) : '';
+
+        while (true) {
+            if ($finished) {
+                return;
+            }
+
+            $msg = yield;
+
+            if ($msg === false) {
+                $counter++;
+                $finished = true;
+                $msg = $doneMsg ?: '';
+            }
+
+            printf($tpl, $msg);
+
+            if ($finished) {
+                echo "\n";
+                break;
+            }
+        }
+
+        yield $counter;
+    }
+
+    /**
      * @param int $total
      * @param string $msg
      * @param string|null $doneMsg

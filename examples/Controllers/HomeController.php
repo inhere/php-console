@@ -45,6 +45,7 @@ class HomeController extends Controller
             'ml' => 'multiList',
             'ms' => 'multiSelect',
             'sl' => 'splitLine',
+            'dt' => 'dynamicText',
         ];
     }
 
@@ -372,6 +373,23 @@ class HomeController extends Controller
         }
 
         Show::pointing('Done', true);
+    }
+
+    /**
+     * dynamic text message example, by Show::dynamicText
+     */
+    public function dynamicTextCommand()
+    {
+        $dt = Show::dynamicText('Complete', 'Download file: xyz.zip ... ');
+        $dt->send('Start');
+
+        foreach (['Request','Downloading', 'Save'] as $txt) {
+            \sleep(2);
+            $dt->send($txt);
+        }
+
+        \sleep(2);
+        $dt->send(false);
     }
 
     /**
