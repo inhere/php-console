@@ -26,7 +26,7 @@ class Helper
      */
     public static function isSupportCoroutine(): bool
     {
-        return class_exists(Coroutine::class, false);
+        return \class_exists(Coroutine::class, false);
     }
 
     /**
@@ -59,7 +59,7 @@ class Helper
      */
     public static function isAbsPath(string $path): bool
     {
-        return $path{0} === '/' || 1 === preg_match('#^[a-z]:[\/|\\\]{1}.+#i', $path);
+        return \strpos($path, '/') === 0 || 1 === \preg_match('#^[a-z]:[\/|\\\]{1}.+#i', $path);
     }
 
     /**
@@ -67,9 +67,9 @@ class Helper
      * @param int $mode
      * @throws \RuntimeException
      */
-    public static function mkdir($dir, $mode = 0775)
+    public static function mkdir(string $dir, int $mode = 0775)
     {
-        if (!file_exists($dir) && !mkdir($dir, $mode, true) && !is_dir($dir)) {
+        if (!\file_exists($dir) && !\mkdir($dir, $mode, true) && !\is_dir($dir)) {
             throw new \RuntimeException(sprintf('Directory "%s" was not created', $dir));
         }
     }
@@ -112,7 +112,7 @@ class Helper
      * @param string $tag
      * @return string
      */
-    public static function wrapTag($string, $tag): string
+    public static function wrapTag(string $string, string $tag): string
     {
         if (!$string) {
             return '';
@@ -130,21 +130,21 @@ class Helper
      * @param string $string
      * @return string
      */
-    public static function stripAnsiCode($string): string
+    public static function stripAnsiCode(string $string): string
     {
-        return (string)preg_replace('/\033\[[\d;?]*\w/', '', $string);
+        return (string)\preg_replace('/\033\[[\d;?]*\w/', '', $string);
     }
 
     /**
      * @param $string
      * @return int
      */
-    public static function strUtf8Len($string): int
+    public static function strUtf8Len(string $string): int
     {
         // strlen: one chinese is 3 char.
         // mb_strlen: one chinese is 1 char.
         // mb_strwidth: one chinese is 2 char.
-        return mb_strlen($string, 'utf-8');
+        return \mb_strlen($string, 'utf-8');
     }
 
     /**
@@ -152,13 +152,13 @@ class Helper
      * @param $string
      * @return int
      */
-    public static function strLen($string): int
+    public static function strLen(string $string): int
     {
-        if (false === $encoding = mb_detect_encoding($string, null, true)) {
+        if (false === $encoding = \mb_detect_encoding($string, null, true)) {
             return \strlen($string);
         }
 
-        return mb_strwidth($string, $encoding);
+        return \mb_strwidth($string, $encoding);
     }
 
     /**
@@ -169,7 +169,7 @@ class Helper
      */
     public static function strPad(string $string, $indent, $padStr): string
     {
-        return $indent > 0 ? str_pad($string, $indent, $padStr) : $string;
+        return $indent > 0 ? \str_pad($string, $indent, $padStr) : $string;
     }
 
     /**
@@ -202,7 +202,7 @@ class Helper
      * @param int $similarPercent
      * @return array
      */
-    public static function findSimilar($need, $iterator, $similarPercent = 45): array
+    public static function findSimilar(string $need, $iterator, $similarPercent = 45): array
     {
         if (!$need) {
             return [];
@@ -212,7 +212,7 @@ class Helper
         $similar = [];
 
         foreach ($iterator as $name) {
-            similar_text($need, $name, $percent);
+            \similar_text($need, $name, $percent);
 
             if ($similarPercent <= (int)$percent) {
                 $similar[] = $name;
@@ -233,7 +233,7 @@ class Helper
      * @param bool $expectInt
      * @return int
      */
-    public static function getKeyMaxWidth(array $data, $expectInt = false): int
+    public static function getKeyMaxWidth(array $data, bool $expectInt = false): int
     {
         $keyMaxWidth = 0;
 
@@ -255,11 +255,11 @@ class Helper
      */
     public static function dumpVars(...$args): string
     {
-        ob_start();
-        var_dump(...$args);
-        $string = ob_get_clean();
+        \ob_start();
+        \var_dump(...$args);
+        $string = \ob_get_clean();
 
-        return preg_replace("/=>\n\s+/", '=> ', trim($string));
+        return \preg_replace("/=>\n\s+/", '=> ', \trim($string));
     }
 
     /**
@@ -276,5 +276,14 @@ class Helper
         }
 
         return preg_replace("/Array\n\s+\(/", 'Array (', trim($string));
+    }
+
+    /**
+     * @param string $format
+     * @param mixed  ...$args
+     */
+    public static function throwInvalidArgument(string $format, ...$args)
+    {
+        throw new \InvalidArgumentException(\sprintf($format, ...$args));
     }
 }

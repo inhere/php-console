@@ -24,33 +24,35 @@ class Application extends AbstractApplication
     /**
      * Register a app group command(by controller)
      * @param string $name The controller name
-     * @param string $class The controller class
+     * @param string|Controller $class The controller class
      * @param null|array|string $option
      * @return static
      * @throws \InvalidArgumentException
      */
-    public function controller(string $name, string $class = null, $option = null)
+    public function controller(string $name, $class = null, $option = null)
     {
-        if (!$class && class_exists($name)) {
-            /** @var Controller $class */
+        /** @var Controller $class */
+        if (!$class && \class_exists($name)) {
             $class = $name;
             $name = $class::getName();
         }
 
         if (!$name || !$class) {
-            throw new \InvalidArgumentException(
-                'Group-command "name" and "controller" not allowed to is empty! name: ' . $name . ', controller: ' . $class
+            Helper::throwInvalidArgument(
+                'Group-command "name" and "controller" not allowed to is empty! name: %s, controller: %s',
+                $name,
+                $class
             );
         }
 
         $this->validateName($name, true);
 
-        if (!class_exists($class)) {
-            throw new \InvalidArgumentException("The console controller class [$class] not exists!");
+        if (\is_string($class) && !\class_exists($class)) {
+            Helper::throwInvalidArgument("The console controller class [$class] not exists!");
         }
 
-        if (!is_subclass_of($class, Controller::class)) {
-            throw new \InvalidArgumentException('The console controller class must is subclass of the: ' . Controller::class);
+        if (!\is_subclass_of($class, Controller::class)) {
+            Helper::throwInvalidArgument('The console controller class must is subclass of the: ' . Controller::class);
         }
 
         // not enable
@@ -60,21 +62,19 @@ class Application extends AbstractApplication
 
         // allow define aliases in Command class by Controller::aliases()
         if ($aliases = $class::aliases()) {
-            $option['aliases'] = isset($option['aliases']) ? array_merge($option['aliases'], $aliases) : $aliases;
+            $option['aliases'] = isset($option['aliases']) ? \array_merge($option['aliases'], $aliases) : $aliases;
         }
 
         $this->controllers[$name] = $class;
 
-        if (!$option) {
-            return $this;
-        }
-
-        // have option information
-        if (\is_string($option)) {
-            $this->addCommandMessage($name, $option);
-        } elseif (\is_array($option)) {
-            $this->addCommandAliases($name, $option['aliases'] ?? null);
-            $this->addCommandMessage($name, $option['description'] ?? null);
+        // has option information
+        if ($option) {
+            if (\is_string($option)) {
+                $this->addCommandMessage($name, $option);
+            } elseif (\is_array($option)) {
+                $this->addCommandAliases($name, $option['aliases'] ?? null);
+                $this->addCommandMessage($name, $option['description'] ?? null);
+            }
         }
 
         return $this;
@@ -85,7 +85,7 @@ class Application extends AbstractApplication
      * @see Application::controller()
      * @throws \InvalidArgumentException
      */
-    public function addController(string $name, string $class = null, $option = null)
+    public function addController(string $name, $class = null, $option = null)
     {
         return $this->controller($name, $class, $option);
     }
@@ -109,7 +109,7 @@ class Application extends AbstractApplication
      */
     public function command(string $name, $handler = null, $option = null)
     {
-        if (!$handler && class_exists($name)) {
+        if (!$handler && \class_exists($name)) {
             /** @var Command $name */
             $handler = $name;
             $name = $name::getName();
@@ -126,7 +126,7 @@ class Application extends AbstractApplication
         }
 
         if (\is_string($handler)) {
-            if (!class_exists($handler)) {
+            if (!\class_exists($handler)) {
                 throw new \InvalidArgumentException("The console command class [$handler] not exists!");
             }
 
@@ -144,7 +144,7 @@ class Application extends AbstractApplication
             if ($aliases = $handler::aliases()) {
                 $option['aliases'] = isset($option['aliases']) ? array_merge($option['aliases'], $aliases) : $aliases;
             }
-        } elseif (!\is_object($handler) || !method_exists($handler, '__invoke')) {
+        } elseif (!\is_object($handler) || !\method_exists($handler, '__invoke')) {
             throw new \InvalidArgumentException(sprintf(
                 'The console command handler must is an subclass of %s OR a Closure OR a object have method __invoke()',
                 Command::class
@@ -199,7 +199,7 @@ class Application extends AbstractApplication
      * @return static
      * @throws \InvalidArgumentException
      */
-    public function addGroup(string $name, string $controller = null, $option = null)
+    public function addGroup(string $name, $controller = null, $option = null)
     {
         return $this->controller($name, $controller, $option);
     }
@@ -253,7 +253,7 @@ class Application extends AbstractApplication
             $name = $f->getFilename();
 
             // Skip hidden files and directories.
-            if ($name[0] === '.') {
+            if (\strpos($name, '.') === 0) {
                 return false;
             }
 
@@ -302,7 +302,7 @@ class Application extends AbstractApplication
         }
 
         // command not found
-        if (true !== $this->fire(self::ON_NOT_FOUND, [$this])) {
+        if (true !== $this->fire(self::ON_NOT_FOUND, $this)) {
             $this->output->liteError("The command '{$name}' is not exists in the console application!");
 
             $commands = \array_merge($this->getControllerNames(), $this->getCommandNames());
@@ -325,7 +325,7 @@ class Application extends AbstractApplication
      * @return mixed
      * @throws \InvalidArgumentException
      */
-    public function runCommand($name, $believable = false)
+    public function runCommand(string $name, bool $believable = false)
     {
         // if $believable = true, will skip check.
         if (!$believable && $this->isCommand($name)) {
@@ -372,25 +372,29 @@ class Application extends AbstractApplication
      * @throws \InvalidArgumentException
      * @throws \ReflectionException
      */
-    public function runAction($name, $action, $believable = false, $standAlone = false)
+    public function runAction(string $name, string $action, bool $believable = false, bool $standAlone = false)
     {
         // if $believable = true, will skip check.
         if (!$believable && !$this->isController($name)) {
-            throw new \InvalidArgumentException("The console controller-command [$name] not exists!");
+            Helper::throwInvalidArgument('The console controller-command [%s] not exists!', $name);
         }
 
         // Controller class
-        $controller = $this->controllers[$name];
+        $object = $this->controllers[$name];
 
-        if (!class_exists($controller)) {
-            throw new \InvalidArgumentException("The console controller class [$controller] not exists!");
+        if (\is_string($object)) {
+            $class = $object;
+
+            if (!\class_exists($class)) {
+                Helper::throwInvalidArgument('The console controller class [%s] not exists!', $class);
+            }
+
+            /** @var Controller $object */
+            $object = new $class($this->input, $this->output);
         }
 
-        /** @var Controller $object */
-        $object = new $controller($this->input, $this->output);
-
         if (!($object instanceof Controller)) {
-            throw new \InvalidArgumentException("The console controller class [$object] must instanceof the " . Controller::class);
+            Helper::throwInvalidArgument('The console controller class [%s] must instanceof the %s', $object, Controller::class);
         }
 
         $object::setName($name);

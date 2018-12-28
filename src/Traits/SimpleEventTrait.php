@@ -68,11 +68,11 @@ trait SimpleEventTrait
 
     /**
      * trigger event
-     * @param $event
-     * @param array $args
+     * @param string $event
+     * @param array ...$args
      * @return bool
      */
-    public function fire(string $event, array $args = []): bool
+    public function fire(string $event, ...$args): bool
     {
         if (!isset(self::$events[$event])) {
             return false;

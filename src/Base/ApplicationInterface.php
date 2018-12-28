@@ -24,9 +24,13 @@ interface ApplicationInterface
     /**
      * @param bool $exit
      */
-    public function run($exit = true);
+    public function run(bool $exit = true);
 
-    public function stop($code = 0);
+    /**
+     * @param int $code
+     * @return mixed
+     */
+    public function stop(int $code = 0);
 
     /**
      * run a independent command
@@ -34,7 +38,7 @@ interface ApplicationInterface
      * @param bool $believable
      * @return mixed
      */
-    public function runCommand($name, $believable = false);
+    public function runCommand(string $name, bool $believable = false);
 
     /**
      * run a controller's action
@@ -44,12 +48,12 @@ interface ApplicationInterface
      * @param bool $standAlone
      * @return mixed
      */
-    public function runAction($name, $action, $believable = false, $standAlone = false);
+    public function runAction(string $name, string $action, bool $believable = false, bool $standAlone = false);
 
     /**
      * Register a app group command(by controller)
      * @param string $name The controller name
-     * @param string $class The controller class
+     * @param string|ControllerInterface $class The controller class
      * @param null|array|string $option
      * string: define the description message.
      * array:
@@ -58,7 +62,7 @@ interface ApplicationInterface
      * @return static
      * @throws \InvalidArgumentException
      */
-    public function controller(string $name, string $class = null, $option = null);
+    public function controller(string $name, $class = null, $option = null);
 
     /**
      * Register a app independent console command

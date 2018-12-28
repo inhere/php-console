@@ -165,7 +165,7 @@ final class FormatUtil
      * @param array $info
      * @return array
      */
-    public static function runtime($startTime, $startMem, array $info = []): array
+    public static function runtime(int $startTime, $startMem, array $info = []): array
     {
         $info['startTime'] = $startTime;
         $info['endTime'] = \microtime(true);

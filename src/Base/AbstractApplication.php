@@ -151,7 +151,7 @@ abstract class AbstractApplication implements ApplicationInterface
      * @param bool $exit
      * @throws \InvalidArgumentException
      */
-    public function run($exit = true)
+    public function run(bool $exit = true)
     {
         $command = trim($this->input->getCommand(), $this->delimiter);
 
@@ -159,14 +159,14 @@ abstract class AbstractApplication implements ApplicationInterface
         $this->filterSpecialCommand($command);
 
         // call 'onBeforeRun' service, if it is registered.
-        $this->fire(self::ON_BEFORE_RUN, [$this]);
+        $this->fire(self::ON_BEFORE_RUN, $this);
         $this->beforeRun();
 
         // do run ...
         try {
             $returnCode = $this->dispatch($command);
         } catch (\Throwable $e) {
-            $this->fire(self::ON_RUN_ERROR, [$e, $this]);
+            $this->fire(self::ON_RUN_ERROR, $e, $this);
             $returnCode = $e->getCode() === 0 ? $e->getLine() : $e->getCode();
             $this->handleException($e);
         }
@@ -174,7 +174,7 @@ abstract class AbstractApplication implements ApplicationInterface
         $this->meta['_stats']['endTime'] = microtime(1);
 
         // call 'onAfterRun' service, if it is registered.
-        $this->fire(self::ON_AFTER_RUN, [$this]);
+        $this->fire(self::ON_AFTER_RUN, $this);
         $this->afterRun();
 
         if ($exit) {
@@ -189,18 +189,6 @@ abstract class AbstractApplication implements ApplicationInterface
      */
     abstract protected function dispatch(string $command);
 
-    /**
-     * run a independent command
-     * {@inheritdoc}
-     */
-    abstract public function runCommand($name, $believable = false);
-
-    /**
-     * run a controller's action
-     * {@inheritdoc}
-     */
-    abstract public function runAction($name, $action, $believable = false, $standAlone = false);
-
     protected function afterRun()
     {
     }
@@ -208,10 +196,10 @@ abstract class AbstractApplication implements ApplicationInterface
     /**
      * @param int $code
      */
-    public function stop($code = 0)
+    public function stop(int $code = 0)
     {
         // call 'onAppStop' service, if it is registered.
-        $this->fire(self::ON_STOP_RUN, [$this]);
+        $this->fire(self::ON_STOP_RUN, $this);
 
         // display runtime info
         if ($this->isProfile()) {
@@ -251,7 +239,7 @@ abstract class AbstractApplication implements ApplicationInterface
     {
         // check env
         if (!\in_array(PHP_SAPI, ['cli', 'cli-server'], true)) {
-            header('HTTP/1.1 403 Forbidden');
+            \header('HTTP/1.1 403 Forbidden');
             exit("  403 Forbidden \n\n"
                 . " current environment is CLI. \n"
                 . " :( Sorry! Run this script is only allowed in the terminal environment!\n,You are not allowed to access this file.\n");

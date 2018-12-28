@@ -256,7 +256,7 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
             $desc = Annotation::firstLine($m->getDocComment()) ?: $defaultDes;
 
             // is a annotation tag
-            if ($desc[0] === '@') {
+            if (\strpos($desc, '@') === 0) {
                 $desc = $defaultDes;
             }
 
@@ -303,9 +303,10 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
             'sepChar' => '  ',
         ]);
 
-        $this->write(sprintf(
-            "More information about a command, please use: <cyan>$script $name{command} -h</cyan>",
-            $this->executionAlone ? ' ' . $name : ''
+        $this->write(\sprintf(
+            'More information about a command, please use: <cyan>%s %s{command} -h</cyan>',
+            $script,
+            $this->executionAlone ? $name : ''
         ));
         $this->output->flush();
     }
