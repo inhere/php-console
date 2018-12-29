@@ -9,13 +9,14 @@
 namespace Inhere\Console\IO;
 
 /**
- * Class FixedInput
+ * Class StrictInput
+ * - 严格按照定义解析
  * - 初始化时不全部解析，只取出 '-h' '--help' 还有命令名
  * - 到运行命令时根据命令的参数选项配置(InputDefinition)来进行解析
  * - @todo un-completed
  * @package Inhere\Console\IO
  */
-class FixedInput extends Input
+class StrictInput extends Input
 {
     /**
      * the prepare parsed options.
