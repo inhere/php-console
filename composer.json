@@ -32,7 +32,7 @@
   },
   "autoload-dev": {
     "psr-4": {
-      "Inhere\\Console\\Test\\": "test/"
+      "Inhere\\ConsoleTest\\": "test/"
     }
   },
   "suggest": {

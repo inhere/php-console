@@ -14,8 +14,8 @@ spl_autoload_register(function($class)
         $path = str_replace('\\', '/', substr($class, strlen('Inhere\Console\Examples\\')));
         $file = dirname(__DIR__) . "/examples/{$path}.php";
 
-    } elseif (0 === strpos($class,'Inhere\Console\Test\\')) {
-        $path = str_replace('\\', '/', substr($class, strlen('Inhere\Console\Test\\')));
+    } elseif (0 === strpos($class,'Inhere\ConsoleTest\\')) {
+        $path = str_replace('\\', '/', substr($class, strlen('Inhere\ConsoleTest\\')));
         $file = __DIR__ . "/{$path}.php";
     } elseif (0 === strpos($class,'Inhere\Console\\')) {
         $path = str_replace('\\', '/', substr($class, strlen('Inhere\Console\\')));

@@ -39,7 +39,7 @@ class Application extends AbstractApplication
 
         if (!$name || !$class) {
             Helper::throwInvalidArgument(
-                'Group-command "name" and "controller" not allowed to is empty! name: %s, controller: %s',
+                'Group-command "name" and "controller" cannot be empty! name: %s, controller: %s',
                 $name,
                 $class
             );

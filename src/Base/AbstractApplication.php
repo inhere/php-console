@@ -56,6 +56,7 @@ abstract class AbstractApplication implements ApplicationInterface
         'updateAt' => '2017.03.24',
         'rootPath' => '',
         'hideRootPath' => true,
+
         // 'timeZone' => 'Asia/Shanghai',
         // 'env' => 'pdt', // dev test pdt
         // 'charset' => 'UTF-8',
@@ -153,7 +154,7 @@ abstract class AbstractApplication implements ApplicationInterface
      */
     public function run(bool $exit = true)
     {
-        $command = trim($this->input->getCommand(), $this->delimiter);
+        $command = \trim($this->input->getCommand(), $this->delimiter);
 
         $this->prepareRun();
         $this->filterSpecialCommand($command);
@@ -750,13 +751,21 @@ ERR;
     }
 
     /**
+     * @return string
+     */
+    public function getVersion(): string
+    {
+        return $this->meta['version'];
+    }
+
+    /**
      * set meta info
      * @param array $meta
      */
     public function setMeta(array $meta)
     {
         if ($meta) {
-            $this->meta = array_merge($this->meta, $meta);
+            $this->meta = \array_merge($this->meta, $meta);
         }
     }
 
@@ -862,10 +871,6 @@ ERR;
      */
     public function getCommandMetaValue(string $command, string $key, $default = null)
     {
-        if (isset($this->commandsMeta[$command][$key])) {
-            return $this->commandsMeta[$command][$key];
-        }
-
-        return $default;
+        return $this->commandsMeta[$command][$key] ?? $default;
     }
 }

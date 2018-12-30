@@ -1,5 +1,7 @@
 <?php
 
+namespace Inhere\ConsoleTest;
+
 use PHPUnit\Framework\TestCase;
 use Inhere\Console\Controller;
 

@@ -1,0 +1,30 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: inhere
+ * Date: 2018-12-30
+ * Time: 18:58
+ */
+
+namespace Inhere\ConsoleTest;
+
+use Inhere\Console\Controller;
+
+/**
+ * Class TestController
+ * @package Inhere\ConsoleTest
+ */
+class TestController extends Controller
+{
+    protected static $name = 'test';
+    protected static $description = 'test description message';
+
+    /**
+     * this is an demo command in test
+     * @return int
+     */
+    public function demoCommand(): int
+    {
+        return 0;
+    }
+}

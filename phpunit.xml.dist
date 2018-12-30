@@ -8,7 +8,6 @@
          convertNoticesToExceptions="true"
          convertWarningsToExceptions="true"
          stopOnFailure="false"
-         syntaxCheck="false"
 >
     <testsuites>
         <testsuite name="Php Console Test Suite">
