@@ -110,8 +110,8 @@ final class FormatUtil
             $width = $size[0];
         }
 
-        $pad = str_repeat(' ', $indent);
-        $lines = explode("\n", wordwrap($text, $width - $indent, "\n", true));
+        $pad = \str_repeat(' ', $indent);
+        $lines = \explode("\n", \wordwrap($text, $width - $indent, "\n", true));
         $first = true;
 
         foreach ($lines as $i => $line) {
@@ -122,7 +122,7 @@ final class FormatUtil
             $lines[$i] = $pad . $line;
         }
 
-        return $pad . '  ' . implode("\n", $lines);
+        return $pad . '  ' . \implode("\n", $lines);
     }
 
 
@@ -130,10 +130,10 @@ final class FormatUtil
      * @param array $options
      * @return array
      */
-    public static function alignmentOptions(array $options): array
+    public static function alignOptions(array $options): array
     {
         // e.g '-h, --help'
-        $hasShort = (bool)strpos(implode(array_keys($options), ''), ',');
+        $hasShort = (bool)\strpos(\implode(\array_keys($options), ''), ',');
 
         if (!$hasShort) {
             return $options;
@@ -265,16 +265,19 @@ final class FormatUtil
         $utf8String = \mb_convert_encoding($string, 'utf8', $encoding);
         $lines = [];
         $line = '';
+
         foreach (\preg_split('//u', $utf8String) as $char) {
             // test if $char could be appended to current line
             if (\mb_strwidth($line . $char, 'utf8') <= $width) {
                 $line .= $char;
                 continue;
             }
+
             // if not, push current line to array and make new line
-            $lines[] = str_pad($line, $width);
+            $lines[] = \str_pad($line, $width);
             $line = $char;
         }
+
         if ('' !== $line) {
             $lines[] = \count($lines) ? \str_pad($line, $width) : $line;
         }

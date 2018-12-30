@@ -17,7 +17,7 @@ use Inhere\Console\Controller;
 class TestController extends Controller
 {
     protected static $name = 'test';
-    protected static $description = 'test description message';
+    protected static $description = 'controller description message';
 
     /**
      * this is an demo command in test

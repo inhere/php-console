@@ -72,22 +72,22 @@ class Input implements InputInterface
 
     /**
      * Input constructor.
-     * @param null|array $argv
-     * @param bool $parsing
+     * @param null|array $args
+     * @param bool       $parsing
      */
-    public function __construct($argv = null, $parsing = true)
+    public function __construct(array $args = null, bool $parsing = true)
     {
-        if (null === $argv) {
-            $argv = (array)$_SERVER['argv'];
+        if (null === $args) {
+            $args = (array)$_SERVER['argv'];
         }
 
         $this->pwd = $this->getPwd();
-        $this->tokens = $argv;
-        $this->script = \array_shift($argv);
-        $this->fullScript = \implode(' ', $argv);
+        $this->tokens = $args;
+        $this->script = \array_shift($args);
+        $this->fullScript = \implode(' ', $args);
 
         if ($parsing) {
-            list($this->args, $this->sOpts, $this->lOpts) = InputParser::fromArgv($argv);
+            list($this->args, $this->sOpts, $this->lOpts) = InputParser::fromArgv($args);
 
             // collect command. it is first argument.
             $this->command = isset($this->args[0]) ? \array_shift($this->args) : null;
@@ -97,7 +97,15 @@ class Input implements InputInterface
     /**
      * @return string
      */
-    public function __toString()
+    public function __toString(): string
+    {
+        return $this->toString();
+    }
+
+    /**
+     * @return string
+     */
+    public function toString(): string
     {
         $tokens = \array_map(function ($token) {
             if (\preg_match('{^(-[^=]+=)(.+)}', $token, $match)) {
@@ -120,13 +128,13 @@ class Input implements InputInterface
      * @param  bool $nl true 会添加换行符 false 原样输出，不添加换行符
      * @return string
      */
-    public function read($question = null, $nl = false): string
+    public function read(string $question = '', bool $nl = false): string
     {
         if ($question) {
-            fwrite(\STDOUT, $question . ($nl ? "\n" : ''));
+            \fwrite(\STDOUT, $question . ($nl ? "\n" : ''));
         }
 
-        return trim(fgets($this->inputStream));
+        return \trim(\fgets($this->inputStream));
     }
 
     /***********************************************************************************
@@ -202,7 +210,7 @@ class Input implements InputInterface
 
     /**
      * get a required argument
-     * @param int|string $name
+     * @param int|string $name argument index
      * @return mixed
      * @throws \InvalidArgumentException
      */
@@ -220,7 +228,7 @@ class Input implements InputInterface
      * @param string $default
      * @return string
      */
-    public function getFirstArg($default = ''): string
+    public function getFirstArg(string $default = ''): string
     {
         return $this->get(0, $default);
     }
@@ -230,7 +238,7 @@ class Input implements InputInterface
      * @param string $default
      * @return string
      */
-    public function getSecondArg($default = ''): string
+    public function getSecondArg(string $default = ''): string
     {
         return $this->get(1, $default);
     }
@@ -322,11 +330,11 @@ class Input implements InputInterface
 
     /**
      * get a required argument
-     * @param int|string $name
+     * @param string $name
      * @return mixed
      * @throws \InvalidArgumentException
      */
-    public function getRequiredOpt($name)
+    public function getRequiredOpt(string $name)
     {
         if (null === ($val = $this->getOpt($name))) {
             throw new \InvalidArgumentException("The option '{$name}' is required");
@@ -402,16 +410,16 @@ class Input implements InputInterface
 
     /**
      * get short-opt value
-     * @param $name
+     * @param string $name
      * @param null $default
      * @return mixed|null
      */
-    public function sOpt($name, $default = null)
+    public function sOpt(string $name, $default = null)
     {
         return $this->sOpts[$name] ?? $default;
     }
 
-    public function getShortOpt($name, $default = null)
+    public function getShortOpt(string $name, $default = null)
     {
         return $this->sOpts[$name] ?? $default;
     }
@@ -468,9 +476,9 @@ class Input implements InputInterface
      * @param array $sOpts
      * @param bool $replace
      */
-    public function setSOpts(array $sOpts, $replace = false)
+    public function setSOpts(array $sOpts, bool $replace = false)
     {
-        $this->sOpts = $replace ? $sOpts : array_merge($this->sOpts, $sOpts);
+        $this->sOpts = $replace ? $sOpts : \array_merge($this->sOpts, $sOpts);
     }
 
     /**
@@ -485,16 +493,21 @@ class Input implements InputInterface
 
     /**
      * get long-opt value
-     * @param $name
+     * @param string $name
      * @param null $default
      * @return mixed|null
      */
-    public function lOpt($name, $default = null)
+    public function lOpt(string $name, $default = null)
     {
         return $this->lOpts[$name] ?? $default;
     }
 
-    public function getLongOpt($name, $default = null)
+    /**
+     * @param string $name
+     * @param null   $default
+     * @return mixed|null
+     */
+    public function getLongOpt(string $name, $default = null)
     {
         return $this->lOpts[$name] ?? $default;
     }
@@ -551,9 +564,9 @@ class Input implements InputInterface
      * @param array $lOpts
      * @param bool $replace
      */
-    public function setLOpts(array $lOpts, $replace = false)
+    public function setLOpts(array $lOpts, bool $replace = false)
     {
-        $this->lOpts = $replace ? $lOpts : array_merge($this->lOpts, $lOpts);
+        $this->lOpts = $replace ? $lOpts : \array_merge($this->lOpts, $lOpts);
     }
 
     /**
@@ -573,7 +586,7 @@ class Input implements InputInterface
     }
 
     /**
-     * clear l-opts
+     * clear lang opts
      */
     public function clearLOpts()
     {
@@ -625,10 +638,10 @@ class Input implements InputInterface
     }
 
     /**
-     * @param null|string $default
+     * @param string $default
      * @return string
      */
-    public function getCommand($default = ''): string
+    public function getCommand(string $default = ''): string
     {
         return $this->command ?: $default;
     }
@@ -655,7 +668,7 @@ class Input implements InputInterface
     public function getPwd(): string
     {
         if (!$this->pwd) {
-            $this->pwd = getcwd();
+            $this->pwd = \getcwd();
         }
 
         return $this->pwd;

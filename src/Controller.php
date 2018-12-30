@@ -22,7 +22,7 @@ use Inhere\Console\Utils\Annotation;
  */
 abstract class Controller extends AbstractCommand implements ControllerInterface
 {
-    /** @var array */
+    /** @var array command aliases */
     private static $commandAliases;
 
     /** @var array */
@@ -297,7 +297,7 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
         $this->output->mList([
             'Usage:' => $usage,
             //'Group Name:' => "<info>$sName</info>",
-            'Global Options:' => FormatUtil::alignmentOptions(array_merge(Application::getInternalOptions(), static::$globalOptions)),
+            'Global Options:' => FormatUtil::alignOptions(array_merge(Application::getInternalOptions(), static::$globalOptions)),
             'Available Commands:' => $commands,
         ], [
             'sepChar' => '  ',

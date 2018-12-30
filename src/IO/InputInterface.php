@@ -30,7 +30,7 @@ interface InputInterface
      * @param  bool $nl true 会添加换行符 false 原样输出，不添加换行符
      * @return string
      */
-    public function read($question = null, $nl = false): string;
+    public function read(string $question = '', bool $nl = false): string;
 
     /**
      * @return string
@@ -41,7 +41,7 @@ interface InputInterface
      * @param string $default
      * @return string
      */
-    public function getCommand($default = ''): string;
+    public function getCommand(string $default = ''): string;
 
     /**
      * @return array

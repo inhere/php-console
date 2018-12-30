@@ -16,13 +16,13 @@ use Inhere\Console\Base\CommandInterface;
  * @package Inhere\Console
  *
  * ```php
- * In sub class:
- *
- * protected function execute($input, $output)
- * {
- *      // some logic ...
- * }
- *
+ *  class MyCommand extends Command
+ *  {
+ *      protected function execute($input, $output)
+ *      {
+ *          // some logic ...
+ *      }
+ *  }
  * ```
  */
 abstract class Command extends AbstractCommand implements CommandInterface

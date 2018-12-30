@@ -23,7 +23,7 @@ class Application extends AbstractApplication
 
     /**
      * Register a app group command(by controller)
-     * @param string $name The controller name
+     * @param string            $name The controller name
      * @param string|Controller $class The controller class
      * @param null|array|string $option
      * @return static
@@ -34,7 +34,7 @@ class Application extends AbstractApplication
         /** @var Controller $class */
         if (!$class && \class_exists($name)) {
             $class = $name;
-            $name = $class::getName();
+            $name  = $class::getName();
         }
 
         if (!$name || !$class) {
@@ -101,9 +101,9 @@ class Application extends AbstractApplication
 
     /**
      * Register a app independent console command
-     * @param string|Command $name
+     * @param string|Command          $name
      * @param string|\Closure|Command $handler
-     * @param null|array|string $option
+     * @param null|array|string       $option
      * @return $this|mixed
      * @throws \InvalidArgumentException
      */
@@ -112,26 +112,26 @@ class Application extends AbstractApplication
         if (!$handler && \class_exists($name)) {
             /** @var Command $name */
             $handler = $name;
-            $name = $name::getName();
+            $name    = $name::getName();
         }
 
         if (!$name || !$handler) {
-            throw new \InvalidArgumentException("Command 'name' and 'handler' not allowed to is empty! name: $name");
+            Helper::throwInvalidArgument("Command 'name' and 'handler' not allowed to is empty! name: $name");
         }
 
         $this->validateName($name);
 
         if (isset($this->commands[$name])) {
-            throw new \InvalidArgumentException("Command '$name' have been registered!");
+            Helper::throwInvalidArgument("Command '$name' have been registered!");
         }
 
         if (\is_string($handler)) {
             if (!\class_exists($handler)) {
-                throw new \InvalidArgumentException("The console command class [$handler] not exists!");
+                Helper::throwInvalidArgument("The console command class [$handler] not exists!");
             }
 
             if (!is_subclass_of($handler, Command::class)) {
-                throw new \InvalidArgumentException('The console command class must is subclass of the: ' . Command::class);
+                Helper::throwInvalidArgument('The console command class must is subclass of the: ' . Command::class);
             }
 
             // not enable
@@ -142,28 +142,26 @@ class Application extends AbstractApplication
 
             // allow define aliases in Command class by Command::aliases()
             if ($aliases = $handler::aliases()) {
-                $option['aliases'] = isset($option['aliases']) ? array_merge($option['aliases'], $aliases) : $aliases;
+                $option['aliases'] = isset($option['aliases']) ? \array_merge($option['aliases'], $aliases) : $aliases;
             }
         } elseif (!\is_object($handler) || !\method_exists($handler, '__invoke')) {
-            throw new \InvalidArgumentException(sprintf(
+            Helper::throwInvalidArgument(
                 'The console command handler must is an subclass of %s OR a Closure OR a object have method __invoke()',
                 Command::class
-            ));
+            );
         }
 
         // is an class name string
         $this->commands[$name] = $handler;
 
-        if (!$option) {
-            return $this;
-        }
-
         // have option information
-        if (\is_string($option)) {
-            $this->setCommandMetaValue($name, 'description', $option);
-        } elseif (\is_array($option)) {
-            $this->addCommandAliases($name, $option['aliases'] ?? null);
-            $this->setCommandMeta($name, $option);
+        if ($option) {
+            if (\is_string($option)) {
+                $this->setCommandMetaValue($name, 'description', $option);
+            } elseif (\is_array($option)) {
+                $this->addCommandAliases($name, $option['aliases'] ?? null);
+                $this->setCommandMeta($name, $option);
+            }
         }
 
         return $this;
@@ -179,12 +177,9 @@ class Application extends AbstractApplication
     }
 
     /**
-     * addCommand
-     * @param string $name
-     * @param mixed $handler
-     * @param null|string|array $option
-     * @return $this
-     * @throws \InvalidArgumentException
+     * add command
+     * @inheritdoc
+     * @see command()
      */
     public function addCommand(string $name, $handler = null, $option = null): self
     {
@@ -192,12 +187,9 @@ class Application extends AbstractApplication
     }
 
     /**
-     * addGroup
-     * @param string $name
-     * @param string|null $controller
-     * @param null|string|array $option
-     * @return static
-     * @throws \InvalidArgumentException
+     * add group/controller
+     * @inheritdoc
+     * @see controller()
      */
     public function addGroup(string $name, $controller = null, $option = null)
     {
@@ -213,7 +205,7 @@ class Application extends AbstractApplication
      */
     public function registerCommands(string $namespace, string $basePath): self
     {
-        $length = \strlen($basePath) + 1;
+        $length   = \strlen($basePath) + 1;
         $iterator = Helper::directoryIterator($basePath, $this->getFileFilter());
 
         foreach ($iterator as $file) {
@@ -233,7 +225,7 @@ class Application extends AbstractApplication
      */
     public function registerGroups(string $namespace, string $basePath): self
     {
-        $length = \strlen($basePath) + 1;
+        $length   = \strlen($basePath) + 1;
         $iterator = Helper::directoryIterator($basePath, $this->getFileFilter());
 
         foreach ($iterator as $file) {
@@ -287,7 +279,7 @@ class Application extends AbstractApplication
             return $this->runCommand($realName, true);
         }
 
-        // maybe is a controller name
+        // maybe is a controller/group name
         $action = '';
 
         // like 'home:index'
@@ -321,7 +313,7 @@ class Application extends AbstractApplication
     /**
      * run a command
      * @param string $name Command name
-     * @param bool $believable The `$name` is believable
+     * @param bool   $believable The `$name` is believable
      * @return mixed
      * @throws \InvalidArgumentException
      */
@@ -329,7 +321,7 @@ class Application extends AbstractApplication
     {
         // if $believable = true, will skip check.
         if (!$believable && $this->isCommand($name)) {
-            throw new \InvalidArgumentException("The console independent-command [$name] not exists!");
+            Helper::throwInvalidArgument("The console independent-command [$name] not exists!");
         }
 
         /** @var \Closure|string $handler Command class */
@@ -345,14 +337,14 @@ class Application extends AbstractApplication
             $status = $handler($this->input, $this->output);
         } else {
             if (!\class_exists($handler)) {
-                throw new \InvalidArgumentException("The console command class [$handler] not exists!");
+                Helper::throwInvalidArgument("The console command class [$handler] not exists!");
             }
 
             /** @var Command $object */
             $object = new $handler($this->input, $this->output);
 
             if (!($object instanceof Command)) {
-                throw new \InvalidArgumentException("The console command class [$handler] must instanceof the " . Command::class);
+                Helper::throwInvalidArgument("The console command class [$handler] must instanceof the " . Command::class);
             }
 
             $object::setName($name);
@@ -366,8 +358,8 @@ class Application extends AbstractApplication
     /**
      * @param string $name group name
      * @param string $action Command method, no suffix
-     * @param bool $believable The `$name` is believable
-     * @param bool $standAlone
+     * @param bool   $believable The `$name` is believable
+     * @param bool   $standAlone
      * @return mixed
      * @throws \InvalidArgumentException
      * @throws \ReflectionException
@@ -394,7 +386,8 @@ class Application extends AbstractApplication
         }
 
         if (!($object instanceof Controller)) {
-            Helper::throwInvalidArgument('The console controller class [%s] must instanceof the %s', $object, Controller::class);
+            Helper::throwInvalidArgument('The console controller class [%s] must instanceof the %s', $object,
+                Controller::class);
         }
 
         $object::setName($name);

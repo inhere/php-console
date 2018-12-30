@@ -226,7 +226,7 @@ abstract class AbstractCommand implements BaseCommandInterface
     }
 
     /**
-     * do execute
+     * do execute command
      * @param  Input $input
      * @param  Output $output
      * @return int|mixed
@@ -253,14 +253,13 @@ abstract class AbstractCommand implements BaseCommandInterface
         // 创建了 InputDefinition , 则使用它的信息(此时不会再解析和使用命令的注释)
         $help = $definition->getSynopsis();
         $help['usage:'] = \sprintf('%s %s %s', $this->input->getScript(), $this->input->getCommand(), $help['usage:']);
-        $help['global options:'] = FormatUtil::alignmentOptions(Application::getInternalOptions());
+        $help['global options:'] = FormatUtil::alignOptions(Application::getInternalOptions());
 
         if (empty($help[0]) && $this->isAlone()) {
             $help[0] = self::getDescription();
         }
 
         $this->output->mList($help, ['sepChar' => '  ']);
-
         return true;
     }
 
@@ -300,6 +299,7 @@ abstract class AbstractCommand implements BaseCommandInterface
         }
 
         $in = $this->input;
+        $out = $this->output;
         $givenArgs = $errArgs = [];
 
         foreach ($in->getArgs() as $key => $value) {
@@ -311,19 +311,17 @@ abstract class AbstractCommand implements BaseCommandInterface
         }
 
         if (\count($errArgs) > 0) {
-            $this->output->liteError(\sprintf('Unknown arguments (error: "%s").', \implode(', ', $errArgs)));
-
+            $out->liteError(\sprintf('Unknown arguments (error: "%s").', \implode(', ', $errArgs)));
             return false;
         }
 
         $defArgs = $def->getArguments();
         $missingArgs = \array_filter(\array_keys($defArgs), function ($name, $key) use ($def, $givenArgs) {
             return !\array_key_exists($key, $givenArgs) && $def->argumentIsRequired($name);
-        }, ARRAY_FILTER_USE_BOTH);
+        }, \ARRAY_FILTER_USE_BOTH);
 
         if (\count($missingArgs) > 0) {
-            $this->output->liteError(\sprintf('Not enough arguments (missing: "%s").', \implode(', ', $missingArgs)));
-
+            $out->liteError(\sprintf('Not enough arguments (missing: "%s").', \implode(', ', $missingArgs)));
             return false;
         }
 
@@ -347,7 +345,7 @@ abstract class AbstractCommand implements BaseCommandInterface
             $names = \array_keys($unknown);
             $first = \array_shift($names);
 
-            throw new \InvalidArgumentException(sprintf(
+            throw new \InvalidArgumentException(\sprintf(
                 'Input option is not exists (unknown: "%s").',
                 (isset($first[1]) ? '--' : '-') . $first
             ));
@@ -364,8 +362,8 @@ abstract class AbstractCommand implements BaseCommandInterface
         }
 
         if (\count($missingOpts) > 0) {
-            $this->output->liteError(
-                \sprintf('Not enough options parameters (missing: "%s").', implode(', ', $missingOpts))
+            $out->liteError(
+                \sprintf('Not enough options parameters (missing: "%s").', \implode(', ', $missingOpts))
             );
 
             return false;
@@ -515,7 +513,7 @@ abstract class AbstractCommand implements BaseCommandInterface
             unset($help['Description:']);
         }
 
-        $help['Global Options:'] = FormatUtil::alignmentOptions(\array_merge(Application::getInternalOptions(),static::$commandOptions));
+        $help['Global Options:'] = FormatUtil::alignOptions(\array_merge(Application::getInternalOptions(),static::$commandOptions));
 
         $this->output->mList($help, [
             'sepChar' => '  ',

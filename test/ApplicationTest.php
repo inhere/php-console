@@ -3,6 +3,7 @@
 namespace Inhere\ConsoleTest;
 
 use Inhere\Console\Application;
+use Inhere\Console\Console;
 use Inhere\Console\IO\InputInterface;
 use PHPUnit\Framework\TestCase;
 
@@ -22,10 +23,8 @@ class ApplicationTest extends TestCase
 
     public function testApp()
     {
-        $app = new Application([
-            'name'    => 'Tests',
-            'debug'   => 1,
-            'version' => '1.0.0',
+        $app = Console::newApp([
+            'name' => 'Tests',
         ]);
 
         $this->assertArrayHasKey('name', $app->getMeta());
@@ -39,7 +38,7 @@ class ApplicationTest extends TestCase
     {
         $app = $this->newApp();
 
-        $app->addCommand('test', function (){
+        $app->addCommand('test', function () {
             return 0;
         });
 

@@ -38,17 +38,17 @@ class StrictInput extends Input
 
     /**
      * FixedInput constructor.
-     * @param null|array $argv
+     * @param null|array $args
      */
-    public function __construct($argv = null)
+    public function __construct(array $args = null)
     {
-        if (null === $argv) {
-            $argv = $_SERVER['argv'];
+        if (null === $args) {
+            $args = (array)$_SERVER['argv'];
         }
 
-        parent::__construct($argv, false);
+        parent::__construct($args, false);
 
-        $copy = $argv;
+        $copy = $args;
 
         // command name
         if (!empty($copy[1]) && $copy[1][0] !== '-' && false === \strpos($copy[1], '=')) {

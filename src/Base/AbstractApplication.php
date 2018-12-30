@@ -114,9 +114,9 @@ abstract class AbstractApplication implements ApplicationInterface
     protected function init()
     {
         $this->meta['_stats'] = [
-            'startTime' => microtime(1),
+            'startTime' => \microtime(1),
             'endTime' => 0,
-            'startMemory' => memory_get_usage(),
+            'startMemory' => \memory_get_usage(),
             'endMemory' => 0,
         ];
 
@@ -211,7 +211,7 @@ abstract class AbstractApplication implements ApplicationInterface
             $this->output->aList($this->meta['_stats'], $title);
         }
 
-        exit((int)$code);
+        exit($code);
     }
 
     /**
@@ -370,7 +370,7 @@ ERR;
      * @param bool $isGroup
      * @throws \InvalidArgumentException
      */
-    protected function validateName(string $name, $isGroup = false)
+    protected function validateName(string $name, bool $isGroup = false)
     {
         $pattern = $isGroup ? '/^[a-z][\w-]+$/' : '/^[a-z][\w-]*:?([a-z][\w-]+)?$/';
 
@@ -513,7 +513,7 @@ ERR;
         \ksort($internalCommands);
 
         // built in options
-        $internalOptions = FormatUtil::alignmentOptions(self::$internalOptions);
+        $internalOptions = FormatUtil::alignOptions(self::$internalOptions);
 
         $this->output->mList([
             'Usage:' => "$script <info>{command}</info> [--opt -v -h ...] [arg0 arg1 arg2=value2 ...]",
@@ -806,7 +806,7 @@ ERR;
      * @param null|string $name
      * @return array
      */
-    public function getCommandAliases($name = null): array
+    public function getCommandAliases(string $name = null): array
     {
         if (!$name) {
             return $this->commandAliases;

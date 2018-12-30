@@ -88,7 +88,7 @@ trait InputOutputAwareTrait
      * @see Input::getRequiredOpt()
      * @throws \InvalidArgumentException
      */
-    public function getRequiredOpt($name)
+    public function getRequiredOpt(string $name)
     {
         return $this->input->getRequiredOpt($name);
     }
@@ -97,7 +97,7 @@ trait InputOutputAwareTrait
      * @param string $msg
      * @return string
      */
-    protected function read($msg = ''): string
+    protected function read(string $msg = ''): string
     {
         return $this->input->read($msg);
     }
