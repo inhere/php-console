@@ -22,7 +22,7 @@ class DevServerCommand extends Command
 
     public static function aliases(): array
     {
-        return ['devServer', 'dev-server'];
+        return ['devServer', 'dev-server', 'dev-serve'];
     }
 
     /**
@@ -51,12 +51,12 @@ class DevServerCommand extends Command
             $server = $this->getSameOpt(['H', 'host'], '127.0.0.1');
         }
 
-        if (!strpos($server, ':')) {
+        if (!\strpos($server, ':')) {
             $port = $this->getSameOpt(['p', 'port'], 8552);
             $server .= ':' . $port;
         }
 
-        $version = PHP_VERSION;
+        $version = \PHP_VERSION;
         $workDir = $this->input->getPwd();
         $docDir = $this->getOpt('t');
         $docRoot = $docDir ? $workDir . '/' . $docDir : $workDir;

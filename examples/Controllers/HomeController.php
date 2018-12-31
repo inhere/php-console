@@ -129,7 +129,7 @@ class HomeController extends Controller
      */
     public function errorCommand()
     {
-        trigger_error('oo, this is a runtime error!', E_USER_ERROR);
+        \trigger_error('oo, this is a runtime error!', E_USER_ERROR);
     }
 
     /**

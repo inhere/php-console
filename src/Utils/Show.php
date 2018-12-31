@@ -489,7 +489,7 @@ class Show
         $option = [
             'indentDes' => '  ',
         ];
-        $config = array_merge([
+        $config = \array_merge([
             'description' => '',
             'usage' => '',
 
@@ -507,8 +507,7 @@ class Show
 
         // some option for show.
         if (isset($config['_opts'])) {
-            $option = array_merge($option, $config['_opts']);
-
+            $option = \array_merge($option, $config['_opts']);
             unset($config['_opts']);
         }
 
@@ -528,7 +527,7 @@ class Show
             if (\is_array($value)) {
                 // is natural key ['text1', 'text2'](like usage,examples)
                 if (isset($value[0])) {
-                    $value = implode(PHP_EOL . '  ', $value);
+                    $value = \implode(\PHP_EOL . '  ', $value);
 
                     // is key-value [ 'key1' => 'text1', 'key2' => 'text2']
                 } else {
@@ -541,14 +540,14 @@ class Show
             }
 
             if (\is_string($value)) {
-                $value = trim($value);
-                $section = ucfirst($section);
+                $value = \trim($value);
+                $section = \ucfirst($section);
                 $parts[] = "<comment>$section</comment>:\n  {$value}\n";
             }
         }
 
         if ($parts) {
-            self::write(implode("\n", $parts), false);
+            self::write(\implode("\n", $parts), false);
         }
 
         if ($showAfterQuit) {
@@ -567,11 +566,10 @@ class Show
     {
         if (!$data) {
             self::write('<info>No data to display!</info>');
-
-            return -404;
+            return -2;
         }
 
-        $opts = array_merge([
+        $opts = \array_merge([
             'borderChar' => '*',
             'ucFirst' => true,
         ], $opts);
@@ -586,8 +584,8 @@ class Show
 
         foreach ($data as $label => $value) {
             // label exists
-            if (!is_numeric($label)) {
-                $width = mb_strlen($label, 'UTF-8');
+            if (!\is_numeric($label)) {
+                $width = \mb_strlen($label, 'UTF-8');
                 $labelMaxWidth = $width > $labelMaxWidth ? $width : $labelMaxWidth;
             }
 
@@ -603,22 +601,22 @@ class Show
                         $val = (string)$val;
                     }
 
-                    $temp .= (!is_numeric($key) ? "$key: " : '') . "<info>$val</info>, ";
+                    $temp .= (!\is_numeric($key) ? "$key: " : '') . "<info>$val</info>, ";
                 }
 
-                $value = rtrim($temp, ' ,');
+                $value = \rtrim($temp, ' ,');
             } else {
                 if (\is_bool($value)) {
                     $value = $value ? 'True' : 'False';
                 } else {
-                    $value = trim((string)$value);
+                    $value = \trim((string)$value);
                 }
             }
 
             // get value width
             /** @var string $value */
-            $value = trim($value);
-            $width = mb_strlen(strip_tags($value), 'UTF-8'); // must clear style tag
+            $value = \trim($value);
+            $width = \mb_strlen(\strip_tags($value), 'UTF-8'); // must clear style tag
             $valueMaxWidth = $width > $valueMaxWidth ? $width : $valueMaxWidth;
 
             $panelData[$label] = $value;
@@ -630,16 +628,16 @@ class Show
 
         // output title
         if ($title) {
-            $title = ucwords($title);
-            $titleLength = mb_strlen($title, 'UTF-8');
+            $title = \ucwords($title);
+            $titleLength = \mb_strlen($title, 'UTF-8');
             $panelWidth = $panelWidth > $titleLength ? $panelWidth : $titleLength;
-            $indentSpace = str_pad(' ', ceil($panelWidth / 2) - ceil($titleLength / 2) + 2 * 2, ' ');
+            $indentSpace = \str_pad(' ', ceil($panelWidth / 2) - ceil($titleLength / 2) + 2 * 2, ' ');
             self::write("  {$indentSpace}<bold>{$title}</bold>");
         }
 
         // output panel top border
         if ($borderChar) {
-            $border = str_pad($borderChar, $panelWidth + (3 * 3), $borderChar);
+            $border = \str_pad($borderChar, $panelWidth + (3 * 3), $borderChar);
             self::write('  ' . $border);
         }
 
@@ -661,7 +659,6 @@ class Show
 
         self::flushBuffer();
         unset($panelData);
-
         return 0;
     }
 
@@ -679,7 +676,7 @@ class Show
 
         if ($started) {
             $started = 0;
-            $opts = array_merge([
+            $opts = \array_merge([
                 // 'char' => Cli::isSupportColor() ? '─' : '-', // ——
                 'char' => '-',
                 'prefix' => Cli::isSupportColor() ? '├' : '|',
@@ -693,9 +690,9 @@ class Show
         }
 
         foreach ($data as $key => $value) {
-            if (is_scalar($value)) {
+            if (\is_scalar($value)) {
                 $counter++;
-                $leftString = $opts['leftPadding'] . str_pad($opts['prefix'], $opts['_level'] + 1, $opts['char']);
+                $leftString = $opts['leftPadding'] . \str_pad($opts['prefix'], $opts['_level'] + 1, $opts['char']);
 
                 self::write($leftString . ' ' . FormatUtil::typeToString($value));
             } elseif (\is_array($value)) {
@@ -731,6 +728,7 @@ class Show
      *  ... ...
      * ];
      * Show::table($data, 'a table');
+     *
      * // use custom head
      * $data = [
      *  [ value1, value2, value3, ... ], // first row
@@ -752,7 +750,7 @@ class Show
         }
 
         $buf = new StrBuffer();
-        $opts = array_merge([
+        $opts = \array_merge([
             'showBorder' => true,
             'leftIndent' => '  ',
             'titlePos' => self::POS_LEFT,
@@ -785,7 +783,7 @@ class Show
         foreach ($data as $row) {
             // collection all field name
             if ($rowIndex === 0) {
-                $head = $tableHead ?: array_keys($row);
+                $head = $tableHead ?: \array_keys($row);
                 $info['columnCount'] = \count($row);
 
                 foreach ($head as $index => $name) {
@@ -793,7 +791,7 @@ class Show
                         $hasHead = true;
                     }
 
-                    $info['columnMaxWidth'][$index] = mb_strlen($name, 'UTF-8');
+                    $info['columnMaxWidth'][$index] = \mb_strlen($name, 'UTF-8');
                 }
             }
 
@@ -802,14 +800,14 @@ class Show
             foreach ((array)$row as $value) {
                 // collection column max width
                 if (isset($info['columnMaxWidth'][$colIndex])) {
-                    $colWidth = mb_strlen($value, 'UTF-8');
+                    $colWidth = \mb_strlen($value, 'UTF-8');
 
                     // If current column width gt old column width. override old width.
                     if ($colWidth > $info['columnMaxWidth'][$colIndex]) {
                         $info['columnMaxWidth'][$colIndex] = $colWidth;
                     }
                 } else {
-                    $info['columnMaxWidth'][$colIndex] = mb_strlen($value, 'UTF-8');
+                    $info['columnMaxWidth'][$colIndex] = \mb_strlen($value, 'UTF-8');
                 }
 
                 $colIndex++;
@@ -818,19 +816,19 @@ class Show
             $rowIndex++;
         }
 
-        $tableWidth = $info['tableWidth'] = array_sum($info['columnMaxWidth']);
+        $tableWidth = $info['tableWidth'] = \array_sum($info['columnMaxWidth']);
         $columnCount = $info['columnCount'];
 
         // output title
         if ($title) {
             $tStyle = $opts['titleStyle'] ?: 'bold';
-            $title = ucwords(trim($title));
-            $titleLength = mb_strlen($title, 'UTF-8');
-            $indentSpace = str_pad(' ', ceil($tableWidth / 2) - ceil($titleLength / 2) + ($columnCount * 2), ' ');
+            $title = \ucwords(trim($title));
+            $titleLength = \mb_strlen($title, 'UTF-8');
+            $indentSpace = \str_pad(' ', \ceil($tableWidth / 2) - \ceil($titleLength / 2) + ($columnCount * 2), ' ');
             $buf->write("  {$indentSpace}<$tStyle>{$title}</$tStyle>\n");
         }
 
-        $border = $leftIndent . str_pad($rowBorderChar, $tableWidth + ($columnCount * 3) + 2, $rowBorderChar);
+        $border = $leftIndent . \str_pad($rowBorderChar, $tableWidth + ($columnCount * 3) + 2, $rowBorderChar);
 
         // output table top border
         if ($showBorder) {
@@ -845,7 +843,7 @@ class Show
 
             foreach ($head as $index => $name) {
                 $colMaxWidth = $info['columnMaxWidth'][$index];
-                $name = str_pad($name, $colMaxWidth, ' ');
+                $name = \str_pad($name, $colMaxWidth, ' ');
                 $name = Helper::wrapTag($name, $opts['headStyle']);
                 $headStr .= " {$name} {$colBorderChar}";
             }
@@ -854,7 +852,7 @@ class Show
 
             // head border: split head and body
             if ($headBorderChar = $opts['headBorderChar']) {
-                $headBorder = $leftIndent . str_pad($headBorderChar, $tableWidth + ($columnCount * 3) + 2,
+                $headBorder = $leftIndent . \str_pad($headBorderChar, $tableWidth + ($columnCount * 3) + 2,
                         $headBorderChar);
                 $buf->write($headBorder . "\n");
             }
@@ -869,7 +867,7 @@ class Show
 
             foreach ((array)$row as $value) {
                 $colMaxWidth = $info['columnMaxWidth'][$colIndex];
-                $value = str_pad($value, $colMaxWidth, ' ');
+                $value = \str_pad($value, $colMaxWidth, ' ');
                 $value = Helper::wrapTag($value, $opts['bodyStyle']);
                 $rowStr .= " {$value} {$colBorderChar}";
                 $colIndex++;
@@ -886,7 +884,6 @@ class Show
         }
 
         self::write($buf);
-
         return 0;
     }
 
@@ -917,11 +914,10 @@ class Show
 
         if ($ended) {
             printf($tpl, $msg);
-
             return;
         }
 
-        $now = microtime(true);
+        $now = \microtime(true);
 
         if (null === $lastTime || ($lastTime < $now - 0.1)) {
             $lastTime = $now;
@@ -968,11 +964,10 @@ class Show
 
         if ($ended) {
             printf($tpl, $msg);
-
             return;
         }
 
-        $now = microtime(true);
+        $now = \microtime(true);
 
         if (null === $lastTime || ($lastTime < $now - 0.8)) {
             $lastTime = $now;

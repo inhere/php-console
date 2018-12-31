@@ -1,0 +1,32 @@
+#!/usr/env/php
+<?php
+/**
+ * only run a controller.
+ */
+
+use Inhere\Console\Examples\Controllers\HomeController;
+
+define('BASE_PATH', dirname(__DIR__));
+
+require dirname(__DIR__) . '/test/boot.php';
+
+try {
+    $input = new \Inhere\Console\IO\Input();
+    $app   = new \Inhere\Console\Application([
+        'debug'    => true,
+        'rootPath' => BASE_PATH,
+    ], $input);
+
+    $app->controller('home', HomeController::class);
+    $code = $app->runAction('home', $input->getCommand(), false, true);
+
+    exit((int)$code);
+} catch (\Exception $e) {
+    $message = \Toolkit\Cli\Color::apply('error', $e->getMessage());
+
+    echo sprintf("%s\nFile %s:%d\nTrace:\n%s\n",
+        $message, $e->getFile(), $e->getLine(), $e->getTraceAsString()
+    );
+}
+
+// can also: see './alone' file

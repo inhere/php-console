@@ -44,8 +44,8 @@ trait RuntimeProfileTrait
     {
         $data = [
             '_profile_stats' => [
-                'startTime' => microtime(true),
-                'startMem' => memory_get_usage(),
+                'startTime' => \microtime(true),
+                'startMem' => \memory_get_usage(),
             ],
             '_profile_start' => $context,
             '_profile_end' => null,
@@ -68,13 +68,13 @@ trait RuntimeProfileTrait
      * @param array $context
      * @return bool|array
      */
-    public static function profileEnd($msg = null, array $context = [])
+    public static function profileEnd(string $msg = null, array $context = [])
     {
-        if (!$latestKey = array_pop(self::$keyQueue)) {
+        if (!$latestKey = \array_pop(self::$keyQueue)) {
             return false;
         }
 
-        list($category, $name) = explode('|', $latestKey);
+        list($category, $name) = \explode('|', $latestKey);
 
         if (isset(self::$profiles[$category][$name])) {
             $data = self::$profiles[$category][$name];
@@ -100,7 +100,7 @@ trait RuntimeProfileTrait
      * @param string $category
      * @return array
      */
-    public static function getProfileData($name = null, $category = 'application'): array
+    public static function getProfileData(string $name = null, string $category = 'application'): array
     {
         if ($name) {
             return self::$profiles[$category][$name] ?? [];
@@ -111,5 +111,11 @@ trait RuntimeProfileTrait
         }
 
         return self::$profiles;
+    }
+
+    public function clearProfileData()
+    {
+        self::$profiles = [];
+        self::$keyQueue = [];
     }
 }

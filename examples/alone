@@ -11,7 +11,7 @@ define('BASE_PATH', dirname(__DIR__));
 require dirname(__DIR__) . '/test/boot.php';
 
 $input = new \Inhere\Console\IO\Input();
-$ctrl = new HomeController($input, new \Inhere\Console\IO\Output());
+$ctrl  = new HomeController($input, new \Inhere\Console\IO\Output());
 $ctrl->setExecutionAlone();
 
 try {
@@ -24,15 +24,4 @@ try {
     );
 }
 
-// can also:
-
-// $app = new \Inhere\Console\Application([
-//     'debug' => true,
-//     'rootPath' => BASE_PATH,
-// ]);
-//
-// $app->controller('home', HomeController::class);
-//
-// exit(
-//     (int)$app->runAction('home', $app->getInput()->getCommand(), false, true)
-// );
+// can also: see './alone-app' file

@@ -10,7 +10,6 @@ namespace Inhere\Console\IO;
 
 use Inhere\Console\Components\Style\Style;
 use Inhere\Console\Traits\FormatOutputAwareTrait;
-use Inhere\Console\Utils\Helper;
 use Inhere\Console\Utils\Show;
 use Toolkit\Cli\Cli;
 
@@ -79,7 +78,7 @@ class Output implements OutputInterface
      * {@inheritdoc}
      * @see Show::stopBuffer()
      */
-    public function stopBuffer($flush = true, $nl = false, $quit = false, array $opts = [])
+    public function stopBuffer(bool $flush = true, $nl = false, $quit = false, array $opts = [])
     {
         Show::stopBuffer($flush, $nl, $quit, $opts);
     }
@@ -88,7 +87,7 @@ class Output implements OutputInterface
      * stop buffering and flush buffer text
      * {@inheritdoc}
      */
-    public function flush($nl = false, $quit = false, array $opts = [])
+    public function flush(bool $nl = false, $quit = false, array $opts = [])
     {
         $this->stopBuffer(true, $nl, $quit, $opts);
     }

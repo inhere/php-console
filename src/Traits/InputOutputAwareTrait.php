@@ -19,14 +19,10 @@ use Inhere\Console\IO\OutputInterface;
  */
 trait InputOutputAwareTrait
 {
-    /**
-     * @var Input|InputInterface
-     */
+    /** @var Input|InputInterface */
     protected $input;
 
-    /**
-     * @var Output|OutputInterface
-     */
+    /** @var Output|OutputInterface */
     protected $output;
 
     /**
@@ -38,12 +34,29 @@ trait InputOutputAwareTrait
     }
 
     /**
+     * @return string
+     */
+    public function getCommandName(): string
+    {
+        return $this->input->getCommand();
+    }
+
+    /**
      * @see Input::getArg()
      * {@inheritdoc}
      */
     public function getArg($name, $default = null)
     {
         return $this->input->getArg($name, $default);
+    }
+
+    /**
+     * @see Input::getFirstArg()
+     * {@inheritdoc}
+     */
+    public function getFirstArg(string $default = ''): string
+    {
+        return $this->input->getFirstArg($default);
     }
 
     /**
@@ -94,12 +107,13 @@ trait InputOutputAwareTrait
     }
 
     /**
-     * @param string $msg
+     * @param string $question
+     * @param bool   $nl
      * @return string
      */
-    protected function read(string $msg = ''): string
+    public function read(string $question = '', bool $nl = false): string
     {
-        return $this->input->read($msg);
+        return $this->input->read($question, $nl);
     }
 
     /**
@@ -108,7 +122,7 @@ trait InputOutputAwareTrait
      * @param bool|int $quit
      * @return int
      */
-    protected function write($message, $nl = true, $quit = false): int
+    public function write($message, $nl = true, $quit = false): int
     {
         return $this->output->write($message, $nl, $quit);
     }
@@ -118,7 +132,7 @@ trait InputOutputAwareTrait
      * @param bool|int $quit
      * @return int
      */
-    protected function writeln($message, $quit = false): int
+    public function writeln($message, $quit = false): int
     {
         return $this->output->write($message, true, $quit);
     }
@@ -140,7 +154,7 @@ trait InputOutputAwareTrait
     }
 
     /**
-     * @return OutputInterface
+     * @return Output|OutputInterface
      */
     public function getOutput(): OutputInterface
     {

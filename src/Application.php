@@ -198,6 +198,11 @@ class Application extends AbstractApplication
 
     /**
      * auto register commands from a dir.
+     *
+     * ```php
+     * $app->registerCommands('SwagPhp\Command', dirname(__DIR__) . '/src/Command');
+     * ```
+     *
      * @param string $namespace
      * @param string $basePath
      * @return $this

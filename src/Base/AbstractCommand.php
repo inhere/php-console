@@ -18,6 +18,7 @@ use Inhere\Console\Utils\Annotation;
 use Inhere\Console\Utils\FormatUtil;
 use Inhere\Console\Utils\Helper;
 use Swoole\Coroutine;
+use Swoole\Event;
 
 /**
  * Class AbstractCommand
@@ -195,25 +196,39 @@ abstract class AbstractCommand implements BaseCommandInterface
 
         // if enable coroutine
         if (self::isCoroutine() && Helper::isSupportCoroutine()) {
-            $ok = Coroutine::create(function () {
-                $this->execute($this->input, $this->output);
-                $this->afterExecute();
-                // $this->getApp()->stop($status);
-            });
-
-            // if open debug, output a tips
-            if (!$ok && $this->input->boolOpt('debug')) {
-                $this->output->warning('The coroutine create failed!');
-            }
+            $ok = $this->coroutineRun();
         }
 
         // when not enable coroutine OR coroutine create fail.
         if (!$ok){
             $status = (int)$this->execute($this->input, $this->output);
-            $this->afterExecute();
         }
 
+        $this->afterExecute();
         return $status;
+    }
+
+    /**
+     * coroutine run by swoole go()
+     * @return bool
+     */
+    public function coroutineRun()
+    {
+        $ok = Coroutine::create(function () {
+            $this->execute($this->input, $this->output);
+            // $this->getApp()->stop($status);
+        });
+
+        // fail: if open debug, output a tips
+        if ((int)$ok === 0) {
+            if ($this->isDebug()) {
+                $this->output->warning('The coroutine create failed!');
+            }
+        } elseif ($ok > 0) { // success: wait coroutine exec.
+            Event::wait();
+        }
+
+        return $ok > 0;
     }
 
     /**
@@ -252,7 +267,7 @@ abstract class AbstractCommand implements BaseCommandInterface
 
         // 创建了 InputDefinition , 则使用它的信息(此时不会再解析和使用命令的注释)
         $help = $definition->getSynopsis();
-        $help['usage:'] = \sprintf('%s %s %s', $this->input->getScript(), $this->input->getCommand(), $help['usage:']);
+        $help['usage:'] = \sprintf('%s %s %s', $this->getScriptName(), $this->getCommandName(), $help['usage:']);
         $help['global options:'] = FormatUtil::alignOptions(Application::getInternalOptions());
 
         if (empty($help[0]) && $this->isAlone()) {
@@ -440,6 +455,14 @@ abstract class AbstractCommand implements BaseCommandInterface
     public function isAlone(): bool
     {
         return $this instanceof CommandInterface;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isDebug(): bool
+    {
+        return $this->input->boolOpt('debug');
     }
 
     /**

@@ -279,6 +279,19 @@ class Helper
     }
 
     /**
+     * @param mixed $data
+     * @param int   $flags
+     * @return false|string
+     */
+    public static function prettyJSON(
+        $data,
+        int $flags = \JSON_PRETTY_PRINT|\JSON_UNESCAPED_UNICODE|\JSON_UNESCAPED_SLASHES
+    )
+    {
+        return \json_encode($data, $flags);
+    }
+
+    /**
      * @param string $format
      * @param mixed  ...$args
      */

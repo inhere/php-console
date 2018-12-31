@@ -254,7 +254,7 @@ $app->registerGroups('App\\Console\\Controllers', dirname(__DIR__) . '/Controlle
 
 ## 错误/异常捕获
 
-<img src="docs/screenshots/error-catch.jpg" alt="error-catch" style="width: 500px">
+![error-handle-display](docs/screenshots/error-handle-display.png)
 
 ## 输入
 

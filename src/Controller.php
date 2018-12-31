@@ -105,12 +105,12 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
     /**
      * load command configure
      */
-    final protected function configure()
+    protected function configure()
     {
         if ($action = $this->action) {
             $method = $action . 'Configure';
 
-            if (method_exists($this, $method)) {
+            if (\method_exists($this, $method)) {
                 $this->$method();
             }
         }
@@ -125,7 +125,7 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
      */
     protected function execute($input, $output)
     {
-        $action = FormatUtil::camelCase(trim($this->action ?: $this->defaultAction, $this->delimiter));
+        $action = FormatUtil::camelCase(\trim($this->action ?: $this->defaultAction, $this->delimiter));
 
         if ($this->isDisabled($action)) {
             $output->liteError(sprintf(
@@ -136,12 +136,12 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
             return -1;
         }
 
-        $method = $this->actionSuffix ? $action . ucfirst($this->actionSuffix) : $action;
+        $method = $this->actionSuffix ? $action . \ucfirst($this->actionSuffix) : $action;
 
         // the action method exists and only allow access public method.
         if (\method_exists($this, $method) && (($rfm = new \ReflectionMethod($this, $method)) && $rfm->isPublic())) {
             // before
-            if (\method_exists($this, $before = 'before' . ucfirst($action))) {
+            if (\method_exists($this, $before = 'before' . \ucfirst($action))) {
                 $this->$before($input, $output);
             }
 
@@ -149,7 +149,7 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
             $status = $this->$method($input, $output);
 
             // after
-            if (\method_exists($this, $after = 'after' . ucfirst($action))) {
+            if (\method_exists($this, $after = 'after' . \ucfirst($action))) {
                 $this->$after($input, $output);
             }
 
@@ -157,7 +157,7 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
         }
 
         // if you defined the method '$this->notFoundCallback' , will call it
-        if (($notFoundCallback = $this->notFoundCallback) && method_exists($this, $notFoundCallback)) {
+        if (($notFoundCallback = $this->notFoundCallback) && \method_exists($this, $notFoundCallback)) {
             $status = $this->{$notFoundCallback}($action);
         } else {
             $group = static::getName();
@@ -168,7 +168,7 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
             $similar = Helper::findSimilar($action, $this->getAllCommandMethods(null, true));
 
             if ($similar) {
-                $output->write(sprintf("\nMaybe what you mean is:\n    <info>%s</info>", implode(', ', $similar)));
+                $output->write(sprintf("\nMaybe what you mean is:\n    <info>%s</info>", \implode(', ', $similar)));
             } else {
                 $this->showCommandList();
             }
@@ -211,13 +211,13 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
         $action = $this->action;
 
         // show all commands of the controller
-        if (!$action && !($action = $this->input->getFirstArg())) {
+        if (!$action && !($action = $this->getFirstArg())) {
             $this->showCommandList();
             return 0;
         }
 
         $action = FormatUtil::camelCase($action);
-        $method = $this->actionSuffix ? $action . ucfirst($this->actionSuffix) : $action;
+        $method = $this->actionSuffix ? $action . \ucfirst($this->actionSuffix) : $action;
         $aliases = self::getCommandAliases($action);
 
         // show help info for a command.
@@ -230,7 +230,7 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
     }
 
     /**
-     * show command list of the controller class
+     * show sub-command list of the controller class
      * @throws \ReflectionException
      */
     final public function showCommandList()
@@ -269,7 +269,7 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
             }
 
             $aliases = self::getCommandAliases($cmd);
-            $desc .= $aliases ? Helper::wrapTag(' [alias: ' . implode(',', $aliases) . ']', 'info') : '';
+            $desc .= $aliases ? Helper::wrapTag(' [alias: ' . \implode(',', $aliases) . ']', 'info') : '';
             $commands[$cmd] = $desc;
         }
 
@@ -297,7 +297,7 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
         $this->output->mList([
             'Usage:' => $usage,
             //'Group Name:' => "<info>$sName</info>",
-            'Global Options:' => FormatUtil::alignOptions(array_merge(Application::getInternalOptions(), static::$globalOptions)),
+            'Global Options:' => FormatUtil::alignOptions(\array_merge(Application::getInternalOptions(), static::$globalOptions)),
             'Available Commands:' => $commands,
         ], [
             'sepChar' => '  ',
@@ -326,9 +326,9 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
         foreach ($ref->getMethods() as $m) {
             $mName = $m->getName();
 
-            if ($m->isPublic() && substr($mName, -$suffixLen) === $suffix) {
+            if ($m->isPublic() && \substr($mName, -$suffixLen) === $suffix) {
                 // suffix is empty ?
-                $cmd = $suffix ? substr($mName, 0, -$suffixLen) : $mName;
+                $cmd = $suffix ? \substr($mName, 0, -$suffixLen) : $mName;
 
                 if ($onlyName) {
                     yield $cmd;
@@ -386,7 +386,7 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
         }
 
         if ($name) {
-            return self::$commandAliases ? array_keys(self::$commandAliases, $name, true) : [];
+            return self::$commandAliases ? \array_keys(self::$commandAliases, $name, true) : [];
         }
 
         return self::$commandAliases;

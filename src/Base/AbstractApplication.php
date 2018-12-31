@@ -8,6 +8,8 @@
 
 namespace Inhere\Console\Base;
 
+use Inhere\Console\BuiltIn\ErrorHandler;
+use Inhere\Console\Face\ErrorHandlerInterface;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\InputInterface;
 use Inhere\Console\IO\Output;
@@ -89,6 +91,9 @@ abstract class AbstractApplication implements ApplicationInterface
     /** @var array The group commands */
     protected $controllers = [];
 
+    /** @var ErrorHandlerInterface */
+    private $errorHandler;
+
     /**
      * App constructor.
      * @param array $meta
@@ -139,6 +144,10 @@ abstract class AbstractApplication implements ApplicationInterface
 
     protected function prepareRun()
     {
+        if (!$this->errorHandler) {
+            $this->errorHandler = new ErrorHandler();
+        }
+
         // date_default_timezone_set($this->config('timeZone', 'UTC'));
         //new AutoCompletion(array_merge($this->getCommandNames(), $this->getControllerNames()));
     }
@@ -172,7 +181,7 @@ abstract class AbstractApplication implements ApplicationInterface
             $this->handleException($e);
         }
 
-        $this->meta['_stats']['endTime'] = microtime(1);
+        $this->meta['_stats']['endTime'] = \microtime(1);
 
         // call 'onAfterRun' service, if it is registered.
         $this->fire(self::ON_AFTER_RUN, $this);
@@ -255,7 +264,6 @@ abstract class AbstractApplication implements ApplicationInterface
     {
         \set_error_handler([$this, 'handleError']);
         \set_exception_handler([$this, 'handleException']);
-
         \register_shutdown_function(function () {
             if ($e = \error_get_last()) {
                 $this->handleError($e['type'], $e['message'], $e['file'], $e['line']);
@@ -278,57 +286,15 @@ abstract class AbstractApplication implements ApplicationInterface
     }
 
     /**
-     * 运行异常处理
+     * Running exception handling
      * @param \Throwable $e
      * @throws \InvalidArgumentException
      */
     public function handleException($e)
     {
-        $class = \get_class($e);
-        $this->logError($e);
-
-        // open debug, throw exception
-        if ($this->isDebug()) {
-            $tpl = <<<ERR
-\n<error> Error </error> <mga>%s</mga>
-
-At File <cyan>%s</cyan> line <bold>%d</bold>
-Exception $class
-<comment>Code View:</comment>\n\n%s
-<comment>Code Trace:</comment>\n\n%s\n
-ERR;
-            $line = $e->getLine();
-            $file = $e->getFile();
-            $snippet = Highlighter::create()->highlightSnippet(file_get_contents($file), $line, 3, 3);
-            $message = sprintf(
-                $tpl,
-                // $e->getCode(),
-                $e->getMessage(),
-                $file,
-                $line,
-                // __METHOD__,
-                $snippet,
-                \str_replace('):', "):\n  -", $e->getTraceAsString())
-            );
-
-            if ($this->meta['hideRootPath'] && ($rootPath = $this->meta['rootPath'])) {
-                $message = \str_replace($rootPath, '{ROOT}', $message);
-            }
-
-            $this->output->write($message, false);
-        } else {
-            // simple output
-            $this->output->error('An error occurred! MESSAGE: ' . $e->getMessage());
-            $this->output->write("\nYou can use '--debug' to see error details.");
-        }
-    }
-
-    /**
-     * @param \Throwable $e
-     */
-    protected function logError($e)
-    {
         // you can log error on sub class ...
+
+        $this->errorHandler->handle($e, $this);
     }
 
     /**
@@ -392,7 +358,7 @@ ERR;
      * @param bool $quit
      * @param string $command
      */
-    public function showHelpInfo($quit = true, string $command = null)
+    public function showHelpInfo(bool $quit = true, string $command = '')
     {
         // display help for a special command
         if ($command) {
@@ -423,14 +389,14 @@ ERR;
      */
     public function showVersionInfo($quit = true)
     {
-        $os = PHP_OS;
-        $date = date('Y.m.d');
+        $os = \PHP_OS;
+        $date = \date('Y.m.d');
         $logo = '';
         $name = $this->getMeta('name', 'Console Application');
         $version = $this->getMeta('version', 'Unknown');
         $publishAt = $this->getMeta('publishAt', 'Unknown');
         $updateAt = $this->getMeta('updateAt', 'Unknown');
-        $phpVersion = PHP_VERSION;
+        $phpVersion = \PHP_VERSION;
 
         if ($logoTxt = $this->getLogoText()) {
             $logo = Helper::wrapTag($logoTxt, $this->getLogoStyle());
@@ -462,7 +428,7 @@ ERR;
         // all console controllers
         if ($controllers = $this->controllers) {
             \ksort($controllers);
-            $controllerArr[] = PHP_EOL . '- <bold>Group Commands</bold>';
+            $controllerArr[] = \PHP_EOL . '- <bold>Group Commands</bold>';
         }
 
         foreach ($controllers as $name => $controller) {
@@ -480,7 +446,7 @@ ERR;
 
         // all independent commands, Independent, Single, Alone
         if ($commands = $this->commands) {
-            $commandArr[] = PHP_EOL . '- <bold>Alone Commands</bold>';
+            $commandArr[] = \PHP_EOL . '- <bold>Alone Commands</bold>';
             \ksort($commands);
         }
 
@@ -535,7 +501,7 @@ ERR;
      * @param string $default
      * @return string|null
      */
-    public function getCommandMessage($name, $default = null)
+    public function getCommandMessage(string $name, $default = null)
     {
         return $this->commandMessages[$name] ?? $default;
     }
@@ -872,5 +838,21 @@ ERR;
     public function getCommandMetaValue(string $command, string $key, $default = null)
     {
         return $this->commandsMeta[$command][$key] ?? $default;
+    }
+
+    /**
+     * @return ErrorHandlerInterface
+     */
+    public function getErrorHandler(): ErrorHandlerInterface
+    {
+        return $this->errorHandler;
+    }
+
+    /**
+     * @param ErrorHandlerInterface $errorHandler
+     */
+    public function setErrorHandler(ErrorHandlerInterface $errorHandler): void
+    {
+        $this->errorHandler = $errorHandler;
     }
 }

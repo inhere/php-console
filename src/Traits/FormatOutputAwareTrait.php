@@ -202,15 +202,15 @@ trait FormatOutputAwareTrait
             $quit = $args[1] ?? false;
             $style = $map[$method];
 
-            if (0 === strpos($method, 'lite')) {
-                $type = substr($method, 4);
+            if (0 === \strpos($method, 'lite')) {
+                $type = \substr($method, 4);
                 return Show::liteBlock($msg, $type === 'Primary' ? 'IMPORTANT' : $type, $style, $quit);
             }
 
             return Show::block($msg, $style === 'primary' ? 'IMPORTANT' : $style, $style, $quit);
         }
 
-        if (method_exists(Show::class, $method)) {
+        if (\method_exists(Show::class, $method)) {
             return Show::$method(...$args);
         }
 
@@ -228,7 +228,7 @@ trait FormatOutputAwareTrait
         $echo = true,
         int $flags = JSON_PRETTY_PRINT|JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES
     ) {
-        $string = json_encode($data, $flags);
+        $string = \json_encode($data, $flags);
 
         if ($echo) {
             return Show::write($string);

@@ -84,7 +84,7 @@ class Interact extends Show
      * @param  bool $allowExit 有退出选项 默认 true
      * @return string
      */
-    public static function select(string $description, $options, $default = null, $allowExit = true): string
+    public static function select(string $description, $options, $default = null, bool $allowExit = true): string
     {
         return self::choice($description, $options, $default, $allowExit);
     }
@@ -97,13 +97,13 @@ class Interact extends Show
      * @param bool $allowExit
      * @return string
      */
-    public static function choice(string $description, $options, $default = null, $allowExit = true): string
+    public static function choice(string $description, $options, $default = null, bool $allowExit = true): string
     {
-        if (!$description = trim($description)) {
+        if (!$description = \trim($description)) {
             self::error('Please provide a description text!', 1);
         }
 
-        $options = \is_array($options) ? $options : explode(',', $options);
+        $options = \is_array($options) ? $options : \explode(',', $options);
 
         // If default option is error
         if (null !== $default && !isset($options[$default])) {
@@ -189,7 +189,7 @@ class Interact extends Show
 
         beginChoice:
         $r = self::read("Your choice{$defaultText} : ");
-        $r = $r !== '' ? \str_replace(' ', '', trim($r, $sep)) : '';
+        $r = $r !== '' ? \str_replace(' ', '', \trim($r, $sep)) : '';
 
         // empty
         if ($r === '') {
@@ -248,11 +248,13 @@ class Interact extends Show
     }
 
     /**
-     * usage:
+     * Usage:
+     *
      * ```php
      *  echo "are you ok?";
      *  $ok = Interact::answerIsYes();
      * ```
+     *
      * @param bool|null $default
      * @return bool
      */
