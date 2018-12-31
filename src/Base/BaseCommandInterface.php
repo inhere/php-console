@@ -17,6 +17,7 @@ use Inhere\Console\IO\InputDefinition;
 interface BaseCommandInterface
 {
     const OK = 0;
+    const ERR = 2;
 
     // name -> {name}
     const ANNOTATION_VAR = '{%s}'; // '{$%s}';

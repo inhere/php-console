@@ -9,6 +9,7 @@
 namespace Inhere\Console\Base;
 
 use Inhere\Console\Application;
+use Inhere\Console\Face\CommandInterface;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\InputDefinition;
 use Inhere\Console\IO\Output;
@@ -480,14 +481,12 @@ abstract class AbstractCommand implements BaseCommandInterface
 
         if (!$ref->hasMethod($method)) {
             $this->write("The command [<info>$name</info>] don't exist in the group: " . static::getName());
-
             return 0;
         }
 
         // is a console controller command
         if ($action && !$ref->getMethod($method)->isPublic()) {
             $this->write("The command [<info>$name</info>] don't allow access in the class.");
-
             return 0;
         }
 
@@ -536,7 +535,7 @@ abstract class AbstractCommand implements BaseCommandInterface
             unset($help['Description:']);
         }
 
-        $help['Global Options:'] = FormatUtil::alignOptions(\array_merge(Application::getInternalOptions(),static::$commandOptions));
+        $help['Global Options:'] = FormatUtil::alignOptions(\array_merge(Application::getInternalOptions(), static::$commandOptions));
 
         $this->output->mList($help, [
             'sepChar' => '  ',

@@ -42,6 +42,8 @@ $app->controller(ProcessController::class, null, [
     'aliases' => 'prc'
 ]);
 $app->controller(PharController::class);
+$app->controller(\Inhere\Console\Examples\Controllers\ShowController::class);
+$app->controller(\Inhere\Console\Examples\Controllers\InteractController::class);
 
 // add alias for a group command.
 $app->addCommandAliases('home:test', 'h-test');

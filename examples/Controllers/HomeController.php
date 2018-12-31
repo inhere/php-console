@@ -3,15 +3,10 @@
 namespace Inhere\Console\Examples\Controllers;
 
 use Toolkit\Cli\Cli;
-use Toolkit\Cli\Terminal;
 use Inhere\Console\Components\Symbol\ArtFont;
-use Toolkit\Cli\Color;
 use Toolkit\Cli\Download;
-use Toolkit\Cli\Highlighter;
 use Inhere\Console\Controller;
 use Inhere\Console\IO\Input;
-use Inhere\Console\Components\Symbol\Char;
-use Inhere\Console\Components\Symbol\Emoji;
 use Inhere\Console\Utils\Helper;
 use Inhere\Console\Utils\Interact;
 use Inhere\Console\Utils\ProgressBar;
@@ -24,6 +19,7 @@ use Inhere\Console\Utils\Show;
  */
 class HomeController extends Controller
 {
+    protected static $name = 'home';
     protected static $description = 'This is a demo command controller. there are some command usage examples(2)';
 
     /**
@@ -36,14 +32,9 @@ class HomeController extends Controller
             'i' => 'index',
             'prg' => 'progress',
             'pgb' => 'progressBar',
-            'pwd' => 'password',
             'l' => 'list',
-            'h' => 'helpPanel',
-            'hl' => 'highlight',
-            'hp' => 'helpPanel',
             'af' => 'artFont',
             'ml' => 'multiList',
-            'ms' => 'multiSelect',
             'sl' => 'splitLine',
             'dt' => 'dynamicText',
         ];
@@ -151,46 +142,6 @@ class HomeController extends Controller
     }
 
     /**
-     * a example for highlight code
-     * @options
-     *  --ln    Display with line number
-     * @param Input $in
-     */
-    public function highlightCommand($in)
-    {
-        // $file = $this->app->getRootPath() . '/examples/routes.php';
-        $file = $this->app->getRootPath() . '/src/Utils/Show.php';
-        $src = file_get_contents($file);
-
-        $code = Highlighter::create()->highlight($src, $in->getBoolOpt('ln'));
-
-        $this->output->writeRaw($code);
-    }
-
-    /**
-     * a example for use color text output by Style::class
-     * @usage {fullCommand}
-     * @return int
-     */
-    public function colorCommand(): int
-    {
-        if (!$this->output->supportColor()) {
-            $this->write('Current terminal is not support output color text.');
-
-            return 0;
-        }
-
-        $this->write('color style text output:');
-        $styles = $this->output->getStyle()->getStyleNames();
-
-        foreach ($styles as $style) {
-            $this->output->write("<$style>$style style text</$style>");
-        }
-
-        return 0;
-    }
-
-    /**
      * check color support for current env.
      */
     public function colorCheckCommand()
@@ -207,49 +158,6 @@ class HomeController extends Controller
             '256 color output?' => Cli::isSupport256Color() ? 'Y' : 'N',
             'font symbol output?' => Cli::isSupport256Color() ? 'Y' : 'N',
         ], 'color support check');
-    }
-
-    /**
-     * a example for use color text output by LiteStyle::class
-     */
-    public function colorLiteCommand(): int
-    {
-        if (!$this->output->supportColor()) {
-            $this->write('Current terminal is not support output color text.');
-
-            return -2;
-        }
-
-        $this->output->startBuffer();
-
-        foreach (Color::getStyles() as $style) {
-            $this->output->write(Color::render("color text(style:$style)", $style));
-        }
-
-        $this->output->flush();
-
-        return 0;
-    }
-
-    /**
-     * output block message text
-     * @return int
-     */
-    public function blockMsgCommand(): int
-    {
-        if (!$this->output->supportColor()) {
-            $this->write('Current terminal is not support output color text.');
-
-            return 0;
-        }
-
-        $this->write('block message:');
-
-        foreach (Show::getBlockMethods() as $type) {
-            $this->output->$type("$type style message text");
-        }
-
-        return 0;
     }
 
     /**
@@ -271,34 +179,6 @@ class HomeController extends Controller
         ArtFont::create()->show($name, ArtFont::INTERNAL_GROUP,[
             'type' => $this->input->getBoolOpt('italic') ? 'italic' : '',
             'style' => $this->input->getOpt('style'),
-        ]);
-
-        return 0;
-    }
-
-    /**
-     * display some special chars
-     * @return int
-     * @throws \ReflectionException
-     */
-    public function charCommand(): int
-    {
-        $this->output->aList(Char::getConstants(), 'some special char', [
-            'ucFirst' => false,
-        ]);
-
-        return 0;
-    }
-
-    /**
-     * display some special emoji chars
-     * @return int
-     * @throws \ReflectionException
-     */
-    public function emojiCommand(): int
-    {
-        $this->output->aList(Emoji::getConstants(), 'some emoji char', [
-            'ucFirst' => false,
         ]);
 
         return 0;
@@ -453,92 +333,6 @@ class HomeController extends Controller
     }
 
     /**
-     * output format message: title
-     */
-    public function titleCommand()
-    {
-        $this->output->title('title show');
-
-        return 0;
-    }
-
-    /**
-     * output format message: splitLine
-     * @options
-     *  -w, --width WIDTH   The split line width. default is current screen width.
-     */
-    public function splitLineCommand(): int
-    {
-        $this->output->splitLine('', '=', $this->input->getSameOpt(['w', 'width'], 0));
-        $this->output->splitLine('split Line', '-', $this->input->getSameOpt(['w', 'width'], 0));
-
-        $this->output->splitLine('split 中文 Line', '-', $this->input->getSameOpt(['w', 'width'], 0));
-
-
-        return 0;
-    }
-
-    /**
-     * output format message: section
-     */
-    public function sectionCommand(): int
-    {
-        $body = 'If screen size could not be detected, or the indentation is greater than the screen size, the text will not be wrapped.' .
-            'Word wrap text with indentation to fit the screen size,' .
-            'Word wrap text with indentation to fit the screen size,' .
-            'Word wrap text with indentation to fit the screen size,' .
-            'Word wrap text with indentation to fit the screen size,';
-
-        $this->output->section('section show', $body, [
-            'pos' => 'l'
-        ]);
-
-        return 0;
-    }
-
-    /**
-     * output format message: panel
-     */
-    public function panelCommand()
-    {
-        $data = [
-            'application version' => '1.2.0',
-            'system version' => '5.2.3',
-            'key' => 'value ...',
-            'a only value message text',
-        ];
-
-        Show::panel($data, 'panel show', [
-            'borderChar' => '*'
-        ]);
-
-        Show::panel($data, 'panel show', [
-            'borderChar' => '='
-        ]);
-    }
-
-    /**
-     * output format message: helpPanel
-     */
-    public function helpPanelCommand()
-    {
-        Show::helpPanel([
-            Show::HELP_DES => 'a help panel description text. (help panel show)',
-            Show::HELP_USAGE => 'a usage text',
-            Show::HELP_ARGUMENTS => [
-                'arg1' => 'arg1 description',
-                'arg2' => 'arg2 description',
-            ],
-            Show::HELP_OPTIONS => [
-                '--opt1' => 'a long option',
-                '-s' => 'a short option',
-                '-d' => 'Run the server on daemon.(default: <comment>false</comment>)',
-                '-h, --help' => 'Display this help message'
-            ],
-        ], false);
-    }
-
-    /**
      * output format message: list
      */
     public function listCommand()
@@ -646,34 +440,6 @@ class HomeController extends Controller
     }
 
     /**
-     * output format message: tree
-     */
-    public function treeCommand()
-    {
-        Show::tree([
-            123,
-            true,
-            false,
-            null,
-            'one-level',
-            'one-level1',
-
-            [
-                'two-level',
-                'two-level1',
-                'two-level2',
-                [
-                    'three-level',
-                    'three-level1',
-                    'three-level2',
-                ],
-            ],
-
-            'one-level99',
-        ]);
-    }
-
-    /**
      * output format message: padding
      */
     public function paddingCommand()
@@ -685,42 +451,6 @@ class HomeController extends Controller
         ];
 
         Show::padding($data, 'padding data show');
-    }
-
-    /**
-     * output format message: dump
-     */
-    public function jsonCommand()
-    {
-        $data = [
-            [
-                'id' => 1,
-                'name' => 'john',
-                'status' => 2,
-                'email' => 'john@email.com',
-            ],
-            [
-                'id' => 2,
-                'name' => 'tom',
-                'status' => 0,
-                'email' => 'tom@email.com',
-            ],
-            [
-                'id' => 3,
-                'name' => 'jack',
-                'status' => 1,
-                'email' => 'jack-test@email.com',
-            ],
-        ];
-
-        $this->output->write('use dump:');
-        $this->output->dump($data);
-
-        $this->output->write('use print:');
-        $this->output->prints($data);
-
-        $this->output->write('use json:');
-        $this->output->json($data);
     }
 
     /**
@@ -746,98 +476,6 @@ class HomeController extends Controller
     }
 
     /**
-     * This is a demo for use <magenta>Interact::confirm</magenta> method
-     */
-    public function confirmCommand()
-    {
-        // can also: $this->confirm();
-        $a = Interact::confirm('continue');
-
-        $this->write('Your answer is: ' . ($a ? 'yes' : 'no'));
-    }
-
-    /**
-     * This is a demo for use <magenta>Interact::select()</magenta> method
-     */
-    public function selectCommand()
-    {
-        $opts = ['john', 'simon', 'rose'];
-        // can also: $this->select();
-        $a = Interact::select('you name is', $opts);
-
-        $this->write('Your answer is: ' . $opts[$a]);
-    }
-
-    /**
-     * This is a demo for use <magenta>Interact::multiSelect()</magenta> method
-     */
-    public function multiSelectCommand()
-    {
-        $opts = ['john', 'simon', 'rose', 'tom'];
-
-        // can also: $a = Interact::multiSelect('Your friends are', $opts);
-        $a = $this->multiSelect('Your friends are', $opts);
-
-        $this->write('Your answer is: ' . json_encode($a));
-    }
-
-    /**
-     * This is a demo for use <magenta>Interact::ask()</magenta> method
-     */
-    public function askCommand()
-    {
-        $a = Interact::ask('you name is: ', null, function ($val, &$err) {
-            if (!preg_match('/^\w{2,}$/', $val)) {
-                $err = 'Your input must match /^\w{2,}$/';
-
-                return false;
-            }
-
-            return true;
-        });
-
-        $this->write('Your answer is: ' . $a);
-    }
-
-    /**
-     * This is a demo for use <magenta>Interact::limitedAsk()</magenta> method
-     * @options
-     *  --nv   Not use validator.
-     *  --limit  limit times.(default: 3)
-     */
-    public function limitedAskCommand()
-    {
-        $times = (int)$this->input->getOpt('limit', 3);
-
-        if ($this->input->getBoolOpt('nv')) {
-            $a = Interact::limitedAsk('you name is: ', null, null, $times);
-        } else {
-            $a = Interact::limitedAsk('you name is: ', null, function ($val) {
-                if (!preg_match('/^\w{2,}$/', $val)) {
-                    Show::error('Your input must match /^\w{2,}$/');
-
-                    return false;
-                }
-
-                return true;
-            }, $times);
-        }
-
-        $this->write('Your answer is: ' . $a);
-    }
-
-    /**
-     * This is a demo for input password. use: <magenta>Interact::askPassword()</magenta>
-     * @usage {fullCommand}
-     */
-    public function passwordCommand()
-    {
-        $pwd = $this->askPassword();
-
-        $this->write('Your input is: ' . $pwd);
-    }
-
-    /**
      * output current env info
      */
     public function envCommand()
@@ -848,7 +486,7 @@ class HomeController extends Controller
             'debug' => true,
         ];
 
-        Interact::panel($info);
+        Show::panel($info);
 
         echo Helper::printVars($_SERVER);
     }
@@ -877,7 +515,6 @@ class HomeController extends Controller
 
         if (!$goon) {
             Show::notice('Quit download, Bye!');
-
             return 0;
         }
 
@@ -886,39 +523,5 @@ class HomeController extends Controller
         // echo Helper::dumpVars($d);
 
         return 0;
-    }
-
-    /**
-     * This is a demo for show cursor move on the Terminal screen
-     */
-    public function cursorCommand()
-    {
-        $this->write('hello, this in ' . __METHOD__);
-        $this->write('this is a message text.', false);
-
-        sleep(1);
-        Terminal::make()->cursor(Terminal::CURSOR_BACKWARD, 6);
-
-        sleep(1);
-        Terminal::make()->cursor(Terminal::CURSOR_FORWARD, 3);
-
-        sleep(1);
-        Terminal::make()->cursor(Terminal::CURSOR_BACKWARD, 2);
-
-        sleep(2);
-
-        Terminal::make()->screen(Terminal::CLEAR_LINE, 3);
-
-        $this->write('after 2s scroll down 3 row.');
-
-        sleep(2);
-
-        Terminal::make()->screen(Terminal::SCROLL_DOWN, 3);
-
-        $this->write('after 3s clear screen.');
-
-        sleep(3);
-
-        Terminal::make()->screen(Terminal::CLEAR);
     }
 }

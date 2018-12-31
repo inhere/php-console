@@ -391,8 +391,11 @@ class Application extends AbstractApplication
         }
 
         if (!($object instanceof Controller)) {
-            Helper::throwInvalidArgument('The console controller class [%s] must instanceof the %s', $object,
-                Controller::class);
+            Helper::throwInvalidArgument(
+                'The console controller class [%s] must instanceof the %s',
+                $object,
+                Controller::class
+            );
         }
 
         $object::setName($name);

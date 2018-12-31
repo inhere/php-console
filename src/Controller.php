@@ -93,7 +93,7 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
      */
     public function run(string $command = ''): int
     {
-        $this->action = $this->getRealCommandName(trim($command, $this->delimiter));
+        $this->action = $this->getRealCommandName(\trim($command, $this->delimiter));
 
         if (!$this->action) {
             return $this->showHelp();
