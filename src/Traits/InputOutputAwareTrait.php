@@ -168,4 +168,12 @@ trait InputOutputAwareTrait
     {
         $this->output = $output;
     }
+
+    /**
+     * @return bool
+     */
+    public function isDebug(): bool
+    {
+        return $this->input->boolOpt('debug');
+    }
 }

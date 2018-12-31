@@ -22,10 +22,10 @@ use Inhere\Console\Utils\Annotation;
  */
 abstract class Controller extends AbstractCommand implements ControllerInterface
 {
-    /** @var array command aliases */
-    private static $commandAliases;
+    /** @var array sub-command aliases */
+    private static $commandAliases = [];
 
-    /** @var array */
+    /** @var array global options for the group command */
     protected static $globalOptions = [
         '--show-disabled' => 'Whether display disabled commands',
     ];
@@ -40,7 +40,7 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
     private $executionAlone = false;
 
     /** @var string */
-    private $defaultAction = 'help';
+    private $defaultAction = '';
 
     /** @var string */
     private $actionSuffix = 'Command';
@@ -48,9 +48,7 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
     /** @var string */
     protected $notFoundCallback = 'notFound';
 
-    /**
-     * @var array From disabledCommands()
-     */
+    /** @var array From disabledCommands() */
     protected $disabledCommands = [];
 
     /**
@@ -68,7 +66,7 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
     protected function init()
     {
         $list = $this->disabledCommands();
-        $this->disabledCommands = $list ? array_flip($list) : [];
+        $this->disabledCommands = $list ? \array_flip($list) : [];
 
         if (!$this->actionSuffix) {
             $this->actionSuffix = 'Command';
@@ -93,7 +91,11 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
      */
     public function run(string $command = ''): int
     {
-        $this->action = $this->getRealCommandName(\trim($command, $this->delimiter));
+        if (!$command = \trim($command, $this->delimiter)) {
+            $command = $this->defaultAction;
+        }
+
+        $this->action = FormatUtil::camelCase($this->getRealCommandName($command));
 
         if (!$this->action) {
             return $this->showHelp();
@@ -107,12 +109,10 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
      */
     protected function configure()
     {
-        if ($action = $this->action) {
-            $method = $action . 'Configure';
+        $method = $this->action . 'Configure';
 
-            if (\method_exists($this, $method)) {
-                $this->$method();
-            }
+        if (\method_exists($this, $method)) {
+            $this->$method();
         }
     }
 
@@ -125,14 +125,11 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
      */
     protected function execute($input, $output)
     {
-        $action = FormatUtil::camelCase(\trim($this->action ?: $this->defaultAction, $this->delimiter));
+        $action = $this->action;
+        $group = static::getName();
 
         if ($this->isDisabled($action)) {
-            $output->liteError(sprintf(
-                "Sorry, The command '$action' is invalid in the group '%s'!",
-                static::getName()
-            ));
-
+            $output->liteError(\sprintf("Sorry, The command '%s' is invalid in the group '%s'!", $action, $group));
             return -1;
         }
 
@@ -160,7 +157,6 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
         if (($notFoundCallback = $this->notFoundCallback) && \method_exists($this, $notFoundCallback)) {
             $status = $this->{$notFoundCallback}($action);
         } else {
-            $group = static::getName();
             $status = -1;
             $output->liteError("Sorry, The command '$action' not exist of the group '{$group}'!");
 
@@ -220,7 +216,7 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
         $method = $this->actionSuffix ? $action . \ucfirst($this->actionSuffix) : $action;
         $aliases = self::getCommandAliases($action);
 
-        // show help info for a command.
+        // show help info for a sub-command.
         return $this->showHelpByMethodAnnotations($method, $action, $aliases);
     }
 
@@ -292,12 +288,14 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
             $usage = "$script {$name}<info>{command}</info> [--options ...] [arguments ...]";
         }
 
+        $globalOptions = \array_merge(Application::getInternalOptions(), static::$globalOptions);
+
         $this->output->startBuffer();
-        $this->output->write(ucfirst($classDes) . PHP_EOL);
+        $this->output->write(\ucfirst($classDes) . \PHP_EOL);
         $this->output->mList([
             'Usage:' => $usage,
             //'Group Name:' => "<info>$sName</info>",
-            'Global Options:' => FormatUtil::alignOptions(\array_merge(Application::getInternalOptions(), static::$globalOptions)),
+            'Global Options:' => FormatUtil::alignOptions($globalOptions),
             'Available Commands:' => $commands,
         ], [
             'sepChar' => '  ',
@@ -306,7 +304,7 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
         $this->write(\sprintf(
             'More information about a command, please use: <cyan>%s %s{command} -h</cyan>',
             $script,
-            $this->executionAlone ? $name : ''
+            $this->executionAlone ? '' : $name
         ));
         $this->output->flush();
     }
@@ -426,7 +424,7 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
      */
     public function setDefaultAction(string $defaultAction)
     {
-        $this->defaultAction = $defaultAction;
+        $this->defaultAction = \trim($defaultAction, $this->delimiter);
     }
 
     /**

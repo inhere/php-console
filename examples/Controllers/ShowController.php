@@ -35,6 +35,16 @@ class ShowController extends Controller
     }
 
     /**
+     * @return array
+     */
+    protected function commonOptions(): array
+    {
+        return \array_merge(parent::commonOptions(), [
+            '-c, --command' => 'This is a common option for all sub-commands',
+        ]);
+    }
+
+    /**
      * output format message: title
      */
     public function titleCommand()

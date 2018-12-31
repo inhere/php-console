@@ -608,6 +608,14 @@ class Input implements InputInterface
     /**
      * @return string
      */
+    public function getFullCommand(): string
+    {
+        return $this->script . ' ' . $this->command;
+    }
+
+    /**
+     * @return string
+     */
     public function getScriptName(): string
     {
         return $this->script;

@@ -47,11 +47,6 @@ abstract class AbstractCommand implements BaseCommandInterface
      */
     protected static $coroutine = false;
 
-    /** @var array */
-    protected static $commandOptions = [
-        '--skip-invalid' => 'Whether ignore invalid arguments and options, when use input definition',
-    ];
-
     /**
      * Allow display message tags in the command annotation
      * @var array
@@ -63,16 +58,20 @@ abstract class AbstractCommand implements BaseCommandInterface
         'arguments' => true,
         'options' => true,
         'example' => true,
+        'help' => true,
     ];
 
     /** @var Application */
     protected $app;
 
+    /** @var array common options for all sub-commands */
+    private $commonOptions;
+
     /** @var InputDefinition|null */
     private $definition;
 
     /** @var string */
-    private $processTitle;
+    private $processTitle = '';
 
     /** @var array */
     private $annotationVars;
@@ -111,6 +110,7 @@ abstract class AbstractCommand implements BaseCommandInterface
             $this->definition = $definition;
         }
 
+        $this->commonOptions = $this->commonOptions();
         $this->annotationVars = $this->annotationVars();
 
         $this->init();
@@ -144,10 +144,20 @@ abstract class AbstractCommand implements BaseCommandInterface
     }
 
     /**
+     * @return array
+     */
+    protected function commonOptions(): array
+    {
+        return [
+            '--skip-invalid' => 'Whether ignore invalid arguments and options, when use input definition',
+        ];
+    }
+
+    /**
      * 为命令注解提供可解析解析变量. 可以在命令的注释中使用
      * @return array
      */
-    public function annotationVars(): array
+    protected function annotationVars(): array
     {
         // e.g: `more info see {name}:index`
         return [
@@ -157,7 +167,7 @@ abstract class AbstractCommand implements BaseCommandInterface
             'script' => $this->input->getScript(), // bin/app
             'binName' => $this->input->getScript(), // bin/app
             'command' => $this->input->getCommand(), // demo OR home:test
-            'fullCommand' => $this->input->getScript() . ' ' . $this->input->getCommand(),
+            'fullCommand' => $this->input->getFullCommand(),
         ];
     }
 
@@ -257,46 +267,21 @@ abstract class AbstractCommand implements BaseCommandInterface
     }
 
     /**
-     * display help information
-     * @return bool
-     */
-    protected function showHelp(): bool
-    {
-        if (!$definition = $this->getDefinition()) {
-            return false;
-        }
-
-        // 创建了 InputDefinition , 则使用它的信息(此时不会再解析和使用命令的注释)
-        $help = $definition->getSynopsis();
-        $help['usage:'] = \sprintf('%s %s %s', $this->getScriptName(), $this->getCommandName(), $help['usage:']);
-        $help['global options:'] = FormatUtil::alignOptions(Application::getInternalOptions());
-
-        if (empty($help[0]) && $this->isAlone()) {
-            $help[0] = self::getDescription();
-        }
-
-        $this->output->mList($help, ['sepChar' => '  ']);
-        return true;
-    }
-
-    /**
      * prepare run
      * @throws \InvalidArgumentException
      * @throws \RuntimeException
      */
     protected function prepare(): bool
     {
-        if ($this->processTitle) {
+        if ($this->processTitle && 'Darwin' !== \PHP_OS) {
             if (\function_exists('cli_set_process_title')) {
-                if (false === @cli_set_process_title($this->processTitle)) {
-                    $error = \error_get_last();
-
-                    if ($error && 'Darwin' !== PHP_OS) {
-                        throw new \RuntimeException($error['message']);
-                    }
-                }
+                \cli_set_process_title($this->processTitle);
             } elseif (\function_exists('setproctitle')) {
                 \setproctitle($this->processTitle);
+            }
+
+            if ($error = \error_get_last()) {
+                throw new \RuntimeException($error['message']);
             }
         }
 
@@ -379,7 +364,8 @@ abstract class AbstractCommand implements BaseCommandInterface
 
         if (\count($missingOpts) > 0) {
             $out->liteError(
-                \sprintf('Not enough options parameters (missing: "%s").', \implode(', ', $missingOpts))
+                \sprintf('Not enough options parameters (missing: "%s").',
+                \implode(', ', $missingOpts))
             );
 
             return false;
@@ -458,12 +444,39 @@ abstract class AbstractCommand implements BaseCommandInterface
         return $this instanceof CommandInterface;
     }
 
+    /**********************************************************
+     * display help information
+     **********************************************************/
+
     /**
+     * display help information
      * @return bool
      */
-    public function isDebug(): bool
+    protected function showHelp(): bool
     {
-        return $this->input->boolOpt('debug');
+        if (!$definition = $this->getDefinition()) {
+            return false;
+        }
+
+        // 创建了 InputDefinition , 则使用它的信息(此时不会再解析和使用命令的注释)
+        $help = $definition->getSynopsis();
+        $help['usage:'] = \sprintf('%s %s %s', $this->getScriptName(), $this->getCommandName(), $help['usage:']);
+        $help['global options:'] = FormatUtil::alignOptions(Application::getInternalOptions());
+
+        if (empty($help[0]) && $this->isAlone()) {
+            $help[0] = self::getDescription();
+        }
+
+        if (empty($help[0])) {
+            $help[0] = 'No description message for the command';
+        }
+
+        // output description
+        $this->write(\ucfirst($help[0]) . \PHP_EOL);
+        unset($help[0]);
+
+        $this->output->mList($help, ['sepChar' => '  ']);
+        return true;
     }
 
     /**
@@ -497,7 +510,7 @@ abstract class AbstractCommand implements BaseCommandInterface
 
         if ($aliases) {
             $realName = $action ?: self::getName();
-            $help['Command:'] = sprintf('%s(alias: <info>%s</info>)', $realName, implode(',', $aliases));
+            $help['Command:'] = \sprintf('%s(alias: <info>%s</info>)', $realName, \implode(',', $aliases));
         }
 
         foreach (\array_keys(self::$annotationTags) as $tag) {
@@ -531,11 +544,11 @@ abstract class AbstractCommand implements BaseCommandInterface
 
         if (isset($help['Description:'])) {
             $description = $help['Description:'] ?: 'No description message for the command';
-            $this->write(ucfirst($description) . PHP_EOL);
+            $this->write(\ucfirst($description) . \PHP_EOL);
             unset($help['Description:']);
         }
 
-        $help['Global Options:'] = FormatUtil::alignOptions(\array_merge(Application::getInternalOptions(), static::$commandOptions));
+        $help['Global Options:'] = FormatUtil::alignOptions(\array_merge(Application::getInternalOptions(), $this->commonOptions));
 
         $this->output->mList($help, [
             'sepChar' => '  ',
@@ -638,6 +651,14 @@ abstract class AbstractCommand implements BaseCommandInterface
     public function setDefinition(InputDefinition $definition)
     {
         $this->definition = $definition;
+    }
+
+    /**
+     * @return array
+     */
+    public function getCommonOptions(): array
+    {
+        return $this->commonOptions;
     }
 
     /**

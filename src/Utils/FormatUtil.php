@@ -40,12 +40,12 @@ final class FormatUtil
      */
     public static function camelCase(string $name): string
     {
-        $name = trim($name, '-_');
+        $name = \trim($name, '-_');
 
         // convert 'first-second' to 'firstSecond'
-        if (strpos($name, '-')) {
-            $name = ucwords(str_replace('-', ' ', $name));
-            $name = str_replace(' ', '', lcfirst($name));
+        if (\strpos($name, '-')) {
+            $name = \ucwords(\str_replace('-', ' ', $name));
+            $name = \str_replace(' ', '', lcfirst($name));
         }
 
         return $name;
@@ -64,8 +64,8 @@ final class FormatUtil
         }
 
         $new = '';
-        $list = explode("\n", $string);
-        $indentStr = str_repeat($indentChar ?: ' ', $indent);
+        $list = \explode("\n", $string);
+        $indentStr = \str_repeat($indentChar ?: ' ', $indent);
 
         foreach ($list as $value) {
             $new .= $indentStr . trim($value) . "\n";

@@ -9,6 +9,7 @@
 namespace Inhere\Console\Base;
 
 use Inhere\Console\BuiltIn\ErrorHandler;
+use Inhere\Console\Face\CommandInterface;
 use Inhere\Console\Face\ErrorHandlerInterface;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\InputInterface;

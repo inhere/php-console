@@ -213,7 +213,7 @@ final class Color
             $values[] = static::$knownOptions[$option];
         }
 
-        return implode(';', $values);
+        return \implode(';', $values);
     }
 
     /**

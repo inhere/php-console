@@ -31,7 +31,7 @@ class ErrorHandler implements ErrorHandlerInterface
 \n<error> Error </error> <mga>%s</mga>
 
 At File <cyan>%s</cyan> line <bold>%d</bold>
-Exception $class
+Exception class is <magenta>$class</magenta>
 <comment>Code View:</comment>\n\n%s
 <comment>Code Trace:</comment>\n\n%s\n
 ERR;
