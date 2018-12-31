@@ -22,7 +22,7 @@ a php console application library.
 **NOTICE**
 
 - master branch -- is require `php >= 7` (recommended use)。
-- php5 branch -- It's a branch of PHP 5, but it hasn't been updated for some time (the basic functionality is complete).
+- `1.x` branch -- It's a branch of PHP 5, but it hasn't been updated for some time (the basic functionality is complete).
 
 ## install
 
@@ -32,7 +32,7 @@ edit `composer.json`，at `require` add
 
 ```
 "inhere/console": "dev-master",
-// "inhere/console": "dev-php5", // for php5
+// "inhere/console": "dev-1.x", // for php5
 ```
 
 run: `composer update`

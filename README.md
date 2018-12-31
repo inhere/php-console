@@ -6,8 +6,7 @@
 
 简洁、功能全面的php命令行应用库。提供控制台参数解析, 命令运行，颜色风格输出, 用户信息交互, 特殊格式信息显示。
 
-> 无其他库依赖，可以方便的整合到任何已有项目中。
-
+- 可以方便的整合到任何已有项目中
 - 功能全面的命令行的选项参数解析(命名参数，短选项，长选项 ...)
 - 命令行应用, 命令行的 `controller`, `command` 解析运行。(支持命令别名)
 - 命令行中功能强大的 `input`, `output` 管理、使用
@@ -29,8 +28,7 @@
 
 **注意：**
 
-- master 分支是要求 `php >= 7` 的(推荐使用)。
-- php5 分支是支持 php5 `php >= 5.5` 的代码分支。
+- `1.x` 分支是支持 php5 `php >= 5.6`  的代码分支。
 
 ## 安装
 
@@ -48,7 +46,7 @@ composer require inhere/console
 "inhere/console": "dev-master",
 
 // "inhere/console": "^2.0", // 指定稳定版本
-// "inhere/console": "dev-php5", // for php5
+// "inhere/console": "~1.0", // for php5
 ```
 
 然后执行: `composer update`
