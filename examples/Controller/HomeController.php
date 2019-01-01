@@ -1,6 +1,6 @@
 <?php
 
-namespace Inhere\Console\Examples\Controllers;
+namespace Inhere\Console\Examples\Controller;
 
 use Toolkit\Cli\Cli;
 use Inhere\Console\Component\Symbol\ArtFont;
@@ -15,7 +15,7 @@ use Inhere\Console\Util\Show;
 /**
  * default command controller. there are some command usage examples(1)
  * Class HomeController
- * @package Inhere\Console\Examples\Controllers
+ * @package Inhere\Console\Examples\Controller
  */
 class HomeController extends Controller
 {

@@ -4,7 +4,7 @@
  * only run a controller.
  */
 
-use Inhere\Console\Examples\Controllers\HomeController;
+use Inhere\Console\Examples\Controller\HomeController;
 
 define('BASE_PATH', dirname(__DIR__));
 

@@ -6,7 +6,7 @@
  * Time: 18:58
  */
 
-namespace Inhere\Console\Examples\Commands;
+namespace Inhere\Console\Examples\Command;
 
 use Inhere\Console\Command;
 use Inhere\Console\IO\Input;
@@ -14,7 +14,7 @@ use Inhere\Console\IO\Output;
 
 /**
  * Class DemoCommand
- * @package Inhere\Console\Examples\Commands
+ * @package Inhere\Console\Examples\Command
  */
 class DemoCommand extends Command
 {

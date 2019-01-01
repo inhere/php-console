@@ -9,11 +9,11 @@
 
 use Inhere\Console\BuiltIn\PharController;
 use Inhere\Console\BuiltIn\SelfUpdateCommand;
-use Inhere\Console\Examples\Commands\CorCommand;
-use Inhere\Console\Examples\Commands\DemoCommand;
-use Inhere\Console\Examples\Commands\TestCommand;
-use Inhere\Console\Examples\Controllers\HomeController;
-use Inhere\Console\Examples\Controllers\ProcessController;
+use Inhere\Console\Examples\Command\CorCommand;
+use Inhere\Console\Examples\Command\DemoCommand;
+use Inhere\Console\Examples\Command\TestCommand;
+use Inhere\Console\Examples\Controller\HomeController;
+use Inhere\Console\Examples\Controller\ProcessController;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
 
@@ -42,8 +42,8 @@ $app->controller(ProcessController::class, null, [
     'aliases' => 'prc'
 ]);
 $app->controller(PharController::class);
-$app->controller(\Inhere\Console\Examples\Controllers\ShowController::class);
-$app->controller(\Inhere\Console\Examples\Controllers\InteractController::class);
+$app->controller(\Inhere\Console\Examples\Controller\ShowController::class);
+$app->controller(\Inhere\Console\Examples\Controller\InteractController::class);
 
 // add alias for a group command.
 $app->addCommandAliases('home:test', 'h-test');

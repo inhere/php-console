@@ -115,18 +115,18 @@ class LiteApp
                 return $handler($this);
             }
 
-            if (class_exists($handler)) {
+            if (\class_exists($handler)) {
                 $handler = new $handler;
 
                 // $handler->execute()
-                if (method_exists($handler, 'execute')) {
+                if (\method_exists($handler, 'execute')) {
                     return $handler->execute($this);
                 }
             }
         }
 
         // a \Closure OR $handler->__invoke()
-        if (method_exists($handler, '__invoke')) {
+        if (\method_exists($handler, '__invoke')) {
             return $handler($this);
         }
 
@@ -177,13 +177,11 @@ class LiteApp
                 } else {
                     $this->opts[$value] = true;
                 }
+            } elseif (strpos($value, '=')) {
+                list($n, $v) = explode('=', $value);
+                $this->args[$n] = $v;
             } else {
-                if (strpos($value, '=')) {
-                    list($n, $v) = explode('=', $value);
-                    $this->args[$n] = $v;
-                } else {
-                    $this->args[] = $value;
-                }
+                $this->args[] = $value;
             }
         }
     }

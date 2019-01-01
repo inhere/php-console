@@ -6,7 +6,7 @@
  * Time: 17:47
  */
 
-namespace Inhere\Console\Examples\Commands;
+namespace Inhere\Console\Examples\Command;
 
 use Inhere\Console\Command;
 use Inhere\Console\IO\Input;
@@ -15,7 +15,7 @@ use Inhere\Console\Util\Helper;
 
 /**
  * Class CorCommand
- * @package Inhere\Console\Examples\Commands
+ * @package Inhere\Console\Examples\Command
  */
 class CorCommand extends Command
 {

@@ -7,6 +7,7 @@
  */
 
 namespace Inhere\Console\Component\Formatter;
+
 use Inhere\Console\Component\StrBuffer;
 use Inhere\Console\Util\FormatUtil;
 
@@ -110,12 +111,10 @@ EOF;
                 }
 
                 $value = rtrim($temp, ' ,');
+            } elseif (\is_bool($value)) {
+                $value = $value ? 'True' : 'False';
             } else {
-                if (\is_bool($value)) {
-                    $value = $value ? 'True' : 'False';
-                } else {
-                    $value = trim((string)$value);
-                }
+                $value = trim((string)$value);
             }
 
             // get value width

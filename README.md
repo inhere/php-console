@@ -229,9 +229,9 @@ $app->command(TestCommand::class);
 
 ```php
 // 独立命令
-$app->registerCommands('App\\Console\\Commands', dirname(__DIR__) . '/Commands');
+$app->registerCommands('App\\Console\\Command', dirname(__DIR__) . '/Commands');
 // 命令组
-$app->registerGroups('App\\Console\\Controllers', dirname(__DIR__) . '/Controllers');
+$app->registerGroups('App\\Console\\Controller', dirname(__DIR__) . '/Controllers');
 ```
 
 ### 一些说明

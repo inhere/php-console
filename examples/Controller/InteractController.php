@@ -6,7 +6,7 @@
  * Time: 14:27
  */
 
-namespace Inhere\Console\Examples\Controllers;
+namespace Inhere\Console\Examples\Controller;
 
 use Inhere\Console\Controller;
 use Inhere\Console\Util\Interact;
@@ -15,7 +15,7 @@ use Toolkit\Cli\Terminal;
 
 /**
  * Class InteractController
- * @package Inhere\Console\Examples\Controllers
+ * @package Inhere\Console\Examples\Controller
  */
 class InteractController extends Controller
 {

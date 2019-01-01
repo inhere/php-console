@@ -346,12 +346,10 @@ final class FormatUtil
                 }
 
                 $value = \rtrim($temp, ' ,');
+            } elseif (\is_bool($value)) {
+                $value = $value ? '(True)' : '(False)';
             } else {
-                if (\is_bool($value)) {
-                    $value = $value ? '(True)' : '(False)';
-                } else {
-                    $value = (string)$value;
-                }
+                $value = (string)$value;
             }
 
             $value = $hasKey && $opts['ucFirst'] ? \ucfirst($value) : $value;

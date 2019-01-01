@@ -6,7 +6,7 @@
  * Time: 11:44
  */
 
-namespace Inhere\Console\Examples\Controllers;
+namespace Inhere\Console\Examples\Controller;
 
 use Inhere\Console\Controller;
 use Toolkit\Sys\ProcessUtil;
@@ -14,7 +14,7 @@ use Toolkit\Sys\Sys;
 
 /**
  * Class ProcessController
- * @package Inhere\Console\Examples\Controllers
+ * @package Inhere\Console\Examples\Controller
  */
 class ProcessController extends Controller
 {

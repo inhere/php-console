@@ -6,7 +6,7 @@
  * Time: 14:27
  */
 
-namespace Inhere\Console\Examples\Controllers;
+namespace Inhere\Console\Examples\Controller;
 
 use Inhere\Console\Component\Symbol\Char;
 use Inhere\Console\Component\Symbol\Emoji;
@@ -18,7 +18,7 @@ use Toolkit\Cli\Highlighter;
 
 /**
  * Class ShowController
- * @package Inhere\Console\Examples\Controllers
+ * @package Inhere\Console\Examples\Controller
  */
 class ShowController extends Controller
 {

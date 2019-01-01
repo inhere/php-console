@@ -114,14 +114,11 @@ final class InputParser
                     } else {
                         $lOpts[$opt] = $val;
                     }
-                } else {
-                    if ($isArray) {
-                        $sOpts[$opt][] = $val;
-                    } else {
-                        $sOpts[$opt] = $val;
-                    }
+                } elseif ($isArray) { // short
+                    $sOpts[$opt][] = $val;
+                } else { // short
+                    $sOpts[$opt] = $val;
                 }
-
                 // arguments: param doesn't belong to any option, define it is args
             } else {
                 // value specified inline (<arg>=<value>)
