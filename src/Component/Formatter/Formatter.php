@@ -15,9 +15,9 @@ namespace Inhere\Console\Component\Formatter;
 abstract class Formatter
 {
     // content align
-    const ALIGN_LEFT = 'left';
-    const ALIGN_CENTER = 'center';
-    const ALIGN_RIGHT = 'right';
+    public const ALIGN_LEFT   = 'left';
+    public const ALIGN_CENTER = 'center';
+    public const ALIGN_RIGHT  = 'right';
 
     /**
      * @var array

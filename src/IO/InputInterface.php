@@ -15,14 +15,14 @@ namespace Inhere\Console\IO;
 interface InputInterface
 {
     // fixed args and opts for a command/controller-command
-    const ARG_REQUIRED = 1;
-    const ARG_OPTIONAL = 2;
-    const ARG_IS_ARRAY = 4;
+    public const ARG_REQUIRED = 1;
+    public const ARG_OPTIONAL = 2;
+    public const ARG_IS_ARRAY = 4;
 
-    const OPT_BOOLEAN = 1; // eq symfony InputOption::VALUE_NONE
-    const OPT_REQUIRED = 2;
-    const OPT_OPTIONAL = 4;
-    const OPT_IS_ARRAY = 8;
+    public const OPT_BOOLEAN  = 1; // eq symfony InputOption::VALUE_NONE
+    public const OPT_REQUIRED = 2;
+    public const OPT_OPTIONAL = 4;
+    public const OPT_IS_ARRAY = 8;
 
     /**
      * 读取输入信息

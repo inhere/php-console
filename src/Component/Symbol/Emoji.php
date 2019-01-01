@@ -14,71 +14,71 @@ namespace Inhere\Console\Component\Symbol;
  */
 final class Emoji
 {
-    const ID = '🆔';
-    const KEY = '🔑';
-    const BOX = '📦';
-    const GIFT = '🎁';
-    const CLOCK = '⏰';
-    const FLAG = '🚩';
-    const TOOL = '🔧';
-    const GUN = '🔫';
-    const DING = '📌';
-    const STOP = '🚫';
+    public const ID    = '🆔';
+    public const KEY   = '🔑';
+    public const BOX   = '📦';
+    public const GIFT  = '🎁';
+    public const CLOCK = '⏰';
+    public const FLAG  = '🚩';
+    public const TOOL  = '🔧';
+    public const GUN   = '🔫';
+    public const DING  = '📌';
+    public const STOP  = '🚫';
 
-    const DOC = '📄';
-    const DIR = '📂';
-    const BOOK = '📔';
-    const RECYCLE = '♻';
+    public const DOC     = '📄';
+    public const DIR     = '📂';
+    public const BOOK    = '📔';
+    public const RECYCLE = '♻';
 
-    const EDIT = '✍';
-    const SMILE = '😊';
-    const LAUGH = '😆';
-    const LIKE = '😍';
-    const ANGER = '😡';
-    const HAPPY = '😀';
-    const DOZE = '😴';
+    public const EDIT  = '✍';
+    public const SMILE = '😊';
+    public const LAUGH = '😆';
+    public const LIKE  = '😍';
+    public const ANGER = '😡';
+    public const HAPPY = '😀';
+    public const DOZE  = '😴';
 
-    const OK = '👌';
-    const YES = '✌';
-    const NO = '✋';
-    const PRAISE = '👍';
-    const TREAD = '👎';
-    const STEP = '🐾';
+    public const OK     = '👌';
+    public const YES    = '✌';
+    public const NO     = '✋';
+    public const PRAISE = '👍';
+    public const TREAD  = '👎';
+    public const STEP   = '🐾';
 
-    const UP = '👆';
-    const DOWN = '👇';
-    const LEFT = '👈';
-    const RIGHT = '👉';
+    public const UP    = '👆';
+    public const DOWN  = '👇';
+    public const LEFT  = '👈';
+    public const RIGHT = '👉';
 
-    const FIRE = '🔥';
-    const SNOW = '❄';
-    const WATER = '💧';
-    const FLASH = '⚡';
+    public const FIRE  = '🔥';
+    public const SNOW  = '❄';
+    public const WATER = '💧';
+    public const FLASH = '⚡';
 
-    const EYE = '👀';
-    const HEART = '💖';
-    const HEARTBREAK = '💔';
+    public const EYE        = '👀';
+    public const HEART      = '💖';
+    public const HEARTBREAK = '💔';
 
-    const SUC = '✅';
-    const FAIL = '❌';
-    const WAN = '❗';
-    const QUESTION = '❓';
+    public const SUC      = '✅';
+    public const FAIL     = '❌';
+    public const WAN      = '❗';
+    public const QUESTION = '❓';
 
-    const CAR = '🚕';
+    public const CAR = '🚕';
 
-    const TREE = '🌲';
-    const FLOWER = '🌺';
+    public const TREE   = '🌲';
+    public const FLOWER = '🌺';
 
-    const PEAR = '🍐';
-    const APPLE = '🍎';
+    public const PEAR  = '🍐';
+    public const APPLE = '🍎';
 
-    const ELEPHANT = '🐘';
-    const WHALE = '🐳';
+    public const ELEPHANT = '🐘';
+    public const WHALE    = '🐳';
 
-    const SUN = '🌞';
-    const STAR = '⭐';
-    const MOON = '🌜';
-    const EARTH = '🌏';
+    public const SUN   = '🌞';
+    public const STAR  = '⭐';
+    public const MOON  = '🌜';
+    public const EARTH = '🌏';
 
     /**
      * @var array

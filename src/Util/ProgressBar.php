@@ -86,7 +86,7 @@ class ProgressBar
         // 'precent' => function () { ... },
     ];
 
-    const DEFAULT_FORMAT = '[{@bar}] {@percent:3s}%({@current}/{@max}) {@elapsed:6s}/{@estimated:-6s} {@memory:6s}';
+    public const DEFAULT_FORMAT = '[{@bar}] {@percent:3s}%({@current}/{@max}) {@elapsed:6s}/{@estimated:-6s} {@memory:6s}';
 
     /**
      * @param OutputInterface $output

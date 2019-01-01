@@ -660,6 +660,7 @@ EOF;
     /**
      * auto collect project information by git log
      * @throws \RuntimeException
+     * @throws \Exception
      */
     private function collectInformation()
     {

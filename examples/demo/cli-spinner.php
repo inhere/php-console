@@ -88,6 +88,7 @@ $input = fgets(STDIN);
 Status::hide(false);
 echo $input;
 die;
+
 $total = random_int(5000, 10000);
 for ($x=1; $x<=$total; $x++) {
     Status::spinner();

@@ -14,7 +14,7 @@ namespace Inhere\Console\Component\Style;
  */
 class Alert
 {
-    const THEMES = [
+    public const THEMES = [
         'default' => '<{@style}>{@message}</{@style}>',
         'theme1' => '<{@style}>[{@type}] {@message}</{@style}>',
         'lite' => '[<{@style}>{@type}</{@style}>] {@message}',

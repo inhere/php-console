@@ -14,36 +14,36 @@ namespace Inhere\Console\Component\Style;
 final class Color
 {
     /** Foreground base value */
-    const FG_BASE = 30;
+    public const FG_BASE = 30;
 
     /** Background base value */
-    const BG_BASE = 40;
+    public const BG_BASE = 40;
 
     /** Extra Foreground base value */
-    const FG_EXTRA = 90;
+    public const FG_EXTRA = 90;
 
     /** Extra Background base value */
-    const BG_EXTRA = 100;
+    public const BG_EXTRA = 100;
 
     // color
-    const BLACK = 'black';
-    const RED = 'red';
-    const GREEN = 'green';
-    const YELLOW = 'yellow'; // BROWN
-    const BLUE = 'blue';
-    const MAGENTA = 'magenta';
-    const CYAN = 'cyan';
-    const WHITE = 'white';
-    const NORMAL = 'normal';
+    public const BLACK   = 'black';
+    public const RED     = 'red';
+    public const GREEN   = 'green';
+    public const YELLOW  = 'yellow'; // BROWN
+    public const BLUE    = 'blue';
+    public const MAGENTA = 'magenta';
+    public const CYAN    = 'cyan';
+    public const WHITE   = 'white';
+    public const NORMAL  = 'normal';
 
     // color option
-    const BOLD = 'bold';       // 加粗
-    const FUZZY = 'fuzzy';      // 模糊(不是所有的终端仿真器都支持)
-    const ITALIC = 'italic';     // 斜体(不是所有的终端仿真器都支持)
-    const UNDERSCORE = 'underscore'; // 下划线
-    const BLINK = 'blink';      // 闪烁
-    const REVERSE = 'reverse';    // 颠倒的 交换背景色与前景色
-    const CONCEALED = 'concealed';  // 隐匿的
+    public const BOLD       = 'bold';       // 加粗
+    public const FUZZY      = 'fuzzy';      // 模糊(不是所有的终端仿真器都支持)
+    public const ITALIC     = 'italic';     // 斜体(不是所有的终端仿真器都支持)
+    public const UNDERSCORE = 'underscore'; // 下划线
+    public const BLINK      = 'blink';      // 闪烁
+    public const REVERSE    = 'reverse';    // 颠倒的 交换背景色与前景色
+    public const CONCEALED  = 'concealed';  // 隐匿的
 
     /** @var array Known color list */
     private static $knownColors = array(

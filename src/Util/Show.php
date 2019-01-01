@@ -36,29 +36,29 @@ use Toolkit\Sys\Sys;
  */
 class Show
 {
-    const FINISHED = -1;
+    public const FINISHED = -1;
 
-    const CHAR_SPACE = ' ';
-    const CHAR_HYPHEN = '-';
-    const CHAR_UNDERLINE = '_';
-    const CHAR_VERTICAL = '|';
-    const CHAR_EQUAL = '=';
-    const CHAR_STAR = '*';
+    public const CHAR_SPACE     = ' ';
+    public const CHAR_HYPHEN    = '-';
+    public const CHAR_UNDERLINE = '_';
+    public const CHAR_VERTICAL  = '|';
+    public const CHAR_EQUAL     = '=';
+    public const CHAR_STAR      = '*';
 
-    const POS_LEFT = 'l';
-    const POS_MIDDLE = 'm';
-    const POS_RIGHT = 'r';
+    public const POS_LEFT   = 'l';
+    public const POS_MIDDLE = 'm';
+    public const POS_RIGHT  = 'r';
 
     /**
      * help panel keys
      */
-    const HELP_DES = 'description';
-    const HELP_USAGE = 'usage';
-    const HELP_COMMANDS = 'commands';
-    const HELP_ARGUMENTS = 'arguments';
-    const HELP_OPTIONS = 'options';
-    const HELP_EXAMPLES = 'examples';
-    const HELP_EXTRAS = 'extras';
+    public const HELP_DES       = 'description';
+    public const HELP_USAGE     = 'usage';
+    public const HELP_COMMANDS  = 'commands';
+    public const HELP_ARGUMENTS = 'arguments';
+    public const HELP_OPTIONS   = 'options';
+    public const HELP_EXAMPLES  = 'examples';
+    public const HELP_EXTRAS    = 'extras';
 
     /** @var string */
     private static $buffer;

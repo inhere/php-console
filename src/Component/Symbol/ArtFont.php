@@ -17,8 +17,8 @@ use Inhere\Console\Util\Show;
  */
 class ArtFont
 {
-    const DEFAULT_GROUP = '_default';
-    const INTERNAL_GROUP = '_internal';
+    public const DEFAULT_GROUP  = '_default';
+    public const INTERNAL_GROUP = '_internal';
 
     /** @var self */
     private static $instance;

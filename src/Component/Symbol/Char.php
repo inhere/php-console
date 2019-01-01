@@ -15,29 +15,29 @@ namespace Inhere\Console\Component\Symbol;
  */
 final class Char
 {
-    const OK = '✔';
-    const NO = '✘';
-    const PEN = '✎';
+    public const OK  = '✔';
+    public const NO  = '✘';
+    public const PEN = '✎';
 
-    const HEART = '❤';
-    const SMILE = '☺';
+    public const HEART = '❤';
+    public const SMILE = '☺';
 
-    const FLOWER = '✿';
-    const MUSIC = '♬';
+    public const FLOWER = '✿';
+    public const MUSIC  = '♬';
 
-    const UP = '';
-    const DOWN = '';
-    const LEFT = '';
-    const RIGHT = '';
-    const SEARCH = '';
+    public const UP     = '';
+    public const DOWN   = '';
+    public const LEFT   = '';
+    public const RIGHT  = '';
+    public const SEARCH = '';
 
-    const MALE = '♂';
-    const FEMALE = '♀';
+    public const MALE   = '♂';
+    public const FEMALE = '♀';
 
-    const SUN = '☀';
-    const STAR = '★';
-    const SNOW = '❈';
-    const CLOUD = '☁';
+    public const SUN   = '☀';
+    public const STAR  = '★';
+    public const SNOW  = '❈';
+    public const CLOUD = '☁';
 
     /**
      * @var array

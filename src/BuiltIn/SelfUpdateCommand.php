@@ -22,13 +22,13 @@ use Humbug\SelfUpdate\Strategy\GithubStrategy;
  */
 class SelfUpdateCommand extends Command
 {
-    const VERSION_URL = 'https://padraic.github.io/humbug/downloads/humbug.version';
+    public const VERSION_URL = 'https://padraic.github.io/humbug/downloads/humbug.version';
 
-    const PHAR_URL = 'https://padraic.github.io/humbug/downloads/humbug.phar';
+    public const PHAR_URL = 'https://padraic.github.io/humbug/downloads/humbug.phar';
 
-    const PACKAGE_NAME = 'humbug/humbug';
+    public const PACKAGE_NAME = 'humbug/humbug';
 
-    const FILE_NAME = 'humbug.phar';
+    public const FILE_NAME = 'humbug.phar';
 
     protected static $name = 'self-update';
     protected static $description = 'Update phar package to most recent stable, pre-release or development build.';

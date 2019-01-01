@@ -30,30 +30,30 @@ class Style
     /**
      * there are some default style tags
      */
-    const NORMAL = 'normal';
-    const FAINTLY = 'faintly';
-    const BOLD = 'bold';
-    const NOTICE = 'notice';
-    const PRIMARY = 'primary';
-    const SUCCESS = 'success';
-    const INFO = 'info';
-    const NOTE = 'note';
-    const WARNING = 'warning';
-    const COMMENT = 'comment';
-    const QUESTION = 'question';
-    const DANGER = 'danger';
-    const ERROR = 'error';
+    public const NORMAL   = 'normal';
+    public const FAINTLY  = 'faintly';
+    public const BOLD     = 'bold';
+    public const NOTICE   = 'notice';
+    public const PRIMARY  = 'primary';
+    public const SUCCESS  = 'success';
+    public const INFO     = 'info';
+    public const NOTE     = 'note';
+    public const WARNING  = 'warning';
+    public const COMMENT  = 'comment';
+    public const QUESTION = 'question';
+    public const DANGER   = 'danger';
+    public const ERROR    = 'error';
 
     /**
      * Regex to match tags
      * @var string
      */
-    const COLOR_TAG = '/<([a-zA-Z=;]+)>(.*?)<\/\\1>/s';
+    public const COLOR_TAG = '/<([a-zA-Z=;]+)>(.*?)<\/\\1>/s';
 
     /**
      * Regex used for removing color codes
      */
-    const STRIP_TAG = '/<[\/]?[a-zA-Z=;]+>/';
+    public const STRIP_TAG = '/<[\/]?[a-zA-Z=;]+>/';
 
     /**
      * @var self
