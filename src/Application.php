@@ -21,12 +21,7 @@ class Application extends AbstractApplication
      ****************************************************************************/
 
     /**
-     * Register a app group command(by controller)
-     * @param string            $name The controller name
-     * @param string|Controller $class The controller class
-     * @param null|array|string $option
-     * @return static
-     * @throws \InvalidArgumentException
+     * {@inheritdoc}
      */
     public function controller(string $name, $class = null, $option = null)
     {
@@ -69,10 +64,11 @@ class Application extends AbstractApplication
         // has option information
         if ($option) {
             if (\is_string($option)) {
-                $this->addCommandMessage($name, $option);
+                $this->setCommandMetaValue($name, 'description', $option);
             } elseif (\is_array($option)) {
                 $this->addCommandAliases($name, $option['aliases'] ?? null);
-                $this->addCommandMessage($name, $option['description'] ?? null);
+                unset($option['aliases']);
+                $this->setCommandMeta($name, $option);
             }
         }
 
@@ -99,12 +95,7 @@ class Application extends AbstractApplication
     }
 
     /**
-     * Register a app independent console command
-     * @param string|Command          $name
-     * @param string|\Closure|Command $handler
-     * @param null|array|string       $option
-     * @return $this|mixed
-     * @throws \InvalidArgumentException
+     * {@inheritdoc}
      */
     public function command(string $name, $handler = null, $option = null)
     {
@@ -139,15 +130,16 @@ class Application extends AbstractApplication
                 return $this;
             }
 
-            // allow define aliases in Command class by Command::aliases()
-            if ($aliases = $handler::aliases()) {
-                $option['aliases'] = isset($option['aliases']) ? \array_merge($option['aliases'], $aliases) : $aliases;
-            }
         } elseif (!\is_object($handler) || !\method_exists($handler, '__invoke')) {
             Helper::throwInvalidArgument(
                 'The console command handler must is an subclass of %s OR a Closure OR a object have method __invoke()',
                 Command::class
             );
+        }
+
+        // allow define aliases in Command class by Command::aliases()
+        if ($aliases = $handler::aliases()) {
+            $option['aliases'] = isset($option['aliases']) ? \array_merge($option['aliases'], $aliases) : $aliases;
         }
 
         // is an class name string
@@ -159,6 +151,7 @@ class Application extends AbstractApplication
                 $this->setCommandMetaValue($name, 'description', $option);
             } elseif (\is_array($option)) {
                 $this->addCommandAliases($name, $option['aliases'] ?? null);
+                unset($option['aliases']);
                 $this->setCommandMeta($name, $option);
             }
         }

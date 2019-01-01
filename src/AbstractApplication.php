@@ -56,12 +56,12 @@ abstract class AbstractApplication implements ApplicationInterface
         'profile' => false,
         'version' => '0.5.1',
         'publishAt' => '2017.03.24',
-        'updateAt' => '2017.03.24',
+        'updateAt' => '2019.01.01',
         'rootPath' => '',
         'hideRootPath' => true,
 
         // 'timeZone' => 'Asia/Shanghai',
-        // 'env' => 'pdt', // dev test pdt
+        // 'env' => 'prod', // dev test prod
         // 'charset' => 'UTF-8',
 
         'logoText' => '',
@@ -74,14 +74,11 @@ abstract class AbstractApplication implements ApplicationInterface
     /** @var string Command delimiter. e.g dev:serve */
     public $delimiter = ':'; // '/' ':'
 
-    /** @var string Current command name */
-    private $commandName;
-
-    /** @var array Some metadata for command */
+    /**
+     * @var array Some metadata for command
+     * - description
+     */
     private $commandsMeta = [];
-
-    /** @var array Some message for command */
-    private $commandMessages = [];
 
     /** @var array Save command aliases */
     private $commandAliases = [];
@@ -125,8 +122,6 @@ abstract class AbstractApplication implements ApplicationInterface
             'startMemory' => \memory_get_usage(),
             'endMemory' => 0,
         ];
-
-        $this->commandName = $this->input->getCommand();
 
         $this->registerErrorHandle();
     }
@@ -506,30 +501,6 @@ abstract class AbstractApplication implements ApplicationInterface
 
     /**
      * @param string $name
-     * @param string $default
-     * @return string|null
-     */
-    public function getCommandMessage(string $name, $default = null)
-    {
-        return $this->commandMessages[$name] ?? $default;
-    }
-
-    /**
-     * @param string $name The command name
-     * @param string $message
-     * @return $this
-     */
-    public function addCommandMessage($name, $message): self
-    {
-        if ($name && $message) {
-            $this->commandMessages[$name] = $message;
-        }
-
-        return $this;
-    }
-
-    /**
-     * @param string $name
      * @param string|array $aliases
      * @return $this
      */
@@ -834,7 +805,9 @@ abstract class AbstractApplication implements ApplicationInterface
      */
     public function setCommandMetaValue(string $command, string $key, $value)
     {
-        $this->commandsMeta[$command][$key] = $value;
+        if ($value !== null) {
+            $this->commandsMeta[$command][$key] = $value;
+        }
     }
 
     /**
