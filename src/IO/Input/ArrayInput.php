@@ -9,7 +9,7 @@
 namespace Inhere\Console\IO\Input;
 
 use Inhere\Console\IO\Input;
-use Inhere\Console\Utils\InputParser;
+use Inhere\Console\Util\InputParser;
 
 /**
  * Class ArrayInput

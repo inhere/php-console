@@ -8,9 +8,9 @@
 
 namespace Inhere\Console\Traits;
 
-use Inhere\Console\Components\Style\Style;
-use Inhere\Console\Utils\Helper;
-use Inhere\Console\Utils\Show;
+use Inhere\Console\Component\Style\Style;
+use Inhere\Console\Util\Helper;
+use Inhere\Console\Util\Show;
 
 /**
  * Class FormatOutputAwareTrait

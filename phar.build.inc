@@ -5,7 +5,7 @@
  * User: Inhere
  * Date: 2018/1/26 0026
  * Time: 22:11
- * @var \Inhere\Console\Components\PharCompiler $compiler
+ * @var \Inhere\Console\Component\PharCompiler $compiler
  */
 
 // config

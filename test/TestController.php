@@ -21,10 +21,10 @@ class TestController extends Controller
 
     /**
      * this is an demo command in test
-     * @return int
+     * @return mixed
      */
-    public function demoCommand(): int
+    public function demoCommand()
     {
-        return 0;
+        return __METHOD__;
     }
 }

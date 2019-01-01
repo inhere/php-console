@@ -23,6 +23,7 @@ interface ApplicationInterface
 
     /**
      * @param bool $exit
+     * @return int|mixed
      */
     public function run(bool $exit = true);
 

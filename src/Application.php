@@ -8,8 +8,7 @@
 
 namespace Inhere\Console;
 
-use Inhere\Console\AbstractApplication;
-use Inhere\Console\Utils\Helper;
+use Inhere\Console\Util\Helper;
 
 /**
  * Class App
@@ -109,14 +108,14 @@ class Application extends AbstractApplication
      */
     public function command(string $name, $handler = null, $option = null)
     {
+        /** @var Command $name */
         if (!$handler && \class_exists($name)) {
-            /** @var Command $name */
             $handler = $name;
             $name    = $name::getName();
         }
 
         if (!$name || !$handler) {
-            Helper::throwInvalidArgument("Command 'name' and 'handler' not allowed to is empty! name: $name");
+            Helper::throwInvalidArgument("Command 'name' and 'handler' cannot be empty! name: $name");
         }
 
         $this->validateName($name);
@@ -130,7 +129,7 @@ class Application extends AbstractApplication
                 Helper::throwInvalidArgument("The console command class [$handler] not exists!");
             }
 
-            if (!is_subclass_of($handler, Command::class)) {
+            if (!\is_subclass_of($handler, Command::class)) {
                 Helper::throwInvalidArgument('The console command class must is subclass of the: ' . Command::class);
             }
 
@@ -339,7 +338,7 @@ class Application extends AbstractApplication
                 return $this->output->write($des);
             }
 
-            $status = $handler($this->input, $this->output);
+            $result = $handler($this->input, $this->output);
         } else {
             if (!\class_exists($handler)) {
                 Helper::throwInvalidArgument("The console command class [$handler] not exists!");
@@ -354,13 +353,14 @@ class Application extends AbstractApplication
 
             $object::setName($name);
             $object->setApp($this);
-            $status = $object->run();
+            $result = $object->run();
         }
 
-        return $status;
+        return $result;
     }
 
     /**
+     * exec an action in a group command(controller)
      * @param string $name group name
      * @param string $action Command method, no suffix
      * @param bool   $believable The `$name` is believable

@@ -3,14 +3,14 @@
 namespace Inhere\Console\Examples\Controllers;
 
 use Toolkit\Cli\Cli;
-use Inhere\Console\Components\Symbol\ArtFont;
+use Inhere\Console\Component\Symbol\ArtFont;
 use Toolkit\Cli\Download;
 use Inhere\Console\Controller;
 use Inhere\Console\IO\Input;
-use Inhere\Console\Utils\Helper;
-use Inhere\Console\Utils\Interact;
-use Inhere\Console\Utils\ProgressBar;
-use Inhere\Console\Utils\Show;
+use Inhere\Console\Util\Helper;
+use Inhere\Console\Util\Interact;
+use Inhere\Console\Util\ProgressBar;
+use Inhere\Console\Util\Show;
 
 /**
  * default command controller. there are some command usage examples(1)

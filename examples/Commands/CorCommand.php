@@ -11,7 +11,7 @@ namespace Inhere\Console\Examples\Commands;
 use Inhere\Console\Command;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
-use Inhere\Console\Utils\Helper;
+use Inhere\Console\Util\Helper;
 
 /**
  * Class CorCommand

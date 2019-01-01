@@ -12,9 +12,9 @@ use Inhere\Console\AbstractCommand;
 use Inhere\Console\Face\ControllerInterface;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
-use Inhere\Console\Utils\FormatUtil;
-use Inhere\Console\Utils\Helper;
-use Inhere\Console\Utils\Annotation;
+use Inhere\Console\Util\FormatUtil;
+use Inhere\Console\Util\Helper;
+use Inhere\Console\Util\Annotation;
 
 /**
  * Class Controller
@@ -86,10 +86,10 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
 
     /**
      * @param string $command
-     * @return int
+     * @return int|mixed
      * @throws \ReflectionException
      */
-    public function run(string $command = ''): int
+    public function run(string $command = '')
     {
         if (!$command = \trim($command, $this->delimiter)) {
             $command = $this->defaultAction;
@@ -143,21 +143,21 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
             }
 
             // run action
-            $status = $this->$method($input, $output);
+            $result = $this->$method($input, $output);
 
             // after
             if (\method_exists($this, $after = 'after' . \ucfirst($action))) {
                 $this->$after($input, $output);
             }
 
-            return (int)$status;
+            return $result;
         }
 
         // if you defined the method '$this->notFoundCallback' , will call it
         if (($notFoundCallback = $this->notFoundCallback) && \method_exists($this, $notFoundCallback)) {
-            $status = $this->{$notFoundCallback}($action);
+            $result = $this->{$notFoundCallback}($action);
         } else {
-            $status = -1;
+            $result = -1;
             $output->liteError("Sorry, The command '$action' not exist of the group '{$group}'!");
 
             // find similar command names
@@ -170,7 +170,7 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
             }
         }
 
-        return $status;
+        return $result;
     }
 
     /**

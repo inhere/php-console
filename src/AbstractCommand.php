@@ -15,9 +15,9 @@ use Inhere\Console\IO\InputDefinition;
 use Inhere\Console\IO\Output;
 use Inhere\Console\Traits\InputOutputAwareTrait;
 use Inhere\Console\Traits\UserInteractAwareTrait;
-use Inhere\Console\Utils\Annotation;
-use Inhere\Console\Utils\FormatUtil;
-use Inhere\Console\Utils\Helper;
+use Inhere\Console\Util\Annotation;
+use Inhere\Console\Util\FormatUtil;
+use Inhere\Console\Util\Helper;
 use Swoole\Coroutine;
 use Swoole\Event;
 
@@ -178,11 +178,11 @@ abstract class AbstractCommand implements BaseCommandInterface
     /**
      * run command
      * @param string $command
-     * @return int
+     * @return int|mixed
      * @throws \RuntimeException
      * @throws \InvalidArgumentException
      */
-    public function run(string $command = ''): int
+    public function run(string $command = '')
     {
         // load input definition configure
         $this->configure();
@@ -202,21 +202,16 @@ abstract class AbstractCommand implements BaseCommandInterface
             return -1;
         }
 
-        $ok = false;
-        $status = 0;
-
-        // if enable coroutine
-        if (self::isCoroutine() && Helper::isSupportCoroutine()) {
-            $ok = $this->coroutineRun();
-        }
-
-        // when not enable coroutine OR coroutine create fail.
-        if (!$ok){
-            $status = (int)$this->execute($this->input, $this->output);
+        // if enable swoole coroutine
+        if (static::isCoroutine() && Helper::isSupportCoroutine()) {
+            $result = $this->coroutineRun();
+        } else { // when not enable coroutine
+            $result = $this->execute($this->input, $this->output);
         }
 
         $this->afterExecute();
-        return $status;
+
+        return $result;
     }
 
     /**
@@ -225,21 +220,28 @@ abstract class AbstractCommand implements BaseCommandInterface
      */
     public function coroutineRun()
     {
-        $ok = Coroutine::create(function () {
-            $this->execute($this->input, $this->output);
+        $ch = new Coroutine\Channel(1);
+        $ok = Coroutine::create(function () use ($ch) {
+            $result = $this->execute($this->input, $this->output);
+            $ch->push($result);
             // $this->getApp()->stop($status);
         });
 
-        // fail: if open debug, output a tips
+        // create co fail:
         if ((int)$ok === 0) {
+            // if open debug, output a tips
             if ($this->isDebug()) {
                 $this->output->warning('The coroutine create failed!');
             }
-        } elseif ($ok > 0) { // success: wait coroutine exec.
-            Event::wait();
+
+            // exec by normal flow
+            $result = $this->execute($this->input, $this->output);
+        } else { // success: wait coroutine exec.
+            // Event::wait();
+            $result = $ch->pop(10);
         }
 
-        return $ok > 0;
+        return $result;
     }
 
     /**

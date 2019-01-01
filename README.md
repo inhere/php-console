@@ -408,14 +408,14 @@ $output->write('hello <info>world<info>');
 
 ![alt text](docs/screenshots/output-color-text.png "Title")
 
-来自于类 `Inhere\Console\Utils\Show`。
+来自于类 `Inhere\Console\Util\Show`。
 
-> output 实例拥有 `Inhere\Console\Utils\Show` 的所有格式化输出方法。不过都是通过对象式访问的。
+> output 实例拥有 `Inhere\Console\Util\Show` 的所有格式化输出方法。不过都是通过对象式访问的。
 
 - **单独使用颜色风格**
 
 ```php
-$style = Inhere\Console\Components\Style\Style::create();
+$style = Inhere\Console\Component\Style\Style::create();
 
 echo $style->render('no color <info>color text</info>');
 
@@ -639,7 +639,7 @@ Show::helpPanel([
 
 ## 用户交互方法
 
-> 要独立使用的话需引入类 `Inhere\Console\Utils\Interact`， `Controller` 和 `Command` 里可以直接调用相关方法
+> 要独立使用的话需引入类 `Inhere\Console\Util\Interact`， `Controller` 和 `Command` 里可以直接调用相关方法
 
 ### 读取用户输入
 

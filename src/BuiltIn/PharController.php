@@ -8,10 +8,10 @@
 
 namespace Inhere\Console\BuiltIn;
 
-use Inhere\Console\Components\PharCompiler;
+use Inhere\Console\Component\PharCompiler;
 use Inhere\Console\Controller;
-use Inhere\Console\Utils\Helper;
-use Inhere\Console\Utils\Show;
+use Inhere\Console\Util\Helper;
+use Inhere\Console\Util\Show;
 
 /**
  * Class PharController

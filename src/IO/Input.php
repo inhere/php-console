@@ -8,7 +8,7 @@
 
 namespace Inhere\Console\IO;
 
-use Inhere\Console\Utils\InputParser;
+use Inhere\Console\Util\InputParser;
 
 /**
  * Class Input - the input information. by parse global var $argv.
@@ -47,7 +47,7 @@ class Input implements InputInterface
     protected $fullScript;
 
     /**
-     * raw argv data
+     * raw argv data.
      * @var array
      */
     protected $tokens;

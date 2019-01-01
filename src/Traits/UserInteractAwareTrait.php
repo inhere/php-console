@@ -8,7 +8,7 @@
 
 namespace Inhere\Console\Traits;
 
-use Inhere\Console\Utils\Interact;
+use Inhere\Console\Util\Interact;
 
 /**
  * Class UserInteractAwareTrait

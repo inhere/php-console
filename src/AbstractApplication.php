@@ -8,7 +8,7 @@
 
 namespace Inhere\Console;
 
-use Inhere\Console\BuiltIn\ErrorHandler;
+use Inhere\Console\Component\ErrorHandler;
 use Inhere\Console\Face\ApplicationInterface;
 use Inhere\Console\Face\CommandInterface;
 use Inhere\Console\Face\ErrorHandlerInterface;
@@ -18,9 +18,9 @@ use Inhere\Console\IO\Output;
 use Inhere\Console\IO\OutputInterface;
 use Inhere\Console\Traits\InputOutputAwareTrait;
 use Inhere\Console\Traits\SimpleEventTrait;
-use Inhere\Console\Components\Style\Style;
-use Inhere\Console\Utils\FormatUtil;
-use Inhere\Console\Utils\Helper;
+use Inhere\Console\Component\Style\Style;
+use Inhere\Console\Util\FormatUtil;
+use Inhere\Console\Util\Helper;
 
 /**
  * Class AbstractApplication
@@ -158,8 +158,9 @@ abstract class AbstractApplication implements ApplicationInterface
     }
 
     /**
-     * run app
+     * run application
      * @param bool $exit
+     * @return int|mixed
      * @throws \InvalidArgumentException
      */
     public function run(bool $exit = true)
@@ -175,10 +176,10 @@ abstract class AbstractApplication implements ApplicationInterface
 
         // do run ...
         try {
-            $returnCode = $this->dispatch($command);
+            $result = $this->dispatch($command);
         } catch (\Throwable $e) {
             $this->fire(self::ON_RUN_ERROR, $e, $this);
-            $returnCode = $e->getCode() === 0 ? $e->getLine() : $e->getCode();
+            $result = $e->getCode() === 0 ? $e->getLine() : $e->getCode();
             $this->handleException($e);
         }
 
@@ -189,8 +190,10 @@ abstract class AbstractApplication implements ApplicationInterface
         $this->afterRun();
 
         if ($exit) {
-            $this->stop((int)$returnCode);
+            $this->stop(\is_int($result) ? $result : 0);
         }
+
+        return $result;
     }
 
     /**

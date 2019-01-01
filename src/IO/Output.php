@@ -8,9 +8,9 @@
 
 namespace Inhere\Console\IO;
 
-use Inhere\Console\Components\Style\Style;
+use Inhere\Console\Component\Style\Style;
 use Inhere\Console\Traits\FormatOutputAwareTrait;
-use Inhere\Console\Utils\Show;
+use Inhere\Console\Util\Show;
 use Toolkit\Cli\Cli;
 
 /**

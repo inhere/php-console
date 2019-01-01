@@ -188,7 +188,7 @@ $output->write('hello');
 
 ## more interactive
 
-in the class `Inhere\Console\Utils\Interact`
+in the class `Inhere\Console\Util\Interact`
 
 interactive method:
 

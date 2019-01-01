@@ -8,7 +8,7 @@
 
 namespace Inhere\Console\Traits;
 
-use Inhere\Console\Utils\FormatUtil;
+use Inhere\Console\Util\FormatUtil;
 
 /**
  * Trait RuntimeProfileTrait

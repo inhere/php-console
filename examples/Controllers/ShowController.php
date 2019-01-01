@@ -8,12 +8,12 @@
 
 namespace Inhere\Console\Examples\Controllers;
 
-use Inhere\Console\Components\Symbol\Char;
-use Inhere\Console\Components\Symbol\Emoji;
+use Inhere\Console\Component\Symbol\Char;
+use Inhere\Console\Component\Symbol\Emoji;
 use Toolkit\Cli\Color;
 use Inhere\Console\Controller;
 use Inhere\Console\IO\Input;
-use Inhere\Console\Utils\Show;
+use Inhere\Console\Util\Show;
 use Toolkit\Cli\Highlighter;
 
 /**

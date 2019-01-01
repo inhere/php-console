@@ -4,6 +4,7 @@ namespace Inhere\ConsoleTest;
 
 use Inhere\Console\Application;
 use Inhere\Console\Console;
+use Inhere\Console\IO\Input;
 use Inhere\Console\IO\InputInterface;
 use PHPUnit\Framework\TestCase;
 
@@ -12,13 +13,15 @@ use PHPUnit\Framework\TestCase;
  */
 class ApplicationTest extends TestCase
 {
-    private function newApp()
+    private function newApp(array $args = null)
     {
+        $input = new Input($args);
+
         return new Application([
             'name'    => 'Tests',
             'debug'   => 1,
             'version' => '1.0.0',
-        ]);
+        ], $input);
     }
 
     public function testApp()
@@ -48,6 +51,34 @@ class ApplicationTest extends TestCase
         $this->assertContains('test', $app->getCommandNames());
     }
 
+    public function testAddCommandError()
+    {
+        $app = $this->newApp();
+
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessageRegExp("/'name' and 'handler' cannot be empty/");
+        $app->addCommand('');
+
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessageRegExp('/"name" and "controller" cannot be empty/');
+        $app->addCommand('test', 'invalid');
+    }
+
+    public function testRunCommand()
+    {
+        $app = $this->newApp([
+            './app',
+            'test'
+        ]);
+
+        $app->addCommand('test', function () {
+            return 'hello';
+        });
+
+        $ret = $app->run(false);
+        $this->assertSame('hello', $ret);
+    }
+
     public function testAddController()
     {
         $app = $this->newApp();
@@ -72,5 +103,18 @@ class ApplicationTest extends TestCase
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessageRegExp('/"name" and "controller" cannot be empty/');
         $app->controller('test', 'invalid');
+    }
+
+    public function testRunController()
+    {
+        $app = $this->newApp([
+            './app',
+            'test:demo'
+        ]);
+
+        $app->controller('test', TestController::class);
+
+        $ret = $app->run(false);
+        $this->assertSame('Inhere\ConsoleTest\TestController::demoCommand', $ret);
     }
 }

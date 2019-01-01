@@ -9,8 +9,8 @@
 namespace Inhere\Console\Examples\Controllers;
 
 use Inhere\Console\Controller;
-use Inhere\Console\Utils\Interact;
-use Inhere\Console\Utils\Show;
+use Inhere\Console\Util\Interact;
+use Inhere\Console\Util\Show;
 use Toolkit\Cli\Terminal;
 
 /**
