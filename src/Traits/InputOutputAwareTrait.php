@@ -8,6 +8,7 @@
 
 namespace Inhere\Console\Traits;
 
+use Inhere\Console\Console;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\InputInterface;
 use Inhere\Console\IO\Output;
@@ -170,10 +171,21 @@ trait InputOutputAwareTrait
     }
 
     /**
+     * get debug level value
+     * @return int
+     */
+    public function getVerbLevel(): int
+    {
+        return (int)$this->input->getLongOpt('debug', Console::VERB_ERROR);
+    }
+
+    /**
+     * check is given verbose level
+     * @param int $level
      * @return bool
      */
-    public function isDebug(): bool
+    public function isDebug(int $level = Console::VERB_DEBUG): bool
     {
-        return $this->input->boolOpt('debug');
+        return $level <= $this->getVerbLevel();
     }
 }

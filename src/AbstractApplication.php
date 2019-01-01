@@ -39,7 +39,7 @@ abstract class AbstractApplication implements ApplicationInterface
 
     /** @var array */
     protected static $internalOptions = [
-        '--debug' => 'Setting the application runtime debug level',
+        '--debug' => 'Setting the application runtime debug level(0 - 4)',
         '--profile' => 'Display timing and memory usage information',
         '--no-color' => 'Disable color/ANSI for message output',
         '-h, --help' => 'Display this help message',
@@ -52,7 +52,7 @@ abstract class AbstractApplication implements ApplicationInterface
      */
     private $meta = [
         'name' => 'My Console Application',
-        'debug' => false,
+        'debug' => Console::VERB_ERROR,
         'profile' => false,
         'version' => '0.5.1',
         'publishAt' => '2017.03.24',
@@ -431,12 +431,23 @@ abstract class AbstractApplication implements ApplicationInterface
 
         // all console controllers
         if ($controllers = $this->controllers) {
+            $hasGroup = true;
             \ksort($controllers);
+        }
+
+        // all independent commands, Independent, Single, Alone
+        if ($commands = $this->commands) {
+            $hasCommand = true;
+            \ksort($commands);
+        }
+
+        // add split title on both exists.
+        if ($hasCommand && $hasGroup) {
+            $commandArr[] = \PHP_EOL . '- <bold>Alone Commands</bold>';
             $controllerArr[] = \PHP_EOL . '- <bold>Group Commands</bold>';
         }
 
         foreach ($controllers as $name => $controller) {
-            $hasGroup = true;
             /** @var AbstractCommand $controller */
             $desc = $controller::getDescription() ?: $desPlaceholder;
             $aliases = $this->getCommandAliases($name);
@@ -448,15 +459,8 @@ abstract class AbstractApplication implements ApplicationInterface
             $controllerArr[] = '... Not register any group command(controller)';
         }
 
-        // all independent commands, Independent, Single, Alone
-        if ($commands = $this->commands) {
-            $commandArr[] = \PHP_EOL . '- <bold>Alone Commands</bold>';
-            \ksort($commands);
-        }
-
         foreach ($commands as $name => $command) {
             $desc = $desPlaceholder;
-            $hasCommand = true;
 
             /** @var AbstractCommand $command */
             if (\is_subclass_of($command, CommandInterface::class)) {
@@ -755,12 +759,12 @@ abstract class AbstractApplication implements ApplicationInterface
     }
 
     /**
-     * is Debug
-     * @return boolean|int
+     * get current debug level value
+     * @return int
      */
-    public function isDebug()
+    public function getVerbLevel(): int
     {
-        return $this->input->getOpt('debug', $this->meta['debug']);
+        return (int)$this->input->getLongOpt('debug', (int)$this->meta['debug']);
     }
 
     /**
