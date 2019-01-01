@@ -127,7 +127,7 @@ class OutputFormatterStyle
                 implode(', ', array_keys(static::$availableOptions))
             ));
         }
-        if (!in_array(static::$availableOptions[$option], $this->options)) {
+        if (!in_array(static::$availableOptions[$option], $this->options, true)) {
             $this->options[] = static::$availableOptions[$option];
         }
     }
@@ -147,7 +147,7 @@ class OutputFormatterStyle
                 implode(', ', array_keys(static::$availableOptions))
             ));
         }
-        $pos = array_search(static::$availableOptions[$option], $this->options);
+        $pos = array_search(static::$availableOptions[$option], $this->options, true);
         if (false !== $pos) {
             unset($this->options[$pos]);
         }

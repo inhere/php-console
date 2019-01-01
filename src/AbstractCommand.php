@@ -19,7 +19,6 @@ use Inhere\Console\Util\Annotation;
 use Inhere\Console\Util\FormatUtil;
 use Inhere\Console\Util\Helper;
 use Swoole\Coroutine;
-use Swoole\Event;
 
 /**
  * Class AbstractCommand

@@ -64,7 +64,7 @@ class Status
         if ($masked) {
             `stty -echo`; // disable shell echo
         }
-        $buffer = "";
+        $buffer = '';
         $char = "";
         $f = fopen('php://stdin', 'r');
         while (strlen($buffer) < $limit) {

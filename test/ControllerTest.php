@@ -5,7 +5,6 @@ namespace Inhere\ConsoleTest;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
 use PHPUnit\Framework\TestCase;
-use Inhere\Console\Controller;
 
 /**
  * Class ControllerTest

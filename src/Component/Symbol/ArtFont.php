@@ -27,7 +27,7 @@ class ArtFont
     private static $internalFonts = ['404', '500', 'error', 'no', 'ok', 'success', 'yes'];
 
     /**
-     * @var array<name:path>
+     * @var array <name:path>
      */
     private $groups = [];
 

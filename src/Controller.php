@@ -8,7 +8,6 @@
 
 namespace Inhere\Console;
 
-use Inhere\Console\AbstractCommand;
 use Inhere\Console\Face\ControllerInterface;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;

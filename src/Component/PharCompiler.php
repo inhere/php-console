@@ -593,7 +593,7 @@ EOF;
                 $name = $file->getFilename();
 
                 // Skip hidden files and directories.
-                if ($name[0] === '.') {
+                if (\strpos($name, '.') === 0) {
                     return false;
                 }
 

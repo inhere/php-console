@@ -33,4 +33,20 @@ class ConsoleRenderer
     {
 
     }
+
+    /**
+     * @return FormatterInterface
+     */
+    public function getFormatter(): FormatterInterface
+    {
+        return $this->formatter;
+    }
+
+    /**
+     * @param FormatterInterface $formatter
+     */
+    public function setFormatter(FormatterInterface $formatter): void
+    {
+        $this->formatter = $formatter;
+    }
 }
