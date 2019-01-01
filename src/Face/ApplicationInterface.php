@@ -6,7 +6,7 @@
  * Time: 16:51
  */
 
-namespace Inhere\Console\Base;
+namespace Inhere\Console\Face;
 
 /**
  * Interface ApplicationInterface
@@ -15,11 +15,11 @@ namespace Inhere\Console\Base;
 interface ApplicationInterface
 {
     // event name list
-    const ON_BEFORE_RUN = 'beforeRun';
-    const ON_AFTER_RUN = 'afterRun';
-    const ON_RUN_ERROR = 'runError';
-    const ON_STOP_RUN = 'stopRun';
-    const ON_NOT_FOUND = 'notFound';
+    public const ON_BEFORE_RUN = 'app.beforeRun';
+    public const ON_AFTER_RUN = 'app.afterRun';
+    public const ON_RUN_ERROR = 'app.runError';
+    public const ON_STOP_RUN = 'app.stopRun';
+    public const ON_NOT_FOUND = 'app.notFound';
 
     /**
      * @param bool $exit

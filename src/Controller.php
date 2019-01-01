@@ -8,8 +8,8 @@
 
 namespace Inhere\Console;
 
-use Inhere\Console\Base\AbstractCommand;
-use Inhere\Console\Base\ControllerInterface;
+use Inhere\Console\AbstractCommand;
+use Inhere\Console\Face\ControllerInterface;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
 use Inhere\Console\Utils\FormatUtil;

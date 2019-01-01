@@ -1,0 +1,20 @@
+language: php
+
+php:
+  - 7.1
+  - 7.2
+  - 7.3
+
+#matrix:
+#  include:
+#    - php: 7.2
+#      env: ANALYSIS='true'
+
+before_script:
+  - composer require php-coveralls/php-coveralls:^2.1.0
+
+script:
+  - phpunit --coverage-clover clover.xml
+
+after_success:
+  - vendor/bin/php-coveralls --coverage_clover=clover.xml --json_path=coveralls-upload.json -v

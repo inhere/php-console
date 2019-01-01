@@ -6,21 +6,22 @@
  * Time: 18:57
  */
 
-namespace Inhere\Console\Base;
+namespace Inhere\Console\Face;
 
+use Inhere\Console\AbstractApplication;
 use Inhere\Console\IO\InputDefinition;
 
 /**
  * Interface BaseCommandInterface
- * @package Inhere\Console\Base
+ * @package Inhere\Console\Face
  */
 interface BaseCommandInterface
 {
-    const OK = 0;
-    const ERR = 2;
+    public const OK = 0;
+    public const ERR = 2;
 
     // name -> {name}
-    const ANNOTATION_VAR = '{%s}'; // '{$%s}';
+    public const ANNOTATION_VAR = '{%s}'; // '{$%s}';
 
     /**
      * run command
@@ -35,7 +36,7 @@ interface BaseCommandInterface
     public function getDefinition();
 
     /**
-     * @return AbstractApplication
+     * @return AbstractApplication|ApplicationInterface
      */
     public function getApp(): AbstractApplication;
 

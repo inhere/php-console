@@ -8,7 +8,7 @@
 
 namespace Inhere\Console;
 
-use Inhere\Console\Base\AbstractApplication;
+use Inhere\Console\AbstractApplication;
 use Inhere\Console\Utils\Helper;
 
 /**

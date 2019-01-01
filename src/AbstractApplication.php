@@ -6,9 +6,10 @@
  * Time: 18:37
  */
 
-namespace Inhere\Console\Base;
+namespace Inhere\Console;
 
 use Inhere\Console\BuiltIn\ErrorHandler;
+use Inhere\Console\Face\ApplicationInterface;
 use Inhere\Console\Face\CommandInterface;
 use Inhere\Console\Face\ErrorHandlerInterface;
 use Inhere\Console\IO\Input;
@@ -20,7 +21,6 @@ use Inhere\Console\Traits\SimpleEventTrait;
 use Inhere\Console\Components\Style\Style;
 use Inhere\Console\Utils\FormatUtil;
 use Inhere\Console\Utils\Helper;
-use Toolkit\Cli\Highlighter;
 
 /**
  * Class AbstractApplication

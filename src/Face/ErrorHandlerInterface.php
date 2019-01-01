@@ -9,7 +9,7 @@
 namespace Inhere\Console\Face;
 
 use Inhere\Console\Application;
-use Inhere\Console\Base\AbstractApplication;
+use Inhere\Console\AbstractApplication;
 
 /**
  * Interface ErrorHandlerInterface

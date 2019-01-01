@@ -6,11 +6,11 @@
  * Time: 9:23
  */
 
-namespace Inhere\Console\Base;
+namespace Inhere\Console\Face;
 
 /**
  * interface ControllerInterface
- * @package Inhere\Console\Base
+ * @package Inhere\Console\Face
  */
 interface ControllerInterface
 {

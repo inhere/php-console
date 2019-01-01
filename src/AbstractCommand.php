@@ -6,9 +6,9 @@
  * Time: 11:40
  */
 
-namespace Inhere\Console\Base;
+namespace Inhere\Console;
 
-use Inhere\Console\Application;
+use Inhere\Console\Face\BaseCommandInterface;
 use Inhere\Console\Face\CommandInterface;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\InputDefinition;

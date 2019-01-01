@@ -8,8 +8,6 @@
 
 namespace Inhere\Console\Face;
 
-use Inhere\Console\Base\BaseCommandInterface;
-
 /**
  * Interface CommandInterface
  * @package Inhere\Console\Face

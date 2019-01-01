@@ -8,7 +8,7 @@
 
 namespace Inhere\Console\BuiltIn;
 
-use Inhere\Console\Base\AbstractApplication;
+use Inhere\Console\AbstractApplication;
 use Inhere\Console\Face\ErrorHandlerInterface;
 use Toolkit\Cli\Highlighter;
 
