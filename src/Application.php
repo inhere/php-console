@@ -130,16 +130,15 @@ class Application extends AbstractApplication
                 return $this;
             }
 
+            // allow define aliases in Command class by Command::aliases()
+            if ($aliases = $handler::aliases()) {
+                $option['aliases'] = isset($option['aliases']) ? \array_merge($option['aliases'], $aliases) : $aliases;
+            }
         } elseif (!\is_object($handler) || !\method_exists($handler, '__invoke')) {
             Helper::throwInvalidArgument(
                 'The console command handler must is an subclass of %s OR a Closure OR a object have method __invoke()',
                 Command::class
             );
-        }
-
-        // allow define aliases in Command class by Command::aliases()
-        if ($aliases = $handler::aliases()) {
-            $option['aliases'] = isset($option['aliases']) ? \array_merge($option['aliases'], $aliases) : $aliases;
         }
 
         // is an class name string
