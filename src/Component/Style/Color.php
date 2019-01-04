@@ -86,7 +86,7 @@ final class Color
      * @return Color
      * @throws \InvalidArgumentException
      */
-    public static function make($fg = '', $bg = '', array $options = [], $extra = false): Color
+    public static function make($fg = '', $bg = '', array $options = [], bool $extra = false): Color
     {
         return new self($fg, $bg, $options, $extra);
     }
@@ -104,10 +104,10 @@ final class Color
         $fg = $bg = '';
         $extra = false;
         $options = [];
-        $parts = explode(';', str_replace(' ', '', $string));
+        $parts = \explode(';', \str_replace(' ', '', $string));
 
         foreach ($parts as $part) {
-            $subParts = explode('=', $part);
+            $subParts = \explode('=', $part);
 
             if (\count($subParts) < 2) {
                 continue;
@@ -121,12 +121,11 @@ final class Color
                     $bg = $subParts[1];
                     break;
                 case 'extra':
-                    $extra = $subParts[1];
+                    $extra = (bool)$subParts[1];
                     break;
                 case 'options':
-                    $options = explode(',', $subParts[1]);
+                    $options = \explode(',', $subParts[1]);
                     break;
-
                 default:
                     throw new \RuntimeException('Invalid option');
                     break;
@@ -144,7 +143,7 @@ final class Color
      * @param bool $extra
      * @throws \InvalidArgumentException
      */
-    public function __construct($fg = '', $bg = '', array $options = [], $extra = false)
+    public function __construct($fg = '', $bg = '', array $options = [], bool $extra = false)
     {
         if ($fg) {
             if (false === array_key_exists($fg, static::$knownColors)) {

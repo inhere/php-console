@@ -91,18 +91,18 @@ class Show
      */
     public static function block($messages, $type = 'MESSAGE', string $style = Style::NORMAL, $quit = false): int
     {
-        $messages = \is_array($messages) ? array_values($messages) : array($messages);
+        $messages = \is_array($messages) ? \array_values($messages) : array($messages);
 
         // add type
         if (null !== $type) {
-            $messages[0] = sprintf('[%s] %s', strtoupper($type), $messages[0]);
+            $messages[0] = \sprintf('[%s] %s', strtoupper($type), $messages[0]);
         }
 
-        $text = implode(PHP_EOL, $messages);
+        $text = \implode(\PHP_EOL, $messages);
         $color = static::getStyle();
 
         if (\is_string($style) && $color->hasStyle($style)) {
-            $text = sprintf('<%s>%s</%s>', $style, $text, $style);
+            $text = \sprintf('<%s>%s</%s>', $style, $text, $style);
         }
 
         return self::write($text, true, $quit);
@@ -172,7 +172,7 @@ class Show
             $quit = $args[1] ?? false;
             $style = self::$blockMethods[$method];
 
-            if (0 === strpos($method, 'lite')) {
+            if (0 === \strpos($method, 'lite')) {
                 return self::liteBlock($msg, $style === 'primary' ? 'IMPORTANT' : $style, $style, $quit);
             }
 

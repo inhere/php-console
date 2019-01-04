@@ -121,28 +121,28 @@ class Style
     protected function loadDefaultStyles()
     {
         $this
-            ->add(self::NORMAL, ['fg' => 'normal'])
+            ->addByArray(self::NORMAL, ['fg' => 'normal'])
             // 不明显的 浅灰色的
-            ->add(self::FAINTLY, ['fg' => 'normal', 'options' => ['italic']])
-            ->add(self::BOLD, ['options' => ['bold']])
-            ->add(self::INFO, ['fg' => 'green',])//'options' => ['bold']
-            ->add(self::NOTE, ['fg' => 'cyan', 'options' => ['bold']])//'options' => ['bold']
-            ->add(self::PRIMARY, ['fg' => 'yellow', 'options' => ['bold']])//
-            ->add(self::SUCCESS, ['fg' => 'green', 'options' => ['bold']])
-            ->add(self::NOTICE, ['options' => ['bold', 'underscore'],])
-            ->add(self::WARNING, ['fg' => 'black', 'bg' => 'yellow',])//'options' => ['bold']
-            ->add(self::COMMENT, ['fg' => 'yellow',])//'options' => ['bold']
-            ->add(self::QUESTION, ['fg' => 'black', 'bg' => 'cyan'])
-            ->add(self::DANGER, ['fg' => 'red',])// 'bg' => 'magenta', 'options' => ['bold']
-            ->add(self::ERROR, ['fg' => 'white', 'bg' => 'red', 'options' => ['bold']])
-            ->add('underline', ['fg' => 'normal', 'options' => ['underscore']])
-            ->add('blue', ['fg' => 'blue'])
-            ->add('cyan', ['fg' => 'cyan'])
-            ->add('magenta', ['fg' => 'magenta'])
-            ->add('mga', ['fg' => 'magenta'])
-            ->add('red', ['fg' => 'red'])
-            ->add('darkGray', ['fg' => 'black', 'extra' => true])
-            ->add('yellow', ['fg' => 'yellow']);
+            ->addByArray(self::FAINTLY, ['fg' => 'normal', 'options' => ['italic']])
+            ->addByArray(self::BOLD, ['options' => ['bold']])
+            ->addByArray(self::INFO, ['fg' => 'green',])//'options' => ['bold']
+            ->addByArray(self::NOTE, ['fg' => 'cyan', 'options' => ['bold']])//'options' => ['bold']
+            ->addByArray(self::PRIMARY, ['fg' => 'yellow', 'options' => ['bold']])//
+            ->addByArray(self::SUCCESS, ['fg' => 'green', 'options' => ['bold']])
+            ->addByArray(self::NOTICE, ['options' => ['bold', 'underscore'],])
+            ->addByArray(self::WARNING, ['fg' => 'black', 'bg' => 'yellow',])//'options' => ['bold']
+            ->addByArray(self::COMMENT, ['fg' => 'yellow',])//'options' => ['bold']
+            ->addByArray(self::QUESTION, ['fg' => 'black', 'bg' => 'cyan'])
+            ->addByArray(self::DANGER, ['fg' => 'red',])// 'bg' => 'magenta', 'options' => ['bold']
+            ->add(self::ERROR, 'white', 'red', [], true)
+            ->add('underline', 'normal','', ['underscore'])
+            ->add('blue', 'blue')
+            ->add('cyan', 'cyan')
+            ->add('magenta', 'magenta')
+            ->add('mga', 'magenta')
+            ->add('red', 'red')
+            ->add('yellow', ['fg' => 'yellow'])
+            ->addByArray('darkGray', ['fg' => 'black', 'extra' => true]);
     }
 
     /**
@@ -241,7 +241,7 @@ class Style
      * @param bool $extra
      * @return $this
      */
-    public function add(string $name, $fg = '', $bg = '', array $options = [], $extra = false): self
+    public function add(string $name, $fg = '', $bg = '', array $options = [], bool $extra = false): self
     {
         if (\is_array($fg)) {
             return $this->addByArray($name, $fg);
@@ -281,7 +281,7 @@ class Style
         $config = \array_merge($style, $styleConfig);
         list($fg, $bg, $extra, $options) = \array_values($config);
 
-        $this->styles[$name] = Color::make($fg, $bg, $options, $extra);
+        $this->styles[$name] = Color::make($fg, $bg, $options, (bool)$extra);
 
         return $this;
     }
