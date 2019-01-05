@@ -1,5 +1,13 @@
 # CHANGELOG
 
+## v3.0.x
+
+> publish at: 2019.01.03
+
+- modify some dir structure
+- remove some helper methods, use deps lib instead
+- fix some bugs, format code
+
 ## v2.4.0
 
 > publish at: 2018.07.03

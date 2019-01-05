@@ -813,7 +813,7 @@ phpunit
 
 ## License
 
-MIT
+[MIT](LICENSE)
 
 ## 我的其他项目
 
@@ -824,11 +824,3 @@ MIT
 ### `inhere/php-validate` [github](https://github.com/inhere/php-validate)  [git@osc](https://git.oschina.net/inhere/php-validate)
  
  一个简洁小巧且功能完善的php验证库。仅有几个文件，无依赖。
- 
-### `inhere/http` [github](https://github.com/inhere/php-http) [git@osc](https://git.oschina.net/inhere/php-http)
-
-http message 工具库(PSR 7 实现)
-
-### `inhere/http-client` [github](https://github.com/inhere/php-http) [git@osc](https://git.oschina.net/inhere/php-http)
-
-http client 工具库(`request` 请求 `response` 响应 `curl` curl请求库，有简洁、完整和并发请求三个版本的类)
