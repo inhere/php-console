@@ -11,16 +11,14 @@ namespace Inhere\Console;
 use Inhere\Console\Component\ErrorHandler;
 use Inhere\Console\Component\Style\Style;
 use Inhere\Console\Face\ApplicationInterface;
-use Inhere\Console\Face\CommandInterface;
 use Inhere\Console\Face\ErrorHandlerInterface;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\InputInterface;
 use Inhere\Console\IO\Output;
 use Inhere\Console\IO\OutputInterface;
+use Inhere\Console\Traits\ApplicationHelpTrait;
 use Inhere\Console\Traits\InputOutputAwareTrait;
 use Inhere\Console\Traits\SimpleEventTrait;
-use Inhere\Console\Util\FormatUtil;
-use Inhere\Console\Util\Helper;
 use Toolkit\PhpUtil\PhpHelper;
 
 /**
@@ -29,7 +27,7 @@ use Toolkit\PhpUtil\PhpHelper;
  */
 abstract class AbstractApplication implements ApplicationInterface
 {
-    use InputOutputAwareTrait, SimpleEventTrait;
+    use ApplicationHelpTrait, InputOutputAwareTrait, SimpleEventTrait;
 
     /** @var array */
     protected static $internalCommands = [
@@ -357,157 +355,6 @@ abstract class AbstractApplication implements ApplicationInterface
         if ($this->isInternalCommand($name)) {
             throw new \InvalidArgumentException("The command name '$name' is not allowed. It is a built in command.");
         }
-    }
-
-    /***************************************************************************
-     * some information for the application
-     ***************************************************************************/
-
-    /**
-     * show the application help information
-     * @param bool   $quit
-     * @param string $command
-     */
-    public function showHelpInfo(bool $quit = true, string $command = '')
-    {
-        // display help for a special command
-        if ($command) {
-            $this->input->setCommand($command);
-            $this->input->setSOpt('h', true);
-            $this->input->clearArgs();
-            $this->dispatch($command);
-            $this->stop();
-        }
-
-        $script = $this->input->getScript();
-        $sep = $this->delimiter;
-
-        $this->output->helpPanel([
-            'usage'   => "$script <info>{command}</info> [--opt -v -h ...] [arg0 arg1 arg2=value2 ...]",
-            'example' => [
-                "$script test (run a independent command)",
-                "$script home{$sep}index (run a command of the group)",
-                "$script help {command} (see a command help information)",
-                "$script home{$sep}index -h (see a command help of the group)",
-            ]
-        ], $quit);
-    }
-
-    /**
-     * show the application version information
-     * @param bool $quit
-     */
-    public function showVersionInfo($quit = true)
-    {
-        $os = \PHP_OS;
-        $date = \date('Y.m.d');
-        $logo = '';
-        $name = $this->getConfig('name', 'Console Application');
-        $version = $this->getConfig('version', 'Unknown');
-        $publishAt = $this->getConfig('publishAt', 'Unknown');
-        $updateAt = $this->getConfig('updateAt', 'Unknown');
-        $phpVersion = \PHP_VERSION;
-
-        if ($logoTxt = $this->getLogoText()) {
-            $logo = Helper::wrapTag($logoTxt, $this->getLogoStyle());
-        }
-
-        $this->output->aList([
-            "$logo\n  <info>{$name}</info>, Version <comment>$version</comment>\n",
-            'System Info'      => "PHP version <info>$phpVersion</info>, on <info>$os</info> system",
-            'Application Info' => "Update at <info>$updateAt</info>, publish at <info>$publishAt</info>(current $date)",
-        ], null, [
-            'leftChar' => '',
-            'sepChar'  => ' :  '
-        ]);
-
-        $quit && $this->stop();
-    }
-
-    /**
-     * show the application command list information
-     * @param bool $quit
-     */
-    public function showCommandList($quit = true)
-    {
-        $script = $this->getScriptName();
-        $hasGroup = $hasCommand = false;
-        $controllerArr = $commandArr = [];
-        $desPlaceholder = 'No description of the command';
-
-        // all console controllers
-        if ($controllers = $this->controllers) {
-            $hasGroup = true;
-            \ksort($controllers);
-        }
-
-        // all independent commands, Independent, Single, Alone
-        if ($commands = $this->commands) {
-            $hasCommand = true;
-            \ksort($commands);
-        }
-
-        // add split title on both exists.
-        if ($hasCommand && $hasGroup) {
-            $commandArr[] = \PHP_EOL . '- <bold>Alone Commands</bold>';
-            $controllerArr[] = \PHP_EOL . '- <bold>Group Commands</bold>';
-        }
-
-        foreach ($controllers as $name => $controller) {
-            /** @var AbstractCommand $controller */
-            $desc = $controller::getDescription() ?: $desPlaceholder;
-            $aliases = $this->getCommandAliases($name);
-            $extra = $aliases ? Helper::wrapTag(' [alias: ' . \implode(',', $aliases) . ']', 'info') : '';
-            $controllerArr[$name] = $desc . $extra;
-        }
-
-        if (!$hasGroup && $this->isDebug()) {
-            $controllerArr[] = '... Not register any group command(controller)';
-        }
-
-        foreach ($commands as $name => $command) {
-            $desc = $desPlaceholder;
-
-            /** @var AbstractCommand $command */
-            if (\is_subclass_of($command, CommandInterface::class)) {
-                $desc = $command::getDescription() ?: $desPlaceholder;
-            } elseif ($msg = $this->getCommandMetaValue($name, 'description')) {
-                $desc = $msg;
-            } elseif (\is_string($command)) {
-                $desc = 'A handler : ' . $command;
-            } elseif (\is_object($command)) {
-                $desc = 'A handler by ' . \get_class($command);
-            }
-
-            $aliases = $this->getCommandAliases($name);
-            $extra = $aliases ? Helper::wrapTag(' [alias: ' . \implode(',', $aliases) . ']', 'info') : '';
-            $commandArr[$name] = $desc . $extra;
-        }
-
-        if (!$hasCommand && $this->isDebug()) {
-            $commandArr[] = '... Not register any alone command';
-        }
-
-        // built in commands
-        $internalCommands = static::$internalCommands;
-        \ksort($internalCommands);
-
-        // built in options
-        $internalOptions = FormatUtil::alignOptions(self::$internalOptions);
-
-        $this->output->mList([
-            'Usage:'              => "$script <info>{command}</info> [--opt -v -h ...] [arg0 arg1 arg2=value2 ...]",
-            'Options:'            => $internalOptions,
-            'Internal Commands:'  => $internalCommands,
-            'Available Commands:' => \array_merge($controllerArr, $commandArr),
-        ], [
-            'sepChar' => '  ',
-        ]);
-
-        unset($controllerArr, $commandArr, $internalCommands);
-        $this->output->write("More command information, please use: <cyan>$script {command} -h</cyan>");
-
-        $quit && $this->stop();
     }
 
     /**

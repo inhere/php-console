@@ -23,7 +23,7 @@ class ArtFont
     /** @var self */
     private static $instance;
 
-    /** @var array  */
+    /** @var array */
     private static $internalFonts = ['404', '500', 'error', 'no', 'ok', 'success', 'yes'];
 
     /**
@@ -85,7 +85,7 @@ class ArtFont
     /**
      * display the internal art font
      * @param string $name
-     * @param array $opts
+     * @param array  $opts
      * @return int
      */
     public function showInternal(string $name, array $opts = []): int
@@ -96,7 +96,7 @@ class ArtFont
     /**
      * @param string $name
      * @param string $group
-     * @param array $opts
+     * @param array  $opts
      * @return int
      */
     public function showItalic(string $name, string $group = null, array $opts = []): int
@@ -110,7 +110,7 @@ class ArtFont
      * display the art font
      * @param string $name
      * @param string $group
-     * @param array $opts
+     * @param array  $opts
      * contains:
      * - type => '', // 'italic'
      * - indent => 2,
@@ -120,9 +120,9 @@ class ArtFont
     public function show(string $name, string $group = null, array $opts = []): int
     {
         $opts = array_merge([
-            'type' => '',
+            'type'   => '',
             'indent' => 2,
-            'style' => '',
+            'style'  => '',
         ], $opts);
 
         $type = $opts['type'];
@@ -206,8 +206,8 @@ class ArtFont
     }
 
     /**
-     * @param string $name
-     * @param string $file font file path
+     * @param string      $name
+     * @param string      $file font file path
      * @param string|null $group
      * @return $this
      */

@@ -17,9 +17,9 @@ class InputDefinition
 {
     /** @var array */
     private static $defaultArgOptConfig = [
-        'mode' => null,
+        'mode'        => null,
         'description' => '',
-        'default' => null,
+        'default'     => null,
     ];
 
     /** @var string|array */
@@ -97,10 +97,10 @@ class InputDefinition
 
     /**
      * alias of the addArgument
-     * @param string $name
+     * @param string   $name
      * @param int|null $mode
-     * @param string $description
-     * @param null $default
+     * @param string   $description
+     * @param null     $default
      * @return InputDefinition
      */
     public function addArg(string $name, int $mode = null, string $description = '', $default = null): self
@@ -112,9 +112,9 @@ class InputDefinition
      * Adds an argument.
      *
      * @param string $name The argument name
-     * @param int $mode The argument mode: InputArgument::REQUIRED or InputArgument::OPTIONAL
+     * @param int    $mode The argument mode: InputArgument::REQUIRED or InputArgument::OPTIONAL
      * @param string $description A description text
-     * @param mixed $default The default value (for InputArgument::OPTIONAL mode only)
+     * @param mixed  $default The default value (for InputArgument::OPTIONAL mode only)
      * @return $this
      * @throws \LogicException
      */
@@ -163,11 +163,11 @@ class InputDefinition
         }
 
         $this->arguments[$name] = [
-            'mode' => $mode,
-            'required' => $required,
-            'isArray' => $isArray,
+            'mode'        => $mode,
+            'required'    => $required,
+            'isArray'     => $isArray,
             'description' => $description,
-            'default' => $default,
+            'default'     => $default,
         ];
 
         return $this;
@@ -175,7 +175,7 @@ class InputDefinition
 
     /**
      * @param int|string $name
-     * @param null $default
+     * @param null       $default
      * @return string|int|null
      */
     public function getArgument($name, $default = null)
@@ -263,26 +263,36 @@ class InputDefinition
      * {@inheritdoc}
      * @return InputDefinition
      */
-    public function addOpt(string $name, string $shortcut = null, int $mode = null, string $description = '', $default = null): self
-    {
+    public function addOpt(
+        string $name,
+        string $shortcut = null,
+        int $mode = null,
+        string $description = '',
+        $default = null
+    ): self {
         return $this->addOption($name, $shortcut, $mode, $description, $default);
     }
 
     /**
      * Adds an option.
      *
-     * @param string|bool $name The option name, must is a string
+     * @param string|bool       $name The option name, must is a string
      * @param string|array|null $shortcut The shortcut (can be null)
-     * @param int $mode The option mode: One of the Input::OPT_* constants
-     * @param string $description A description text
-     * @param mixed $default The default value (must be null for InputOption::OPT_BOOL)
+     * @param int               $mode The option mode: One of the Input::OPT_* constants
+     * @param string            $description A description text
+     * @param mixed             $default The default value (must be null for InputOption::OPT_BOOL)
      *
      * @return $this
      * @throws \InvalidArgumentException
      * @throws \LogicException
      */
-    public function addOption(string $name, string $shortcut = null, int $mode = null, string $description = '', $default = null): self
-    {
+    public function addOption(
+        string $name,
+        string $shortcut = null,
+        int $mode = null,
+        string $description = '',
+        $default = null
+    ): self {
         if (0 === \strpos($name, '-')) {
             $name = \trim($name, '-');
         }
@@ -318,7 +328,7 @@ class InputDefinition
 
         if ($isArray) {
             if (null === $default) {
-                $default = array();
+                $default = [];
             } elseif (!\is_array($default)) {
                 throw new \LogicException('A default value for an array option must be an array.');
             }
@@ -345,12 +355,12 @@ class InputDefinition
         }
 
         $this->options[$name] = [
-            'mode' => $mode,
-            'shortcut' => $shortcut, // 允许数组
-            'required' => $mode === Input::OPT_REQUIRED,
-            'optional' => $mode === Input::OPT_OPTIONAL,
+            'mode'        => $mode,
+            'shortcut'    => $shortcut, // 允许数组
+            'required'    => $mode === Input::OPT_REQUIRED,
+            'optional'    => $mode === Input::OPT_OPTIONAL,
             'description' => $description,
-            'default' => $default,
+            'default'     => $default,
         ];
 
         return $this;
@@ -488,10 +498,10 @@ class InputDefinition
 
         return [
             $this->description,
-            'usage:' => \implode(' ', $elements),
-            'options:' => $opts,
-            'arguments:' => $args,
-            'example:' => $this->example,
+            'usage:'          => \implode(' ', $elements),
+            'options:'        => $opts,
+            'arguments:'      => $args,
+            'example:'        => $this->example,
             'global options:' => '',
         ];
     }

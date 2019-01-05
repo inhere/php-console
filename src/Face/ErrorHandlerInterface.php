@@ -8,8 +8,8 @@
 
 namespace Inhere\Console\Face;
 
-use Inhere\Console\Application;
 use Inhere\Console\AbstractApplication;
+use Inhere\Console\Application;
 
 /**
  * Interface ErrorHandlerInterface
@@ -18,7 +18,7 @@ use Inhere\Console\AbstractApplication;
 interface ErrorHandlerInterface
 {
     /**
-     * @param \Throwable  $e
+     * @param \Throwable                      $e
      * @param Application|AbstractApplication $app
      */
     public function handle(\Throwable $e, AbstractApplication $app);

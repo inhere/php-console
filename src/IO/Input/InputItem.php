@@ -57,10 +57,10 @@ class InputItem
     private $isArray;
 
     /**
-     * @param string $name
+     * @param string   $name
      * @param int|null $mode
-     * @param string $description
-     * @param null $default
+     * @param string   $description
+     * @param null     $default
      * @return static
      */
     public static function make(string $name, int $mode = null, string $description = '', $default = null)
@@ -70,10 +70,10 @@ class InputItem
 
     /**
      * class constructor.
-     * @param string $name
+     * @param string   $name
      * @param int|null $mode
-     * @param string $description
-     * @param mixed $default The default value
+     * @param string   $description
+     * @param mixed    $default The default value
      *  - for InputArgument::OPTIONAL mode only
      *  - must be null for InputOption::OPT_BOOL
      */

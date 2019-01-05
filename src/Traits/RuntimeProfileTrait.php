@@ -8,7 +8,6 @@
 
 namespace Inhere\Console\Traits;
 
-use Inhere\Console\Util\FormatUtil;
 use Toolkit\PhpUtil\PhpHelper;
 
 /**
@@ -36,8 +35,8 @@ trait RuntimeProfileTrait
 
     /**
      * mark data analysis start
-     * @param $name
-     * @param array $context
+     * @param        $name
+     * @param array  $context
      * @param string $category
      * @throws \InvalidArgumentException
      */
@@ -46,11 +45,11 @@ trait RuntimeProfileTrait
         $data = [
             '_profile_stats' => [
                 'startTime' => \microtime(true),
-                'startMem' => \memory_get_usage(),
+                'startMem'  => \memory_get_usage(),
             ],
             '_profile_start' => $context,
-            '_profile_end' => null,
-            '_profile_msg' => null,
+            '_profile_end'   => null,
+            '_profile_msg'   => null,
         ];
 
         $profileKey = $category . '|' . $name;
@@ -66,7 +65,7 @@ trait RuntimeProfileTrait
     /**
      * mark data analysis end
      * @param string|null $msg
-     * @param array $context
+     * @param array       $context
      * @return bool|array
      */
     public static function profileEnd(string $msg = null, array $context = [])
@@ -98,7 +97,7 @@ trait RuntimeProfileTrait
 
     /**
      * @param null|string $name
-     * @param string $category
+     * @param string      $category
      * @return array
      */
     public static function getProfileData(string $name = null, string $category = 'application'): array

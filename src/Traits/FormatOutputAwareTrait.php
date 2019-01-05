@@ -9,7 +9,6 @@
 namespace Inhere\Console\Traits;
 
 use Inhere\Console\Component\Style\Style;
-use Inhere\Console\Util\Helper;
 use Inhere\Console\Util\Show;
 use Toolkit\PhpUtil\Php;
 
@@ -56,7 +55,7 @@ trait FormatOutputAwareTrait
     public function write($messages, $nl = true, $quit = false): int
     {
         return Show::write($messages, $nl, $quit, [
-            'flush' => true,
+            'flush'  => true,
             'stream' => $this->outputStream,
         ]);
     }
@@ -190,7 +189,7 @@ trait FormatOutputAwareTrait
 
     /**
      * @param string $method
-     * @param array $args
+     * @param array  $args
      * @return int
      * @throws \LogicException
      */
@@ -220,14 +219,14 @@ trait FormatOutputAwareTrait
 
     /**
      * @param mixed $data
-     * @param bool $echo
-     * @param int $flags
+     * @param bool  $echo
+     * @param int   $flags
      * @return int|string
      */
     public function json(
         $data,
         $echo = true,
-        int $flags = JSON_PRETTY_PRINT|JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES
+        int $flags = JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
     ) {
         $string = \json_encode($data, $flags);
 

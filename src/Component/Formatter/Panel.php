@@ -18,13 +18,13 @@ use Inhere\Console\Util\FormatUtil;
  */
 class Panel extends Formatter
 {
-    /** @var string  */
+    /** @var string */
     public $title = '';
 
-    /** @var string  */
+    /** @var string */
     public $titleBorder = '-';
 
-    /** @var string  */
+    /** @var string */
     public $titleStyle = '-';
 
     /** @var string */
@@ -36,25 +36,25 @@ class Panel extends Formatter
     /** @var string */
     public $bodyAlign = self::ALIGN_LEFT;
 
-    /** @var string  */
+    /** @var string */
     public $footerBorder = '-';
 
-    /** @var string  */
+    /** @var string */
     public $footer = '';
 
-    /** @var bool  */
+    /** @var bool */
     public $ucFirst = true;
 
-    /** @var int  */
+    /** @var int */
     public $width = 0;
 
-    /** @var bool  */
+    /** @var bool */
     public $border = true;
 
-    /** @var string  */
+    /** @var string */
     public $borderYChar = '-';
 
-    /** @var string  */
+    /** @var string */
     public $borderXChar = '|';
 
     /**
@@ -146,10 +146,10 @@ EOF;
 
         // output panel body
         $panelStr = FormatUtil::spliceKeyValue($panelData, [
-            'leftChar' => "  $borderChar ",
-            'sepChar' => ' | ',
+            'leftChar'    => "  $borderChar ",
+            'sepChar'     => ' | ',
             'keyMaxWidth' => $labelMaxWidth,
-            'ucFirst' => $this->ucFirst,
+            'ucFirst'     => $this->ucFirst,
         ]);
 
         // already exists "\n"

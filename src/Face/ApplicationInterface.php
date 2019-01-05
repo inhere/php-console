@@ -16,10 +16,10 @@ interface ApplicationInterface
 {
     // event name list
     public const ON_BEFORE_RUN = 'app.beforeRun';
-    public const ON_AFTER_RUN = 'app.afterRun';
-    public const ON_RUN_ERROR = 'app.runError';
-    public const ON_STOP_RUN = 'app.stopRun';
-    public const ON_NOT_FOUND = 'app.notFound';
+    public const ON_AFTER_RUN  = 'app.afterRun';
+    public const ON_RUN_ERROR  = 'app.runError';
+    public const ON_STOP_RUN   = 'app.stopRun';
+    public const ON_NOT_FOUND  = 'app.notFound';
 
     /**
      * @param bool $exit
@@ -36,7 +36,7 @@ interface ApplicationInterface
     /**
      * run a independent command
      * @param string $name
-     * @param bool $believable
+     * @param bool   $believable
      * @return mixed
      */
     public function runCommand(string $name, bool $believable = false);
@@ -45,17 +45,17 @@ interface ApplicationInterface
      * run a controller's action
      * @param string $name Controller name
      * @param string $action Command
-     * @param bool $believable The `$name` is believable
-     * @param bool $standAlone
+     * @param bool   $believable The `$name` is believable
+     * @param bool   $standAlone
      * @return mixed
      */
     public function runAction(string $name, string $action, bool $believable = false, bool $standAlone = false);
 
     /**
      * Register a app group command(by controller)
-     * @param string $name The controller name
+     * @param string                     $name The controller name
      * @param string|ControllerInterface $class The controller class
-     * @param null|array|string $option
+     * @param null|array|string          $option
      * string: define the description message.
      * array:
      *  - aliases     The command aliases
@@ -67,9 +67,9 @@ interface ApplicationInterface
 
     /**
      * Register a app independent console command
-     * @param string|CommandInterface $name
+     * @param string|CommandInterface          $name
      * @param string|\Closure|CommandInterface $handler
-     * @param null|array|string $option
+     * @param null|array|string                $option
      * string: define the description message.
      * array:
      *  - aliases     The command aliases

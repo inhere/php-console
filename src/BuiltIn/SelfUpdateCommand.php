@@ -8,13 +8,13 @@
 
 namespace Inhere\Console\BuiltIn;
 
+use Humbug\SelfUpdate\Strategy\GithubStrategy;
+use Humbug\SelfUpdate\Strategy\ShaStrategy;
+use Humbug\SelfUpdate\Updater;
+use Humbug\SelfUpdate\VersionParser;
 use Inhere\Console\Command;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
-use Humbug\SelfUpdate\Updater;
-use Humbug\SelfUpdate\VersionParser;
-use Humbug\SelfUpdate\Strategy\ShaStrategy;
-use Humbug\SelfUpdate\Strategy\GithubStrategy;
 
 /**
  * Class SelfUpdateCommand
@@ -40,7 +40,7 @@ class SelfUpdateCommand extends Command
 
     /**
      * Execute the command.
-     * @param Input $input
+     * @param Input  $input
      * @param Output $output
      */
     protected function execute($input, $output)

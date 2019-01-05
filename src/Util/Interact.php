@@ -21,7 +21,7 @@ class Interact extends Show
     /**
      * read CLI input
      * @param mixed $message
-     * @param bool $nl
+     * @param bool  $nl
      * @param array $opts
      * [
      *   'stream' => \STDIN
@@ -42,7 +42,7 @@ class Interact extends Show
     /**
      * 读取输入信息
      * @param  mixed $message 若不为空，则先输出文本
-     * @param  bool $nl true 会添加换行符 false 原样输出，不添加换行符
+     * @param  bool  $nl true 会添加换行符 false 原样输出，不添加换行符
      * @return string
      */
     public static function readRow($message = null, $nl = false): string
@@ -52,7 +52,7 @@ class Interact extends Show
 
     /**
      * @param null|mixed $message
-     * @param bool $nl
+     * @param bool       $nl
      * @return string
      */
     public static function readFirst($message = null, $nl = false): string
@@ -72,7 +72,7 @@ class Interact extends Show
 
     /**
      * alias of the `select()`
-     * @param  string $description 说明
+     * @param  string       $description 说明
      * @param  string|array $options 选项数据
      * e.g
      * [
@@ -80,8 +80,8 @@ class Interact extends Show
      *    '1' => 'chengdu',
      *    '2' => 'beijing'
      * ]
-     * @param  mixed $default 默认选项
-     * @param  bool $allowExit 有退出选项 默认 true
+     * @param  mixed        $default 默认选项
+     * @param  bool         $allowExit 有退出选项 默认 true
      * @return string
      */
     public static function select(string $description, $options, $default = null, bool $allowExit = true): string
@@ -91,10 +91,10 @@ class Interact extends Show
 
     /**
      * choice one of the options 在多个选项中选择一个
-     * @param $description
+     * @param              $description
      * @param string|array $options
-     * @param null $default
-     * @param bool $allowExit
+     * @param null         $default
+     * @param bool         $allowExit
      * @return string
      */
     public static function choice(string $description, $options, $default = null, bool $allowExit = true): string
@@ -140,10 +140,10 @@ class Interact extends Show
 
     /**
      * alias of the `multiSelect()`
-     * @param string $description
+     * @param string       $description
      * @param string|array $options
-     * @param null|mixed $default
-     * @param bool $allowExit
+     * @param null|mixed   $default
+     * @param bool         $allowExit
      * @return array
      */
     public static function checkbox(string $description, $options, $default = null, $allowExit = true): array
@@ -152,10 +152,10 @@ class Interact extends Show
     }
 
     /**
-     * @param string $description
+     * @param string       $description
      * @param string|array $options
-     * @param null|mixed $default
-     * @param bool $allowExit
+     * @param null|mixed   $default
+     * @param bool         $allowExit
      * @return array
      */
     public static function multiSelect(string $description, $options, $default = null, $allowExit = true): array
@@ -214,7 +214,7 @@ class Interact extends Show
     /**
      * 确认, 发出信息要求确认
      * @param string $question 发出的信息
-     * @param bool $default Default value
+     * @param bool   $default Default value
      * @return bool
      */
     public static function confirm(string $question, $default = true): bool
@@ -277,7 +277,7 @@ class Interact extends Show
             if ($answer === 'n') {
                 return false;
             }
-        } elseif($default !== null) {
+        } elseif ($default !== null) {
             return $default;
         }
 
@@ -287,9 +287,9 @@ class Interact extends Show
 
     /**
      * alias of the `question()`
-     * @param string $question 问题
+     * @param string      $question 问题
      * @param null|string $default 默认值
-     * @param \Closure $validator The validate callback. It must return bool.
+     * @param \Closure    $validator The validate callback. It must return bool.
      * @return string|null
      */
     public static function ask(string $question, $default = null, \Closure $validator = null)
@@ -329,8 +329,8 @@ class Interact extends Show
      *
      *  echo "Your input: $answer";
      * ```
-     * @param string $question
-     * @param null|mixed $default
+     * @param string        $question
+     * @param null|mixed    $default
      * @param \Closure|null $validator Validator, must return bool.
      * @return null|string
      */
@@ -378,9 +378,9 @@ class Interact extends Show
      * 有次数限制的询问,提出问题
      *   若输入了值且验证成功则返回 输入的结果
      *   否则，会连续询问 $times 次， 若仍然错误，退出
-     * @param string $question 问题
+     * @param string      $question 问题
      * @param null|string $default 默认值
-     * @param \Closure $validator (默认验证输入是否为空)自定义回调验证输入是否符合要求; 验证成功返回true 否则 可返回错误消息
+     * @param \Closure    $validator (默认验证输入是否为空)自定义回调验证输入是否符合要求; 验证成功返回true 否则 可返回错误消息
      * @example This is an example
      * ```php
      * // no default value
@@ -403,7 +403,7 @@ class Interact extends Show
      *     return true;
      * } );
      * ```
-     * @param int $times Allow input times
+     * @param int         $times Allow input times
      * @return string|null
      */
     public static function limitedAsk(string $question, $default = null, \Closure $validator = null, int $times = 3)
@@ -493,7 +493,7 @@ class Interact extends Show
         if (Sys::shIsAvailable()) {
             // COMMAND: sh -c 'read -p "Enter Password:" -s user_input && echo $user_input'
             $command = sprintf('sh -c "read -p \'%s\' -s user_input && echo $user_input"', $prompt);
-            $password = Sys::execute($command,false);
+            $password = Sys::execute($command, false);
 
             echo "\n";
             return $password;

@@ -28,13 +28,13 @@ class Table extends Formatter
     /** @var string|array */
     public $body;
 
-    /** @var string  */
+    /** @var string */
     public $title = '';
 
-    /** @var string  */
+    /** @var string */
     public $titleBorder = '-';
 
-    /** @var string  */
+    /** @var string */
     public $titleStyle = '-';
 
     /** @var string */

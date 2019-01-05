@@ -17,7 +17,7 @@ use Inhere\Console\IO\InputDefinition;
  */
 interface BaseCommandInterface
 {
-    public const OK = 0;
+    public const OK  = 0;
     public const ERR = 2;
 
     // name -> {name}

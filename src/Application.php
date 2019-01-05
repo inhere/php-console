@@ -28,7 +28,7 @@ class Application extends AbstractApplication
         /** @var Controller $class */
         if (!$class && \class_exists($name)) {
             $class = $name;
-            $name  = $class::getName();
+            $name = $class::getName();
         }
 
         if (!$name || !$class) {
@@ -102,7 +102,7 @@ class Application extends AbstractApplication
         /** @var Command $name */
         if (!$handler && \class_exists($name)) {
             $handler = $name;
-            $name    = $name::getName();
+            $name = $name::getName();
         }
 
         if (!$name || !$handler) {
@@ -201,7 +201,7 @@ class Application extends AbstractApplication
      */
     public function registerCommands(string $namespace, string $basePath): self
     {
-        $length   = \strlen($basePath) + 1;
+        $length = \strlen($basePath) + 1;
         $iterator = Helper::directoryIterator($basePath, $this->getFileFilter());
 
         foreach ($iterator as $file) {
@@ -221,7 +221,7 @@ class Application extends AbstractApplication
      */
     public function registerGroups(string $namespace, string $basePath): self
     {
-        $length   = \strlen($basePath) + 1;
+        $length = \strlen($basePath) + 1;
         $iterator = Helper::directoryIterator($basePath, $this->getFileFilter());
 
         foreach ($iterator as $file) {

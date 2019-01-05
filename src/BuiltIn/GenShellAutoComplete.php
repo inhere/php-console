@@ -28,7 +28,7 @@ class GenShellAutoComplete extends Command
 
     /**
      * do execute
-     * @param  Input $input
+     * @param  Input  $input
      * @param  Output $output
      * @return int|mixed
      */

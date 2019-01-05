@@ -46,27 +46,27 @@ class Color
     public const CONCEALED  = 'concealed';  // 隐匿的
 
     /** @var array Known color list */
-    private static $knownColors = array(
-        'black' => 0,
-        'red' => 1,
-        'green' => 2,
-        'yellow' => 3,
-        'blue' => 4,
+    private static $knownColors = [
+        'black'   => 0,
+        'red'     => 1,
+        'green'   => 2,
+        'yellow'  => 3,
+        'blue'    => 4,
         'magenta' => 5, // 洋红色 洋红 品红色
-        'cyan' => 6, // 青色 青绿色 蓝绿色
-        'white' => 7,
-        'normal' => 9,
-    );
+        'cyan'    => 6, // 青色 青绿色 蓝绿色
+        'white'   => 7,
+        'normal'  => 9,
+    ];
 
     /** @var array Known style option */
     private static $knownOptions = [
-        'bold' => 1,       // 22 加粗
-        'fuzzy' => 2,      // 模糊(不是所有的终端仿真器都支持)
-        'italic' => 3,      // 斜体(不是所有的终端仿真器都支持)
+        'bold'       => 1,       // 22 加粗
+        'fuzzy'      => 2,      // 模糊(不是所有的终端仿真器都支持)
+        'italic'     => 3,      // 斜体(不是所有的终端仿真器都支持)
         'underscore' => 4, // 24 下划线
-        'blink' => 5,      // 25 闪烁
-        'reverse' => 7,    // 27 颠倒的 交换背景色与前景色
-        'concealed' => 8,  // 28 隐匿的
+        'blink'      => 5,      // 25 闪烁
+        'reverse'    => 7,    // 27 颠倒的 交换背景色与前景色
+        'concealed'  => 8,  // 28 隐匿的
     ];
 
     /** @var int Foreground color */
@@ -81,8 +81,8 @@ class Color
     /**
      * @param string $fg
      * @param string $bg
-     * @param array $options
-     * @param bool $extra
+     * @param array  $options
+     * @param bool   $extra
      * @return Color
      * @throws \InvalidArgumentException
      */
@@ -139,8 +139,8 @@ class Color
      * Constructor
      * @param string $fg Foreground color.  e.g 'white'
      * @param string $bg Background color.  e.g 'black'
-     * @param array $options Style options. e.g ['bold', 'underscore']
-     * @param bool $extra
+     * @param array  $options Style options. e.g ['bold', 'underscore']
+     * @param bool   $extra
      * @throws \InvalidArgumentException
      */
     public function __construct($fg = '', $bg = '', array $options = [], bool $extra = false)

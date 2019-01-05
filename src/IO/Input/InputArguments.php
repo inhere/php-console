@@ -21,15 +21,21 @@ class InputArguments
     private $arguments = [];
 
     /**
-     * @param string $name
-     * @param int|null $mode
+     * @param string      $name
+     * @param int|null    $mode
      * @param string|null $type The argument data type. (eg: 'string', 'array', 'mixed')
-     * @param string $description
-     * @param null $default
-     * @param null $alias
+     * @param string      $description
+     * @param null        $default
+     * @param null        $alias
      */
-    public function add(string $name, int $mode = null, string $type = null, string $description = '', $default = null, $alias = null)
-    {
+    public function add(
+        string $name,
+        int $mode = null,
+        string $type = null,
+        string $description = '',
+        $default = null,
+        $alias = null
+    ) {
 
     }
 

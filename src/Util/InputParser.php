@@ -57,8 +57,8 @@ final class InputParser
             'arrayValues'    => [], // ['names', 'status']
         ], $config);
 
-        $args        = $sOpts = $lOpts = [];
-        $noValues    = \array_flip((array)$config['noValues']);
+        $args = $sOpts = $lOpts = [];
+        $noValues = \array_flip((array)$config['noValues']);
         $arrayValues = \array_flip((array)$config['arrayValues']);
 
         // each() will deprecated at 7.2. so,there use current and next instead it.
@@ -68,13 +68,13 @@ final class InputParser
 
             // is options
             if ($p{0} === '-') {
-                $val    = true;
-                $opt    = \substr($p, 1);
+                $val = true;
+                $opt = \substr($p, 1);
                 $isLong = false;
 
                 // long-opt: (--<opt>)
                 if (\strpos($opt, '-') === 0) {
-                    $opt    = \substr($opt, 1);
+                    $opt = \substr($opt, 1);
                     $isLong = true;
 
                     // long-opt: value specified inline (--<opt>=<value>)
@@ -105,7 +105,7 @@ final class InputParser
                     continue;
                 }
 
-                $val     = self::filterBool($val);
+                $val = self::filterBool($val);
                 $isArray = isset($arrayValues[$opt]);
 
                 if ($isLong) {

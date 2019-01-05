@@ -52,7 +52,7 @@ class Helper
 
     /**
      * @param string $dir
-     * @param int $mode
+     * @param int    $mode
      * @throws \RuntimeException
      */
     public static function mkdir(string $dir, int $mode = 0775)
@@ -63,9 +63,9 @@ class Helper
     }
 
     /**
-     * @param string $srcDir
+     * @param string   $srcDir
      * @param callable $filter
-     * @param int $flags
+     * @param int      $flags
      * @return \RecursiveIteratorIterator
      * @throws \InvalidArgumentException
      */
@@ -73,8 +73,7 @@ class Helper
         string $srcDir,
         callable $filter,
         $flags = \FilesystemIterator::KEY_AS_PATHNAME | \FilesystemIterator::CURRENT_AS_FILEINFO
-    ): \RecursiveIteratorIterator
-    {
+    ): \RecursiveIteratorIterator {
         if (!$srcDir || !file_exists($srcDir)) {
             throw new \InvalidArgumentException('Please provide a exists source directory.');
         }
@@ -87,7 +86,7 @@ class Helper
 
     /**
      * @param string $command
-     * @param array $map
+     * @param array  $map
      */
     public static function commandSearch(string $command, array $map)
     {
@@ -115,7 +114,7 @@ class Helper
 
     /**
      * @param string $string
-     * @param int $indent
+     * @param int    $indent
      * @param string $padStr
      * @return string
      */
@@ -126,9 +125,9 @@ class Helper
 
     /**
      * find similar text from an array|Iterator
-     * @param string $need
+     * @param string          $need
      * @param \Iterator|array $iterator
-     * @param int $similarPercent
+     * @param int             $similarPercent
      * @return array
      */
     public static function findSimilar(string $need, $iterator, $similarPercent = 45): array
@@ -158,7 +157,7 @@ class Helper
      *     'key1'      => 'value1',
      *     'key2-test' => 'value2',
      * ]
-     * @param bool $expectInt
+     * @param bool   $expectInt
      * @return int
      */
     public static function getKeyMaxWidth(array $data, bool $expectInt = false): int

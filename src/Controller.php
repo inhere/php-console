@@ -118,7 +118,7 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
 
     /**
      * 运行控制器的 action
-     * @param  Input $input
+     * @param  Input  $input
      * @param  Output $output
      * @return mixed
      * @throws \ReflectionException
@@ -293,9 +293,9 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
         $this->output->startBuffer();
         $this->output->write(\ucfirst($classDes) . \PHP_EOL);
         $this->output->mList([
-            'Usage:' => $usage,
+            'Usage:'              => $usage,
             //'Group Name:' => "<info>$sName</info>",
-            'Global Options:' => FormatUtil::alignOptions($globalOptions),
+            'Global Options:'     => FormatUtil::alignOptions($globalOptions),
             'Available Commands:' => $commands,
         ], [
             'sepChar' => '  ',
@@ -311,7 +311,7 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
 
     /**
      * @param \ReflectionClass|null $ref
-     * @param bool $onlyName
+     * @param bool                  $onlyName
      * @return \Generator
      */
     protected function getAllCommandMethods(\ReflectionClass $ref = null, $onlyName = false)

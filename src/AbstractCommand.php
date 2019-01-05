@@ -53,11 +53,11 @@ abstract class AbstractCommand implements BaseCommandInterface
     protected static $annotationTags = [
         // tag name => multi line align
         'description' => false,
-        'usage' => false,
-        'arguments' => true,
-        'options' => true,
-        'example' => true,
-        'help' => true,
+        'usage'       => false,
+        'arguments'   => true,
+        'options'     => true,
+        'example'     => true,
+        'help'        => true,
     ];
 
     /** @var Application */
@@ -96,8 +96,8 @@ abstract class AbstractCommand implements BaseCommandInterface
 
     /**
      * Command constructor.
-     * @param Input $input
-     * @param Output $output
+     * @param Input                $input
+     * @param Output               $output
      * @param InputDefinition|null $definition
      */
     public function __construct(Input $input, Output $output, InputDefinition $definition = null)
@@ -160,12 +160,12 @@ abstract class AbstractCommand implements BaseCommandInterface
     {
         // e.g: `more info see {name}:index`
         return [
-            'name' => self::getName(),
-            'group' => self::getName(),
-            'workDir' => $this->input->getPwd(),
-            'script' => $this->input->getScript(), // bin/app
-            'binName' => $this->input->getScript(), // bin/app
-            'command' => $this->input->getCommand(), // demo OR home:test
+            'name'        => self::getName(),
+            'group'       => self::getName(),
+            'workDir'     => $this->input->getPwd(),
+            'script'      => $this->input->getScript(), // bin/app
+            'binName'     => $this->input->getScript(), // bin/app
+            'command'     => $this->input->getCommand(), // demo OR home:test
             'fullCommand' => $this->input->getFullCommand(),
         ];
     }
@@ -254,7 +254,7 @@ abstract class AbstractCommand implements BaseCommandInterface
 
     /**
      * do execute command
-     * @param  Input $input
+     * @param  Input  $input
      * @param  Output $output
      * @return int|mixed
      */
@@ -366,7 +366,7 @@ abstract class AbstractCommand implements BaseCommandInterface
         if (\count($missingOpts) > 0) {
             $out->liteError(
                 \sprintf('Not enough options parameters (missing: "%s").',
-                \implode(', ', $missingOpts))
+                    \implode(', ', $missingOpts))
             );
 
             return false;
@@ -405,7 +405,7 @@ abstract class AbstractCommand implements BaseCommandInterface
     }
 
     /**
-     * @param string $name
+     * @param string       $name
      * @param string|array $value
      */
     protected function setAnnotationVar(string $name, $value)
@@ -482,9 +482,9 @@ abstract class AbstractCommand implements BaseCommandInterface
 
     /**
      * show help by parse method annotations
-     * @param string $method
+     * @param string      $method
      * @param null|string $action
-     * @param array $aliases
+     * @param array       $aliases
      * @return int
      * @throws \ReflectionException
      */
@@ -549,10 +549,12 @@ abstract class AbstractCommand implements BaseCommandInterface
             unset($help['Description:']);
         }
 
-        $help['Global Options:'] = FormatUtil::alignOptions(\array_merge(Application::getInternalOptions(), $this->commonOptions));
-
+        $help['Global Options:'] = FormatUtil::alignOptions(
+            \array_merge(Application::getInternalOptions(),
+            $this->commonOptions)
+        );
         $this->output->mList($help, [
-            'sepChar' => '  ',
+            'sepChar'     => '  ',
             'lastNewline' => 0,
         ]);
 
@@ -631,7 +633,7 @@ abstract class AbstractCommand implements BaseCommandInterface
 
     /**
      * @param array $annotationTags
-     * @param bool $replace
+     * @param bool  $replace
      */
     public static function setAnnotationTags(array $annotationTags, $replace = false)
     {

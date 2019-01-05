@@ -44,7 +44,7 @@ class PharController extends Controller
      *  -o, --output STRING     Setting the output file name(<cyan>{defaultPkgName}.phar</cyan>)
      *  --fast BOOL             Fast build. only add modified files by <cyan>git status -s</cyan>
      *  --refresh BOOL          Whether build vendor folder files on phar file exists(<cyan>False</cyan>)
-     * @param  \Inhere\Console\IO\Input $in
+     * @param  \Inhere\Console\IO\Input  $in
      * @param  \Inhere\Console\IO\Output $out
      * @return int
      * @throws \UnexpectedValueException
@@ -155,7 +155,7 @@ class PharController extends Controller
      *  -y, --yes BOOL      Whether display goon tips message.
      *  --overwrite BOOL    Whether overwrite exists files on extract phar
      * @example {fullCommand} -f myapp.phar -d var/www/app
-     * @param  \Inhere\Console\IO\Input $in
+     * @param  \Inhere\Console\IO\Input  $in
      * @param  \Inhere\Console\IO\Output $out
      * @return int
      */

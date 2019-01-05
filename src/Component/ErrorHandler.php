@@ -47,7 +47,7 @@ ERR;
                 // __METHOD__,
                 $snippet,
                 $e->getTraceAsString()
-                // \str_replace('):', '): -', $e->getTraceAsString())
+            // \str_replace('):', '): -', $e->getTraceAsString())
             );
 
             if ($app->getConfig('hideRootPath') && ($rootPath = $app->getConfig('rootPath'))) {

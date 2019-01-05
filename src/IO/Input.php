@@ -125,7 +125,7 @@ class Input implements InputInterface
     /**
      * 读取输入信息
      * @param  string $question 若不为空，则先输出文本消息
-     * @param  bool $nl true 会添加换行符 false 原样输出，不添加换行符
+     * @param  bool   $nl true 会添加换行符 false 原样输出，不添加换行符
      * @return string
      */
     public function read(string $question = '', bool $nl = false): string
@@ -159,7 +159,7 @@ class Input implements InputInterface
 
     /**
      * @param array $args
-     * @param bool $replace
+     * @param bool  $replace
      */
     public function setArgs(array $args, $replace = false)
     {
@@ -178,7 +178,7 @@ class Input implements InputInterface
     /**
      * get Argument
      * @param null|int|string $name
-     * @param mixed $default
+     * @param mixed           $default
      * @return mixed
      */
     public function getArgument($name, $default = null)
@@ -189,7 +189,7 @@ class Input implements InputInterface
     /**
      * get Argument
      * @param null|int|string $name
-     * @param mixed $default
+     * @param mixed           $default
      * @return mixed
      */
     public function getArg($name, $default = null)
@@ -200,7 +200,7 @@ class Input implements InputInterface
     /**
      * get Argument
      * @param null|int|string $name
-     * @param mixed $default
+     * @param mixed           $default
      * @return mixed
      */
     public function get($name, $default = null)
@@ -245,7 +245,7 @@ class Input implements InputInterface
 
     /**
      * @param string|int $key
-     * @param int $default
+     * @param int        $default
      * @return int
      */
     public function getInt($key, $default = 0): int
@@ -304,7 +304,7 @@ class Input implements InputInterface
      * get (long/short)opt value
      * eg: -e dev --name sam
      * @param string $name
-     * @param null $default
+     * @param null   $default
      * @return bool|mixed|null
      */
     public function getOpt(string $name, $default = null)
@@ -320,7 +320,7 @@ class Input implements InputInterface
     /**
      * alias of the getOpt()
      * @param string $name
-     * @param mixed $default
+     * @param mixed  $default
      * @return mixed
      */
     public function getOption(string $name, $default = null)
@@ -347,7 +347,7 @@ class Input implements InputInterface
      * get (long/short)opt value(bool)
      * eg: -h --help
      * @param string $name
-     * @param bool $default
+     * @param bool   $default
      * @return bool
      */
     public function getBoolOpt(string $name, $default = false): bool
@@ -411,7 +411,7 @@ class Input implements InputInterface
     /**
      * get short-opt value
      * @param string $name
-     * @param null $default
+     * @param null   $default
      * @return mixed|null
      */
     public function sOpt(string $name, $default = null)
@@ -437,7 +437,7 @@ class Input implements InputInterface
     /**
      * get short-opt value(bool)
      * @param string $name
-     * @param bool $default
+     * @param bool   $default
      * @return bool
      */
     public function sBoolOpt(string $name, $default = false): bool
@@ -457,7 +457,7 @@ class Input implements InputInterface
 
     /**
      * @param string $name
-     * @param $value
+     * @param        $value
      */
     public function setSOpt(string $name, $value)
     {
@@ -474,7 +474,7 @@ class Input implements InputInterface
 
     /**
      * @param array $sOpts
-     * @param bool $replace
+     * @param bool  $replace
      */
     public function setSOpts(array $sOpts, bool $replace = false)
     {
@@ -494,7 +494,7 @@ class Input implements InputInterface
     /**
      * get long-opt value
      * @param string $name
-     * @param null $default
+     * @param null   $default
      * @return mixed|null
      */
     public function lOpt(string $name, $default = null)
@@ -525,7 +525,7 @@ class Input implements InputInterface
     /**
      * get long-opt value(bool)
      * @param string $name
-     * @param bool $default
+     * @param bool   $default
      * @return bool
      */
     public function lBoolOpt(string $name, $default = false): bool
@@ -553,7 +553,7 @@ class Input implements InputInterface
 
     /**
      * @param string $name
-     * @param $value
+     * @param        $value
      */
     public function setLOpt(string $name, $value)
     {
@@ -562,7 +562,7 @@ class Input implements InputInterface
 
     /**
      * @param array $lOpts
-     * @param bool $replace
+     * @param bool  $replace
      */
     public function setLOpts(array $lOpts, bool $replace = false)
     {

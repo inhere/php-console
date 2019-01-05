@@ -84,15 +84,15 @@ class Show
      **************************************************************************************************/
 
     /**
-     * @param mixed $messages
+     * @param mixed       $messages
      * @param string|null $type
-     * @param string $style
+     * @param string      $style
      * @param int|boolean $quit If is int, setting it is exit code.
      * @return int
      */
     public static function block($messages, $type = 'MESSAGE', string $style = Style::NORMAL, $quit = false): int
     {
-        $messages = \is_array($messages) ? \array_values($messages) : array($messages);
+        $messages = \is_array($messages) ? \array_values($messages) : [$messages];
 
         // add type
         if (null !== $type) {
@@ -110,15 +110,15 @@ class Show
     }
 
     /**
-     * @param mixed $messages
+     * @param mixed       $messages
      * @param string|null $type
-     * @param string $style
+     * @param string      $style
      * @param int|boolean $quit If is int, setting it is exit code.
      * @return int
      */
     public static function liteBlock($messages, $type = 'MESSAGE', string $style = Style::NORMAL, $quit = false): int
     {
-        $messages = \is_array($messages) ? \array_values($messages) : array($messages);
+        $messages = \is_array($messages) ? \array_values($messages) : [$messages];
 
         // add type
         if (null !== $type) {
@@ -140,29 +140,29 @@ class Show
      */
     private static $blockMethods = [
         // method => style
-        'info' => 'info',
-        'note' => 'note',
-        'notice' => 'notice',
-        'success' => 'success',
-        'primary' => 'primary',
-        'warning' => 'warning',
-        'danger' => 'danger',
-        'error' => 'error',
+        'info'        => 'info',
+        'note'        => 'note',
+        'notice'      => 'notice',
+        'success'     => 'success',
+        'primary'     => 'primary',
+        'warning'     => 'warning',
+        'danger'      => 'danger',
+        'error'       => 'error',
 
         // lite style
-        'liteInfo' => 'info',
-        'liteNote' => 'note',
-        'liteNotice' => 'notice',
+        'liteInfo'    => 'info',
+        'liteNote'    => 'note',
+        'liteNotice'  => 'notice',
         'liteSuccess' => 'success',
         'litePrimary' => 'primary',
         'liteWarning' => 'yellow',
-        'liteDanger' => 'danger',
-        'liteError' => 'red',
+        'liteDanger'  => 'danger',
+        'liteError'   => 'red',
     ];
 
     /**
      * @param string $method
-     * @param array $args
+     * @param array  $args
      * @return int
      * @throws \LogicException
      */
@@ -190,7 +190,7 @@ class Show
     /**
      * @param string $title
      * @param string $char
-     * @param int $width
+     * @param int    $width
      * @return int
      */
     public static function splitLine(string $title, string $char = '-', int $width = 0): int
@@ -212,15 +212,15 @@ class Show
 
     /**
      * @param string $title The title text
-     * @param array $opts
+     * @param array  $opts
      */
     public static function title(string $title, array $opts = [])
     {
         $opts = \array_merge([
-            'width' => 80,
-            'char' => self::CHAR_EQUAL,
-            'titlePos' => self::POS_LEFT,
-            'indent' => 2,
+            'width'      => 80,
+            'char'       => self::CHAR_EQUAL,
+            'titlePos'   => self::POS_LEFT,
+            'indent'     => 2,
             'showBorder' => true,
         ], $opts);
 
@@ -252,18 +252,18 @@ class Show
     }
 
     /**
-     * @param string $title The title text
+     * @param string       $title The title text
      * @param string|array $body The section body message
-     * @param array $opts
+     * @param array        $opts
      */
     public static function section(string $title, $body, array $opts = [])
     {
         $opts = array_merge([
-            'width' => 80,
-            'char' => self::CHAR_HYPHEN,
-            'titlePos' => self::POS_LEFT,
-            'indent' => 2,
-            'topBorder' => true,
+            'width'        => 80,
+            'char'         => self::CHAR_HYPHEN,
+            'titlePos'     => self::POS_LEFT,
+            'indent'       => 2,
+            'topBorder'    => true,
             'bottomBorder' => true,
         ], $opts);
 
@@ -321,9 +321,9 @@ class Show
      *  'Bacon' => '$2.99',
      * ];
      * ```
-     * @param array $data
+     * @param array       $data
      * @param string|null $title
-     * @param array $opts
+     * @param array       $opts
      */
     public static function padding(array $data, string $title = null, array $opts = [])
     {
@@ -333,9 +333,9 @@ class Show
 
         $string = $title ? Helper::wrapTag(ucfirst($title), 'comment') . ":\n" : '';
         $opts = array_merge([
-            'char' => '.',
-            'indent' => '  ',
-            'padding' => 10,
+            'char'       => '.',
+            'indent'     => '  ',
+            'padding'    => 10,
             'valueStyle' => 'info',
         ], $opts);
 
@@ -359,21 +359,21 @@ class Show
      *      'name2' => 'value text 2',
      * ];
      * ```
-     * @param array $data
+     * @param array  $data
      * @param string $title
-     * @param array $opts More {@see FormatUtil::spliceKeyValue()}
+     * @param array  $opts More {@see FormatUtil::spliceKeyValue()}
      * @return int|string
      */
     public static function aList($data, string $title = null, array $opts = [])
     {
         $string = '';
         $opts = array_merge([
-            'leftChar' => '  ',
+            'leftChar'    => '  ',
             // 'sepChar' => '  ',
-            'keyStyle' => 'info',
+            'keyStyle'    => 'info',
             'keyMinWidth' => 8,
-            'titleStyle' => 'comment',
-            'returned' => false,
+            'titleStyle'  => 'comment',
+            'returned'    => false,
             'lastNewline' => true,
         ], $opts);
 
@@ -482,7 +482,7 @@ class Show
      *      ]
      *  examples    array|string  The command usage example. e.g 'php server.php {start|reload|restart|stop} [-d]'
      * ]
-     * @param  bool $showAfterQuit Show help after quit
+     * @param  bool  $showAfterQuit Show help after quit
      */
     public static function helpPanel(array $config, $showAfterQuit = true)
     {
@@ -492,16 +492,16 @@ class Show
         ];
         $config = \array_merge([
             'description' => '',
-            'usage' => '',
+            'usage'       => '',
 
-            'commands' => [],
+            'commands'  => [],
             'arguments' => [],
-            'options' => [],
+            'options'   => [],
 
             'examples' => [],
 
             // extra
-            'extras' => [],
+            'extras'   => [],
 
             '_opts' => [],
         ], $config);
@@ -534,7 +534,7 @@ class Show
                 } else {
                     $value = FormatUtil::spliceKeyValue($value, [
                         'leftChar' => '  ',
-                        'sepChar' => '  ',
+                        'sepChar'  => '  ',
                         'keyStyle' => 'info',
                     ]);
                 }
@@ -558,9 +558,9 @@ class Show
 
     /**
      * Show information data panel
-     * @param  mixed $data
+     * @param  mixed  $data
      * @param  string $title
-     * @param  array $opts
+     * @param  array  $opts
      * @return int
      */
     public static function panel($data, string $title = 'Information Panel', array $opts = []): int
@@ -572,7 +572,7 @@ class Show
 
         $opts = \array_merge([
             'borderChar' => '*',
-            'ucFirst' => true,
+            'ucFirst'    => true,
         ], $opts);
 
         $borderChar = $opts['borderChar'];
@@ -642,10 +642,10 @@ class Show
 
         // output panel body
         $panelStr = FormatUtil::spliceKeyValue($panelData, [
-            'leftChar' => "  $borderChar ",
-            'sepChar' => ' | ',
+            'leftChar'    => "  $borderChar ",
+            'sepChar'     => ' | ',
             'keyMaxWidth' => $labelMaxWidth,
-            'ucFirst' => $opts['ucFirst'],
+            'ucFirst'     => $opts['ucFirst'],
         ]);
 
         // already exists "\n"
@@ -677,8 +677,8 @@ class Show
             $started = 0;
             $opts = \array_merge([
                 // 'char' => Cli::isSupportColor() ? '─' : '-', // ——
-                'char' => '-',
-                'prefix' => Cli::isSupportColor() ? '├' : '|',
+                'char'        => '-',
+                'prefix'      => Cli::isSupportColor() ? '├' : '|',
                 'leftPadding' => '',
             ], $opts);
 
@@ -715,9 +715,9 @@ class Show
 
     /**
      * 表格数据信息展示
-     * @param  array $data
+     * @param  array  $data
      * @param  string $title
-     * @param  array $opts
+     * @param  array  $opts
      * @example
      * ```
      * // like from database query's data.
@@ -750,16 +750,16 @@ class Show
 
         $buf = new StrBuffer();
         $opts = \array_merge([
-            'showBorder' => true,
-            'leftIndent' => '  ',
-            'titlePos' => self::POS_LEFT,
-            'titleStyle' => 'bold',
-            'headStyle' => 'comment',
+            'showBorder'     => true,
+            'leftIndent'     => '  ',
+            'titlePos'       => self::POS_LEFT,
+            'titleStyle'     => 'bold',
+            'headStyle'      => 'comment',
             'headBorderChar' => self::CHAR_EQUAL,   // default is '='
-            'bodyStyle' => '',
-            'rowBorderChar' => self::CHAR_HYPHEN,   // default is '-'
-            'colBorderChar' => self::CHAR_VERTICAL, // default is '|'
-            'columns' => [],                  // custom column names
+            'bodyStyle'      => '',
+            'rowBorderChar'  => self::CHAR_HYPHEN,   // default is '-'
+            'colBorderChar'  => self::CHAR_VERTICAL, // default is '|'
+            'columns'        => [],                  // custom column names
         ], $opts);
 
         $hasHead = false;
@@ -772,10 +772,10 @@ class Show
         $colBorderChar = $opts['colBorderChar'];
 
         $info = [
-            'rowCount' => \count($data),
-            'columnCount' => 0,     // how many column in the table.
+            'rowCount'       => \count($data),
+            'columnCount'    => 0,     // how many column in the table.
             'columnMaxWidth' => [], // table column max width
-            'tableWidth' => 0,      // table width. equals to all max column width's sum.
+            'tableWidth'     => 0,      // table width. equals to all max column width's sum.
         ];
 
         // parse table data
@@ -901,7 +901,7 @@ class Show
      *  Show::spinner('Done', true);
      * ```
      * @param string $msg
-     * @param bool $ended
+     * @param bool   $ended
      */
     public static function spinner(string $msg = '', $ended = false)
     {
@@ -933,7 +933,7 @@ class Show
     /**
      * alias of the pending()
      * @param string $msg
-     * @param bool $ended
+     * @param bool   $ended
      */
     public static function loading(string $msg = 'Loading ', $ended = false)
     {
@@ -951,7 +951,7 @@ class Show
      *  Show::pending('Done', true);
      * ```
      * @param string $msg
-     * @param bool $ended
+     * @param bool   $ended
      */
     public static function pending(string $msg = 'Pending ', $ended = false)
     {
@@ -990,7 +990,7 @@ class Show
      *  Show::pointing('Total', true);
      * ```
      * @param string $msg
-     * @param bool $ended
+     * @param bool   $ended
      * @return int|mixed
      */
     public static function pointing(string $msg = 'handling ', $ended = false)
@@ -1024,7 +1024,7 @@ class Show
      *  // end of the counter.
      *  $ctt->send(-1);
      * ```
-     * @param string $msg
+     * @param string      $msg
      * @param string|null $doneMsg
      * @return \Generator
      */
@@ -1063,7 +1063,7 @@ class Show
     }
 
     /**
-     * @param string $doneMsg
+     * @param string      $doneMsg
      * @param string|null $fixMsg
      * @return \Generator
      */
@@ -1073,7 +1073,7 @@ class Show
     }
 
     /**
-     * @param string $doneMsg
+     * @param string      $doneMsg
      * @param string|null $fixMsg
      * @return \Generator
      */
@@ -1116,8 +1116,8 @@ class Show
     }
 
     /**
-     * @param int $total
-     * @param string $msg
+     * @param int         $total
+     * @param string      $msg
      * @param string|null $doneMsg
      * @return \Generator
      */
@@ -1179,7 +1179,7 @@ class Show
      *      $i++;
      * }
      * ```
-     * @param int $total
+     * @param int   $total
      * @param array $opts
      * @internal int $current
      * @return \Generator
@@ -1193,8 +1193,8 @@ class Show
             'doneChar' => '=',
             'waitChar' => ' ',
             'signChar' => '>',
-            'msg' => '',
-            'doneMsg' => '',
+            'msg'      => '',
+            'doneMsg'  => '',
         ], $opts);
 
         $msg = self::getStyle()->render($opts['msg']);
@@ -1255,7 +1255,7 @@ class Show
      * }
      * $bar->finish();
      * ```
-     * @param int $max
+     * @param int  $max
      * @param bool $start
      * @return ProgressBar
      * @throws \LogicException
@@ -1318,9 +1318,9 @@ class Show
     /**
      * stop buffering
      * @see Show::write()
-     * @param bool $flush Whether flush buffer to output stream
-     * @param bool $nl Default is False, because the last write() have been added "\n"
-     * @param bool $quit
+     * @param bool  $flush Whether flush buffer to output stream
+     * @param bool  $nl Default is False, because the last write() have been added "\n"
+     * @param bool  $quit
      * @param array $opts
      * @return null|string If flush = False, will return all buffer text.
      */
@@ -1345,8 +1345,8 @@ class Show
     /**
      * stop buffering and flush buffer text
      * @see Show::write()
-     * @param bool $nl
-     * @param bool $quit
+     * @param bool  $nl
+     * @param bool  $quit
      * @param array $opts
      */
     public static function flushBuffer($nl = false, $quit = false, array $opts = [])
@@ -1361,9 +1361,9 @@ class Show
     /**
      * Write a message to standard output stream.
      * @param string|array $messages Output message
-     * @param boolean $nl True 会添加换行符, False 原样输出，不添加换行符
-     * @param int|boolean $quit If is int, setting it is exit code. 'True' translate as code 0 and exit, 'False' will not exit.
-     * @param array $opts
+     * @param boolean      $nl True 会添加换行符, False 原样输出，不添加换行符
+     * @param int|boolean  $quit If is int, setting it is exit code. 'True' translate as code 0 and exit, 'False' will not exit.
+     * @param array        $opts
      * [
      *     'color' => bool, // whether render color, default is: True.
      *     'stream' => resource, // the stream resource, default is: STDOUT
@@ -1415,9 +1415,9 @@ class Show
     /**
      * write raw data to stdout
      * @param string|array $message
-     * @param bool $nl
-     * @param bool|int $quit
-     * @param array $opts
+     * @param bool         $nl
+     * @param bool|int     $quit
+     * @param array        $opts
      * @return int
      */
     public static function writeRaw($message, $nl = true, $quit = false, array $opts = []): int
@@ -1430,8 +1430,8 @@ class Show
     /**
      * Logs data to stdout
      * @param string|array $message
-     * @param array $opts
-     * @param bool|int $quit
+     * @param array        $opts
+     * @param bool|int     $quit
      * @return int
      */
     public static function writeln($message, $quit = false, array $opts = []): int
@@ -1441,9 +1441,9 @@ class Show
 
     /**
      * @param string|array $message
-     * @param string $style
-     * @param bool $nl
-     * @param array $opts
+     * @param string       $style
+     * @param bool         $nl
+     * @param array        $opts
      * @return int
      */
     public static function color($message, string $style = 'info', $nl = true, array $opts = []): int
@@ -1456,8 +1456,8 @@ class Show
     /**
      * Logs data to stdout
      * @param string|array $text
-     * @param bool $nl
-     * @param bool|int $quit
+     * @param bool         $nl
+     * @param bool|int     $quit
      */
     public static function stdout($text, $nl = true, $quit = false)
     {
@@ -1467,8 +1467,8 @@ class Show
     /**
      * Logs data to stderr
      * @param string|array $text
-     * @param bool $nl
-     * @param bool|int $quit
+     * @param bool         $nl
+     * @param bool|int     $quit
      */
     public static function stderr($text, $nl = true, $quit = -200)
     {

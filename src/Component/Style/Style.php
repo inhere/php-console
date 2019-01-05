@@ -88,7 +88,7 @@ class Style
      * Constructor
      * @param  string $fg 前景色(字体颜色)
      * @param  string $bg 背景色
-     * @param  array $options 其它选项
+     * @param  array  $options 其它选项
      */
     public function __construct($fg = '', $bg = '', array $options = [])
     {
@@ -101,7 +101,7 @@ class Style
 
     /**
      * @param string $method
-     * @param array $args
+     * @param array  $args
      * @return mixed|string
      * @throws \InvalidArgumentException
      */
@@ -135,7 +135,7 @@ class Style
             ->addByArray(self::QUESTION, ['fg' => 'black', 'bg' => 'cyan'])
             ->addByArray(self::DANGER, ['fg' => 'red',])// 'bg' => 'magenta', 'options' => ['bold']
             ->add(self::ERROR, 'white', 'red', [], true)
-            ->add('underline', 'normal','', ['underscore'])
+            ->add('underline', 'normal', '', ['underscore'])
             ->add('blue', 'blue')
             ->add('cyan', 'cyan')
             ->add('magenta', 'magenta')
@@ -148,7 +148,7 @@ class Style
     /**
      * Process a string use style
      * @param string $style
-     * @param $text
+     * @param        $text
      * @return string
      */
     public function apply(string $style, $text): string
@@ -202,7 +202,7 @@ class Style
 
     /**
      * Replace color tags in a string.
-     * @param string $text
+     * @param string   $text
      * @param   string $tag The matched tag.
      * @param   string $match The match.
      * @param   string $style The color style to apply.
@@ -233,12 +233,12 @@ class Style
 
     /**
      * Add a style.
-     * @param string $name
+     * @param string             $name
      * @param string|Color|array $fg 前景色|Color对象|也可以是style配置数组(@see self::addByArray())
      *                               当它为Color对象或配置数组时，后面两个参数无效
-     * @param string $bg 背景色
-     * @param array $options 其它选项
-     * @param bool $extra
+     * @param string             $bg 背景色
+     * @param array              $options 其它选项
+     * @param bool               $extra
      * @return $this
      */
     public function add(string $name, $fg = '', $bg = '', array $options = [], bool $extra = false): self
@@ -259,7 +259,7 @@ class Style
     /**
      * Add a style by an array config
      * @param string $name
-     * @param array $styleConfig 样式设置信息
+     * @param array  $styleConfig 样式设置信息
      * e.g
      * [
      *     'fg' => 'white',
@@ -272,9 +272,9 @@ class Style
     public function addByArray(string $name, array $styleConfig): self
     {
         $style = [
-            'fg' => '',
-            'bg' => '',
-            'extra' => false,
+            'fg'      => '',
+            'bg'      => '',
+            'extra'   => false,
             'options' => []
         ];
 

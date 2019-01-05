@@ -41,9 +41,9 @@ trait SimpleEventTrait
 
     /**
      * register a event handler
-     * @param $event
+     * @param          $event
      * @param callable $handler
-     * @param bool $once
+     * @param bool     $once
      */
     public function on(string $event, callable $handler, $once = false)
     {
@@ -58,7 +58,7 @@ trait SimpleEventTrait
 
     /**
      * register a once event handler
-     * @param $event
+     * @param          $event
      * @param callable $handler
      */
     public function once(string $event, callable $handler)
@@ -69,7 +69,7 @@ trait SimpleEventTrait
     /**
      * trigger event
      * @param string $event
-     * @param array ...$args
+     * @param array  ...$args
      * @return bool
      */
     public function fire(string $event, ...$args): bool

@@ -118,8 +118,8 @@ trait InputOutputAwareTrait
     }
 
     /**
-     * @param mixed $message
-     * @param bool $nl
+     * @param mixed    $message
+     * @param bool     $nl
      * @param bool|int $quit
      * @return int
      */
@@ -129,7 +129,7 @@ trait InputOutputAwareTrait
     }
 
     /**
-     * @param mixed $message
+     * @param mixed    $message
      * @param bool|int $quit
      * @return int
      */

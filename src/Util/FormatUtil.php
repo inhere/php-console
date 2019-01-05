@@ -35,7 +35,7 @@ final class FormatUtil
 
     /**
      * @param string $string
-     * @param int $indent
+     * @param int    $indent
      * @param string $indentChar
      * @return string
      */
@@ -70,7 +70,7 @@ final class FormatUtil
      *     amet.
      * ```
      *
-     * @param string $text the text to be wrapped
+     * @param string  $text the text to be wrapped
      * @param integer $indent number of spaces to use for indentation.
      * @param integer $width
      * @return string the wrapped text.
@@ -213,13 +213,13 @@ final class FormatUtil
     {
         $text = '';
         $opts = \array_merge([
-            'leftChar' => '',   // e.g '  ', ' * '
-            'sepChar' => ' ',  // e.g ' | ' OUT: key | value
-            'keyStyle' => '',   // e.g 'info','comment'
-            'valStyle' => '',   // e.g 'info','comment'
+            'leftChar'    => '',   // e.g '  ', ' * '
+            'sepChar'     => ' ',  // e.g ' | ' OUT: key | value
+            'keyStyle'    => '',   // e.g 'info','comment'
+            'valStyle'    => '',   // e.g 'info','comment'
             'keyMinWidth' => 8,
             'keyMaxWidth' => null, // if not set, will automatic calculation
-            'ucFirst' => true,  // upper first char
+            'ucFirst'     => true,  // upper first char
         ], $opts);
 
         if (!\is_numeric($opts['keyMaxWidth'])) {

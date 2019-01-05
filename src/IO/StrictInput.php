@@ -23,12 +23,12 @@ class StrictInput extends Input
      * @see AbstractApplication::$internalOptions
      * @var array
      */
-    private $preParsed =[
+    private $preParsed = [
         // opt name => has value
-        'h' => false,
-        'V' => false,
-        'help' => false,
-        'debug' => true,
+        'h'       => false,
+        'V'       => false,
+        'help'    => false,
+        'debug'   => true,
         'profile' => false,
         'version' => false,
     ];

@@ -79,7 +79,7 @@ trait UserInteractAwareTrait
 
     /**
      * @param string $method
-     * @param array $args
+     * @param array  $args
      * @return int
      * @throws \LogicException
      */

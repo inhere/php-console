@@ -16,8 +16,8 @@ class Alert
 {
     public const THEMES = [
         'default' => '<{@style}>{@message}</{@style}>',
-        'theme1' => '<{@style}>[{@type}] {@message}</{@style}>',
-        'lite' => '[<{@style}>{@type}</{@style}>] {@message}',
+        'theme1'  => '<{@style}>[{@type}] {@message}</{@style}>',
+        'lite'    => '[<{@style}>{@type}</{@style}>] {@message}',
     ];
 
     public static function create(string $message, string $style = 'info', array $opts = [])
@@ -31,8 +31,8 @@ class Alert
             'paddingX' => 1, // line
             'paddingY' => 1, // space
 
-            'icon' => '',
-            'theme' => 'default',
+            'icon'     => '',
+            'theme'    => 'default',
             'template' => ''
         ], $opts);
 

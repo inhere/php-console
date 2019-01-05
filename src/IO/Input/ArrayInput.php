@@ -20,7 +20,7 @@ class ArrayInput extends Input
     /**
      * Input constructor.
      * @param null|array $args
-     * @param bool $parsing
+     * @param bool       $parsing
      */
     public function __construct(array $args = null, bool $parsing = true)
     {
