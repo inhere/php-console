@@ -11,6 +11,7 @@ use Inhere\Console\Util\Helper;
 use Inhere\Console\Util\Interact;
 use Inhere\Console\Util\ProgressBar;
 use Inhere\Console\Util\Show;
+use Toolkit\PhpUtil\Php;
 
 /**
  * default command controller. there are some command usage examples(1)
@@ -463,10 +464,10 @@ class HomeController extends Controller
     public function useArgCommand()
     {
         $this->write('input arguments:');
-        echo Helper::dumpVars($this->input->getArgs());
+        $this->output->dump($this->input->getArgs());
 
         $this->write('input options:');
-        echo Helper::dumpVars($this->input->getOpts());
+        $this->output->dump($this->input->getOpts());
 
         $this->write('raw argv:');
         $this->output->dump($this->input->getTokens());
@@ -488,7 +489,7 @@ class HomeController extends Controller
 
         Show::panel($info);
 
-        echo Helper::printVars($_SERVER);
+        echo Php::printVars($_SERVER);
     }
 
     /**

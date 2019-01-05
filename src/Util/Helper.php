@@ -42,18 +42,6 @@ class Helper
     }
 
     /**
-     * 给对象设置属性值
-     * @param $object
-     * @param array $options
-     */
-    public static function init($object, array $options)
-    {
-        foreach ($options as $property => $value) {
-            $object->$property = $value;
-        }
-    }
-
-    /**
      * @param string $path
      * @return bool
      */
@@ -126,42 +114,6 @@ class Helper
     }
 
     /**
-     * clear Ansi Code
-     * @param string $string
-     * @return string
-     */
-    public static function stripAnsiCode(string $string): string
-    {
-        return (string)\preg_replace('/\033\[[\d;?]*\w/', '', $string);
-    }
-
-    /**
-     * @param $string
-     * @return int
-     */
-    public static function strUtf8Len(string $string): int
-    {
-        // strlen: one chinese is 3 char.
-        // mb_strlen: one chinese is 1 char.
-        // mb_strwidth: one chinese is 2 char.
-        return \mb_strlen($string, 'utf-8');
-    }
-
-    /**
-     * from Symfony
-     * @param $string
-     * @return int
-     */
-    public static function strLen(string $string): int
-    {
-        if (false === $encoding = \mb_detect_encoding($string, null, true)) {
-            return \strlen($string);
-        }
-
-        return \mb_strwidth($string, $encoding);
-    }
-
-    /**
      * @param string $string
      * @param int $indent
      * @param string $padStr
@@ -170,29 +122,6 @@ class Helper
     public static function strPad(string $string, $indent, $padStr): string
     {
         return $indent > 0 ? \str_pad($string, $indent, $padStr) : $string;
-    }
-
-    /**
-     * findValueByNodes
-     * @param  array $data
-     * @param  array $nodes
-     * @param  mixed $default
-     * @return mixed
-     */
-    public static function findValueByNodes(array $data, array $nodes, $default = null)
-    {
-        $temp = $data;
-
-        foreach ($nodes as $name) {
-            if (isset($temp[$name])) {
-                $temp = $temp[$name];
-            } else {
-                $temp = $default;
-                break;
-            }
-        }
-
-        return $temp;
     }
 
     /**
@@ -224,7 +153,6 @@ class Helper
 
     /**
      * get key Max Width
-     *
      * @param  array $data
      * [
      *     'key1'      => 'value1',
@@ -239,56 +167,13 @@ class Helper
 
         foreach ($data as $key => $value) {
             // key is not a integer
-            if (!$expectInt || !is_numeric($key)) {
-                $width = mb_strlen($key, 'UTF-8');
+            if (!$expectInt || !\is_numeric($key)) {
+                $width = \mb_strlen($key, 'UTF-8');
                 $keyMaxWidth = $width > $keyMaxWidth ? $width : $keyMaxWidth;
             }
         }
 
         return $keyMaxWidth;
-    }
-
-    /**
-     * dump vars
-     * @param array ...$args
-     * @return string
-     */
-    public static function dumpVars(...$args): string
-    {
-        \ob_start();
-        \var_dump(...$args);
-        $string = \ob_get_clean();
-
-        return \preg_replace("/=>\n\s+/", '=> ', \trim($string));
-    }
-
-    /**
-     * print vars
-     * @param array ...$args
-     * @return string
-     */
-    public static function printVars(...$args): string
-    {
-        $string = '';
-
-        foreach ($args as $arg) {
-            $string .= print_r($arg, 1) . PHP_EOL;
-        }
-
-        return preg_replace("/Array\n\s+\(/", 'Array (', trim($string));
-    }
-
-    /**
-     * @param mixed $data
-     * @param int   $flags
-     * @return false|string
-     */
-    public static function prettyJSON(
-        $data,
-        int $flags = \JSON_PRETTY_PRINT|\JSON_UNESCAPED_UNICODE|\JSON_UNESCAPED_SLASHES
-    )
-    {
-        return \json_encode($data, $flags);
     }
 
     /**
@@ -298,5 +183,42 @@ class Helper
     public static function throwInvalidArgument(string $format, ...$args)
     {
         throw new \InvalidArgumentException(\sprintf($format, ...$args));
+    }
+
+
+    /**
+     * @param string $optsStr
+     */
+    public static function formatOptions(string $optsStr)
+    {
+
+    }
+
+    /**
+     * this is a command's description message
+     * the second line text
+     * @format
+     * @usage usage message
+     * @arguments(format=true)
+     *  arg1  argument description 1
+     *        the second line
+     *  a2,arg2  argument description 2
+     *        the second line
+     * @arguments(
+     *  arg1="argument description 1
+     *        the second line",
+     *  "a2,arg2"="argument description 2
+     *        the second line"
+     * )
+     * @options
+     *  -s, --long LONG option description 1
+     *  --opt    OPT   option description 2
+     * @example example text one
+     *  the second line example
+     * @param string $argsStr
+     */
+    public static function formatArguments(string $argsStr)
+    {
+
     }
 }

@@ -15,10 +15,10 @@ use Inhere\Console\IO\InputDefinition;
 use Inhere\Console\IO\Output;
 use Inhere\Console\Traits\InputOutputAwareTrait;
 use Inhere\Console\Traits\UserInteractAwareTrait;
-use Inhere\Console\Util\Annotation;
 use Inhere\Console\Util\FormatUtil;
 use Inhere\Console\Util\Helper;
 use Swoole\Coroutine;
+use Toolkit\PhpUtil\PhpDoc;
 
 /**
  * Class AbstractCommand
@@ -505,7 +505,7 @@ abstract class AbstractCommand implements BaseCommandInterface
         }
 
         $doc = $ref->getMethod($method)->getDocComment();
-        $tags = Annotation::getTags($this->parseAnnotationVars($doc));
+        $tags = PhpDoc::getTags($this->parseAnnotationVars($doc));
         $isAlone = $ref->isSubclassOf(CommandInterface::class);
         $help = [];
 

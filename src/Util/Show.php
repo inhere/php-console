@@ -11,6 +11,7 @@ namespace Inhere\Console\Util;
 use Inhere\Console\Component\StrBuffer;
 use Inhere\Console\Component\Style\Style;
 use Toolkit\Cli\Cli;
+use Toolkit\StrUtil\Str;
 use Toolkit\Sys\Sys;
 
 /**
@@ -200,13 +201,13 @@ class Show
         }
 
         if (!$title) {
-            return self::write(str_repeat($char, $width));
+            return self::write(\str_repeat($char, $width));
         }
 
-        $strLen = ceil(($width - Helper::strLen($title) - 2) / 2);
-        $padStr = $strLen > 0 ? str_repeat($char, $strLen) : '';
+        $strLen = \ceil(($width - Str::len($title) - 2) / 2);
+        $padStr = $strLen > 0 ? \str_repeat($char, $strLen) : '';
 
-        return self::write($padStr . ' ' . ucwords($title) . ' ' . $padStr);
+        return self::write($padStr . ' ' . \ucwords($title) . ' ' . $padStr);
     }
 
     /**
@@ -215,7 +216,7 @@ class Show
      */
     public static function title(string $title, array $opts = [])
     {
-        $opts = array_merge([
+        $opts = \array_merge([
             'width' => 80,
             'char' => self::CHAR_EQUAL,
             'titlePos' => self::POS_LEFT,
@@ -230,18 +231,18 @@ class Show
         $indentStr = Helper::strPad(self::CHAR_SPACE, $indent, self::CHAR_SPACE);
 
         $title = ucwords(trim($title));
-        $tLength = Helper::strLen($title);
+        $tLength = Str::len($title);
         $width = $width > 10 ? $width : 80;
 
         // title position
         if ($tLength >= $width) {
-            $titleIndent = Helper::strPad(self::CHAR_SPACE, $indent, self::CHAR_SPACE);
+            $titleIndent = Str::pad(self::CHAR_SPACE, $indent, self::CHAR_SPACE);
         } elseif ($opts['titlePos'] === self::POS_RIGHT) {
-            $titleIndent = Helper::strPad(self::CHAR_SPACE, ceil($width - $tLength) + $indent, self::CHAR_SPACE);
+            $titleIndent = Str::pad(self::CHAR_SPACE, ceil($width - $tLength) + $indent, self::CHAR_SPACE);
         } elseif ($opts['titlePos'] === self::POS_MIDDLE) {
-            $titleIndent = Helper::strPad(self::CHAR_SPACE, ceil(($width - $tLength) / 2) + $indent, self::CHAR_SPACE);
+            $titleIndent = Str::pad(self::CHAR_SPACE, ceil(($width - $tLength) / 2) + $indent, self::CHAR_SPACE);
         } else {
-            $titleIndent = Helper::strPad(self::CHAR_SPACE, $indent, self::CHAR_SPACE);
+            $titleIndent = Str::pad(self::CHAR_SPACE, $indent, self::CHAR_SPACE);
         }
 
         $titleLine = "$titleIndent<bold>$title</bold>\n";
@@ -268,23 +269,23 @@ class Show
 
         // list($sW, $sH) = Helper::getScreenSize();
         $width = (int)$opts['width'];
-        $char = trim($opts['char']);
+        $char = \trim($opts['char']);
         $indent = (int)$opts['indent'] >= 0 ? $opts['indent'] : 2;
-        $indentStr = Helper::strPad(self::CHAR_SPACE, $indent, self::CHAR_SPACE);
+        $indentStr = Str::pad(self::CHAR_SPACE, $indent, self::CHAR_SPACE);
 
-        $title = ucwords(trim($title));
-        $tLength = Helper::strLen($title);
+        $title = \ucwords(\trim($title));
+        $tLength = Str::len($title);
         $width = $width > 10 ? $width : 80;
 
         // title position
         if ($tLength >= $width) {
-            $titleIndent = Helper::strPad(self::CHAR_SPACE, $indent, self::CHAR_SPACE);
+            $titleIndent = Str::pad(self::CHAR_SPACE, $indent, self::CHAR_SPACE);
         } elseif ($opts['titlePos'] === self::POS_RIGHT) {
-            $titleIndent = str_pad(self::CHAR_SPACE, ceil($width - $tLength) + $indent, self::CHAR_SPACE);
+            $titleIndent = \str_pad(self::CHAR_SPACE, \ceil($width - $tLength) + $indent, self::CHAR_SPACE);
         } elseif ($opts['titlePos'] === self::POS_MIDDLE) {
-            $titleIndent = str_pad(self::CHAR_SPACE, ceil(($width - $tLength) / 2) + $indent, self::CHAR_SPACE);
+            $titleIndent = \str_pad(self::CHAR_SPACE, \ceil(($width - $tLength) / 2) + $indent, self::CHAR_SPACE);
         } else {
-            $titleIndent = Helper::strPad(self::CHAR_SPACE, $indent, self::CHAR_SPACE);
+            $titleIndent = Str::pad(self::CHAR_SPACE, $indent, self::CHAR_SPACE);
         }
 
         $tpl = "%s\n%s%s\n%s";// title topBorder body bottomBorder
@@ -295,7 +296,7 @@ class Show
         $showBBorder = (bool)$opts['bottomBorder'];
 
         if ($showTBorder || $showBBorder) {
-            $border = str_pad($char, $width, $char);
+            $border = \str_pad($char, $width, $char);
 
             if ($showTBorder) {
                 $topBorder = "{$indentStr}$border\n";

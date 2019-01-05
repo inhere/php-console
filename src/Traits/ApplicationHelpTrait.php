@@ -14,5 +14,8 @@ namespace Inhere\Console\Traits;
  */
 trait ApplicationHelpTrait
 {
-
+    public function listCommand(): int
+    {
+        return 0;
+    }
 }

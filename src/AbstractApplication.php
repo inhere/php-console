@@ -21,6 +21,7 @@ use Inhere\Console\Traits\InputOutputAwareTrait;
 use Inhere\Console\Traits\SimpleEventTrait;
 use Inhere\Console\Util\FormatUtil;
 use Inhere\Console\Util\Helper;
+use Toolkit\PhpUtil\PhpHelper;
 
 /**
  * Class AbstractApplication
@@ -224,7 +225,7 @@ abstract class AbstractApplication implements ApplicationInterface
         if ($this->isProfile()) {
             $title = '------ Runtime Stats(use --profile) ------';
             $stats = $this->stats;
-            $this->stats = FormatUtil::runtime($stats['startTime'], $stats['startMemory'], $stats);
+            $this->stats = PhpHelper::runtime($stats['startTime'], $stats['startMemory'], $stats);
             $this->output->write('');
             $this->output->aList($this->stats, $title);
         }

@@ -13,7 +13,8 @@ use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
 use Inhere\Console\Util\FormatUtil;
 use Inhere\Console\Util\Helper;
-use Inhere\Console\Util\Annotation;
+use Toolkit\PhpUtil\PhpDoc;
+use Toolkit\StrUtil\Str;
 
 /**
  * Class Controller
@@ -94,7 +95,7 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
             $command = $this->defaultAction;
         }
 
-        $this->action = FormatUtil::camelCase($this->getRealCommandName($command));
+        $this->action = Str::camelCase($this->getRealCommandName($command));
 
         if (!$this->action) {
             return $this->showHelp();
@@ -211,7 +212,7 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
             return 0;
         }
 
-        $action = FormatUtil::camelCase($action);
+        $action = Str::camelCase($action);
         $method = $this->actionSuffix ? $action . \ucfirst($this->actionSuffix) : $action;
         $aliases = self::getCommandAliases($action);
 
@@ -236,7 +237,7 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
         $sName = \lcfirst(self::getName() ?: $ref->getShortName());
 
         if (!($classDes = self::getDescription())) {
-            $classDes = Annotation::description($ref->getDocComment()) ?: 'No description for the console controller';
+            $classDes = PhpDoc::description($ref->getDocComment()) ?: 'No description for the console controller';
         }
 
         $commands = [];
@@ -248,7 +249,7 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
                 continue;
             }
 
-            $desc = Annotation::firstLine($m->getDocComment()) ?: $defaultDes;
+            $desc = PhpDoc::firstLine($m->getDocComment()) ?: $defaultDes;
 
             // is a annotation tag
             if (\strpos($desc, '@') === 0) {
@@ -318,7 +319,7 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
         $ref = $ref ?: new \ReflectionObject($this);
 
         $suffix = $this->actionSuffix;
-        $suffixLen = Helper::strLen($suffix);
+        $suffixLen = Str::len($suffix);
 
         foreach ($ref->getMethods() as $m) {
             $mName = $m->getName();
@@ -404,7 +405,7 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
     public function setAction(string $action): self
     {
         if ($action) {
-            $this->action = FormatUtil::camelCase($action);
+            $this->action = Str::camelCase($action);
         }
 
         return $this;

@@ -34,24 +34,6 @@ final class FormatUtil
     }
 
     /**
-     * to camel
-     * @param string $name
-     * @return string
-     */
-    public static function camelCase(string $name): string
-    {
-        $name = \trim($name, '-_');
-
-        // convert 'first-second' to 'firstSecond'
-        if (\strpos($name, '-')) {
-            $name = \ucwords(\str_replace('-', ' ', $name));
-            $name = \str_replace(' ', '', lcfirst($name));
-        }
-
-        return $name;
-    }
-
-    /**
      * @param string $string
      * @param int $indent
      * @param string $indentChar
@@ -125,7 +107,6 @@ final class FormatUtil
         return $pad . '  ' . \implode("\n", $lines);
     }
 
-
     /**
      * @param array $options
      * @return array
@@ -141,51 +122,21 @@ final class FormatUtil
 
         $formatted = [];
         foreach ($options as $name => $des) {
-            if (!$name = trim($name, ', ')) {
+            if (!$name = \trim($name, ', ')) {
                 continue;
             }
 
-            if (!strpos($name, ',')) {
+            if (!\strpos($name, ',')) {
                 // padding length equals to '-h, '
                 $name = '    ' . $name;
             } else {
-                $name = str_replace([' ', ','], ['', ', '], $name);
+                $name = \str_replace([' ', ','], ['', ', '], $name);
             }
 
             $formatted[$name] = $des;
         }
 
         return $formatted;
-    }
-
-    /**
-     * 计算并格式化资源消耗
-     * @param int $startTime
-     * @param int|float $startMem
-     * @param array $info
-     * @return array
-     */
-    public static function runtime(int $startTime, $startMem, array $info = []): array
-    {
-        $info['startTime'] = $startTime;
-        $info['endTime'] = \microtime(true);
-        $info['endMemory'] = \memory_get_usage();
-
-        // 计算运行时间
-        $info['runtime'] = \number_format(($info['endTime'] - $startTime) * 1000, 3) . ' ms';
-
-        if ($startMem) {
-            $startMem = \array_sum(explode(' ', $startMem));
-            $endMem = \array_sum(explode(' ', $info['endMemory']));
-
-            // $info['memory'] = number_format(($endMem - $startMem) / 1024, 3) . 'kb';
-            $info['memory'] = self::memoryUsage($endMem - $startMem);
-        }
-
-        // $peakMem = memory_get_peak_usage() / 1024 / 1024;
-        $info['peakMemory'] = self::memoryUsage(memory_get_peak_usage());
-
-        return $info;
     }
 
     /**
@@ -246,45 +197,6 @@ final class FormatUtil
         }
 
         return \date('Y-m-d H:i:s', $secs);
-    }
-
-    /**
-     * @param string $string
-     * @param int $width
-     * @return array
-     */
-    public static function splitStringByWidth(string $string, int $width): array
-    {
-        // str_split is not suitable for multi-byte characters, we should use preg_split to get char array properly.
-        // additionally, array_slice() is not enough as some character has doubled width.
-        // we need a function to split string not by character count but by string width
-        if (false === $encoding = \mb_detect_encoding($string, null, true)) {
-            return \str_split($string, $width);
-        }
-
-        $utf8String = \mb_convert_encoding($string, 'utf8', $encoding);
-        $lines = [];
-        $line = '';
-
-        foreach (\preg_split('//u', $utf8String) as $char) {
-            // test if $char could be appended to current line
-            if (\mb_strwidth($line . $char, 'utf8') <= $width) {
-                $line .= $char;
-                continue;
-            }
-
-            // if not, push current line to array and make new line
-            $lines[] = \str_pad($line, $width);
-            $line = $char;
-        }
-
-        if ('' !== $line) {
-            $lines[] = \count($lines) ? \str_pad($line, $width) : $line;
-        }
-
-        \mb_convert_variables($encoding, 'utf8', $lines);
-
-        return $lines;
     }
 
     /**

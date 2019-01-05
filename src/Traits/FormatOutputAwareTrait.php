@@ -11,6 +11,7 @@ namespace Inhere\Console\Traits;
 use Inhere\Console\Component\Style\Style;
 use Inhere\Console\Util\Helper;
 use Inhere\Console\Util\Show;
+use Toolkit\PhpUtil\Php;
 
 /**
  * Class FormatOutputAwareTrait
@@ -242,7 +243,7 @@ trait FormatOutputAwareTrait
      */
     public function dump(...$vars)
     {
-        Show::write(Helper::dumpVars(...$vars));
+        Show::write(Php::dumpVars(...$vars));
     }
 
     /**
@@ -250,6 +251,6 @@ trait FormatOutputAwareTrait
      */
     public function prints(...$vars)
     {
-        Show::write(Helper::printVars(...$vars));
+        Show::write(Php::printVars(...$vars));
     }
 }

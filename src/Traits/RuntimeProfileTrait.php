@@ -9,6 +9,7 @@
 namespace Inhere\Console\Traits;
 
 use Inhere\Console\Util\FormatUtil;
+use Toolkit\PhpUtil\PhpHelper;
 
 /**
  * Trait RuntimeProfileTrait
@@ -80,7 +81,7 @@ trait RuntimeProfileTrait
             $data = self::$profiles[$category][$name];
 
             $old = $data['_profile_stats'];
-            $data['_profile_stats'] = FormatUtil::runtime($old['startTime'], $old['startMem']);
+            $data['_profile_stats'] = PhpHelper::runtime($old['startTime'], $old['startMem']);
             $data['_profile_end'] = $context;
             $data['_profile_msg'] = $msg;
 
