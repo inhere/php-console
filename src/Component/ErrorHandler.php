@@ -50,7 +50,7 @@ ERR;
                 // \str_replace('):', '): -', $e->getTraceAsString())
             );
 
-            if ($app->getMeta('hideRootPath') && ($rootPath = $app->getMeta('rootPath'))) {
+            if ($app->getConfig('hideRootPath') && ($rootPath = $app->getConfig('rootPath'))) {
                 $message = \str_replace($rootPath, '{ROOT}', $message);
             }
 

@@ -9,6 +9,7 @@
 namespace Inhere\Console;
 
 use Inhere\Console\Component\ErrorHandler;
+use Inhere\Console\Component\Style\Style;
 use Inhere\Console\Face\ApplicationInterface;
 use Inhere\Console\Face\CommandInterface;
 use Inhere\Console\Face\ErrorHandlerInterface;
@@ -18,7 +19,6 @@ use Inhere\Console\IO\Output;
 use Inhere\Console\IO\OutputInterface;
 use Inhere\Console\Traits\InputOutputAwareTrait;
 use Inhere\Console\Traits\SimpleEventTrait;
-use Inhere\Console\Component\Style\Style;
 use Inhere\Console\Util\FormatUtil;
 use Inhere\Console\Util\Helper;
 
@@ -33,46 +33,59 @@ abstract class AbstractApplication implements ApplicationInterface
     /** @var array */
     protected static $internalCommands = [
         'version' => 'Show application version information',
-        'help' => 'Show application help information',
-        'list' => 'List all group and alone commands',
+        'help'    => 'Show application help information',
+        'list'    => 'List all group and alone commands',
     ];
 
     /** @var array */
     protected static $internalOptions = [
-        '--debug' => 'Setting the application runtime debug level(0 - 4)',
-        '--profile' => 'Display timing and memory usage information',
-        '--no-color' => 'Disable color/ANSI for message output',
-        '-h, --help' => 'Display this help message',
+        '--debug'       => 'Setting the application runtime debug level(0 - 4)',
+        '--profile'     => 'Display timing and memory usage information',
+        '--no-color'    => 'Disable color/ANSI for message output',
+        '-h, --help'    => 'Display this help message',
         '-V, --version' => 'Show application version information',
     ];
 
     /**
-     * application meta info
-     * @var array
+     * @var array App runtime stats info
      */
-    private $meta = [
-        'name' => 'My Console Application',
-        'debug' => Console::VERB_ERROR,
-        'profile' => false,
-        'version' => '0.5.1',
-        'publishAt' => '2017.03.24',
-        'updateAt' => '2019.01.01',
-        'rootPath' => '',
+    private $stats = [
+        'startTime'   => 0,
+        'endTime'     => 0,
+        'startMemory' => 0,
+        'endMemory'   => 0,
+    ];
+
+    /**
+     * @var array Application config data
+     */
+    private $config = [
+        'name'         => 'My Console Application',
+        'debug'        => Console::VERB_ERROR,
+        'profile'      => false,
+        'version'      => '0.5.1',
+        'publishAt'    => '2017.03.24',
+        'updateAt'     => '2019.01.01',
+        'rootPath'     => '',
         'hideRootPath' => true,
 
         // 'timeZone' => 'Asia/Shanghai',
         // 'env' => 'prod', // dev test prod
         // 'charset' => 'UTF-8',
 
-        'logoText' => '',
+        'logoText'  => '',
         'logoStyle' => 'info',
-
-        // runtime stats
-        '_stats' => [],
     ];
 
-    /** @var string Command delimiter. e.g dev:serve */
+    /**
+     * @var string Command delimiter char. e.g dev:serve
+     */
     public $delimiter = ':'; // '/' ':'
+
+    /**
+     * @var ErrorHandlerInterface Can custom error handler
+     */
+    private $errorHandler;
 
     /**
      * @var array Some metadata for command
@@ -86,23 +99,20 @@ abstract class AbstractApplication implements ApplicationInterface
     /** @var array The independent commands */
     protected $commands = [];
 
-    /** @var array The group commands */
+    /** @var array The group commands(controller) */
     protected $controllers = [];
 
-    /** @var ErrorHandlerInterface */
-    private $errorHandler;
-
     /**
-     * App constructor.
-     * @param array $meta
-     * @param Input $input
+     * Class constructor.
+     * @param array  $meta
+     * @param Input  $input
      * @param Output $output
      * @throws \InvalidArgumentException
      */
     public function __construct(array $meta = [], Input $input = null, Output $output = null)
     {
         $this->runtimeCheck();
-        $this->setMeta($meta);
+        $this->setConfig($meta);
 
         $this->input = $input ?: new Input();
         $this->output = $output ?: new Output();
@@ -116,11 +126,11 @@ abstract class AbstractApplication implements ApplicationInterface
      */
     protected function init()
     {
-        $this->meta['_stats'] = [
-            'startTime' => \microtime(1),
-            'endTime' => 0,
+        $this->stats = [
+            'startTime'   => \microtime(1),
+            'endTime'     => 0,
             'startMemory' => \memory_get_usage(),
-            'endMemory' => 0,
+            'endMemory'   => 0,
         ];
 
         $this->registerErrorHandle();
@@ -145,7 +155,7 @@ abstract class AbstractApplication implements ApplicationInterface
         }
 
         // date_default_timezone_set($this->config('timeZone', 'UTC'));
-        //new AutoCompletion(array_merge($this->getCommandNames(), $this->getControllerNames()));
+        // new AutoCompletion(array_merge($this->getCommandNames(), $this->getControllerNames()));
     }
 
     protected function beforeRun()
@@ -178,7 +188,7 @@ abstract class AbstractApplication implements ApplicationInterface
             $this->handleException($e);
         }
 
-        $this->meta['_stats']['endTime'] = \microtime(1);
+        $this->stats['endTime'] = \microtime(1);
 
         // call 'onAfterRun' service, if it is registered.
         $this->fire(self::ON_AFTER_RUN, $this);
@@ -207,24 +217,24 @@ abstract class AbstractApplication implements ApplicationInterface
      */
     public function stop(int $code = 0)
     {
-        // call 'onAppStop' service, if it is registered.
+        // call 'onAppStop' event, if it is registered.
         $this->fire(self::ON_STOP_RUN, $this);
 
         // display runtime info
         if ($this->isProfile()) {
             $title = '------ Runtime Stats(use --profile) ------';
-            $stats = $this->meta['_stats'];
-            $this->meta['_stats'] = FormatUtil::runtime($stats['startTime'], $stats['startMemory'], $stats);
+            $stats = $this->stats;
+            $this->stats = FormatUtil::runtime($stats['startTime'], $stats['startMemory'], $stats);
             $this->output->write('');
-            $this->output->aList($this->meta['_stats'], $title);
+            $this->output->aList($this->stats, $title);
         }
 
         exit($code);
     }
 
     /**
-     * @param string $command
-     * @param InputInterface $input
+     * @param string          $command
+     * @param InputInterface  $input
      * @param OutputInterface $output
      * @return int|mixed
      */
@@ -247,7 +257,7 @@ abstract class AbstractApplication implements ApplicationInterface
     protected function runtimeCheck()
     {
         // check env
-        if (!\in_array(PHP_SAPI, ['cli', 'cli-server'], true)) {
+        if (!\in_array(\PHP_SAPI, ['cli', 'cli-server'], true)) {
             \header('HTTP/1.1 403 Forbidden');
             exit("  403 Forbidden \n\n"
                 . " current environment is CLI. \n"
@@ -272,10 +282,10 @@ abstract class AbstractApplication implements ApplicationInterface
 
     /**
      * 运行异常处理
-     * @param int $num
+     * @param int    $num
      * @param string $str
      * @param string $file
-     * @param int $line
+     * @param int    $line
      * @throws \InvalidArgumentException
      */
     public function handleError(int $num, string $str, string $file, int $line)
@@ -331,7 +341,7 @@ abstract class AbstractApplication implements ApplicationInterface
     }
 
     /**
-     * @param $name
+     * @param      $name
      * @param bool $isGroup
      * @throws \InvalidArgumentException
      */
@@ -354,7 +364,7 @@ abstract class AbstractApplication implements ApplicationInterface
 
     /**
      * show the application help information
-     * @param bool $quit
+     * @param bool   $quit
      * @param string $command
      */
     public function showHelpInfo(bool $quit = true, string $command = '')
@@ -372,7 +382,7 @@ abstract class AbstractApplication implements ApplicationInterface
         $sep = $this->delimiter;
 
         $this->output->helpPanel([
-            'usage' => "$script <info>{command}</info> [--opt -v -h ...] [arg0 arg1 arg2=value2 ...]",
+            'usage'   => "$script <info>{command}</info> [--opt -v -h ...] [arg0 arg1 arg2=value2 ...]",
             'example' => [
                 "$script test (run a independent command)",
                 "$script home{$sep}index (run a command of the group)",
@@ -391,10 +401,10 @@ abstract class AbstractApplication implements ApplicationInterface
         $os = \PHP_OS;
         $date = \date('Y.m.d');
         $logo = '';
-        $name = $this->getMeta('name', 'Console Application');
-        $version = $this->getMeta('version', 'Unknown');
-        $publishAt = $this->getMeta('publishAt', 'Unknown');
-        $updateAt = $this->getMeta('updateAt', 'Unknown');
+        $name = $this->getConfig('name', 'Console Application');
+        $version = $this->getConfig('version', 'Unknown');
+        $publishAt = $this->getConfig('publishAt', 'Unknown');
+        $updateAt = $this->getConfig('updateAt', 'Unknown');
         $phpVersion = \PHP_VERSION;
 
         if ($logoTxt = $this->getLogoText()) {
@@ -403,11 +413,11 @@ abstract class AbstractApplication implements ApplicationInterface
 
         $this->output->aList([
             "$logo\n  <info>{$name}</info>, Version <comment>$version</comment>\n",
-            'System Info' => "PHP version <info>$phpVersion</info>, on <info>$os</info> system",
+            'System Info'      => "PHP version <info>$phpVersion</info>, on <info>$os</info> system",
             'Application Info' => "Update at <info>$updateAt</info>, publish at <info>$publishAt</info>(current $date)",
         ], null, [
             'leftChar' => '',
-            'sepChar' => ' :  '
+            'sepChar'  => ' :  '
         ]);
 
         $quit && $this->stop();
@@ -485,9 +495,9 @@ abstract class AbstractApplication implements ApplicationInterface
         $internalOptions = FormatUtil::alignOptions(self::$internalOptions);
 
         $this->output->mList([
-            'Usage:' => "$script <info>{command}</info> [--opt -v -h ...] [arg0 arg1 arg2=value2 ...]",
-            'Options:' => $internalOptions,
-            'Internal Commands:' => $internalCommands,
+            'Usage:'              => "$script <info>{command}</info> [--opt -v -h ...] [arg0 arg1 arg2=value2 ...]",
+            'Options:'            => $internalOptions,
+            'Internal Commands:'  => $internalCommands,
             'Available Commands:' => \array_merge($controllerArr, $commandArr),
         ], [
             'sepChar' => '  ',
@@ -500,7 +510,7 @@ abstract class AbstractApplication implements ApplicationInterface
     }
 
     /**
-     * @param string $name
+     * @param string       $name
      * @param string|array $aliases
      * @return $this
      */
@@ -630,19 +640,19 @@ abstract class AbstractApplication implements ApplicationInterface
      */
     public function getLogoText()
     {
-        return $this->meta['logoText'] ?? null;
+        return $this->config['logoText'] ?? null;
     }
 
     /**
-     * @param string $logoTxt
+     * @param string      $logoTxt
      * @param string|null $style
      */
     public function setLogo(string $logoTxt, string $style = null)
     {
-        $this->meta['logoText'] = $logoTxt;
+        $this->config['logoText'] = $logoTxt;
 
         if ($style) {
-            $this->meta['logoStyle'] = $style;
+            $this->config['logoStyle'] = $style;
         }
     }
 
@@ -651,7 +661,7 @@ abstract class AbstractApplication implements ApplicationInterface
      */
     public function getLogoStyle()
     {
-        return $this->meta['logoStyle'] ?? 'info';
+        return $this->config['logoStyle'] ?? 'info';
     }
 
     /**
@@ -659,7 +669,7 @@ abstract class AbstractApplication implements ApplicationInterface
      */
     public function setLogoStyle(string $style)
     {
-        $this->meta['logoStyle'] = $style;
+        $this->config['logoStyle'] = $style;
     }
 
     /**
@@ -667,7 +677,7 @@ abstract class AbstractApplication implements ApplicationInterface
      */
     public function getRootPath(): string
     {
-        return $this->getMeta('rootPath', '');
+        return $this->getConfig('rootPath', '');
     }
 
     /**
@@ -692,7 +702,7 @@ abstract class AbstractApplication implements ApplicationInterface
      */
     public function getName(): string
     {
-        return $this->meta['name'];
+        return $this->config['name'];
     }
 
     /**
@@ -700,17 +710,17 @@ abstract class AbstractApplication implements ApplicationInterface
      */
     public function getVersion(): string
     {
-        return $this->meta['version'];
+        return $this->config['version'];
     }
 
     /**
      * set meta info
-     * @param array $meta
+     * @param array $config
      */
-    public function setMeta(array $meta)
+    public function setConfig(array $config)
     {
-        if ($meta) {
-            $this->meta = \array_merge($this->meta, $meta);
+        if ($config) {
+            $this->config = \array_merge($this->config, $config);
         }
     }
 
@@ -720,13 +730,13 @@ abstract class AbstractApplication implements ApplicationInterface
      * @param null|string $default
      * @return array|string
      */
-    public function getMeta(string $name = null, $default = null)
+    public function getConfig(string $name = null, $default = null)
     {
         if (!$name) {
-            return $this->meta;
+            return $this->config;
         }
 
-        return $this->meta[$name] ?? $default;
+        return $this->config[$name] ?? $default;
     }
 
     /**
@@ -735,7 +745,7 @@ abstract class AbstractApplication implements ApplicationInterface
      */
     public function getVerbLevel(): int
     {
-        return (int)$this->input->getLongOpt('debug', (int)$this->meta['debug']);
+        return (int)$this->input->getLongOpt('debug', (int)$this->config['debug']);
     }
 
     /**
@@ -744,7 +754,7 @@ abstract class AbstractApplication implements ApplicationInterface
      */
     public function isProfile(): bool
     {
-        return (bool)$this->input->getOpt('profile', $this->getMeta('profile'));
+        return (bool)$this->input->getOpt('profile', $this->getConfig('profile'));
     }
 
     /**
@@ -778,7 +788,7 @@ abstract class AbstractApplication implements ApplicationInterface
 
     /**
      * @param string $command
-     * @param array $meta
+     * @param array  $meta
      */
     public function setCommandMeta(string $command, array $meta)
     {
@@ -801,7 +811,7 @@ abstract class AbstractApplication implements ApplicationInterface
     /**
      * @param string $command
      * @param string $key
-     * @param $value
+     * @param        $value
      */
     public function setCommandMetaValue(string $command, string $key, $value)
     {
@@ -813,7 +823,7 @@ abstract class AbstractApplication implements ApplicationInterface
     /**
      * @param string $command
      * @param string $key
-     * @param mixed $default
+     * @param mixed  $default
      * @return mixed
      */
     public function getCommandMetaValue(string $command, string $key, $default = null)

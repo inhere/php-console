@@ -30,9 +30,9 @@ class ApplicationTest extends TestCase
             'name' => 'Tests',
         ]);
 
-        $this->assertArrayHasKey('name', $app->getMeta());
+        $this->assertArrayHasKey('name', $app->getConfig());
         $this->assertEquals('Tests', $app->getName());
-        $this->assertEquals('Tests', $app->getMeta('name'));
+        $this->assertEquals('Tests', $app->getConfig('name'));
 
         $this->assertInstanceOf(InputInterface::class, $app->getInput());
     }

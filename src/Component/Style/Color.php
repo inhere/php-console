@@ -11,7 +11,7 @@ namespace Inhere\Console\Component\Style;
  * - bg unset 49
  * @package Inhere\Console\Component\Style
  */
-final class Color
+class Color
 {
     /** Foreground base value */
     public const FG_BASE = 30;
@@ -146,7 +146,7 @@ final class Color
     public function __construct($fg = '', $bg = '', array $options = [], bool $extra = false)
     {
         if ($fg) {
-            if (false === array_key_exists($fg, static::$knownColors)) {
+            if (false === \array_key_exists($fg, static::$knownColors)) {
                 throw new \InvalidArgumentException(
                     sprintf('Invalid foreground color "%1$s" [%2$s]',
                         $fg,
@@ -220,9 +220,9 @@ final class Color
      * @param bool $onlyName
      * @return array
      */
-    public function getKnownColors($onlyName = true): array
+    public function getKnownColors(bool $onlyName = true): array
     {
-        return (bool)$onlyName ? array_keys(static::$knownColors) : static::$knownColors;
+        return $onlyName ? \array_keys(static::$knownColors) : static::$knownColors;
     }
 
     /**
@@ -230,8 +230,8 @@ final class Color
      * @param bool $onlyName
      * @return array
      */
-    public function getKnownOptions($onlyName = true): array
+    public function getKnownOptions(bool $onlyName = true): array
     {
-        return (bool)$onlyName ? array_keys(static::$knownOptions) : static::$knownOptions;
+        return $onlyName ? \array_keys(static::$knownOptions) : static::$knownOptions;
     }
 }
