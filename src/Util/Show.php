@@ -1381,6 +1381,8 @@ class Show
 
         if (!isset($opts['color']) || $opts['color']) {
             $messages = static::getStyle()->render($messages);
+        } else {
+            $messages = Style::stripColor($messages);
         }
 
         // if open buffering
@@ -1398,10 +1400,10 @@ class Show
             $messages .= $nl ? PHP_EOL : '';
         }
 
-        fwrite($stream = $opts['stream'] ?? \STDOUT, $messages);
+        \fwrite($stream = $opts['stream'] ?? \STDOUT, $messages);
 
         if (!isset($opts['flush']) || $opts['flush']) {
-            fflush($stream);
+            \fflush($stream);
         }
 
         if ($quit !== false) {

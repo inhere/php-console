@@ -113,7 +113,7 @@ abstract class AbstractApplication implements ApplicationInterface
         $this->runtimeCheck();
         $this->setConfig($meta);
 
-        $this->input = $input ?: new Input();
+        $this->input  = $input ?: new Input();
         $this->output = $output ?: new Output();
 
         $this->init();
@@ -149,6 +149,10 @@ abstract class AbstractApplication implements ApplicationInterface
 
     protected function prepareRun()
     {
+        if ($this->input->getSameOpt(['no-color'])) {
+            Style::setNoColor();
+        }
+
         if (!$this->errorHandler) {
             $this->errorHandler = new ErrorHandler();
         }
@@ -172,7 +176,11 @@ abstract class AbstractApplication implements ApplicationInterface
         $command = \trim($this->input->getCommand(), $this->delimiter);
 
         $this->prepareRun();
-        $this->filterSpecialCommand($command);
+
+        // like: help, version, list
+        if ($this->filterSpecialCommand($command)) {
+            return 0;
+        }
 
         // call 'onBeforeRun' service, if it is registered.
         $this->fire(self::ON_BEFORE_RUN, $this);
@@ -221,8 +229,8 @@ abstract class AbstractApplication implements ApplicationInterface
 
         // display runtime info
         if ($this->isProfile()) {
-            $title = '------ Runtime Stats(use --profile) ------';
-            $stats = $this->stats;
+            $title       = '------ Runtime Stats(use --profile) ------';
+            $stats       = $this->stats;
             $this->stats = PhpHelper::runtime($stats['startTime'], $stats['startMemory'], $stats);
             $this->output->write('');
             $this->output->aList($this->stats, $title);
@@ -306,29 +314,33 @@ abstract class AbstractApplication implements ApplicationInterface
     }
 
     /**
-     * @param $command
+     * @param string $command
+     * @return bool True will stop run, False will goon run give command.
      */
-    protected function filterSpecialCommand(string $command)
+    protected function filterSpecialCommand(string $command): bool
     {
         if (!$command) {
             if ($this->input->getSameOpt(['V', 'version'])) {
                 $this->showVersionInfo();
+                return true;
             }
 
             if ($this->input->getSameOpt(['h', 'help'])) {
                 $this->showHelpInfo();
+                return true;
             }
-        }
 
-        if ($this->input->getSameOpt(['no-color'])) {
-            Style::setNoColor();
+            // default run list command
+            // $command = $this->defaultCommand ? 'list';
+            $command = 'list';
+            // is user command
+        } elseif (!$this->isInternalCommand($command)) {
+            return false;
         }
-
-        $command = $command ?: 'list';
 
         switch ($command) {
             case 'help':
-                $this->showHelpInfo(true, $this->input->getFirstArg());
+                $this->showHelpInfo($this->input->getFirstArg());
                 break;
             case 'list':
                 $this->showCommandList();
@@ -336,7 +348,10 @@ abstract class AbstractApplication implements ApplicationInterface
             case 'version':
                 $this->showVersionInfo();
                 break;
+            default:
+                return false;
         }
+        return true;
     }
 
     /**
@@ -531,9 +546,9 @@ abstract class AbstractApplication implements ApplicationInterface
     /**
      * @return array
      */
-    public static function getInternalCommands(): array
+    public function getInternalCommands(): array
     {
-        return static::$internalCommands;
+        return \array_keys(static::$internalCommands);
     }
 
     /**

@@ -79,7 +79,10 @@ interface ApplicationInterface
      */
     public function command(string $name, $handler = null, $option = null);
 
-    public function showCommandList($quit = true);
+    public function showCommandList();
 
+    /**
+     * @return string
+     */
     public function getRootPath(): string;
 }

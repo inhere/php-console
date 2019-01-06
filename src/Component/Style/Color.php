@@ -150,7 +150,7 @@ class Color
                 throw new \InvalidArgumentException(
                     sprintf('Invalid foreground color "%1$s" [%2$s]',
                         $fg,
-                        implode(', ', $this->getKnownColors())
+                        \implode(', ', $this->getKnownColors())
                     )
                 );
             }
@@ -159,11 +159,11 @@ class Color
         }
 
         if ($bg) {
-            if (false === array_key_exists($bg, static::$knownColors)) {
+            if (false === \array_key_exists($bg, static::$knownColors)) {
                 throw new \InvalidArgumentException(
                     sprintf('Invalid background color "%1$s" [%2$s]',
                         $bg,
-                        implode(', ', $this->getKnownColors())
+                        \implode(', ', $this->getKnownColors())
                     )
                 );
             }
@@ -172,11 +172,11 @@ class Color
         }
 
         foreach ($options as $option) {
-            if (false === array_key_exists($option, static::$knownOptions)) {
+            if (false === \array_key_exists($option, static::$knownOptions)) {
                 throw new \InvalidArgumentException(
                     sprintf('Invalid option "%1$s" [%2$s]',
                         $option,
-                        implode(', ', $this->getKnownOptions())
+                        \implode(', ', $this->getKnownOptions())
                     )
                 );
             }

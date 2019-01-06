@@ -20,17 +20,16 @@ trait ApplicationHelpTrait
 {
     /**
      * show the application version information
-     * @param bool $quit
      */
-    public function showVersionInfo($quit = true)
+    public function showVersionInfo(): void
     {
-        $os = \PHP_OS;
-        $date = \date('Y.m.d');
-        $logo = '';
-        $name = $this->getConfig('name', 'Console Application');
-        $version = $this->getConfig('version', 'Unknown');
-        $publishAt = $this->getConfig('publishAt', 'Unknown');
-        $updateAt = $this->getConfig('updateAt', 'Unknown');
+        $os         = \PHP_OS;
+        $date       = \date('Y.m.d');
+        $logo       = '';
+        $name       = $this->getConfig('name', 'Console Application');
+        $version    = $this->getConfig('version', 'Unknown');
+        $publishAt  = $this->getConfig('publishAt', 'Unknown');
+        $updateAt   = $this->getConfig('updateAt', 'Unknown');
         $phpVersion = \PHP_VERSION;
 
         if ($logoTxt = $this->getLogoText()) {
@@ -47,8 +46,6 @@ trait ApplicationHelpTrait
             'leftChar' => '',
             'sepChar'  => ' :  '
         ]);
-
-        $quit && $this->stop();
     }
 
     /***************************************************************************
@@ -57,10 +54,9 @@ trait ApplicationHelpTrait
 
     /**
      * show the application help information
-     * @param bool   $quit
      * @param string $command
      */
-    public function showHelpInfo(bool $quit = true, string $command = '')
+    public function showHelpInfo(string $command = ''): void
     {
         /** @var \Inhere\Console\IO\Input $in */
         $in = $this->input;
@@ -71,10 +67,10 @@ trait ApplicationHelpTrait
             $in->setSOpt('h', true);
             $in->clearArgs();
             $this->dispatch($command);
-            $quit && $this->stop();
+            return;
         }
 
-        $sep = $this->delimiter;
+        $sep    = $this->delimiter;
         $script = $in->getScript();
 
         /** @var \Inhere\Console\IO\Output $out */
@@ -88,20 +84,32 @@ trait ApplicationHelpTrait
                 "$script home{$sep}index -h (see a command help of the group)",
             ]
         ], false);
-
-        $quit && $this->stop();
     }
 
     /**
      * show the application command list information
-     * @param bool $quit
      */
-    public function showCommandList($quit = true)
+    public function showCommandList()
     {
-        $script = $this->getScriptName();
-        $hasGroup = $hasCommand = false;
+        /** @var \Inhere\Console\IO\Input $input */
+        $input = $this->input;
+        /** @var \Inhere\Console\IO\Output $output */
+        $output = $this->output;
+        // has option: --auto-completion
+        $autoComp = $input->getBoolOpt('auto-completion');
+        // has option: --shell-env
+        $shellEnv = (string)$input->getLongOpt('shell-env', '');
+
+        // php bin/app list --only-name
+        if ($autoComp && $shellEnv === 'bash') {
+            $this->dumpAutoCompletion($shellEnv, []);
+            return;
+        }
+
+        $script        = $this->getScriptName();
+        $hasGroup      = $hasCommand = false;
         $controllerArr = $commandArr = [];
-        $desPlaceholder = 'No description of the command';
+        $placeholder   = 'No description of the command';
 
         // all console controllers
         if ($controllers = $this->controllers) {
@@ -116,16 +124,21 @@ trait ApplicationHelpTrait
         }
 
         // add split title on both exists.
-        if ($hasCommand && $hasGroup) {
-            $commandArr[] = \PHP_EOL . '- <bold>Alone Commands</bold>';
+        if (!$autoComp && $hasCommand && $hasGroup) {
+            $commandArr[]    = \PHP_EOL . '- <bold>Alone Commands</bold>';
             $controllerArr[] = \PHP_EOL . '- <bold>Group Commands</bold>';
         }
 
         foreach ($controllers as $name => $controller) {
             /** @var \Inhere\Console\AbstractCommand $controller */
-            $desc = $controller::getDescription() ?: $desPlaceholder;
+            $desc    = $controller::getDescription() ?: $placeholder;
             $aliases = $this->getCommandAliases($name);
-            $extra = $aliases ? Helper::wrapTag(' [alias: ' . \implode(',', $aliases) . ']', 'info') : '';
+            $extra   = $aliases ? Helper::wrapTag(
+                ' [alias: ' . \implode(',', $aliases) . ']',
+                'info'
+            ) : '';
+
+            // collect
             $controllerArr[$name] = $desc . $extra;
         }
 
@@ -134,11 +147,11 @@ trait ApplicationHelpTrait
         }
 
         foreach ($commands as $name => $command) {
-            $desc = $desPlaceholder;
+            $desc = $placeholder;
 
             /** @var \Inhere\Console\AbstractCommand $command */
             if (\is_subclass_of($command, CommandInterface::class)) {
-                $desc = $command::getDescription() ?: $desPlaceholder;
+                $desc = $command::getDescription() ?: $placeholder;
             } elseif ($msg = $this->getCommandMetaValue($name, 'description')) {
                 $desc = $msg;
             } elseif (\is_string($command)) {
@@ -147,8 +160,8 @@ trait ApplicationHelpTrait
                 $desc = 'A handler by ' . \get_class($command);
             }
 
-            $aliases = $this->getCommandAliases($name);
-            $extra = $aliases ? Helper::wrapTag(' [alias: ' . \implode(',', $aliases) . ']', 'info') : '';
+            $aliases           = $this->getCommandAliases($name);
+            $extra             = $aliases ? Helper::wrapTag(' [alias: ' . \implode(',', $aliases) . ']', 'info') : '';
             $commandArr[$name] = $desc . $extra;
         }
 
@@ -158,10 +171,15 @@ trait ApplicationHelpTrait
 
         // built in commands
         $internalCommands = static::$internalCommands;
+
+        if ($autoComp && $shellEnv === 'zsh') {
+            $map = \array_merge($internalCommands, $controllerArr, $commandArr);
+            $this->dumpAutoCompletion('zsh', $map);
+            return;
+        }
+
         \ksort($internalCommands);
 
-        /** @var \Inhere\Console\IO\Output $output */
-        $output = $this->output;
         // built in options
         $internalOptions = FormatUtil::alignOptions(self::$internalOptions);
 
@@ -176,8 +194,62 @@ trait ApplicationHelpTrait
 
         unset($controllerArr, $commandArr, $internalCommands);
         $output->write("More command information, please use: <cyan>$script {command} -h</cyan>");
-
-        $quit && $this->stop();
     }
 
+    /**
+     * for zsh:
+     *  php bin/app --auto-completion --shell-env zsh
+     * for bash:
+     *  php bin/app --auto-completion --shell-env bash
+     * @param string $shellEnv
+     * @param array  $data
+     */
+    protected function dumpAutoCompletion(string $shellEnv, array $data): void
+    {
+        /** @var \Inhere\Console\IO\Input $input */
+        $input = $this->input;
+        /** @var \Inhere\Console\IO\Output $output */
+        $output = $this->output;
+
+        // info
+        $glue     = ' ';
+        $genFile  = $input->getLongOpt('gen-file');
+        $filename = 'auto-completion.' . $shellEnv;
+        $tplDir   = \dirname(__DIR__, 2) . '/templates';
+
+        if ($shellEnv === 'bash') {
+            $tplFile  = $tplDir . '/auto-completion.bash.tpl';
+            $list = \array_merge(
+                $this->getCommandNames(),
+                $this->getControllerNames(),
+                $this->getInternalCommands()
+            );
+        } else {
+            $glue = \PHP_EOL;
+            $list = [];
+            $tplFile  = $tplDir . '/auto-completion.zsh.tpl';
+            foreach ($data as $name => $desc) {
+                $list[] = $name . ':' . \str_replace(':', '\:', $desc);
+            }
+        }
+
+        $commands = \implode($glue, $list);
+
+        // dump to stdout.
+        if (!$genFile) {
+            $output->write($commands, true, false, ['color' => false]);
+            return;
+        }
+
+        // dump at script file
+        $tplText = \file_get_contents($tplFile);
+        $content = \strtr($tplText, [
+            '{{filename}}' => $filename,
+            '{{commands}}' => $commands,
+            '{{binName}}'  => $input->getBinName(),
+            '{{datetime}}' => \date('Y-m-d H:i:s'),
+        ]);
+
+        \file_put_contents($input->getPwd() . '/' . $filename, $content);
+    }
 }

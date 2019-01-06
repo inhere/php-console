@@ -350,12 +350,12 @@ class Input implements InputInterface
      * @param bool   $default
      * @return bool
      */
-    public function getBoolOpt(string $name, $default = false): bool
+    public function getBoolOpt(string $name, bool $default = false): bool
     {
         return (bool)$this->getOpt($name, $default);
     }
 
-    public function boolOpt(string $name, $default = false): bool
+    public function boolOpt(string $name, bool $default = false): bool
     {
         return (bool)$this->getOpt($name, $default);
     }

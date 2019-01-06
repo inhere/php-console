@@ -181,7 +181,7 @@ class Style
             return static::stripColor($text);
         }
 
-        if (!preg_match_all(self::COLOR_TAG, $text, $matches)) {
+        if (!\preg_match_all(self::COLOR_TAG, $text, $matches)) {
             return $text;
         }
 
