@@ -8,10 +8,10 @@
 
 namespace Inhere\Console\Util;
 
-use Inhere\Console\Component\StrBuffer;
 use Inhere\Console\Component\Style\Style;
 use Toolkit\Cli\Cli;
 use Toolkit\StrUtil\Str;
+use Toolkit\StrUtil\StrBuffer;
 use Toolkit\Sys\Sys;
 
 /**

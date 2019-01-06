@@ -326,6 +326,7 @@ class PharCompiler
      * @throws \UnexpectedValueException
      * @throws \BadMethodCallException
      * @throws \RuntimeException
+     * @throws \Exception
      */
     public function pack(string $pharFile, $refresh = true): string
     {
@@ -461,7 +462,6 @@ class PharCompiler
         // skip error
         if (!\file_exists($file)) {
             $this->reportError("File $file is not exists!");
-
             return;
         }
 
@@ -613,7 +613,6 @@ EOF;
                             return true;
                         }
                     }
-
                     return false;
                 }
 
@@ -636,18 +635,18 @@ EOF;
         }
 
         $output = '';
-        foreach (token_get_all($source) as $token) {
+        foreach (\token_get_all($source) as $token) {
             if (\is_string($token)) {
                 $output .= $token;
-            } elseif (\in_array($token[0], [T_COMMENT, T_DOC_COMMENT], true)) {
-                $output .= str_repeat("\n", substr_count($token[1], "\n"));
-            } elseif (T_WHITESPACE === $token[0]) {
+            } elseif (\in_array($token[0], [\T_COMMENT, \T_DOC_COMMENT], true)) {
+                $output .= \str_repeat("\n", \substr_count($token[1], "\n"));
+            } elseif (\T_WHITESPACE === $token[0]) {
                 // reduce wide spaces
-                $whitespace = preg_replace('{[ \t]+}', ' ', $token[1]);
+                $whitespace = \preg_replace('{[ \t]+}', ' ', $token[1]);
                 // normalize newlines to \n
-                $whitespace = preg_replace('{(?:\r\n|\r|\n)}', "\n", $whitespace);
+                $whitespace = \preg_replace('{(?:\r\n|\r|\n)}', "\n", $whitespace);
                 // trim leading spaces
-                $whitespace = preg_replace('{\n +}', "\n", $whitespace);
+                $whitespace = \preg_replace('{\n +}', "\n", $whitespace);
                 $output .= $whitespace;
             } else {
                 $output .= $token[1];
@@ -677,7 +676,7 @@ EOF;
             );
         }
 
-        $this->version = trim($ret);
+        $this->version = \trim($ret);
 
         list($code, $ret,) = Sys::run('git log -n1 --pretty=%ci HEAD', $basePath);
 
@@ -687,18 +686,18 @@ EOF;
             );
         }
 
-        $this->versionDate = new \DateTime(trim($ret));
+        $this->versionDate = new \DateTime(\trim($ret));
         $this->versionDate->setTimezone(new \DateTimeZone('UTC'));
 
         // 获取到最新的 tag
         list($code, $ret,) = Sys::run('git describe --tags --exact-match HEAD', $basePath);
         if ($code === 0) {
-            $this->version = trim($ret);
+            $this->version = \trim($ret);
         } else {
             list($code1, $ret,) = Sys::run('git branch', $basePath);
 
             if ($code1 === 0) {
-                $this->branchAliasVersion = \explode("\n", trim($ret, "* \n"), 2)[0];
+                $this->branchAliasVersion = \explode("\n", \trim($ret, "* \n"), 2)[0];
             }
         }
     }
@@ -712,10 +711,10 @@ EOF;
         $realPath = $file->getRealPath();
         $pathPrefix = $this->basePath . DIRECTORY_SEPARATOR;
 
-        $pos = strpos($realPath, $pathPrefix);
-        $relativePath = $pos !== false ? substr_replace($realPath, '', $pos, \strlen($pathPrefix)) : $realPath;
+        $pos = \strpos($realPath, $pathPrefix);
+        $relativePath = $pos !== false ? \substr_replace($realPath, '', $pos, \strlen($pathPrefix)) : $realPath;
 
-        return str_replace('\\', '/', $relativePath);
+        return \str_replace('\\', '/', $relativePath);
     }
 
     /**
@@ -884,7 +883,6 @@ EOF;
     public function setBranchAliasVersion(string $branchAliasVersion): PharCompiler
     {
         $this->branchAliasVersion = $branchAliasVersion;
-
         return $this;
     }
 

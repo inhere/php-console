@@ -8,7 +8,7 @@
 
 namespace Inhere\Console\Component\Formatter;
 
-use Inhere\Console\Component\StrBuffer;
+use Toolkit\StrUtil\StrBuffer;
 use Inhere\Console\Util\FormatUtil;
 
 /**

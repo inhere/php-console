@@ -129,7 +129,7 @@ class PharController extends Controller
         // use config file
         $configFile = $this->input->getSameOpt(['c', 'config']) ?: $dir . '/phar.build.inc';
 
-        if ($configFile && is_file($configFile)) {
+        if ($configFile && \is_file($configFile)) {
             require $configFile;
 
             return $compiler->in($dir);
@@ -166,16 +166,16 @@ class PharController extends Controller
         }
 
         $basePath = $in->getPwd();
-        $file = realpath($basePath . '/' . $path);
+        $file = \realpath($basePath . '/' . $path);
 
-        if (!file_exists($file)) {
+        if (!\file_exists($file)) {
             return $out->error("The phar file not exists. File: $file");
         }
 
         $dir = $in->getSameOpt(['d', 'dir']) ?: $basePath;
         $overwrite = $in->getBoolOpt('overwrite');
 
-        if (!is_dir($dir)) {
+        if (!\is_dir($dir)) {
             Helper::mkdir($dir);
         }
 
