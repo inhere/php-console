@@ -8,6 +8,7 @@
 
 namespace Inhere\Console\Traits;
 
+use Inhere\Console\Component\Style\Style;
 use Inhere\Console\Face\CommandInterface;
 use Inhere\Console\Util\FormatUtil;
 use Inhere\Console\Util\Helper;
@@ -197,10 +198,14 @@ trait ApplicationHelpTrait
     }
 
     /**
-     * for zsh:
-     *  php bin/app --auto-completion --shell-env zsh
-     * for bash:
-     *  php bin/app --auto-completion --shell-env bash
+     * zsh:
+     *  php examples/app --auto-completion  --shell-env zsh
+     *  php examples/app --auto-completion --shell-env zsh --gen-file
+     *  php examples/app --auto-completion --shell-env zsh --gen-file stdout
+     * bash:
+     *  php examples/app --auto-completion --shell-env bash
+     *  php examples/app --auto-completion --shell-env bash --gen-file
+     *  php examples/app --auto-completion --shell-env bash --gen-file stdout
      * @param string $shellEnv
      * @param array  $data
      */
@@ -213,21 +218,21 @@ trait ApplicationHelpTrait
 
         // info
         $glue     = ' ';
-        $genFile  = $input->getLongOpt('gen-file');
+        $genFile  = (string)$input->getLongOpt('gen-file');
         $filename = 'auto-completion.' . $shellEnv;
-        $tplDir   = \dirname(__DIR__, 2) . '/templates';
+        $tplDir   = \dirname(__DIR__, 2) . '/res/templates';
 
         if ($shellEnv === 'bash') {
-            $tplFile  = $tplDir . '/auto-completion.bash.tpl';
-            $list = \array_merge(
+            $tplFile = $tplDir . '/bash-completion.tpl';
+            $list    = \array_merge(
                 $this->getCommandNames(),
                 $this->getControllerNames(),
                 $this->getInternalCommands()
             );
         } else {
-            $glue = \PHP_EOL;
-            $list = [];
-            $tplFile  = $tplDir . '/auto-completion.zsh.tpl';
+            $glue    = \PHP_EOL;
+            $list    = [];
+            $tplFile = $tplDir . '/zsh-completion.tpl';
             foreach ($data as $name => $desc) {
                 $list[] = $name . ':' . \str_replace(':', '\:', $desc);
             }
@@ -241,15 +246,36 @@ trait ApplicationHelpTrait
             return;
         }
 
+        if ($shellEnv === 'zsh') {
+            $commands = "'" . \implode("'\n'", $list) . "'";
+            $commands = Style::stripColor($commands);
+        }
+
         // dump at script file
+        $binName = $input->getBinName();
         $tplText = \file_get_contents($tplFile);
         $content = \strtr($tplText, [
-            '{{filename}}' => $filename,
-            '{{commands}}' => $commands,
-            '{{binName}}'  => $input->getBinName(),
-            '{{datetime}}' => \date('Y-m-d H:i:s'),
+            '{{version}}'    => $this->getVersion(),
+            '{{filename}}'   => $filename,
+            '{{commands}}'   => $commands,
+            '{{binName}}'    => $binName,
+            '{{datetime}}'   => \date('Y-m-d H:i:s'),
+            '{{fmtBinName}}' => \str_replace('/', '_', $binName),
         ]);
 
-        \file_put_contents($input->getPwd() . '/' . $filename, $content);
+        // dump to stdout
+        if ($genFile === 'stdout') {
+            \file_put_contents('php://stdout', $content);
+            return;
+        }
+
+        $targetFile = $input->getPwd() . '/' . $filename;
+        $output->write(['Target File:', $targetFile, '']);
+
+        if (\file_put_contents($targetFile, $content) > 10) {
+            $output->success("O_O! Generate $filename successful!");
+        } else {
+            $output->error("O^O! Generate $filename failure!");
+        }
     }
 }
