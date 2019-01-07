@@ -16,3 +16,5 @@ composer.lock
 *.phar
 .DS_Store
 .interactive_history
+*.bash
+*.zsh
