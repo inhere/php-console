@@ -8,7 +8,7 @@
 
 namespace Inhere\Console\IO;
 
-use Inhere\Console\Util\InputParser;
+use Toolkit\Cli\Flags;
 
 /**
  * Class Input - the input information. by parse global var $argv.
@@ -87,7 +87,8 @@ class Input implements InputInterface
         $this->fullScript = \implode(' ', $args);
 
         if ($parsing) {
-            list($this->args, $this->sOpts, $this->lOpts) = InputParser::fromArgv($args);
+            // list($this->args, $this->sOpts, $this->lOpts) = InputParser::fromArgv($args);
+            list($this->args, $this->sOpts, $this->lOpts) = Flags::parseArgv($args);
 
             // collect command. it is first argument.
             $this->command = isset($this->args[0]) ? \array_shift($this->args) : null;
@@ -109,11 +110,11 @@ class Input implements InputInterface
     {
         $tokens = \array_map(function ($token) {
             if (\preg_match('{^(-[^=]+=)(.+)}', $token, $match)) {
-                return $match[1] . InputParser::escapeToken($match[2]);
+                return $match[1] . Flags::escapeToken($match[2]);
             }
 
             if ($token && $token[0] !== '-') {
-                return InputParser::escapeToken($token);
+                return Flags::escapeToken($token);
             }
 
             return $token;

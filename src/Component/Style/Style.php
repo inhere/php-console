@@ -141,7 +141,7 @@ class Style
             ->add('magenta', 'magenta')
             ->add('mga', 'magenta')
             ->add('red', 'red')
-            ->add('yellow', ['fg' => 'yellow'])
+            ->addByArray('yellow', ['fg' => 'yellow'])
             ->addByArray('darkGray', ['fg' => 'black', 'extra' => true]);
     }
 

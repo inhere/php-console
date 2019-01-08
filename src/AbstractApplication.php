@@ -229,8 +229,9 @@ abstract class AbstractApplication implements ApplicationInterface
 
         // display runtime info
         if ($this->isProfile()) {
-            $title       = '------ Runtime Stats(use --profile) ------';
-            $stats       = $this->stats;
+            $title = '------ Runtime Stats(use --profile) ------';
+            $stats = $this->stats;
+            // output
             $this->stats = PhpHelper::runtime($stats['startTime'], $stats['startMemory'], $stats);
             $this->output->write('');
             $this->output->aList($this->stats, $title);

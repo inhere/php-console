@@ -83,6 +83,7 @@ trait ApplicationHelpTrait
                 "$script home{$sep}index (run a command of the group)",
                 "$script help {command} (see a command help information)",
                 "$script home{$sep}index -h (see a command help of the group)",
+                "$script --auto-completion --shell-env [zsh|bash] [--gen-file stdout]",
             ]
         ], false);
     }

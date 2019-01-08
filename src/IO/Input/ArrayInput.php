@@ -9,7 +9,7 @@
 namespace Inhere\Console\IO\Input;
 
 use Inhere\Console\IO\Input;
-use Inhere\Console\Util\InputParser;
+use Toolkit\Cli\Flags;
 
 /**
  * Class ArrayInput
@@ -31,7 +31,7 @@ class ArrayInput extends Input
         $this->fullScript = \implode(' ', $args);
 
         if ($parsing && $args) {
-            list($this->args, $this->sOpts, $this->lOpts) = InputParser::fromArray($args);
+            list($this->args, $this->sOpts, $this->lOpts) = Flags::parseArray($args);
 
             // collect command. it is first argument.
             $this->command = isset($this->args[0]) ? \array_shift($this->args) : null;
