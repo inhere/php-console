@@ -6,6 +6,10 @@
 
 简洁、功能全面的php命令行应用库。提供控制台参数解析, 命令运行，颜色风格输出, 用户信息交互, 特殊格式信息显示。
 
+> **[EN README](./README_en.md)**
+
+## 功能概览
+
 > 使用方便简单。可以方便的整合到任何已有项目中。
 
 - 命令行应用, 命令行的 `controller`, `command` 解析运行 
@@ -35,16 +39,7 @@
 
 ![app-command-list](https://raw.githubusercontent.com/inhere/php-console/master/docs/screenshots/app-command-list.png)
 
-## [EN README](./README_en.md)
-
-## 项目地址
-
-- **github** https://github.com/inhere/php-console.git
-- **gitee** https://gitee.com/inhere/php-console.git
-
 ## 快速安装
-
-- 使用 composer 命令
 
 ```bash
 composer require inhere/console
@@ -68,6 +63,11 @@ composer require inhere/console
 - **[进度动态输出](https://github.com/inhere/php-console/wiki/process-output)**
 - **[用户交互](https://github.com/inhere/php-console/wiki/user-interactive)**
 - **[扩展工具](https://github.com/inhere/php-console/wiki/extra-tools)**
+
+## 项目地址
+
+- **github** https://github.com/inhere/php-console.git
+- **gitee** https://gitee.com/inhere/php-console.git
 
 ## 单元测试
 
