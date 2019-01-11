@@ -28,7 +28,7 @@ Provide console parameter parsing, command run, color style output, user informa
 ### Built-in tools
 
 - Built-in Phar packaging tool class, which can be easily packaged into `phar` files. Easy to distribute and use
-  - Run the command `php examples/app phar:pack` in the example, which will package this console library into an `app.phar`
+  - Run the command `php examples/app phar:pack` in the example, which will package this console library into an `app.phar`
 - Built-in file download tool class under command line with progress bar display
 - Command line php code highlighting support (from `jakub-onderka/php-console-highlighter` and making some adjustments)
 - Simple Terminal screen, cursor control operation class
@@ -43,7 +43,7 @@ Provide console parameter parsing, command run, color style output, user informa
 ## Quick installation
 
 ```bash
-Composer require inhere/console
+composer require inhere/console
 ```
 
 ## Document List
@@ -51,18 +51,18 @@ Composer require inhere/console
 > Please go to WIKI for detailed usage documentation
 
 - **[Document Home](https://github.com/inhere/php-console/wiki/home)**
-- **[Feature Overview] (https://github.com/inhere/php-console/wiki/overview)**
-- **[Install] (https://github.com/inhere/php-console/wiki/install)**
+- **[Feature Overview](https://github.com/inhere/php-console/wiki/overview)**
+- **[Install](https://github.com/inhere/php-console/wiki/install)**
 - **[Create Application](https://github.com/inhere/php-console/wiki/quick-start)**
 - **[Add Command](https://github.com/inhere/php-console/wiki/add-command)**
 - **[Add Command Group](https://github.com/inhere/php-console/wiki/add-group)**
 - **[Register Command](https://github.com/inhere/php-console/wiki/register-command)**
-- **[Error/Exception Capture] (https://github.com/inhere/php-console/wiki/error-handle)**
-- **[Input Object] (https://github.com/inhere/php-console/wiki/input-instance)**
-- **[output object] (https://github.com/inhere/php-console/wiki/output-instance)**
-- **[Formatted Output] (https://github.com/inhere/php-console/wiki/format-output)**
-- **[Progress Dynamic Output] (https://github.com/inhere/php-console/wiki/process-output)**
-- **[User Interaction] (https://github.com/inhere/php-console/wiki/user-interactive)**
+- **[Error/Exception Capture](https://github.com/inhere/php-console/wiki/error-handle)**
+- **[Input Object](https://github.com/inhere/php-console/wiki/input-instance)**
+- **[output object](https://github.com/inhere/php-console/wiki/output-instance)**
+- **[Formatted Output](https://github.com/inhere/php-console/wiki/format-output)**
+- **[Progress Dynamic Output](https://github.com/inhere/php-console/wiki/process-output)**
+- **[User Interaction](https://github.com/inhere/php-console/wiki/user-interactive)**
 - **[Extension Tools](https://github.com/inhere/php-console/wiki/extra-tools)**
 
 ## Project address
@@ -73,7 +73,7 @@ Composer require inhere/console
 ## Unit test
 
 ```bash
-Phpunit
+phpunit
 ```
 
 ## License
