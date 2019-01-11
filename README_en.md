@@ -1,303 +1,86 @@
-# console application lib 
+# PHP console
 
 [![License](https://img.shields.io/packagist/l/inhere/console.svg?style=flat-square)](LICENSE)
 [![Php Version](https://img.shields.io/badge/php-%3E=7.0-brightgreen.svg?maxAge=2592000)](https://packagist.org/packages/inhere/console)
 [![Latest Stable Version](http://img.shields.io/packagist/v/inhere/console.svg)](https://packagist.org/packages/inhere/console)
 
-a php console application library.
+A simple, full-featured php command line application library. 
+Provide console parameter parsing, command run, color style output, user information interaction, and special format information display.
 
-- console application, run command/controller
-- console command-line params parse
-- console `input`, `output`
-- console color support, format message output
-- console interactive
+> **[中文README](./README.md)**
 
-> [中文README](./README.md)
+## Features
 
-## project
+> Easy to use. Can be easily integrated into any existing project.
 
-- **github** https://github.com/inhere/php-console.git
-- **git@osc** https://git.oschina.net/inhere/php-console.git
+- Command line application, `controller`, `command` parsing run on the command line
+- Support for setting aliases for commands. A command can have multiple aliases. Support command display/hide, enable/disable
+- Full-featured command line option parameter parsing (named parameters, short options, long options...). `input`, `output` of the command line, management, use
+- Command method comments are automatically parsed as help information (by default, `@usage` `@arguments` `@options` `@example`)
+- Support for outputting message texts of multiple color styles (`info`, `comment`, `success`, `warning`, `danger`, `error` ... )
+- Commonly used special format information display (`section`, `panel`, `padding`, `helpPanel`, `table`, `tree`, `title`, `list`, `multiList`)
+- Rich dynamic information display (`pending/loading`, `pointing`, `spinner`, `counterTxt`, `dynamicText`, `progressTxt`, `progressBar`)
+- Common user information interaction support (`select`, `multiSelect`, `confirm`, `ask/question`, `askPassword/askHiddenInput`)
+- Support for predefined parameter definitions like `symfony/console` (giving parameter values ​​by position, recommended when strict parameter restrictions are required)
+- The color output is `windows` `linux` `mac` compatible. Environments that do not support color will automatically remove the relevant CODE.
+- Quickly generate auto-completion scripts for the current application in the `bash/zsh` environment
 
-**NOTICE**
+### Built-in tools
 
-- master branch -- is require `php >= 7` (recommended use)。
-- php5 branch -- It's a branch of PHP 5, but it hasn't been updated for some time (the basic functionality is complete).
+- Built-in Phar packaging tool class, which can be easily packaged into `phar` files. Easy to distribute and use
+  - Run the command `php examples/app phar:pack` in the example, which will package this console library into an `app.phar`
+- Built-in file download tool class under command line with progress bar display
+- Command line php code highlighting support (from `jakub-onderka/php-console-highlighter` and making some adjustments)
+- Simple Terminal screen, cursor control operation class
+- Simple process operations using classes (fork, run, stop, wait ..., etc.)
 
-## install
+> All features, effects; can be run in the example code `phps/app` in `examples/`. Basically covers all the features and can be tested directly
 
-- by composer
+## Command line preview
 
-edit `composer.json`，at `require` add
+![app-command-list](https://raw.githubusercontent.com/inhere/php-console/master/docs/screenshots/app-command-list.png)
 
-```
-"inhere/console": "dev-master",
-// "inhere/console": "dev-php5", // for php5
-```
-
-run: `composer update`
-
-- Direct fetch
-
-```
-git clone https://git.oschina.net/inhere/php-console.git // git@osc
-git clone https://github.com/inhere/php-console.git // github
-```
-
-## usage
-
-```php
-use Inhere\Console\IO\Input;
-use Inhere\Console\IO\Output;
-use Inhere\Console\Application;
-
-$meta = [
-    'name' => 'My Console App',
-    'version' => '1.0.2',
-];
-$input = new Input;
-$output = new Output;
-$app = new Application($meta, $input, $output);
-
-// add command routes
-$app->command('demo', function (Input $in, Output $out) {
-    $cmd = $in->getCommand();
-
-    $out->info('hello, this is a test command: ' . $cmd);
-});
-
-// run
-$app->run();
-```
-
-now, you can see:
-
-!['app-command-list'](docs/screenshots/app-command-list.png)
-
-## input
-
-example(in terminal):
+## Quick installation
 
 ```bash
-$ examples/app home/useArg status=2 name=john arg0 -s=test --page=23 --id=154 -e dev -v vvv -d -rf --debug --test=false
+Composer require inhere/console
 ```
 
-**NOTICE:**
+## Document List
 
-- These words will be as a Boolean(`true`) value: `on|yes|true` 
-- These words will be as a Boolean(`false`) value: `off|no|false` 
+> Please go to WIKI for detailed usage documentation
 
-get command info:
+- **[Document Home](https://github.com/inhere/php-console/wiki/home)**
+- **[Feature Overview] (https://github.com/inhere/php-console/wiki/overview)**
+- **[Install] (https://github.com/inhere/php-console/wiki/install)**
+- **[Create Application](https://github.com/inhere/php-console/wiki/quick-start)**
+- **[Add Command](https://github.com/inhere/php-console/wiki/add-command)**
+- **[Add Command Group](https://github.com/inhere/php-console/wiki/add-group)**
+- **[Register Command](https://github.com/inhere/php-console/wiki/register-command)**
+- **[Error/Exception Capture] (https://github.com/inhere/php-console/wiki/error-handle)**
+- **[Input Object] (https://github.com/inhere/php-console/wiki/input-instance)**
+- **[output object] (https://github.com/inhere/php-console/wiki/output-instance)**
+- **[Formatted Output] (https://github.com/inhere/php-console/wiki/format-output)**
+- **[Progress Dynamic Output] (https://github.com/inhere/php-console/wiki/process-output)**
+- **[User Interaction] (https://github.com/inhere/php-console/wiki/user-interactive)**
+- **[Extension Tools](https://github.com/inhere/php-console/wiki/extra-tools)**
 
-```php
-echo $input->getScript();   // 'examples/app'
-echo $input->getCommand(); // 'home/useArg'
+## Project address
+
+- **github** https://github.com/inhere/php-console.git
+- **gitee** https://gitee.com/inhere/php-console.git
+
+## Unit test
+
+```bash
+Phpunit
 ```
 
-get parsed arguments:
-
-```php
-var_dump($input->getArgs());
-```
-
-output:
-
-```php
-array(3) {
-  'status' => string(1) "2"
-  'name' => string(4) "john"
-  [0] => string(4) "arg0"
-}
-```
-
-get parsed options:
-
-```php
-var_dump($input->getOpts());
-```
-
-output:
-
-```php
-array(10) {          
-  's' => string(4) "test"   
-  'e' => string(3) "dev"    
-  'v' => string(3) "vvv"    
-  'd' => bool(true)         
-  'r' => bool(true)         
-  'f' => bool(true)         
-  'page' => string(2) "23"     
-  'id' =>   string(3) "154"    
-  'debug' => bool(true)         
-  'test' => bool(false)        
-}
-```
-
-more method:
-
-```php
-// argument
-$first = $input->getFirstArg(); // 'arg0'
-$status = $input->get('status', 'default'); // '2'
-
-// option
-$page = $input->getOpt('page') // '23'
-$debug = $input->boolOpt('debug') // True
-$test = $input->boolOpt('test') // False
-```
-
-### get user input:
-
-```php
-echo "Your name:";
-
-$text = $input->read(); 
-// in terminal
-// Your name: simon
-
-echo $text; // 'simon'
-```
-
-## output
-
-basic output:
-
-```php
-public function write(mixed $messages = '', $nl = true, $quit = false)
-```
-
-```php
-$output->write('hello');
-```
-
-### formatted output
-
-#### use color style 
-
-![alt text](docs/screenshots/output-color-text.png "Title")
-
-#### special format output
-
-- `$output->title()`
-- `$output->section()`
-- `$output->panel()`
-- `$output->table()`
-- `$output->helpPanel()`
-
-![alt text](docs/screenshots/output-format-msg.png "Title")
-
-## more interactive
-
-in the class `Inhere\Console\Util\Interact`
-
-interactive method:
-
-### `Interact::select()` (alias `Interact::choice()`)
-
-Select one of the options
-
-```php
-select($description, $options, $default = null, $allowExit=true)
-choice($description, $options, $default = null, $allowExit=true)
-```
-
-- example 1:
-
- only values, no setting option
-
-```php
-$select = Interact::select('Your city is ?', [
-    'chengdu', 'beijing', 'shanghai'
-]);
-
-```
-
-output in terminal:
-
-```
-Your city is ? 
-  0) chengdu
-  1) beijing
-  2) shanghai
-  q) Quit // quit option. is auto add. can setting it by 4th argument.
-You choice: 0
-```
-
-```php
-echo $select; // '0'
-```
-
-- example 2:
-
-custom option, setting a default value.
-
-```php
-$select = Interact::select('Your city is ?', [
-    'a' => 'chengdu',
-    'b' => 'beijing',
-    'c' => 'shanghai'
-], 'a');
-```
-
-output in terminal:
-
-```
-Your city is? 
-  a) chengdu
-  b) beijing
-  c) shanghai
-  q) Quit // quit option. is auto add. can setting it by 4th argument.
-You choice[default:a] : b
-```
-
-```php
-echo $select; // 'b'
-```
-
-### `Interact::confirm()`
-
-```php
-public static function confirm($question, $default = true) bool
-```
-
-usage:
-
-
-```php
-$result = Interact::confirm('Whether you want to continue ?');
-```
-
-output in terminal:
-
-```
-Whether you want to continue ?
-Please confirm (yes|no) [default:yes]: n
-```
-
-result: 
-
-```php
-var_dump($result); // bool(false)
-```
-
-### `Interact::question()`/`Interact::ask()`
-
-```php
-public static function ask($question, $default = null, \Closure $validator = null)
-public static function question($question, $default = null, \Closure $validator = null)
-```
-
-```php
- $answer = Interact::ask('Please input your name?', null, function ($answer) {
-     if ( !preg_match('/\w+/', $answer) ) {
-         Interact::error('The name must match "/\w+/"');
-
-         return false;
-     }
-
-     return true;
-  });
-```
 ## License
 
-MIT
+[MIT](LICENSE)
+
+## My other projects
+
+- [inhere/php-validate](https://github.com/inhere/php-validate) A compact and full-featured php verification library
+- [inhere/sroute](https://github.com/inhere/php-srouter) Lightweight and fast HTTP request routing library

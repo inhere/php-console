@@ -52,7 +52,7 @@ composer require inhere/console
 - **[文档首页](https://github.com/inhere/php-console/wiki/home)**
 - **[功能概览](https://github.com/inhere/php-console/wiki/overview)**
 - **[安装](https://github.com/inhere/php-console/wiki/install)**
-- **[快速开始](https://github.com/inhere/php-console/wiki/quick-start)**
+- **[创建应用](https://github.com/inhere/php-console/wiki/quick-start)**
 - **[添加命令](https://github.com/inhere/php-console/wiki/add-command)**
 - **[添加命令组](https://github.com/inhere/php-console/wiki/add-group)**
 - **[注册命令](https://github.com/inhere/php-console/wiki/register-command)**
