@@ -21,17 +21,17 @@
 - 丰富的动态信息显示(`pending/loading`, `pointing`, `spinner`, `counterTxt`, `dynamicText`, `progressTxt`, `progressBar`)
 - 常用的用户信息交互支持(`select`, `multiSelect`, `confirm`, `ask/question`, `askPassword/askHiddenInput`)
 - 支持类似 `symfony/console` 的预定义参数定义(按位置赋予参数值, 需要严格限制参数选项时推荐使用)
-- 输出是 `windows` , `linux` 兼容的，不支持颜色的环境会自动去除相关CODE
-
-> **内置工具**
-
-- `PharCompiler::class` 内置Phar工具类，可以方便的将应用打包成`phar`文件。方便分发和使用
-  - 运行示例中的命令 `php examples/app phar:pack`,会将此console库打包成一个`app.phar`
-- `Download::class` 内置的简单的文件下载工具类，带有进度条
-- `Highlighter::class` 命令行的php代码高亮支持（来自于`jakub-onderka/php-console-highlighter`并做了一些调整）
-- `Terminal::class` 简单的Terminal屏幕、光标控制操作类
-- `ProcessUtil::class` 简单的进程操作使用类（fork,run,stop,wait ... 等）
+- 颜色输出是 `windows` `linux` `mac` 兼容的，不支持颜色的环境会自动去除相关CODE
 - 快速的为当前应用生成 `bash/zsh` 环境下的自动补全脚本
+
+### 内置工具
+
+- 内置Phar打包工具类，可以方便的将应用打包成`phar`文件。方便分发和使用
+  - 运行示例中的命令 `php examples/app phar:pack`,会将此console库打包成一个`app.phar`
+- 内置了命令行下的文件下载工具类，带有进度条显示
+- 命令行的php代码高亮支持（来自于`jakub-onderka/php-console-highlighter`并做了一些调整）
+- 简单的Terminal屏幕、光标控制操作类
+- 简单的进程操作使用类（fork,run,stop,wait ... 等）
 
 > 所有的特性，效果；都可以运行 `examples/` 中的示例代码 `php examples/app` 展示出来的。基本上涵盖了所有功能，可以直接测试运行
 
