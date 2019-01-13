@@ -288,7 +288,7 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
             $usage = "$script {$name}<info>{command}</info> [--options ...] [arguments ...]";
         }
 
-        $globalOptions = \array_merge(Application::getInternalOptions(), static::$globalOptions);
+        $globalOptions = \array_merge(Application::getGlobalOptions(), static::$globalOptions);
 
         $this->output->startBuffer();
         $this->output->write(\ucfirst($classDes) . \PHP_EOL);

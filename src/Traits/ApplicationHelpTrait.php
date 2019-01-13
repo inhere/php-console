@@ -27,10 +27,10 @@ trait ApplicationHelpTrait
         $os         = \PHP_OS;
         $date       = \date('Y.m.d');
         $logo       = '';
-        $name       = $this->getConfig('name', 'Console Application');
-        $version    = $this->getConfig('version', 'Unknown');
-        $publishAt  = $this->getConfig('publishAt', 'Unknown');
-        $updateAt   = $this->getConfig('updateAt', 'Unknown');
+        $name       = $this->getParam('name', 'Console Application');
+        $version    = $this->getParam('version', 'Unknown');
+        $publishAt  = $this->getParam('publishAt', 'Unknown');
+        $updateAt   = $this->getParam('updateAt', 'Unknown');
         $phpVersion = \PHP_VERSION;
 
         if ($logoTxt = $this->getLogoText()) {
@@ -183,7 +183,7 @@ trait ApplicationHelpTrait
         \ksort($internalCommands);
 
         // built in options
-        $internalOptions = FormatUtil::alignOptions(self::$internalOptions);
+        $internalOptions = FormatUtil::alignOptions(self::$globalOptions);
 
         $output->mList([
             'Usage:'              => "$script <info>{command}</info> [--opt -v -h ...] [arg0 arg1 arg2=value2 ...]",

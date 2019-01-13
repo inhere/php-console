@@ -37,7 +37,7 @@ abstract class AbstractApplication implements ApplicationInterface
     ];
 
     /** @var array */
-    protected static $internalOptions = [
+    protected static $globalOptions = [
         '--debug'       => 'Setting the application runtime debug level(0 - 4)',
         '--profile'     => 'Display timing and memory usage information',
         '--no-color'    => 'Disable color/ANSI for message output',
@@ -45,9 +45,7 @@ abstract class AbstractApplication implements ApplicationInterface
         '-V, --version' => 'Show application version information',
     ];
 
-    /**
-     * @var array App runtime stats info
-     */
+    /** @var array Application runtime stats */
     private $stats = [
         'startTime'   => 0,
         'endTime'     => 0,
@@ -55,9 +53,7 @@ abstract class AbstractApplication implements ApplicationInterface
         'endMemory'   => 0,
     ];
 
-    /**
-     * @var array Application config data
-     */
+    /** @var array Application config data */
     private $config = [
         'name'         => 'My Console Application',
         'debug'        => Console::VERB_ERROR,
@@ -103,15 +99,15 @@ abstract class AbstractApplication implements ApplicationInterface
 
     /**
      * Class constructor.
-     * @param array  $meta
+     * @param array  $config
      * @param Input  $input
      * @param Output $output
      * @throws \InvalidArgumentException
      */
-    public function __construct(array $meta = [], Input $input = null, Output $output = null)
+    public function __construct(array $config = [], Input $input = null, Output $output = null)
     {
         $this->runtimeCheck();
-        $this->setConfig($meta);
+        $this->setConfig($config);
 
         $this->input  = $input ?: new Input();
         $this->output = $output ?: new Output();
@@ -138,9 +134,19 @@ abstract class AbstractApplication implements ApplicationInterface
     /**
      * @return array
      */
-    public static function getInternalOptions(): array
+    public static function getGlobalOptions(): array
     {
-        return self::$internalOptions;
+        return self::$globalOptions;
+    }
+
+    /**
+     * @param array $options
+     */
+    public function addGlobalOptions(array $options)
+    {
+        if ($options) {
+            self::$globalOptions = \array_merge(self::$globalOptions, $options);
+        }
     }
 
     /**********************************************************
@@ -541,7 +547,7 @@ abstract class AbstractApplication implements ApplicationInterface
      */
     public function getRootPath(): string
     {
-        return $this->getConfig('rootPath', '');
+        return $this->getParam('rootPath', '');
     }
 
     /**
@@ -578,7 +584,6 @@ abstract class AbstractApplication implements ApplicationInterface
     }
 
     /**
-     * set meta info
      * @param array $config
      */
     public function setConfig(array $config)
@@ -589,17 +594,21 @@ abstract class AbstractApplication implements ApplicationInterface
     }
 
     /**
-     * get meta info
+     * @return array
+     */
+    public function getConfig(): array
+    {
+        return $this->config;
+    }
+
+    /**
+     * get config param value
      * @param null|string $name
      * @param null|string $default
      * @return array|string
      */
-    public function getConfig(string $name = null, $default = null)
+    public function getParam(string $name, $default = null)
     {
-        if (!$name) {
-            return $this->config;
-        }
-
         return $this->config[$name] ?? $default;
     }
 
@@ -618,7 +627,7 @@ abstract class AbstractApplication implements ApplicationInterface
      */
     public function isProfile(): bool
     {
-        return (bool)$this->input->getOpt('profile', $this->getConfig('profile'));
+        return (bool)$this->input->getOpt('profile', $this->getParam('profile'));
     }
 
     /**

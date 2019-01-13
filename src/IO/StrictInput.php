@@ -20,7 +20,7 @@ class StrictInput extends Input
 {
     /**
      * the prepare parsed options.
-     * @see AbstractApplication::$internalOptions
+     * @see AbstractApplication::$globalOptions
      * @var array
      */
     private $preParsed = [

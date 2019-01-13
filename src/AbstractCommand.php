@@ -462,7 +462,7 @@ abstract class AbstractCommand implements BaseCommandInterface
         // 创建了 InputDefinition , 则使用它的信息(此时不会再解析和使用命令的注释)
         $help = $definition->getSynopsis();
         $help['usage:'] = \sprintf('%s %s %s', $this->getScriptName(), $this->getCommandName(), $help['usage:']);
-        $help['global options:'] = FormatUtil::alignOptions(Application::getInternalOptions());
+        $help['global options:'] = FormatUtil::alignOptions(Application::getGlobalOptions());
 
         if (empty($help[0]) && $this->isAlone()) {
             $help[0] = self::getDescription();
@@ -550,7 +550,7 @@ abstract class AbstractCommand implements BaseCommandInterface
         }
 
         $help['Global Options:'] = FormatUtil::alignOptions(
-            \array_merge(Application::getInternalOptions(),
+            \array_merge(Application::getGlobalOptions(),
             $this->commonOptions)
         );
         $this->output->mList($help, [

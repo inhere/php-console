@@ -32,7 +32,7 @@ class ApplicationTest extends TestCase
 
         $this->assertArrayHasKey('name', $app->getConfig());
         $this->assertEquals('Tests', $app->getName());
-        $this->assertEquals('Tests', $app->getConfig('name'));
+        $this->assertEquals('Tests', $app->getParam('name'));
 
         $this->assertInstanceOf(InputInterface::class, $app->getInput());
     }
