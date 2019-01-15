@@ -236,7 +236,7 @@ abstract class AbstractCommand implements BaseCommandInterface
     {
         // $ch = new Coroutine\Channel(1);
         $ok = Coroutine::create(function (){
-            $result = $this->execute($this->input, $this->output);
+            $this->execute($this->input, $this->output);
             // $ch->push($result);
         });
 
