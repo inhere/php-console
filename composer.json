@@ -3,12 +3,13 @@
   "type": "library",
   "description": "a php console library, provide console argument parse, console controller/command run, color style, user interactive, information show.",
   "keywords": [
-    "library",
+    "cli",
+    "phar",
+    "color",
     "console",
     "console-color",
     "command",
     "command-line",
-    "cli",
     "console-application"
   ],
   "homepage": "https://github.com/inhere/php-console",

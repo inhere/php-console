@@ -45,7 +45,7 @@ class HomeController extends Controller
     {
         parent::init();
 
-        $this->addAnnotationVar('internalFonts', implode(',', ArtFont::getInternalFonts()));
+        $this->addCommentsVar('internalFonts', implode(',', ArtFont::getInternalFonts()));
     }
 
     protected function disabledCommands(): array

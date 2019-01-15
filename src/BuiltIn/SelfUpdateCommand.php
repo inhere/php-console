@@ -291,12 +291,12 @@ class SelfUpdateCommand extends Command
         $this
             ->createDefinition()
             // ->setName('self-update')
-            ->setDescription(self::$description)
+            // ->setDescription(self::$description)
             ->addOption(
                 'dev',
                 'd',
                 Input::OPT_BOOLEAN,
-                'Update to most recent <fg=cyan>development build</fg=cyan> of package.'
+                'Update to most recent <cyan>development build</cyan> of package.'
             )
             ->addOption(
                 'non-dev',

@@ -11,15 +11,15 @@ namespace Inhere\Console\IO;
 /**
  * Class InputDefinition
  * @package Inhere\Console\IO
- * @form \Symfony\Component\Console\Input\InputDefinition
+ * @refer \Symfony\Component\Console\Input\InputDefinition
  */
 class InputDefinition
 {
     /** @var array */
     private static $defaultArgOptConfig = [
         'mode'        => null,
-        'description' => '',
         'default'     => null,
+        'description' => '',
     ];
 
     /** @var string|array */
@@ -219,6 +219,7 @@ class InputDefinition
     }
 
     /**
+     * get count of required arguments
      * @return int
      */
     public function getArgumentRequiredCount(): int
@@ -338,12 +339,12 @@ class InputDefinition
 
         if ($shortcut) {
             if (\is_array($shortcut)) {
-                $shortcut = implode('|', $shortcut);
+                $shortcut = \implode('|', $shortcut);
             }
 
-            $shortcuts = preg_split('{(\|)-?}', ltrim($shortcut, '-'));
-            $shortcuts = array_filter($shortcuts);
-            $shortcut = implode('|', $shortcuts);
+            $shortcuts = \preg_split('{(\|)-?}', ltrim($shortcut, '-'));
+            $shortcuts = \array_filter($shortcuts);
+            $shortcut = \implode('|', $shortcuts);
 
             foreach ($shortcuts as $srt) {
                 if (isset($this->shortcuts[$srt])) {
@@ -374,7 +375,7 @@ class InputDefinition
     public function getOption(string $name): array
     {
         if (!$this->hasOption($name)) {
-            throw new \InvalidArgumentException(sprintf('The "--%s" option does not exist.', $name));
+            throw new \InvalidArgumentException(\sprintf('The "--%s" option does not exist.', $name));
         }
 
         return $this->options[$name];
@@ -427,7 +428,7 @@ class InputDefinition
     private function shortcutToName(string $shortcut)
     {
         if (!isset($this->shortcuts[$shortcut])) {
-            throw new \InvalidArgumentException(sprintf('The "-%s" option does not exist.', $shortcut));
+            throw new \InvalidArgumentException(\sprintf('The "-%s" option does not exist.', $shortcut));
         }
 
         return $this->shortcuts[$shortcut];
@@ -552,7 +553,6 @@ class InputDefinition
     public function setExample($example): self
     {
         $this->example = $example;
-
         return $this;
     }
 
@@ -571,7 +571,6 @@ class InputDefinition
     public function setDescription(string $description): self
     {
         $this->description = $description;
-
         return $this;
     }
 

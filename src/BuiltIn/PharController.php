@@ -31,7 +31,7 @@ class PharController extends Controller
     {
         parent::init();
 
-        $this->addAnnotationVar('defaultPkgName', \basename($this->input->getPwd()));
+        $this->addCommentsVar('defaultPkgName', \basename($this->input->getPwd()));
     }
 
     /**
@@ -50,6 +50,7 @@ class PharController extends Controller
      * @throws \UnexpectedValueException
      * @throws \RuntimeException
      * @throws \BadMethodCallException
+     * @throws \Exception
      */
     public function packCommand($in, $out): int
     {

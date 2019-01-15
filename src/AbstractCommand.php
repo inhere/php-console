@@ -73,7 +73,7 @@ abstract class AbstractCommand implements BaseCommandInterface
     private $processTitle = '';
 
     /** @var array */
-    private $annotationVars;
+    private $commentsVars;
 
     /**
      * Whether enabled
@@ -110,7 +110,7 @@ abstract class AbstractCommand implements BaseCommandInterface
         }
 
         $this->commonOptions = $this->commonOptions();
-        $this->annotationVars = $this->annotationVars();
+        $this->commentsVars  = $this->annotationVars();
 
         $this->init();
     }
@@ -120,7 +120,7 @@ abstract class AbstractCommand implements BaseCommandInterface
     }
 
     /**
-     * Configure input definition for command
+     * Configure input definition for command, like symfony console.
      * @return InputDefinition|null
      */
     protected function configure()
@@ -137,12 +137,14 @@ abstract class AbstractCommand implements BaseCommandInterface
     {
         if (!$this->definition) {
             $this->definition = new InputDefinition();
+            $this->definition->setDescription(self::getDescription());
         }
 
         return $this->definition;
     }
 
     /**
+     * you can set common options for all sub-commands
      * @return array
      */
     protected function commonOptions(): array
@@ -153,7 +155,19 @@ abstract class AbstractCommand implements BaseCommandInterface
     }
 
     /**
-     * 为命令注解提供可解析解析变量. 可以在命令的注释中使用
+     * Provides parsable substitution variables for command annotations. Can be used in comments in commands
+     * 为命令注解提供可解析的替换变量. 可以在命令的注释中使用
+     *
+     * you can append by:
+     *
+     * ```php
+     * protected function annotationVars(): array
+     * {
+     *      return \array_merge(parent::annotationVars(), [
+     *          'myVar' => 'value',
+     *      ]);
+     * }
+     * ```
      * @return array
      */
     protected function annotationVars(): array
@@ -368,7 +382,6 @@ abstract class AbstractCommand implements BaseCommandInterface
                 \sprintf('Not enough options parameters (missing: "%s").',
                     \implode(', ', $missingOpts))
             );
-
             return false;
         }
 
@@ -385,22 +398,22 @@ abstract class AbstractCommand implements BaseCommandInterface
 
     /**
      * @param string $name
-     * @param string $value
+     * @param string|array $value
      */
-    protected function addAnnotationVar(string $name, $value)
+    protected function addCommentsVar(string $name, $value)
     {
-        if (!isset($this->annotationVars[$name])) {
-            $this->annotationVars[$name] = (string)$value;
+        if (!isset($this->commentsVars[$name])) {
+            $this->setCommentsVar($name, $value);
         }
     }
 
     /**
      * @param array $map
      */
-    protected function addAnnotationVars(array $map)
+    protected function addCommentsVars(array $map)
     {
         foreach ($map as $name => $value) {
-            $this->addAnnotationVar($name, $value);
+            $this->setCommentsVar($name, $value);
         }
     }
 
@@ -408,9 +421,9 @@ abstract class AbstractCommand implements BaseCommandInterface
      * @param string       $name
      * @param string|array $value
      */
-    protected function setAnnotationVar(string $name, $value)
+    protected function setCommentsVar(string $name, $value)
     {
-        $this->annotationVars[$name] = \is_array($value) ? \implode(',', $value) : (string)$value;
+        $this->commentsVars[$name] = \is_array($value) ? \implode(',', $value) : (string)$value;
     }
 
     /**
@@ -418,7 +431,7 @@ abstract class AbstractCommand implements BaseCommandInterface
      * @param string $str
      * @return string
      */
-    protected function parseAnnotationVars(string $str): string
+    protected function parseCommentsVars(string $str): string
     {
         // not use vars
         if (false === \strpos($str, '{')) {
@@ -428,7 +441,7 @@ abstract class AbstractCommand implements BaseCommandInterface
         static $map;
 
         if ($map === null) {
-            foreach ($this->annotationVars as $key => $value) {
+            foreach ($this->commentsVars as $key => $value) {
                 $key = \sprintf(self::ANNOTATION_VAR, $key);
                 $map[$key] = $value;
             }
@@ -505,7 +518,7 @@ abstract class AbstractCommand implements BaseCommandInterface
         }
 
         $doc = $ref->getMethod($method)->getDocComment();
-        $tags = PhpDoc::getTags($this->parseAnnotationVars($doc));
+        $tags = PhpDoc::getTags($this->parseCommentsVars($doc));
         $isAlone = $ref->isSubclassOf(CommandInterface::class);
         $help = [];
 
@@ -523,7 +536,7 @@ abstract class AbstractCommand implements BaseCommandInterface
                 }
 
                 if ($tag === 'usage') {
-                    $help['Usage:'] = $this->annotationVars['fullCommand'] . ' [--options ...] [arguments ...]';
+                    $help['Usage:'] = $this->commentsVars['fullCommand'] . ' [--options ...] [arguments ...]';
                 }
 
                 continue;
@@ -667,9 +680,9 @@ abstract class AbstractCommand implements BaseCommandInterface
     /**
      * @return array
      */
-    public function getAnnotationVars(): array
+    public function getCommentsVars(): array
     {
-        return $this->annotationVars;
+        return $this->commentsVars;
     }
 
     /**

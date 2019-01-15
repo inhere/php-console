@@ -8,6 +8,9 @@
 
 namespace Inhere\Console\Component\Formatter;
 
+use Inhere\Console\Util\Helper;
+use Toolkit\PhpUtil\PhpHelper;
+
 /**
  * Class Formatter - message formatter
  * @package Inhere\Console\Component\Formatter
@@ -35,15 +38,7 @@ abstract class Formatter
      */
     public function __construct(array $config = [])
     {
-        foreach ($config as $name => $value) {
-            $setter = 'set' . \ucfirst($name);
-
-            if (\method_exists($this, $setter)) {
-                $this->$setter($value);
-            } elseif (\property_exists($this, $name)) {
-                $this->$name = $value;
-            }
-        }
+        PhpHelper::initObject($this, $config);
 
         $this->config = $config;
     }

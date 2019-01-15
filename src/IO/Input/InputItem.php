@@ -23,12 +23,6 @@ class InputItem
     public $name;
 
     /**
-     * alias name
-     * @var string
-     */
-    public $alias;
-
-    /**
      * @var string
      */
     public $description;

@@ -28,7 +28,6 @@ class DemoCommand extends Command
     protected function configure()
     {
         $this->createDefinition()
-            ->setDescription(self::getDescription())
             ->setExample($this->parseAnnotationVars('{script} {command} john male 43 --opt1 value1'))
             ->addArgument('name', Input::ARG_REQUIRED, 'description for the argument [name], is required')
             ->addArgument('sex', Input::ARG_OPTIONAL, 'description for the argument [sex], is optional')
