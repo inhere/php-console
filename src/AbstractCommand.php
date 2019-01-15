@@ -18,6 +18,7 @@ use Inhere\Console\Traits\UserInteractAwareTrait;
 use Inhere\Console\Util\FormatUtil;
 use Inhere\Console\Util\Helper;
 use Swoole\Coroutine;
+use Swoole\Event;
 use Toolkit\PhpUtil\PhpDoc;
 
 /**
@@ -233,11 +234,10 @@ abstract class AbstractCommand implements BaseCommandInterface
      */
     public function coroutineRun()
     {
-        $ch = new Coroutine\Channel(1);
-        $ok = Coroutine::create(function () use ($ch) {
+        // $ch = new Coroutine\Channel(1);
+        $ok = Coroutine::create(function (){
             $result = $this->execute($this->input, $this->output);
-            $ch->push($result);
-            // $this->getApp()->stop($status);
+            // $ch->push($result);
         });
 
         // create co fail:
@@ -250,8 +250,9 @@ abstract class AbstractCommand implements BaseCommandInterface
             // exec by normal flow
             $result = $this->execute($this->input, $this->output);
         } else { // success: wait coroutine exec.
-            // Event::wait();
-            $result = $ch->pop(10);
+            Event::wait();
+            $result = 0;
+            // $result = $ch->pop(10);
         }
 
         return $result;
