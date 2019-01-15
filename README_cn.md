@@ -73,6 +73,8 @@ composer require inhere/console
 
 ```bash
 phpunit
+// 没有xdebug时输出覆盖率
+phpdbg -dauto_globals_jit=Off -qrr /usr/local/bin/phpunit --coverage-text
 ```
 
 ## License

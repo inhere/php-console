@@ -8,9 +8,6 @@ use Inhere\Console\IO\Input;
 use Inhere\Console\IO\InputInterface;
 use PHPUnit\Framework\TestCase;
 
-/**
- * @covers Application
- */
 class ApplicationTest extends TestCase
 {
     private function newApp(array $args = null)
