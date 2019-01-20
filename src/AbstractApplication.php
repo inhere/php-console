@@ -116,7 +116,6 @@ abstract class AbstractApplication implements ApplicationInterface
     }
 
     /**
-     *
      * @throws \InvalidArgumentException
      */
     protected function init()
@@ -127,6 +126,10 @@ abstract class AbstractApplication implements ApplicationInterface
             'startMemory' => \memory_get_usage(),
             'endMemory'   => 0,
         ];
+
+        if (!$this->errorHandler) {
+            $this->errorHandler = new ErrorHandler();
+        }
 
         $this->registerErrorHandle();
     }
@@ -157,10 +160,6 @@ abstract class AbstractApplication implements ApplicationInterface
     {
         if ($this->input->getSameOpt(['no-color'])) {
             Style::setNoColor();
-        }
-
-        if (!$this->errorHandler) {
-            $this->errorHandler = new ErrorHandler();
         }
 
         // date_default_timezone_set($this->config('timeZone', 'UTC'));
