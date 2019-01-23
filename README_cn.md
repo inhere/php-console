@@ -8,6 +8,10 @@
 
 > **[EN README](./README.md)**
 
+## 命令行预览
+
+![app-command-list](https://raw.githubusercontent.com/inhere/php-console/master/docs/screenshots/app-command-list.png)
+
 ## 功能概览
 
 > 使用方便简单。可以方便的整合到任何已有项目中。
@@ -34,10 +38,6 @@
 - 简单的进程操作使用类（fork,run,stop,wait ... 等）
 
 > 所有的特性，效果；都可以运行 `examples/` 中的示例代码 `php examples/app` 展示出来的。基本上涵盖了所有功能，可以直接测试运行
-
-## 命令行预览
-
-![app-command-list](https://raw.githubusercontent.com/inhere/php-console/master/docs/screenshots/app-command-list.png)
 
 ## 快速安装
 

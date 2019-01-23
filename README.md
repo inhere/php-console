@@ -9,6 +9,10 @@ Provide console parameter parsing, command run, color style output, user informa
 
 > **[中文README](./README_cn.md)**
 
+## Command line preview
+
+![app-command-list](https://raw.githubusercontent.com/inhere/php-console/master/docs/screenshots/app-command-list.png)
+
 ## Features
 
 > Easy to use. Can be easily integrated into any existing project.
@@ -35,10 +39,6 @@ Provide console parameter parsing, command run, color style output, user informa
 - Simple process operations using classes (fork, run, stop, wait ..., etc.)
 
 > All features, effects; can be run in the example code `phps/app` in `examples/`. Basically covers all the features and can be tested directly
-
-## Command line preview
-
-![app-command-list](https://raw.githubusercontent.com/inhere/php-console/master/docs/screenshots/app-command-list.png)
 
 ## Quick installation
 
