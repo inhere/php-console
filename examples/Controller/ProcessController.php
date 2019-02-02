@@ -36,7 +36,7 @@ class ProcessController extends Controller
     /**
      * simple process example for child-process
      */
-    public function runScriptCommand()
+    public function runScriptCommand(): void
     {
         /*$script = '<?php echo "foo"; ?>';*/
         $script = '<?php print_r($_SERVER); ?>';
@@ -79,7 +79,7 @@ class ProcessController extends Controller
     /**
      * simple process example for child-process
      */
-    public function childProcessCommand()
+    public function childProcessCommand(): void
     {
         $ret = ProcessUtil::create(function ($pid) {
             echo "print in process $pid";
@@ -96,7 +96,7 @@ class ProcessController extends Controller
      * simple process example for daemon run
      * @throws \RuntimeException
      */
-    public function daemonRunCommand()
+    public function daemonRunCommand(): void
     {
         $ret = ProcessUtil::daemonRun(function ($pid){
             $this->output->info("will running background by new process: $pid");
@@ -110,7 +110,7 @@ class ProcessController extends Controller
     /**
      * simple process example for run In Background
      */
-    public function runInBackgroundCommand()
+    public function runInBackgroundCommand(): void
     {
         $script = '<?php print_r($_SERVER); ?>';
         $ret = Sys::execInBackground("php $script");
@@ -125,7 +125,7 @@ class ProcessController extends Controller
      * @options
      *
      */
-    public function multiProcessCommand()
+    public function multiProcessCommand(): void
     {
 
     }

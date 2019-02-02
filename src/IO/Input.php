@@ -90,9 +90,33 @@ class Input implements InputInterface
             // list($this->args, $this->sOpts, $this->lOpts) = InputParser::fromArgv($args);
             [$this->args, $this->sOpts, $this->lOpts] = Flags::parseArgv($args);
 
-            // collect command. it is first argument.
-            $this->command = isset($this->args[0]) ? \array_shift($this->args) : null;
+            // find command name
+            $this->findCommand();
         }
+    }
+
+    /**
+     * find command name. it is first argument.
+     */
+    protected function findCommand(): void
+    {
+        if (!isset($this->args[0])) {
+            return;
+        }
+
+        $newArgs = [];
+
+        foreach ($this->args as $key => $value) {
+            if ($key === 0) {
+                $this->command = \trim($value);
+            } elseif (\is_int($key)) {
+                $newArgs[] = $value;
+            } else {
+                $newArgs[$key] = $value;
+            }
+        }
+
+        $this->args = $newArgs;
     }
 
     /**

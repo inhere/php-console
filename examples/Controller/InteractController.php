@@ -43,7 +43,7 @@ class InteractController extends Controller
     /**
      * This is a demo for use <magenta>Interact::confirm</magenta> method
      */
-    public function confirmCommand()
+    public function confirmCommand(): void
     {
         // can also: $this->confirm();
         $a = Interact::confirm('continue');
@@ -54,7 +54,7 @@ class InteractController extends Controller
     /**
      * This is a demo for use <magenta>Interact::select()</magenta> method
      */
-    public function selectCommand()
+    public function selectCommand(): void
     {
         $opts = ['john', 'simon', 'rose'];
         // can also: $this->select();
@@ -66,7 +66,7 @@ class InteractController extends Controller
     /**
      * This is a demo for use <magenta>Interact::multiSelect()</magenta> method
      */
-    public function multiSelectCommand()
+    public function multiSelectCommand(): void
     {
         $opts = ['john', 'simon', 'rose', 'tom'];
 
@@ -79,7 +79,7 @@ class InteractController extends Controller
     /**
      * This is a demo for use <magenta>Interact::ask()</magenta> method
      */
-    public function askCommand()
+    public function askCommand(): void
     {
         $a = Interact::ask('you name is: ', null, function ($val, &$err) {
             if (!preg_match('/^\w{2,}$/', $val)) {
@@ -100,7 +100,7 @@ class InteractController extends Controller
      *  --nv   Not use validator.
      *  --limit  limit times.(default: 3)
      */
-    public function limitedAskCommand()
+    public function limitedAskCommand(): void
     {
         $times = (int)$this->input->getOpt('limit', 3);
 
@@ -124,7 +124,7 @@ class InteractController extends Controller
      * This is a demo for input password. use: <magenta>Interact::askPassword()</magenta>
      * @usage {fullCommand}
      */
-    public function passwordCommand()
+    public function passwordCommand(): void
     {
         $pwd = $this->askPassword();
 
@@ -134,7 +134,7 @@ class InteractController extends Controller
     /**
      * This is a demo for show cursor move on the Terminal screen
      */
-    public function cursorCommand()
+    public function cursorCommand(): void
     {
         $this->write('hello, this in ' . __METHOD__);
         $this->write('this is a message text.', false);

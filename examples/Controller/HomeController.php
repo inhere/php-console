@@ -41,7 +41,7 @@ class HomeController extends Controller
         ];
     }
 
-    protected function init()
+    protected function init(): void
     {
         parent::init();
 
@@ -73,7 +73,7 @@ class HomeController extends Controller
      * @example example text one
      *  the second line example
      */
-    public function testCommand()
+    public function testCommand(): void
     {
         $this->write('hello, welcome!! this is ' . __METHOD__);
     }
@@ -81,7 +81,7 @@ class HomeController extends Controller
     /**
      * this is a disabled command. please see 'disabledCommands()'
      */
-    public function disabledCommand()
+    public function disabledCommand(): void
     {
         $this->write('hello, welcome!! this is ' . __METHOD__);
     }
@@ -90,7 +90,7 @@ class HomeController extends Controller
      * command `defArgCommand` config
      * @throws \LogicException
      */
-    protected function defArgConfigure()
+    protected function defArgConfigure(): void
     {
         $this->createDefinition()
             ->setDescription('the command arg/opt config use defined configure, it like symfony console: argument define by position')
@@ -102,7 +102,7 @@ class HomeController extends Controller
     /**
      * the command arg/opt config use defined configure, it like symfony console: argument define by position
      */
-    public function defArgCommand()
+    public function defArgCommand(): void
     {
         $this->output->dump($this->input->getArgs(), $this->input->getOpts(), $this->input->getBoolOpt('y'));
     }
@@ -111,7 +111,7 @@ class HomeController extends Controller
      * a command for test throw exception
      * @throws \RuntimeException
      */
-    public function exCommand()
+    public function exCommand(): void
     {
         throw new \RuntimeException('oo, this is a runtime exception!');
     }
@@ -119,7 +119,7 @@ class HomeController extends Controller
     /**
      * a command for test trigger error
      */
-    public function errorCommand()
+    public function errorCommand(): void
     {
         \trigger_error('oo, this is a runtime error!', E_USER_ERROR);
     }
@@ -127,7 +127,7 @@ class HomeController extends Controller
     /**
      * will run other command in the command.
      */
-    public function subRunCommand()
+    public function subRunCommand(): void
     {
         $this->writeln('hello this is: ' . __METHOD__);
 
@@ -137,7 +137,7 @@ class HomeController extends Controller
     /**
      * dump current env information
      */
-    public function dumpEnvCommand()
+    public function dumpEnvCommand(): void
     {
         $this->output->aList($_SERVER, '$_SERVER data');
     }
@@ -145,7 +145,7 @@ class HomeController extends Controller
     /**
      * check color support for current env.
      */
-    public function colorCheckCommand()
+    public function colorCheckCommand(): void
     {
         // $char= '❤';
         // $ret = ProcessUtil::run('echo ❤');
@@ -214,7 +214,7 @@ class HomeController extends Controller
     /**
      * dynamic spinner message, by Show::spinner()
      */
-    public function spinnerCommand()
+    public function spinnerCommand(): void
     {
         $total = 5000;
 
@@ -229,7 +229,7 @@ class HomeController extends Controller
     /**
      * dynamic notice message show: pending
      */
-    public function pendingCommand()
+    public function pendingCommand(): void
     {
         $total = 8000;
 
@@ -244,7 +244,7 @@ class HomeController extends Controller
     /**
      * dynamic notice message show: pointing
      */
-    public function pointingCommand()
+    public function pointingCommand(): void
     {
         $total = 100;
 
@@ -259,7 +259,7 @@ class HomeController extends Controller
     /**
      * dynamic text message example, by Show::dynamicText
      */
-    public function dynamicTextCommand()
+    public function dynamicTextCommand(): void
     {
         $dt = Show::dynamicText('Complete', 'Download file: xyz.zip ... ');
         $dt->send('Start');
@@ -317,7 +317,7 @@ class HomeController extends Controller
      * a progress bar example show, by class ProgressBar
      * @throws \LogicException
      */
-    public function progressBarCommand()
+    public function progressBarCommand(): void
     {
         $i = 0;
         $total = 120;
@@ -336,7 +336,7 @@ class HomeController extends Controller
     /**
      * output format message: list
      */
-    public function listCommand()
+    public function listCommand(): void
     {
         $list = [
             'The is a list line 0',
@@ -360,7 +360,7 @@ class HomeController extends Controller
     /**
      * output format message: multiList
      */
-    public function multiListCommand()
+    public function multiListCommand(): void
     {
         Show::multiList([
             'list0' => [
@@ -387,7 +387,7 @@ class HomeController extends Controller
     /**
      * output format message: table
      */
-    public function tableCommand()
+    public function tableCommand(): void
     {
         $data = [
             [
@@ -443,7 +443,7 @@ class HomeController extends Controller
     /**
      * output format message: padding
      */
-    public function paddingCommand()
+    public function paddingCommand(): void
     {
         $data = [
             'Eggs' => '$1.99',
@@ -461,7 +461,7 @@ class HomeController extends Controller
      *  home:useArg status=2 name=john arg0 -s=test --page=23 -d -rf --debug --test=false -a v1 --ab -c -g --cd val -h '' -i stat=online
      *  home:useArg status=2 name=john name=tom name=jack arg0 -s=test --page=23 --id=23 --id=154 --id=456  -d -rf --debug --test=false
      */
-    public function useArgCommand()
+    public function useArgCommand(): void
     {
         $this->write('input arguments:');
         $this->output->dump($this->input->getArgs());
@@ -479,7 +479,7 @@ class HomeController extends Controller
     /**
      * output current env info
      */
-    public function envCommand()
+    public function envCommand(): void
     {
         $info = [
             'phpVersion' => PHP_VERSION,
@@ -497,7 +497,7 @@ class HomeController extends Controller
      * @usage {command} url=url saveTo=[saveAs] type=[bar|text]
      * @example {command} url=https://github.com/inhere/php-console/archive/master.zip type=bar
      */
-    public function downCommand()
+    public function downCommand(): int
     {
         $url = $this->input->getArg('url');
 

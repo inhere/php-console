@@ -47,7 +47,7 @@ class ShowController extends Controller
     /**
      * output format message: title
      */
-    public function titleCommand()
+    public function titleCommand(): int
     {
         $this->output->title('title show');
 
@@ -89,7 +89,7 @@ class ShowController extends Controller
     /**
      * output format message: panel
      */
-    public function panelCommand()
+    public function panelCommand(): void
     {
         $data = [
             'application version' => '1.2.0',
@@ -205,7 +205,7 @@ class ShowController extends Controller
      *  --ln    Display with line number
      * @param Input $in
      */
-    public function highlightCommand($in)
+    public function highlightCommand($in): void
     {
         // $file = $this->app->getRootPath() . '/examples/routes.php';
         $file = $this->app->getRootPath() . '/src/Utils/Show.php';
@@ -219,7 +219,7 @@ class ShowController extends Controller
     /**
      * output format message: helpPanel
      */
-    public function helpPanelCommand()
+    public function helpPanelCommand(): void
     {
         Show::helpPanel([
             Show::HELP_DES => 'a help panel description text. (help panel show)',
@@ -240,7 +240,7 @@ class ShowController extends Controller
     /**
      * output format message: tree
      */
-    public function treeCommand()
+    public function treeCommand(): void
     {
         Show::tree([
             123,
@@ -268,7 +268,7 @@ class ShowController extends Controller
     /**
      * output format message: dump
      */
-    public function jsonCommand()
+    public function jsonCommand(): void
     {
         $data = [
             [

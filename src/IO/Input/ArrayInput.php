@@ -33,8 +33,8 @@ class ArrayInput extends Input
         if ($parsing && $args) {
             [$this->args, $this->sOpts, $this->lOpts] = Flags::parseArray($args);
 
-            // collect command. it is first argument.
-            $this->command = isset($this->args[0]) ? \array_shift($this->args) : null;
+            // find command name
+            $this->findCommand();
         }
     }
 
