@@ -8,7 +8,6 @@
 
 namespace Inhere\Console\Component\Formatter;
 
-use Inhere\Console\Util\Helper;
 use Toolkit\PhpUtil\PhpHelper;
 
 /**
@@ -51,7 +50,7 @@ abstract class Formatter
         return $this->toString();
     }
 
-    public function render()
+    public function render(): void
     {
 
     }

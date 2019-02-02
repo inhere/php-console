@@ -20,12 +20,12 @@ class Alert
         'lite'    => '[<{@style}>{@type}</{@style}>] {@message}',
     ];
 
-    public static function create(string $message, string $style = 'info', array $opts = [])
+    public static function create(string $message, string $style = 'info', array $opts = []): void
     {
 
     }
 
-    public static function block(string $message, string $style = 'info', array $opts = [])
+    public static function block(string $message, string $style = 'info', array $opts = []): void
     {
         $opts = \array_merge([
             'paddingX' => 1, // line
@@ -38,7 +38,7 @@ class Alert
 
     }
 
-    public static function lite(string $message, string $style = 'info')
+    public static function lite(string $message, string $style = 'info'): void
     {
 
     }

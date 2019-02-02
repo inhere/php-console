@@ -53,7 +53,7 @@ class HomeController extends Controller
          return ['disabled'];
     }
 
-    protected function afterExecute()
+    protected function afterExecute(): void
     {
         // $this->write('after command execute');
     }

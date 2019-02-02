@@ -60,7 +60,7 @@ class Output implements OutputInterface
     /**
      * start buffering
      */
-    public function startBuffer()
+    public function startBuffer(): void
     {
         Show::startBuffer();
     }
@@ -68,7 +68,7 @@ class Output implements OutputInterface
     /**
      * clear buffering
      */
-    public function clearBuffer()
+    public function clearBuffer(): void
     {
         Show::clearBuffer();
     }
@@ -78,7 +78,7 @@ class Output implements OutputInterface
      * {@inheritdoc}
      * @see Show::stopBuffer()
      */
-    public function stopBuffer(bool $flush = true, $nl = false, $quit = false, array $opts = [])
+    public function stopBuffer(bool $flush = true, $nl = false, $quit = false, array $opts = []): void
     {
         Show::stopBuffer($flush, $nl, $quit, $opts);
     }
@@ -87,7 +87,7 @@ class Output implements OutputInterface
      * stop buffering and flush buffer text
      * {@inheritdoc}
      */
-    public function flush(bool $nl = false, $quit = false, array $opts = [])
+    public function flush(bool $nl = false, $quit = false, array $opts = []): void
     {
         $this->stopBuffer(true, $nl, $quit, $opts);
     }

@@ -37,5 +37,5 @@ interface ControllerInterface
     /**
      * @param string $delimiter
      */
-    public function setDelimiter(string $delimiter);
+    public function setDelimiter(string $delimiter): void;
 }

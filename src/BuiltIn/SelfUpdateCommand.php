@@ -133,7 +133,7 @@ class SelfUpdateCommand extends Command
         return $this->getGithubReleasesUpdater($updater);
     }
 
-    protected function getGithubReleasesUpdater(Updater $updater)
+    protected function getGithubReleasesUpdater(Updater $updater): Updater
     {
         $updater->getStrategy()->setPackageName(self::PACKAGE_NAME);
         $updater->getStrategy()->setPharName(self::FILE_NAME);
@@ -142,7 +142,7 @@ class SelfUpdateCommand extends Command
         return $updater;
     }
 
-    protected function getDevelopmentUpdater()
+    protected function getDevelopmentUpdater(): Updater
     {
         $updater = new Updater;
         $updater->getStrategy()->setPharUrl(self::PHAR_URL);
@@ -151,27 +151,27 @@ class SelfUpdateCommand extends Command
         return $updater;
     }
 
-    protected function updateToStableBuild()
+    protected function updateToStableBuild(): void
     {
         $this->update($this->getStableUpdater());
     }
 
-    protected function updateToPreReleaseBuild()
+    protected function updateToPreReleaseBuild(): void
     {
         $this->update($this->getPreReleaseUpdater());
     }
 
-    protected function updateToMostRecentNonDevRemote()
+    protected function updateToMostRecentNonDevRemote(): void
     {
         $this->update($this->getMostRecentNonDevUpdater());
     }
 
-    protected function updateToDevelopmentBuild()
+    protected function updateToDevelopmentBuild(): void
     {
         $this->update($this->getDevelopmentUpdater());
     }
 
-    protected function update(Updater $updater)
+    protected function update(Updater $updater): void
     {
         $this->output->writeln('Updating...' . PHP_EOL);
         try {
@@ -212,7 +212,7 @@ class SelfUpdateCommand extends Command
         $this->output->writeln('You can also select update stability using --dev, --pre (alpha/beta/rc) or --stable.');
     }
 
-    protected function rollback()
+    protected function rollback(): void
     {
         $updater = new Updater;
         try {
@@ -227,7 +227,7 @@ class SelfUpdateCommand extends Command
         }
     }
 
-    protected function printAvailableUpdates()
+    protected function printAvailableUpdates(): void
     {
         $this->printCurrentLocalVersion();
         $this->printCurrentStableVersion();
@@ -236,7 +236,7 @@ class SelfUpdateCommand extends Command
         $this->output->writeln('You can select update stability using --dev, --pre or --stable when self-updating.');
     }
 
-    protected function printCurrentLocalVersion()
+    protected function printCurrentLocalVersion(): void
     {
         $this->output->writeln(sprintf(
             'Your current local build version is: <options=bold>%s</options=bold>',
@@ -244,22 +244,22 @@ class SelfUpdateCommand extends Command
         ));
     }
 
-    protected function printCurrentStableVersion()
+    protected function printCurrentStableVersion(): void
     {
         $this->printVersion($this->getStableUpdater());
     }
 
-    protected function printCurrentPreReleaseVersion()
+    protected function printCurrentPreReleaseVersion(): void
     {
         $this->printVersion($this->getPreReleaseUpdater());
     }
 
-    protected function printCurrentDevVersion()
+    protected function printCurrentDevVersion(): void
     {
         $this->printVersion($this->getDevelopmentUpdater());
     }
 
-    protected function printVersion(Updater $updater)
+    protected function printVersion(Updater $updater): void
     {
         $stability = 'stable';
         if ($updater->getStrategy() instanceof ShaStrategy) {
@@ -286,7 +286,7 @@ class SelfUpdateCommand extends Command
         }
     }
 
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->createDefinition()

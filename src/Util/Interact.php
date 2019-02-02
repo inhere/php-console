@@ -292,7 +292,7 @@ class Interact extends Show
      * @param \Closure    $validator The validate callback. It must return bool.
      * @return string|null
      */
-    public static function ask(string $question, $default = null, \Closure $validator = null)
+    public static function ask(string $question, $default = null, \Closure $validator = null): ?string
     {
         return self::question($question, $default, $validator);
     }
@@ -334,7 +334,7 @@ class Interact extends Show
      * @param \Closure|null $validator Validator, must return bool.
      * @return null|string
      */
-    public static function question(string $question, $default = null, \Closure $validator = null)
+    public static function question(string $question, $default = null, \Closure $validator = null): ?string
     {
         if (!$question = \trim($question)) {
             self::error('Please provide a question text!', 1);
@@ -406,7 +406,7 @@ class Interact extends Show
      * @param int         $times Allow input times
      * @return string|null
      */
-    public static function limitedAsk(string $question, $default = null, \Closure $validator = null, int $times = 3)
+    public static function limitedAsk(string $question, $default = null, \Closure $validator = null, int $times = 3): ?string
     {
         if (!$question = \trim($question)) {
             self::error('Please provide a question text!', 1);

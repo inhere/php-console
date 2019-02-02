@@ -33,7 +33,7 @@ interface BaseCommandInterface
     /**
      * @return InputDefinition|null
      */
-    public function getDefinition();
+    public function getDefinition(): ?InputDefinition;
 
     /**
      * @return AbstractApplication|ApplicationInterface

@@ -118,7 +118,7 @@ abstract class AbstractApplication implements ApplicationInterface
     /**
      * @throws \InvalidArgumentException
      */
-    protected function init()
+    protected function init(): void
     {
         $this->stats = [
             'startTime'   => \microtime(1),
@@ -145,7 +145,7 @@ abstract class AbstractApplication implements ApplicationInterface
     /**
      * @param array $options
      */
-    public function addGlobalOptions(array $options)
+    public function addGlobalOptions(array $options): void
     {
         if ($options) {
             self::$globalOptions = \array_merge(self::$globalOptions, $options);
@@ -156,7 +156,7 @@ abstract class AbstractApplication implements ApplicationInterface
      * app run
      **********************************************************/
 
-    protected function prepareRun()
+    protected function prepareRun(): void
     {
         if ($this->input->getSameOpt(['no-color'])) {
             Style::setNoColor();
@@ -166,7 +166,7 @@ abstract class AbstractApplication implements ApplicationInterface
         // new AutoCompletion(array_merge($this->getCommandNames(), $this->getControllerNames()));
     }
 
-    protected function beforeRun()
+    protected function beforeRun(): void
     {
     }
 
@@ -220,7 +220,7 @@ abstract class AbstractApplication implements ApplicationInterface
      */
     abstract protected function dispatch(string $command);
 
-    protected function afterRun()
+    protected function afterRun(): void
     {
     }
 
@@ -267,7 +267,7 @@ abstract class AbstractApplication implements ApplicationInterface
     /**
      * runtime env check
      */
-    protected function runtimeCheck()
+    protected function runtimeCheck(): void
     {
         // check env
         if (!\in_array(\PHP_SAPI, ['cli', 'phpdbg', 'cli-server'], true)) {
@@ -282,7 +282,7 @@ abstract class AbstractApplication implements ApplicationInterface
      * register error handle
      * @throws \InvalidArgumentException
      */
-    protected function registerErrorHandle()
+    protected function registerErrorHandle(): void
     {
         \set_error_handler([$this, 'handleError']);
         \set_exception_handler([$this, 'handleException']);
@@ -301,7 +301,7 @@ abstract class AbstractApplication implements ApplicationInterface
      * @param int    $line
      * @throws \InvalidArgumentException
      */
-    public function handleError(int $num, string $str, string $file, int $line)
+    public function handleError(int $num, string $str, string $file, int $line): void
     {
         $this->handleException(new \ErrorException($str, 0, $num, $file, $line));
         $this->stop(-1);
@@ -312,7 +312,7 @@ abstract class AbstractApplication implements ApplicationInterface
      * @param \Throwable $e
      * @throws \InvalidArgumentException
      */
-    public function handleException($e)
+    public function handleException($e): void
     {
         // you can log error on sub class ...
 
@@ -365,7 +365,7 @@ abstract class AbstractApplication implements ApplicationInterface
      * @param bool $isGroup
      * @throws \InvalidArgumentException
      */
-    protected function validateName(string $name, bool $isGroup = false)
+    protected function validateName(string $name, bool $isGroup = false): void
     {
         $pattern = $isGroup ? '/^[a-z][\w-]+$/' : '/^[a-z][\w-]*:?([a-z][\w-]+)?$/';
 
@@ -413,11 +413,7 @@ abstract class AbstractApplication implements ApplicationInterface
      */
     public function findCommand(string $name)
     {
-        if (isset($this->commands[$name])) {
-            return $this->commands[$name];
-        }
-
-        return $this->controllers[$name] ?? null;
+        return $this->commands[$name] ?? $this->controllers[$name] ?? null;
     }
 
     /**********************************************************
@@ -444,7 +440,7 @@ abstract class AbstractApplication implements ApplicationInterface
      * @param array $controllers
      * @throws \InvalidArgumentException
      */
-    public function setControllers(array $controllers)
+    public function setControllers(array $controllers): void
     {
         foreach ($controllers as $name => $controller) {
             if (\is_int($name)) {
@@ -476,7 +472,7 @@ abstract class AbstractApplication implements ApplicationInterface
      * @param array $commands
      * @throws \InvalidArgumentException
      */
-    public function setCommands(array $commands)
+    public function setCommands(array $commands): void
     {
         foreach ($commands as $name => $handler) {
             if (\is_int($name)) {
@@ -507,7 +503,7 @@ abstract class AbstractApplication implements ApplicationInterface
     /**
      * @return string|null
      */
-    public function getLogoText()
+    public function getLogoText(): ?string
     {
         return $this->config['logoText'] ?? null;
     }
@@ -516,7 +512,7 @@ abstract class AbstractApplication implements ApplicationInterface
      * @param string      $logoTxt
      * @param string|null $style
      */
-    public function setLogo(string $logoTxt, string $style = null)
+    public function setLogo(string $logoTxt, string $style = null): void
     {
         $this->config['logoText'] = $logoTxt;
 
@@ -528,7 +524,7 @@ abstract class AbstractApplication implements ApplicationInterface
     /**
      * @return string|null
      */
-    public function getLogoStyle()
+    public function getLogoStyle(): ?string
     {
         return $this->config['logoStyle'] ?? 'info';
     }
@@ -536,7 +532,7 @@ abstract class AbstractApplication implements ApplicationInterface
     /**
      * @param string $style
      */
-    public function setLogoStyle(string $style)
+    public function setLogoStyle(string $style): void
     {
         $this->config['logoStyle'] = $style;
     }
@@ -585,7 +581,7 @@ abstract class AbstractApplication implements ApplicationInterface
     /**
      * @param array $config
      */
-    public function setConfig(array $config)
+    public function setConfig(array $config): void
     {
         if ($config) {
             $this->config = \array_merge($this->config, $config);
@@ -645,7 +641,7 @@ abstract class AbstractApplication implements ApplicationInterface
     /**
      * @param array $commandAliases
      */
-    public function setCommandAliases(array $commandAliases)
+    public function setCommandAliases(array $commandAliases): void
     {
         $this->commandAliases = $commandAliases;
     }
@@ -662,7 +658,7 @@ abstract class AbstractApplication implements ApplicationInterface
      * @param string $command
      * @param array  $meta
      */
-    public function setCommandMeta(string $command, array $meta)
+    public function setCommandMeta(string $command, array $meta): void
     {
         if (isset($this->commandsMeta[$command])) {
             $this->commandsMeta[$command] = \array_merge($this->commandsMeta[$command], $meta);
@@ -685,7 +681,7 @@ abstract class AbstractApplication implements ApplicationInterface
      * @param string $key
      * @param        $value
      */
-    public function setCommandMetaValue(string $command, string $key, $value)
+    public function setCommandMetaValue(string $command, string $key, $value): void
     {
         if ($value !== null) {
             $this->commandsMeta[$command][$key] = $value;

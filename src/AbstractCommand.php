@@ -116,17 +116,15 @@ abstract class AbstractCommand implements BaseCommandInterface
         $this->init();
     }
 
-    protected function init()
+    protected function init(): void
     {
     }
 
     /**
      * Configure input definition for command, like symfony console.
-     * @return InputDefinition|null
      */
-    protected function configure()
+    protected function configure(): void
     {
-        return null;
     }
 
     /**
@@ -232,7 +230,7 @@ abstract class AbstractCommand implements BaseCommandInterface
      * coroutine run by swoole go()
      * @return bool
      */
-    public function coroutineRun()
+    public function coroutineRun(): bool
     {
         // $ch = new Coroutine\Channel(1);
         $ok = Coroutine::create(function (){
@@ -278,7 +276,7 @@ abstract class AbstractCommand implements BaseCommandInterface
     /**
      * after command execute
      */
-    protected function afterExecute()
+    protected function afterExecute(): void
     {
     }
 
@@ -401,7 +399,7 @@ abstract class AbstractCommand implements BaseCommandInterface
      * @param string $name
      * @param string|array $value
      */
-    protected function addCommentsVar(string $name, $value)
+    protected function addCommentsVar(string $name, $value): void
     {
         if (!isset($this->commentsVars[$name])) {
             $this->setCommentsVar($name, $value);
@@ -411,7 +409,7 @@ abstract class AbstractCommand implements BaseCommandInterface
     /**
      * @param array $map
      */
-    protected function addCommentsVars(array $map)
+    protected function addCommentsVars(array $map): void
     {
         foreach ($map as $name => $value) {
             $this->setCommentsVar($name, $value);
@@ -422,7 +420,7 @@ abstract class AbstractCommand implements BaseCommandInterface
      * @param string       $name
      * @param string|array $value
      */
-    protected function setCommentsVar(string $name, $value)
+    protected function setCommentsVar(string $name, $value): void
     {
         $this->commentsVars[$name] = \is_array($value) ? \implode(',', $value) : (string)$value;
     }
@@ -582,7 +580,7 @@ abstract class AbstractCommand implements BaseCommandInterface
     /**
      * @param string $name
      */
-    final public static function setName(string $name)
+    final public static function setName(string $name): void
     {
         static::$name = $name;
     }
@@ -606,7 +604,7 @@ abstract class AbstractCommand implements BaseCommandInterface
     /**
      * @param string $description
      */
-    public static function setDescription(string $description)
+    public static function setDescription(string $description): void
     {
         static::$description = $description;
     }
@@ -622,7 +620,7 @@ abstract class AbstractCommand implements BaseCommandInterface
     /**
      * @param bool $coroutine
      */
-    public static function setCoroutine($coroutine)
+    public static function setCoroutine($coroutine): void
     {
         static::$coroutine = (bool)$coroutine;
     }
@@ -638,7 +636,7 @@ abstract class AbstractCommand implements BaseCommandInterface
     /**
      * @param string $name
      */
-    public static function addAnnotationTag(string $name)
+    public static function addAnnotationTag(string $name): void
     {
         if (!isset(self::$annotationTags[$name])) {
             self::$annotationTags[$name] = true;
@@ -649,7 +647,7 @@ abstract class AbstractCommand implements BaseCommandInterface
      * @param array $annotationTags
      * @param bool  $replace
      */
-    public static function setAnnotationTags(array $annotationTags, $replace = false)
+    public static function setAnnotationTags(array $annotationTags, $replace = false): void
     {
         self::$annotationTags = $replace ? $annotationTags : array_merge(self::$annotationTags, $annotationTags);
     }
@@ -657,7 +655,7 @@ abstract class AbstractCommand implements BaseCommandInterface
     /**
      * @return InputDefinition|null
      */
-    public function getDefinition()
+    public function getDefinition(): ?InputDefinition
     {
         return $this->definition;
     }
@@ -665,7 +663,7 @@ abstract class AbstractCommand implements BaseCommandInterface
     /**
      * @param InputDefinition $definition
      */
-    public function setDefinition(InputDefinition $definition)
+    public function setDefinition(InputDefinition $definition): void
     {
         $this->definition = $definition;
     }
@@ -697,7 +695,7 @@ abstract class AbstractCommand implements BaseCommandInterface
     /**
      * @param AbstractApplication $app
      */
-    public function setApp(AbstractApplication $app)
+    public function setApp(AbstractApplication $app): void
     {
         $this->app = $app;
     }
@@ -713,7 +711,7 @@ abstract class AbstractCommand implements BaseCommandInterface
     /**
      * @param string $processTitle
      */
-    public function setProcessTitle(string $processTitle)
+    public function setProcessTitle(string $processTitle): void
     {
         $this->processTitle = $processTitle;
     }

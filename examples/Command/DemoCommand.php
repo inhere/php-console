@@ -25,10 +25,10 @@ class DemoCommand extends Command
      * {@inheritDoc}
      * @throws \LogicException
      */
-    protected function configure()
+    protected function configure(): void
     {
         $this->createDefinition()
-            ->setExample($this->parseAnnotationVars('{script} {command} john male 43 --opt1 value1'))
+            ->setExample($this->parseCommentsVars('{script} {command} john male 43 --opt1 value1'))
             ->addArgument('name', Input::ARG_REQUIRED, 'description for the argument [name], is required')
             ->addArgument('sex', Input::ARG_OPTIONAL, 'description for the argument [sex], is optional')
             ->addArgument('age', Input::ARG_OPTIONAL, 'description for the argument [age], is optional')

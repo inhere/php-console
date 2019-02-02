@@ -65,7 +65,7 @@ class StrictInput extends Input
         $this->collectPreParsed($copy);
     }
 
-    private function collectPreParsed(array $tokens)
+    private function collectPreParsed(array $tokens): void
     {
         // foreach ($this->preParsed as $name => $hasVal) {
         //
@@ -76,7 +76,7 @@ class StrictInput extends Input
      * @param array $allowArray
      * @param array $noValues
      */
-    public function parseTokens(array $allowArray = [], array $noValues = [])
+    public function parseTokens(array $allowArray = [], array $noValues = []): void
     {
         $params = $this->getTokens();
         \array_shift($params); // pop script name
@@ -93,7 +93,7 @@ class StrictInput extends Input
     /**
      * @param array $preParsed
      */
-    public function setPreParsed(array $preParsed)
+    public function setPreParsed(array $preParsed): void
     {
         $this->preParsed = $preParsed;
     }

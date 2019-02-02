@@ -196,7 +196,7 @@ class Show
     public static function splitLine(string $title, string $char = '-', int $width = 0): int
     {
         if ($width <= 0) {
-            list($width,) = Sys::getScreenSize();
+            [$width,] = Sys::getScreenSize();
             $width -= 2;
         }
 
@@ -214,7 +214,7 @@ class Show
      * @param string $title The title text
      * @param array  $opts
      */
-    public static function title(string $title, array $opts = [])
+    public static function title(string $title, array $opts = []): void
     {
         $opts = \array_merge([
             'width'      => 80,
@@ -256,7 +256,7 @@ class Show
      * @param string|array $body The section body message
      * @param array        $opts
      */
-    public static function section(string $title, $body, array $opts = [])
+    public static function section(string $title, $body, array $opts = []): void
     {
         $opts = array_merge([
             'width'        => 80,
@@ -325,7 +325,7 @@ class Show
      * @param string|null $title
      * @param array       $opts
      */
-    public static function padding(array $data, string $title = null, array $opts = [])
+    public static function padding(array $data, string $title = null, array $opts = []): void
     {
         if (!$data) {
             return;
@@ -420,7 +420,7 @@ class Show
      * @param array $data
      * @param array $opts
      */
-    public static function multiList(array $data, array $opts = [])
+    public static function multiList(array $data, array $opts = []): void
     {
         self::mList($data, $opts);
     }
@@ -430,7 +430,7 @@ class Show
      * @param array $data
      * @param array $opts
      */
-    public static function mList(array $data, array $opts = [])
+    public static function mList(array $data, array $opts = []): void
     {
         $buffer = [];
         $opts['returned'] = true;
@@ -484,7 +484,7 @@ class Show
      * ]
      * @param  bool  $showAfterQuit Show help after quit
      */
-    public static function helpPanel(array $config, $showAfterQuit = true)
+    public static function helpPanel(array $config, $showAfterQuit = true): void
     {
         $parts = [];
         $option = [
@@ -668,7 +668,7 @@ class Show
      * @param array $data
      * @param array $opts
      */
-    public static function tree(array $data, array $opts = [])
+    public static function tree(array $data, array $opts = []): void
     {
         static $counter = 0;
         static $started = 1;
@@ -903,7 +903,7 @@ class Show
      * @param string $msg
      * @param bool   $ended
      */
-    public static function spinner(string $msg = '', $ended = false)
+    public static function spinner(string $msg = '', $ended = false): void
     {
         static $chars = '-\|/';
         static $counter = 0;
@@ -935,7 +935,7 @@ class Show
      * @param string $msg
      * @param bool   $ended
      */
-    public static function loading(string $msg = 'Loading ', $ended = false)
+    public static function loading(string $msg = 'Loading ', $ended = false): void
     {
         self::pending($msg, $ended);
     }
@@ -953,7 +953,7 @@ class Show
      * @param string $msg
      * @param bool   $ended
      */
-    public static function pending(string $msg = 'Pending ', $ended = false)
+    public static function pending(string $msg = 'Pending ', $ended = false): void
     {
         static $counter = 0;
         static $lastTime = null;
@@ -1028,7 +1028,7 @@ class Show
      * @param string|null $doneMsg
      * @return \Generator
      */
-    public static function counterTxt(string $msg, $doneMsg = null)
+    public static function counterTxt(string $msg, $doneMsg = null): ?\Generator
     {
         $counter = 0;
         $finished = false;
@@ -1067,7 +1067,7 @@ class Show
      * @param string|null $fixMsg
      * @return \Generator
      */
-    public static function dynamicTxt(string $doneMsg, string $fixMsg = null)
+    public static function dynamicTxt(string $doneMsg, string $fixMsg = null): \Generator
     {
         return self::dynamicText($doneMsg, $fixMsg);
     }
@@ -1077,7 +1077,7 @@ class Show
      * @param string|null $fixMsg
      * @return \Generator
      */
-    public static function dynamicText(string $doneMsg, string $fixMsg = null)
+    public static function dynamicText(string $doneMsg, string $fixMsg = null): ?\Generator
     {
         $counter = 0;
         $finished = false;
@@ -1121,7 +1121,7 @@ class Show
      * @param string|null $doneMsg
      * @return \Generator
      */
-    public static function progressTxt(int $total, string $msg, string $doneMsg = null)
+    public static function progressTxt(int $total, string $msg, string $doneMsg = null): ?\Generator
     {
         $current = 0;
         $finished = false;
@@ -1184,7 +1184,7 @@ class Show
      * @internal int $current
      * @return \Generator
      */
-    public static function progressBar(int $total, array $opts = [])
+    public static function progressBar(int $total, array $opts = []): ?\Generator
     {
         $current = 0;
         $finished = false;
@@ -1294,7 +1294,7 @@ class Show
     /**
      * @param string $buffer
      */
-    public static function setBuffer(string $buffer)
+    public static function setBuffer(string $buffer): void
     {
         self::$buffer = $buffer;
     }
@@ -1302,7 +1302,7 @@ class Show
     /**
      * start buffering
      */
-    public static function startBuffer()
+    public static function startBuffer(): void
     {
         self::$buffering = true;
     }
@@ -1310,7 +1310,7 @@ class Show
     /**
      * start buffering
      */
-    public static function clearBuffer()
+    public static function clearBuffer(): void
     {
         self::$buffer = null;
     }
@@ -1324,7 +1324,7 @@ class Show
      * @param array $opts
      * @return null|string If flush = False, will return all buffer text.
      */
-    public static function stopBuffer($flush = true, $nl = false, $quit = false, array $opts = [])
+    public static function stopBuffer($flush = true, $nl = false, $quit = false, array $opts = []): ?string
     {
         self::$buffering = false;
 
@@ -1349,7 +1349,7 @@ class Show
      * @param bool  $quit
      * @param array $opts
      */
-    public static function flushBuffer($nl = false, $quit = false, array $opts = [])
+    public static function flushBuffer($nl = false, $quit = false, array $opts = []): void
     {
         self::stopBuffer(true, $nl, $quit, $opts);
     }
@@ -1461,7 +1461,7 @@ class Show
      * @param bool         $nl
      * @param bool|int     $quit
      */
-    public static function stdout($text, $nl = true, $quit = false)
+    public static function stdout($text, $nl = true, $quit = false): void
     {
         self::write($text, $nl, $quit);
     }
@@ -1472,7 +1472,7 @@ class Show
      * @param bool         $nl
      * @param bool|int     $quit
      */
-    public static function stderr($text, $nl = true, $quit = -200)
+    public static function stderr($text, $nl = true, $quit = -200): void
     {
         self::write($text, $nl, $quit, [
             'stream' => STDERR,

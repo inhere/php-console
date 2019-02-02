@@ -116,7 +116,7 @@ class ProgressBar
      * @param null $maxSteps
      * @throws \LogicException
      */
-    public function start($maxSteps = null)
+    public function start($maxSteps = null): void
     {
         if ($this->started) {
             throw new \LogicException('Progress bar already started.');
@@ -139,7 +139,7 @@ class ProgressBar
      * @param int $step 前进几步
      * @throws \LogicException
      */
-    public function advance(int $step = 1)
+    public function advance(int $step = 1): void
     {
         if (!$this->started) {
             throw new \LogicException('Progress indicator has not yet been started.');
@@ -152,7 +152,7 @@ class ProgressBar
      * 直接前进到第几步
      * @param int $step 第几步
      */
-    public function advanceTo(int $step)
+    public function advanceTo(int $step): void
     {
         if ($this->maxSteps && $step > $this->maxSteps) {
             $this->maxSteps = $step;
@@ -174,7 +174,7 @@ class ProgressBar
      * Finishes the progress output.
      * @throws \LogicException
      */
-    public function finish()
+    public function finish(): void
     {
         if (!$this->started) {
             throw new \LogicException('Progress bar has not yet been started.');
@@ -198,7 +198,7 @@ class ProgressBar
     /**
      * Outputs the current progress string.
      */
-    public function display()
+    public function display(): void
     {
         if (null === $this->format) {
             $this->format = self::DEFAULT_FORMAT;
@@ -214,7 +214,7 @@ class ProgressBar
      * while a progress bar is running.
      * Call display() to show the progress bar again.
      */
-    public function clear()
+    public function clear(): void
     {
         if (!$this->overwrite) {
             return;
@@ -227,7 +227,7 @@ class ProgressBar
      * render
      * @param  string $text
      */
-    public function render(string $text)
+    public function render(string $text): void
     {
         if ($this->overwrite) {
             if (!$this->firstRun) {
@@ -273,7 +273,7 @@ class ProgressBar
      * @param string   $section
      * @param callable $handler
      */
-    public function setParser(string $section, callable $handler)
+    public function setParser(string $section, callable $handler): void
     {
         self::$parsers[$section] = $handler;
     }
@@ -313,7 +313,7 @@ class ProgressBar
     /**
      * @param array $messages
      */
-    public function setMessages(array $messages)
+    public function setMessages(array $messages): void
     {
         $this->messages = $messages;
     }
@@ -323,7 +323,7 @@ class ProgressBar
      * @param string $message The text to associate with the placeholder
      * @param string $name The name of the placeholder
      */
-    public function setMessage($message, string $name = 'message')
+    public function setMessage($message, string $name = 'message'): void
     {
         $this->messages[$name] = $message;
     }
@@ -357,12 +357,12 @@ class ProgressBar
      *
      * @param int|float $freq The frequency in steps
      */
-    public function setRedrawFreq($freq)
+    public function setRedrawFreq($freq): void
     {
         $this->redrawFreq = max((int)$freq, 1);
     }
 
-    public function setOverwrite(bool $overwrite)
+    public function setOverwrite(bool $overwrite): void
     {
         $this->overwrite = $overwrite;
     }
@@ -371,7 +371,7 @@ class ProgressBar
      * Sets the progress bar maximal steps.
      * @param int $maxSteps The progress bar max steps
      */
-    private function setMaxSteps(int $maxSteps)
+    private function setMaxSteps(int $maxSteps): void
     {
         $this->maxSteps = \max(0, $maxSteps);
         $this->stepWidth = $this->maxSteps ? Str::len($this->maxSteps) : 2;
@@ -396,7 +396,7 @@ class ProgressBar
     /**
      * @param int $stepWidth
      */
-    public function setStepWidth(int $stepWidth)
+    public function setStepWidth(int $stepWidth): void
     {
         $this->stepWidth = $stepWidth;
     }
@@ -412,7 +412,7 @@ class ProgressBar
     /**
      * @param int $barWidth
      */
-    public function setBarWidth(int $barWidth)
+    public function setBarWidth(int $barWidth): void
     {
         $this->barWidth = $barWidth;
     }
@@ -420,7 +420,7 @@ class ProgressBar
     /**
      * @param mixed $completeChar
      */
-    public function setCompleteChar(string $completeChar)
+    public function setCompleteChar(string $completeChar): void
     {
         $this->completeChar = $completeChar;
     }
@@ -449,7 +449,7 @@ class ProgressBar
     /**
      * @param string $progressChar
      */
-    public function setProgressChar(string $progressChar)
+    public function setProgressChar(string $progressChar): void
     {
         $this->progressChar = $progressChar;
     }
@@ -465,7 +465,7 @@ class ProgressBar
     /**
      * @param string $remainingChar
      */
-    public function setRemainingChar(string $remainingChar)
+    public function setRemainingChar(string $remainingChar): void
     {
         $this->remainingChar = $remainingChar;
     }
@@ -505,7 +505,7 @@ class ProgressBar
     /**
      * @param string $format
      */
-    public function setFormat(string $format)
+    public function setFormat(string $format): void
     {
         $this->format = $format;
     }

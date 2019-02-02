@@ -149,7 +149,7 @@ trait InputOutputAwareTrait
     /**
      * @param InputInterface $input
      */
-    public function setInput(InputInterface $input)
+    public function setInput(InputInterface $input): void
     {
         $this->input = $input;
     }
@@ -165,7 +165,7 @@ trait InputOutputAwareTrait
     /**
      * @param Output|OutputInterface $output
      */
-    public function setOutput(OutputInterface $output)
+    public function setOutput(OutputInterface $output): void
     {
         $this->output = $output;
     }

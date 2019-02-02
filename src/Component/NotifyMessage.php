@@ -29,7 +29,7 @@ class NotifyMessage
     /**
      * @param int $speed
      */
-    public function setSpeed($speed)
+    public function setSpeed($speed): void
     {
         $this->speed = (int)$speed;
     }

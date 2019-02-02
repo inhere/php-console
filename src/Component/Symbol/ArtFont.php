@@ -70,7 +70,7 @@ class ArtFont
     /**
      * load Internal Fonts
      */
-    protected function loadInternalFonts()
+    protected function loadInternalFonts(): void
     {
         $path = \dirname(__DIR__) . '/BuiltIn/Resources/art-fonts/';
         $group = self::INTERNAL_GROUP;
@@ -267,7 +267,7 @@ class ArtFont
     /**
      * @param array $groups
      */
-    public function setGroups(array $groups)
+    public function setGroups(array $groups): void
     {
         $this->groups = array_merge($this->groups, $groups);
     }
@@ -283,7 +283,7 @@ class ArtFont
     /**
      * @param array $fonts
      */
-    public function setFonts(array $fonts)
+    public function setFonts(array $fonts): void
     {
         foreach ($fonts as $name => $font) {
             $this->addFont($name, $font);

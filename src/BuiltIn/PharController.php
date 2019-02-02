@@ -27,7 +27,7 @@ class PharController extends Controller
      */
     private $compilerConfiger;
 
-    protected function init()
+    protected function init(): void
     {
         parent::init();
 
@@ -142,7 +142,7 @@ class PharController extends Controller
     /**
      * @param \Closure $compilerConfiger
      */
-    public function setCompilerConfiger(\Closure $compilerConfiger)
+    public function setCompilerConfiger(\Closure $compilerConfiger): void
     {
         $this->compilerConfiger = $compilerConfiger;
     }

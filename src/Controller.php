@@ -63,7 +63,7 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
         ];
     }
 
-    protected function init()
+    protected function init(): void
     {
         $list = $this->disabledCommands();
         $this->disabledCommands = $list ? \array_flip($list) : [];
@@ -107,7 +107,7 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
     /**
      * load command configure
      */
-    protected function configure()
+    protected function configure(): void
     {
         $method = $this->action . 'Configure';
 
@@ -229,7 +229,7 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
      * show sub-command list of the controller class
      * @throws \ReflectionException
      */
-    final public function showCommandList()
+    final public function showCommandList(): void
     {
         $this->beforeShowCommandList();
 
@@ -314,7 +314,7 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
      * @param bool                  $onlyName
      * @return \Generator
      */
-    protected function getAllCommandMethods(\ReflectionClass $ref = null, $onlyName = false)
+    protected function getAllCommandMethods(\ReflectionClass $ref = null, $onlyName = false): ?\Generator
     {
         $ref = $ref ?: new \ReflectionObject($this);
 
@@ -446,7 +446,7 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
     /**
      * @return string|null
      */
-    public function getNotFoundCallback()
+    public function getNotFoundCallback(): ?string
     {
         return $this->notFoundCallback;
     }
@@ -486,7 +486,7 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
     /**
      * @param string $delimiter
      */
-    public function setDelimiter(string $delimiter)
+    public function setDelimiter(string $delimiter): void
     {
         $this->delimiter = $delimiter;
     }

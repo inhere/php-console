@@ -45,7 +45,7 @@ trait SimpleEventTrait
      * @param callable $handler
      * @param bool     $once
      */
-    public function on(string $event, callable $handler, $once = false)
+    public function on(string $event, callable $handler, $once = false): void
     {
         if (self::isSupportedEvent($event)) {
             self::$eventHandlers[$event][] = $handler;
@@ -61,7 +61,7 @@ trait SimpleEventTrait
      * @param          $event
      * @param callable $handler
      */
-    public function once(string $event, callable $handler)
+    public function once(string $event, callable $handler): void
     {
         $this->on($event, $handler, true);
     }
@@ -161,7 +161,7 @@ trait SimpleEventTrait
     /**
      * @param array $supportedEvents
      */
-    public static function setSupportEvents(array $supportedEvents)
+    public static function setSupportEvents(array $supportedEvents): void
     {
         self::$supportedEvents = $supportedEvents;
     }

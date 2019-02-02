@@ -43,7 +43,7 @@ class Console
     /**
      * @return Application
      */
-    public static function app()
+    public static function app(): Application
     {
         return self::$app;
     }
@@ -51,7 +51,7 @@ class Console
     /**
      * @param Application $app
      */
-    public static function setApp(Application $app)
+    public static function setApp(Application $app): void
     {
         self::$app = $app;
     }
@@ -62,7 +62,7 @@ class Console
      * @param Output|null $output
      * @return Application
      */
-    public static function newApp(array $config = [], Input $input = null, Output $output = null)
+    public static function newApp(array $config = [], Input $input = null, Output $output = null): Application
     {
         return new Application($config, $input, $output);
     }

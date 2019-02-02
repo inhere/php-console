@@ -21,5 +21,5 @@ interface ErrorHandlerInterface
      * @param \Throwable                      $e
      * @param Application|AbstractApplication $app
      */
-    public function handle(\Throwable $e, AbstractApplication $app);
+    public function handle(\Throwable $e, AbstractApplication $app): void;
 }

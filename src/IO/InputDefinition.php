@@ -238,7 +238,7 @@ class InputDefinition
      * @throws \LogicException
      * @throws \InvalidArgumentException
      */
-    public function setOptions(array $options = [])
+    public function setOptions(array $options = []): void
     {
         $this->options = $this->shortcuts = [];
         $this->addOptions($options);
@@ -251,7 +251,7 @@ class InputDefinition
      * @throws \LogicException
      * @throws \InvalidArgumentException
      */
-    public function addOptions(array $options = [])
+    public function addOptions(array $options = []): void
     {
         foreach ($options as $name => $opt) {
             $opt = $this->mergeArgOptConfig($opt);
@@ -559,7 +559,7 @@ class InputDefinition
     /**
      * @return string|null
      */
-    public function getDescription()
+    public function getDescription(): ?string
     {
         return $this->description;
     }

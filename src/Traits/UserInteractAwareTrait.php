@@ -58,12 +58,12 @@ trait UserInteractAwareTrait
      * @inheritdoc
      * @see Interact::question()
      */
-    public function ask(string $question, $default = null, \Closure $validator = null)
+    public function ask(string $question, $default = null, \Closure $validator = null): ?string
     {
         return $this->question($question, $default, $validator);
     }
 
-    public function question(string $question, $default = null, \Closure $validator = null)
+    public function question(string $question, $default = null, \Closure $validator = null): ?string
     {
         return Interact::question($question, $default, $validator);
     }
@@ -72,7 +72,7 @@ trait UserInteractAwareTrait
      * @inheritdoc
      * @see Interact::limitedAsk()
      */
-    public function limitedAsk(string $question, $default = null, \Closure $validator = null, $times = 3)
+    public function limitedAsk(string $question, $default = null, \Closure $validator = null, $times = 3): ?string
     {
         return Interact::limitedAsk($question, $default, $validator, $times);
     }

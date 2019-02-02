@@ -100,7 +100,7 @@ trait FormatOutputAwareTrait
      * @inheritdoc
      * @see Show::title()
      */
-    public function title($title, array $opts = [])
+    public function title($title, array $opts = []): void
     {
         Show::title($title, $opts);
     }
@@ -109,7 +109,7 @@ trait FormatOutputAwareTrait
      * @inheritdoc
      * @see Show::section()
      */
-    public function section($title, $body, array $opts = [])
+    public function section($title, $body, array $opts = []): void
     {
         Show::section($title, $body, $opts);
     }
@@ -118,7 +118,7 @@ trait FormatOutputAwareTrait
      * @inheritdoc
      * @see Show::aList()
      */
-    public function aList($data, $title = null, array $opts = [])
+    public function aList($data, $title = null, array $opts = []): void
     {
         Show::aList($data, $title, $opts);
     }
@@ -127,7 +127,7 @@ trait FormatOutputAwareTrait
      * @inheritdoc
      * @see Show::mList()
      */
-    public function multiList(array $data, array $opts = [])
+    public function multiList(array $data, array $opts = []): void
     {
         Show::mList($data, $opts);
     }
@@ -136,7 +136,7 @@ trait FormatOutputAwareTrait
      * @inheritdoc
      * @see Show::mList()
      */
-    public function mList(array $data, array $opts = [])
+    public function mList(array $data, array $opts = []): void
     {
         Show::mList($data, $opts);
     }
@@ -146,7 +146,7 @@ trait FormatOutputAwareTrait
      * @inheritdoc
      * @see Show::helpPanel()
      */
-    public function helpPanel(array $config, $showAfterQuit = true)
+    public function helpPanel(array $config, $showAfterQuit = true): void
     {
         Show::helpPanel($config, $showAfterQuit);
     }
@@ -155,7 +155,7 @@ trait FormatOutputAwareTrait
      * @inheritdoc
      * @see Show::panel()
      */
-    public function panel(array $data, $title = 'Information panel', array $opts = [])
+    public function panel(array $data, $title = 'Information panel', array $opts = []): void
     {
         Show::panel($data, $title, $opts);
     }
@@ -164,7 +164,7 @@ trait FormatOutputAwareTrait
      * @inheritdoc
      * @see Show::table()
      */
-    public function table(array $data, $title = 'Data Table', $showBorder = true)
+    public function table(array $data, $title = 'Data Table', $showBorder = true): void
     {
         Show::table($data, $title, ['showBorder' => $showBorder]);
     }
@@ -240,7 +240,7 @@ trait FormatOutputAwareTrait
     /**
      * @param array ...$vars
      */
-    public function dump(...$vars)
+    public function dump(...$vars): void
     {
         Show::write(Php::dumpVars(...$vars));
     }
@@ -248,7 +248,7 @@ trait FormatOutputAwareTrait
     /**
      * @param array ...$vars
      */
-    public function prints(...$vars)
+    public function prints(...$vars): void
     {
         Show::write(Php::printVars(...$vars));
     }

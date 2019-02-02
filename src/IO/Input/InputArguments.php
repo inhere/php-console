@@ -35,7 +35,7 @@ class InputArguments
         string $description = '',
         $default = null,
         $alias = null
-    ) {
+    ): void {
 
     }
 

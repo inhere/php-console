@@ -31,7 +31,7 @@ class ArrayInput extends Input
         $this->fullScript = \implode(' ', $args);
 
         if ($parsing && $args) {
-            list($this->args, $this->sOpts, $this->lOpts) = Flags::parseArray($args);
+            [$this->args, $this->sOpts, $this->lOpts] = Flags::parseArray($args);
 
             // collect command. it is first argument.
             $this->command = isset($this->args[0]) ? \array_shift($this->args) : null;

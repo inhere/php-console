@@ -89,7 +89,7 @@ class Application extends AbstractApplication
      * @param array $controllers
      * @throws \InvalidArgumentException
      */
-    public function controllers(array $controllers)
+    public function controllers(array $controllers): void
     {
         $this->setControllers($controllers);
     }
@@ -162,7 +162,7 @@ class Application extends AbstractApplication
      * @param array $commands
      * @throws \InvalidArgumentException
      */
-    public function commands(array $commands)
+    public function commands(array $commands): void
     {
         $this->setCommands($commands);
     }
@@ -281,7 +281,7 @@ class Application extends AbstractApplication
         // like 'home:index'
         if (\strpos($realName, $sep) > 0) {
             $input = \array_values(\array_filter(\explode($sep, $realName)));
-            list($realName, $action) = \count($input) > 2 ? \array_splice($input, 2) : $input;
+            [$realName, $action] = \count($input) > 2 ? \array_splice($input, 2) : $input;
             $realName = $this->getRealCommandName($realName);
         }
 
@@ -299,7 +299,7 @@ class Application extends AbstractApplication
             if ($similar = Helper::findSimilar($name, $commands)) {
                 $this->write(\sprintf("\nMaybe what you mean is:\n    <info>%s</info>", implode(', ', $similar)));
             } else {
-                $this->showCommandList(false);
+                $this->showCommandList();
             }
         }
 

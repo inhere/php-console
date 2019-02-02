@@ -118,7 +118,7 @@ class Style
      * Adds predefined color styles to the Color styles
      * default primary success info warning danger
      */
-    protected function loadDefaultStyles()
+    protected function loadDefaultStyles(): void
     {
         $this
             ->addByArray(self::NORMAL, ['fg' => 'normal'])
@@ -279,7 +279,7 @@ class Style
         ];
 
         $config = \array_merge($style, $styleConfig);
-        list($fg, $bg, $extra, $options) = \array_values($config);
+        [$fg, $bg, $extra, $options] = \array_values($config);
 
         $this->styles[$name] = Color::make($fg, $bg, $options, (bool)$extra);
 
@@ -314,7 +314,7 @@ class Style
      * @param $name
      * @return Color|null
      */
-    public function getStyle($name)
+    public function getStyle($name): ?Color
     {
         if (!isset($this->styles[$name])) {
             return null;
@@ -344,7 +344,7 @@ class Style
      * Method to set property noColor
      * @param $noColor
      */
-    public static function setNoColor($noColor = true)
+    public static function setNoColor($noColor = true): void
     {
         self::$noColor = (bool)$noColor;
     }

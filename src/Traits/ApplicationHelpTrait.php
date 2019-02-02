@@ -91,7 +91,7 @@ trait ApplicationHelpTrait
     /**
      * show the application command list information
      */
-    public function showCommandList()
+    public function showCommandList(): void
     {
         /** @var \Inhere\Console\IO\Input $input */
         $input = $this->input;

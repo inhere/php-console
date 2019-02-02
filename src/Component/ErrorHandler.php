@@ -21,7 +21,7 @@ class ErrorHandler implements ErrorHandlerInterface
     /**
      * @inheritdoc
      */
-    public function handle(\Throwable $e, AbstractApplication $app)
+    public function handle(\Throwable $e, AbstractApplication $app): void
     {
         $class = \get_class($e);
 

@@ -88,7 +88,7 @@ class Input implements InputInterface
 
         if ($parsing) {
             // list($this->args, $this->sOpts, $this->lOpts) = InputParser::fromArgv($args);
-            list($this->args, $this->sOpts, $this->lOpts) = Flags::parseArgv($args);
+            [$this->args, $this->sOpts, $this->lOpts] = Flags::parseArgv($args);
 
             // collect command. it is first argument.
             $this->command = isset($this->args[0]) ? \array_shift($this->args) : null;
@@ -162,7 +162,7 @@ class Input implements InputInterface
      * @param array $args
      * @param bool  $replace
      */
-    public function setArgs(array $args, $replace = false)
+    public function setArgs(array $args, $replace = false): void
     {
         $this->args = $replace ? $args : array_merge($this->args, $args);
     }
@@ -292,7 +292,7 @@ class Input implements InputInterface
     /**
      * clear args
      */
-    public function clearArgs()
+    public function clearArgs(): void
     {
         $this->args = [];
     }
@@ -402,7 +402,7 @@ class Input implements InputInterface
     /**
      * clear (l/s)opts
      */
-    public function clearOpts()
+    public function clearOpts(): void
     {
         $this->sOpts = $this->lOpts = [];
     }
@@ -460,7 +460,7 @@ class Input implements InputInterface
      * @param string $name
      * @param        $value
      */
-    public function setSOpt(string $name, $value)
+    public function setSOpt(string $name, $value): void
     {
         $this->sOpts[$name] = $value;
     }
@@ -477,7 +477,7 @@ class Input implements InputInterface
      * @param array $sOpts
      * @param bool  $replace
      */
-    public function setSOpts(array $sOpts, bool $replace = false)
+    public function setSOpts(array $sOpts, bool $replace = false): void
     {
         $this->sOpts = $replace ? $sOpts : \array_merge($this->sOpts, $sOpts);
     }
@@ -485,7 +485,7 @@ class Input implements InputInterface
     /**
      * clear s-opts
      */
-    public function clearSOpts()
+    public function clearSOpts(): void
     {
         $this->sOpts = [];
     }
@@ -556,7 +556,7 @@ class Input implements InputInterface
      * @param string $name
      * @param        $value
      */
-    public function setLOpt(string $name, $value)
+    public function setLOpt(string $name, $value): void
     {
         $this->lOpts[$name] = $value;
     }
@@ -565,7 +565,7 @@ class Input implements InputInterface
      * @param array $lOpts
      * @param bool  $replace
      */
-    public function setLOpts(array $lOpts, bool $replace = false)
+    public function setLOpts(array $lOpts, bool $replace = false): void
     {
         $this->lOpts = $replace ? $lOpts : \array_merge($this->lOpts, $lOpts);
     }
@@ -589,7 +589,7 @@ class Input implements InputInterface
     /**
      * clear lang opts
      */
-    public function clearLOpts()
+    public function clearLOpts(): void
     {
         $this->lOpts = [];
     }
@@ -641,7 +641,7 @@ class Input implements InputInterface
     /**
      * @param string $script
      */
-    public function setScript(string $script)
+    public function setScript(string $script): void
     {
         $this->script = $script;
     }
@@ -658,7 +658,7 @@ class Input implements InputInterface
     /**
      * @param string $command
      */
-    public function setCommand(string $command)
+    public function setCommand(string $command): void
     {
         $this->command = $command;
     }

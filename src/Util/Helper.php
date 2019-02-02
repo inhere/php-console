@@ -55,7 +55,7 @@ class Helper
      * @param int    $mode
      * @throws \RuntimeException
      */
-    public static function mkdir(string $dir, int $mode = 0775)
+    public static function mkdir(string $dir, int $mode = 0775): void
     {
         if (!\file_exists($dir) && !\mkdir($dir, $mode, true) && !\is_dir($dir)) {
             throw new \RuntimeException(sprintf('Directory "%s" was not created', $dir));
@@ -88,7 +88,7 @@ class Helper
      * @param string $command
      * @param array  $map
      */
-    public static function commandSearch(string $command, array $map)
+    public static function commandSearch(string $command, array $map): void
     {
 
     }
@@ -179,7 +179,7 @@ class Helper
      * @param string $format
      * @param mixed  ...$args
      */
-    public static function throwInvalidArgument(string $format, ...$args)
+    public static function throwInvalidArgument(string $format, ...$args): void
     {
         throw new \InvalidArgumentException(\sprintf($format, ...$args));
     }
@@ -188,7 +188,7 @@ class Helper
     /**
      * @param string $optsStr
      */
-    public static function formatOptions(string $optsStr)
+    public static function formatOptions(string $optsStr): void
     {
 
     }
@@ -216,7 +216,7 @@ class Helper
      *  the second line example
      * @param string $argsStr
      */
-    public static function formatArguments(string $argsStr)
+    public static function formatArguments(string $argsStr): void
     {
 
     }

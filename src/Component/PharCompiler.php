@@ -179,7 +179,7 @@ class PharCompiler
      *
      * @throws \RuntimeException
      */
-    private static function checkEnv()
+    private static function checkEnv(): void
     {
         if (!\class_exists(\Phar::class, false)) {
             throw new \RuntimeException("The 'phar' extension is required for build phar package");
@@ -412,10 +412,10 @@ class PharCompiler
      * find changed or new created files by git status.
      * @return \Generator
      */
-    public function findChangedByGit()
+    public function findChangedByGit(): ?\Generator
     {
         // -u expand dir's files
-        list(, $output,) = Sys::run('git status -s -u', $this->basePath);
+        [, $output,] = Sys::run('git status -s -u', $this->basePath);
 
         // 'D some.file'    deleted
         // ' M some.file'   modified
@@ -457,7 +457,7 @@ class PharCompiler
      * @param \Phar        $phar
      * @param \SplFileInfo $file
      */
-    private function packFile(\Phar $phar, \SplFileInfo $file)
+    private function packFile(\Phar $phar, \SplFileInfo $file): void
     {
         // skip error
         if (!\file_exists($file)) {
@@ -502,7 +502,7 @@ class PharCompiler
     /**
      * @param \Phar $phar
      */
-    private function packIndexFile(\Phar $phar)
+    private function packIndexFile(\Phar $phar): void
     {
         if ($this->cliIndex) {
             $this->counter++;
@@ -661,14 +661,14 @@ EOF;
      * @throws \RuntimeException
      * @throws \Exception
      */
-    private function collectInformation()
+    private function collectInformation(): void
     {
         if (!$this->collectVersionInfo) {
             return;
         }
 
         $basePath = $this->basePath;
-        list($code, $ret,) = Sys::run('git log --pretty="%H" -n1 HEAD', $basePath);
+        [$code, $ret,] = Sys::run('git log --pretty="%H" -n1 HEAD', $basePath);
 
         if ($code !== 0) {
             throw new \RuntimeException(
@@ -678,7 +678,7 @@ EOF;
 
         $this->version = \trim($ret);
 
-        list($code, $ret,) = Sys::run('git log -n1 --pretty=%ci HEAD', $basePath);
+        [$code, $ret,] = Sys::run('git log -n1 --pretty=%ci HEAD', $basePath);
 
         if ($code !== 0) {
             throw new \RuntimeException(
@@ -690,11 +690,11 @@ EOF;
         $this->versionDate->setTimezone(new \DateTimeZone('UTC'));
 
         // 获取到最新的 tag
-        list($code, $ret,) = Sys::run('git describe --tags --exact-match HEAD', $basePath);
+        [$code, $ret,] = Sys::run('git describe --tags --exact-match HEAD', $basePath);
         if ($code === 0) {
             $this->version = \trim($ret);
         } else {
-            list($code1, $ret,) = Sys::run('git branch', $basePath);
+            [$code1, $ret,] = Sys::run('git branch', $basePath);
 
             if ($code1 === 0) {
                 $this->branchAliasVersion = \explode("\n", \trim($ret, "* \n"), 2)[0];
@@ -720,7 +720,7 @@ EOF;
     /**
      * @param string $error
      */
-    private function reportError($error)
+    private function reportError($error): void
     {
         if ($cb = $this->events['error']) {
             $cb($error);
@@ -732,7 +732,7 @@ EOF;
      * @param string   $event
      * @param \Closure $closure
      */
-    public function on(string $event, \Closure $closure)
+    public function on(string $event, \Closure $closure): void
     {
         $this->events[$event] = $closure;
     }
@@ -740,7 +740,7 @@ EOF;
     /**
      * @param \Closure $onAdd
      */
-    public function onAdd(\Closure $onAdd)
+    public function onAdd(\Closure $onAdd): void
     {
         $this->events['add'] = $onAdd;
     }
@@ -748,7 +748,7 @@ EOF;
     /**
      * @param \Closure $onError
      */
-    public function onError(\Closure $onError)
+    public function onError(\Closure $onError): void
     {
         $this->events['error'] = $onError;
     }
@@ -764,7 +764,7 @@ EOF;
     /**
      * @param string $basePath
      */
-    public function setBasePath(string $basePath)
+    public function setBasePath(string $basePath): void
     {
         $this->basePath = realpath($basePath);
     }
@@ -788,7 +788,7 @@ EOF;
     /**
      * @return string|null
      */
-    public function getCliIndex()
+    public function getCliIndex(): ?string
     {
         return $this->cliIndex;
     }
@@ -807,7 +807,7 @@ EOF;
     /**
      * @return null|string
      */
-    public function getWebIndex()
+    public function getWebIndex(): ?string
     {
         return $this->webIndex;
     }
@@ -833,7 +833,7 @@ EOF;
     /**
      * @return string|null
      */
-    public function getVersionFile()
+    public function getVersionFile(): ?string
     {
         return $this->versionFile;
     }
@@ -852,7 +852,7 @@ EOF;
     /**
      * @return string|null
      */
-    public function getVersion()
+    public function getVersion(): ?string
     {
         return $this->version;
     }
@@ -871,7 +871,7 @@ EOF;
     /**
      * @return null|string
      */
-    public function getBranchAliasVersion()
+    public function getBranchAliasVersion(): ?string
     {
         return $this->branchAliasVersion;
     }
