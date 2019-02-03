@@ -10,6 +10,7 @@ namespace Inhere\Console\Component\Symbol;
 
 use Inhere\Console\Util\Helper;
 use Inhere\Console\Util\Show;
+use Toolkit\Cli\ColorTag;
 
 /**
  * Class ArtFont art fonts Manager
@@ -151,7 +152,7 @@ class ArtFont
 
         // var_dump($txt, $this);
         if ($txt) {
-            return Show::write(Helper::wrapTag($txt, $opts['style']));
+            return Show::write(ColorTag::wrap($txt, $opts['style']));
         }
 
         return 0;

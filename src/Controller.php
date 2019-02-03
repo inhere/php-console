@@ -13,6 +13,7 @@ use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
 use Inhere\Console\Util\FormatUtil;
 use Inhere\Console\Util\Helper;
+use Toolkit\Cli\ColorTag;
 use Toolkit\PhpUtil\PhpDoc;
 use Toolkit\StrUtil\Str;
 
@@ -265,7 +266,7 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
             }
 
             $aliases = self::getCommandAliases($cmd);
-            $desc .= $aliases ? Helper::wrapTag(' [alias: ' . \implode(',', $aliases) . ']', 'info') : '';
+            $desc .= $aliases ? ColorTag::wrap(' [alias: ' . \implode(',', $aliases) . ']', 'info') : '';
             $commands[$cmd] = $desc;
         }
 

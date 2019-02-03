@@ -11,7 +11,7 @@ namespace Inhere\Console\Traits;
 use Inhere\Console\Component\Style\Style;
 use Inhere\Console\Face\CommandInterface;
 use Inhere\Console\Util\FormatUtil;
-use Inhere\Console\Util\Helper;
+use Toolkit\Cli\ColorTag;
 
 /**
  * Trait ApplicationHelpTrait
@@ -34,7 +34,7 @@ trait ApplicationHelpTrait
         $phpVersion = \PHP_VERSION;
 
         if ($logoTxt = $this->getLogoText()) {
-            $logo = Helper::wrapTag($logoTxt, $this->getLogoStyle());
+            $logo = ColorTag::wrap($logoTxt, $this->getLogoStyle());
         }
 
         /** @var \Inhere\Console\IO\Output $out */
@@ -135,7 +135,7 @@ trait ApplicationHelpTrait
             /** @var \Inhere\Console\AbstractCommand $controller */
             $desc    = $controller::getDescription() ?: $placeholder;
             $aliases = $this->getCommandAliases($name);
-            $extra   = $aliases ? Helper::wrapTag(
+            $extra   = $aliases ? ColorTag::wrap(
                 ' [alias: ' . \implode(',', $aliases) . ']',
                 'info'
             ) : '';
@@ -163,7 +163,7 @@ trait ApplicationHelpTrait
             }
 
             $aliases           = $this->getCommandAliases($name);
-            $extra             = $aliases ? Helper::wrapTag(' [alias: ' . \implode(',', $aliases) . ']', 'info') : '';
+            $extra             = $aliases ? ColorTag::wrap(' [alias: ' . \implode(',', $aliases) . ']', 'info') : '';
             $commandArr[$name] = $desc . $extra;
         }
 

@@ -10,6 +10,7 @@ namespace Inhere\Console\Util;
 
 use Inhere\Console\Component\Style\Style;
 use Toolkit\Cli\Cli;
+use Toolkit\Cli\ColorTag;
 use Toolkit\StrUtil\Str;
 use Toolkit\StrUtil\StrBuffer;
 use Toolkit\Sys\Sys;
@@ -331,7 +332,7 @@ class Show
             return;
         }
 
-        $string = $title ? Helper::wrapTag(ucfirst($title), 'comment') . ":\n" : '';
+        $string = $title ? ColorTag::wrap(ucfirst($title), 'comment') . ":\n" : '';
         $opts = array_merge([
             'char'       => '.',
             'indent'     => '  ',
@@ -343,7 +344,7 @@ class Show
         $paddingLen = $keyMaxLen > $opts['padding'] ? $keyMaxLen : $opts['padding'];
 
         foreach ($data as $label => $value) {
-            $value = Helper::wrapTag((string)$value, $opts['valueStyle']);
+            $value = ColorTag::wrap((string)$value, $opts['valueStyle']);
             $string .= $opts['indent'] . str_pad($label, $paddingLen, $opts['char']) . " $value\n";
         }
 
@@ -380,7 +381,7 @@ class Show
         // title
         if ($title) {
             $title = ucwords(trim($title));
-            $string .= Helper::wrapTag($title, $opts['titleStyle']) . PHP_EOL;
+            $string .= ColorTag::wrap($title, $opts['titleStyle']) . PHP_EOL;
         }
 
         // handle item list
@@ -843,7 +844,7 @@ class Show
             foreach ($head as $index => $name) {
                 $colMaxWidth = $info['columnMaxWidth'][$index];
                 $name = \str_pad($name, $colMaxWidth, ' ');
-                $name = Helper::wrapTag($name, $opts['headStyle']);
+                $name = ColorTag::wrap($name, $opts['headStyle']);
                 $headStr .= " {$name} {$colBorderChar}";
             }
 
@@ -867,7 +868,7 @@ class Show
             foreach ((array)$row as $value) {
                 $colMaxWidth = $info['columnMaxWidth'][$colIndex];
                 $value = \str_pad($value, $colMaxWidth, ' ');
-                $value = Helper::wrapTag($value, $opts['bodyStyle']);
+                $value = ColorTag::wrap($value, $opts['bodyStyle']);
                 $rowStr .= " {$value} {$colBorderChar}";
                 $colIndex++;
             }
@@ -1452,7 +1453,7 @@ class Show
     {
         $quit = isset($opts['quit']) ? (bool)$opts['quit'] : false;
 
-        return self::write(Helper::wrapTag($message, $style), $nl, $quit, $opts);
+        return self::write(ColorTag::wrap($message, $style), $nl, $quit, $opts);
     }
 
     /**
@@ -1493,6 +1494,6 @@ class Show
      */
     public static function getStyle(): Style
     {
-        return Style::create();
+        return Style::instance();
     }
 }

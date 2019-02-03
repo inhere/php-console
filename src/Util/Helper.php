@@ -94,25 +94,6 @@ class Helper
     }
 
     /**
-     * wrap a style tag
-     * @param string $string
-     * @param string $tag
-     * @return string
-     */
-    public static function wrapTag(string $string, string $tag): string
-    {
-        if (!$string) {
-            return '';
-        }
-
-        if (!$tag) {
-            return $string;
-        }
-
-        return "<$tag>$string</$tag>";
-    }
-
-    /**
      * @param string $string
      * @param int    $indent
      * @param string $padStr
@@ -183,7 +164,6 @@ class Helper
     {
         throw new \InvalidArgumentException(\sprintf($format, ...$args));
     }
-
 
     /**
      * @param string $optsStr

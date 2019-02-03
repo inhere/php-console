@@ -8,6 +8,7 @@
 
 namespace Inhere\Console\Util;
 
+use Toolkit\Cli\ColorTag;
 use Toolkit\Sys\Sys;
 
 /**
@@ -239,7 +240,7 @@ final class FormatUtil
 
             if ($hasKey && $opts['keyMaxWidth']) {
                 $key = \str_pad($key, $opts['keyMaxWidth'], ' ');
-                $text .= Helper::wrapTag($key, $keyStyle) . $opts['sepChar'];
+                $text .= ColorTag::wrap($key, $keyStyle) . $opts['sepChar'];
             }
 
             // if value is array, translate array to string
@@ -265,7 +266,7 @@ final class FormatUtil
             }
 
             $value = $hasKey && $opts['ucFirst'] ? \ucfirst($value) : $value;
-            $text .= Helper::wrapTag($value, $opts['valStyle']) . "\n";
+            $text .= ColorTag::wrap($value, $opts['valStyle']) . "\n";
         }
 
         return $text;

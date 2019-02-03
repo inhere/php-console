@@ -10,7 +10,6 @@
 
 namespace Inhere\Console\Component\Style;
 
-use Inhere\Console\Util\Helper;
 use Toolkit\Cli\Cli;
 
 /**
@@ -75,7 +74,7 @@ class Style
     /**
      * @return Style
      */
-    public static function create(): Style
+    public static function instance(): Style
     {
         if (!self::$instance) {
             self::$instance = new self();
@@ -153,7 +152,7 @@ class Style
      */
     public function apply(string $style, $text): string
     {
-        return $this->format(Helper::wrapTag($text, $style));
+        return $this->format(self::wrap($text, $style));
     }
 
     /**
@@ -330,6 +329,21 @@ class Style
     public function hasStyle($name): bool
     {
         return isset($this->styles[$name]);
+    }
+
+    /**
+     * wrap a color style tag
+     * @param string $text
+     * @param string $tag
+     * @return string
+     */
+    public static function wrap(string $text, string $tag): string
+    {
+        if (!$text || !$tag) {
+            return $text;
+        }
+
+        return "<$tag>$text</$tag>";
     }
 
     /**
