@@ -37,5 +37,4 @@ class ArrayInput extends Input
             $this->findCommand();
         }
     }
-
 }

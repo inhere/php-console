@@ -190,8 +190,8 @@ class Helper
      *        the second line"
      * )
      * @options
-     *  -s, --long LONG option description 1
-     *  --opt    OPT   option description 2
+     *  -s, --long | LONG | option description 1
+     *  --opt  |   OPT |  option description 2
      * @example example text one
      *  the second line example
      * @param string $argsStr
