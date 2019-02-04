@@ -11,6 +11,7 @@
 namespace Inhere\Console\Component\Style;
 
 use Toolkit\Cli\Cli;
+use Toolkit\Cli\ColorTag;
 
 /**
  * Class Style
@@ -48,11 +49,6 @@ class Style
      * @var string
      */
     public const COLOR_TAG = '/<([a-zA-Z=;]+)>(.*?)<\/\\1>/s';
-
-    /**
-     * Regex used for removing color codes
-     */
-    public const STRIP_TAG = '/<[\/]?[a-zA-Z=;]+>/';
 
     /**
      * @var self
@@ -147,20 +143,30 @@ class Style
     /**
      * Process a string use style
      * @param string $style
-     * @param        $text
+     * @param string $text
      * @return string
      */
-    public function apply(string $style, $text): string
+    public function apply(string $style, string $text): string
     {
         return $this->format(self::wrap($text, $style));
     }
 
     /**
      * Process a string.
-     * @param $text
+     * @param string $text
      * @return mixed
      */
-    public function render($text)
+    public function t(string $text)
+    {
+        return $this->format($text);
+    }
+
+    /**
+     * Process a string.
+     * @param string $text
+     * @return mixed
+     */
+    public function render(string $text)
     {
         return $this->format($text);
     }
@@ -177,10 +183,10 @@ class Style
 
         // if don't support output color text, clear color tag.
         if (!Cli::isSupportColor() || self::isNoColor()) {
-            return static::stripColor($text);
+            return self::stripColor($text);
         }
 
-        if (!\preg_match_all(self::COLOR_TAG, $text, $matches)) {
+        if (!$matches = ColorTag::matchAll($text)) {
             return $text;
         }
 
@@ -222,8 +228,7 @@ class Style
      */
     public static function stripColor(string $string)
     {
-        // $text = strip_tags($text);
-        return \preg_replace(self::STRIP_TAG, '', $string);
+        return ColorTag::strip($string);
     }
 
     /****************************************************************************

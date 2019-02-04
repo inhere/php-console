@@ -108,7 +108,7 @@ class Output implements OutputInterface
             $this->write($question, $nl);
         }
 
-        return trim(fgets(\STDIN));
+        return \trim(\fgets(\STDIN));
     }
 
     /**
@@ -121,7 +121,7 @@ class Output implements OutputInterface
     {
         $text = $this->getStyle()->format($text);
 
-        fwrite($this->errorStream, $text . ($nl ? "\n" : null));
+        \fwrite($this->errorStream, $text . ($nl ? "\n" : null));
 
         return $this;
     }

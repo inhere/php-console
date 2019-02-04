@@ -100,7 +100,7 @@ class Show
             $messages[0] = \sprintf('[%s] %s', strtoupper($type), $messages[0]);
         }
 
-        $text = \implode(\PHP_EOL, $messages);
+        $text  = \implode(\PHP_EOL, $messages);
         $color = static::getStyle();
 
         if (\is_string($style) && $color->hasStyle($style)) {
@@ -126,7 +126,7 @@ class Show
             $type = sprintf('[%s]', \strtoupper($type));
         }
 
-        $text = implode(PHP_EOL, $messages);
+        $text  = implode(PHP_EOL, $messages);
         $color = static::getStyle();
 
         if (\is_string($style) && $color->hasStyle($style)) {
@@ -170,8 +170,8 @@ class Show
     public static function __callStatic($method, array $args = [])
     {
         if (isset(self::$blockMethods[$method])) {
-            $msg = $args[0];
-            $quit = $args[1] ?? false;
+            $msg   = $args[0];
+            $quit  = $args[1] ?? false;
             $style = self::$blockMethods[$method];
 
             if (0 === \strpos($method, 'lite')) {
@@ -226,14 +226,14 @@ class Show
         ], $opts);
 
         // list($sW, $sH) = Helper::getScreenSize();
-        $width = (int)$opts['width'];
-        $char = trim($opts['char']);
-        $indent = (int)$opts['indent'] >= 0 ? $opts['indent'] : 2;
+        $width     = (int)$opts['width'];
+        $char      = trim($opts['char']);
+        $indent    = (int)$opts['indent'] >= 0 ? $opts['indent'] : 2;
         $indentStr = Helper::strPad(self::CHAR_SPACE, $indent, self::CHAR_SPACE);
 
-        $title = ucwords(trim($title));
+        $title   = ucwords(trim($title));
         $tLength = Str::len($title);
-        $width = $width > 10 ? $width : 80;
+        $width   = $width > 10 ? $width : 80;
 
         // title position
         if ($tLength >= $width) {
@@ -247,7 +247,7 @@ class Show
         }
 
         $titleLine = "$titleIndent<bold>$title</bold>\n";
-        $border = $indentStr . str_pad($char, $width, $char);
+        $border    = $indentStr . str_pad($char, $width, $char);
 
         self::write($titleLine . $border);
     }
@@ -269,14 +269,14 @@ class Show
         ], $opts);
 
         // list($sW, $sH) = Helper::getScreenSize();
-        $width = (int)$opts['width'];
-        $char = \trim($opts['char']);
-        $indent = (int)$opts['indent'] >= 0 ? $opts['indent'] : 2;
+        $width     = (int)$opts['width'];
+        $char      = \trim($opts['char']);
+        $indent    = (int)$opts['indent'] >= 0 ? $opts['indent'] : 2;
         $indentStr = Str::pad(self::CHAR_SPACE, $indent, self::CHAR_SPACE);
 
-        $title = \ucwords(\trim($title));
+        $title   = \ucwords(\trim($title));
         $tLength = Str::len($title);
-        $width = $width > 10 ? $width : 80;
+        $width   = $width > 10 ? $width : 80;
 
         // title position
         if ($tLength >= $width) {
@@ -289,7 +289,7 @@ class Show
             $titleIndent = Str::pad(self::CHAR_SPACE, $indent, self::CHAR_SPACE);
         }
 
-        $tpl = "%s\n%s%s\n%s";// title topBorder body bottomBorder
+        $tpl       = "%s\n%s%s\n%s";// title topBorder body bottomBorder
         $topBorder = $bottomBorder = '';
         $titleLine = "$titleIndent<bold>$title</bold>";
 
@@ -333,18 +333,18 @@ class Show
         }
 
         $string = $title ? ColorTag::wrap(ucfirst($title), 'comment') . ":\n" : '';
-        $opts = array_merge([
+        $opts   = array_merge([
             'char'       => '.',
             'indent'     => '  ',
             'padding'    => 10,
             'valueStyle' => 'info',
         ], $opts);
 
-        $keyMaxLen = Helper::getKeyMaxWidth($data);
+        $keyMaxLen  = Helper::getKeyMaxWidth($data);
         $paddingLen = $keyMaxLen > $opts['padding'] ? $keyMaxLen : $opts['padding'];
 
         foreach ($data as $label => $value) {
-            $value = ColorTag::wrap((string)$value, $opts['valueStyle']);
+            $value  = ColorTag::wrap((string)$value, $opts['valueStyle']);
             $string .= $opts['indent'] . str_pad($label, $paddingLen, $opts['char']) . " $value\n";
         }
 
@@ -368,7 +368,7 @@ class Show
     public static function aList($data, string $title = null, array $opts = [])
     {
         $string = '';
-        $opts = array_merge([
+        $opts   = array_merge([
             'leftChar'    => '  ',
             // 'sepChar' => '  ',
             'keyStyle'    => 'info',
@@ -380,7 +380,7 @@ class Show
 
         // title
         if ($title) {
-            $title = ucwords(trim($title));
+            $title  = ucwords(trim($title));
             $string .= ColorTag::wrap($title, $opts['titleStyle']) . PHP_EOL;
         }
 
@@ -433,10 +433,10 @@ class Show
      */
     public static function mList(array $data, array $opts = []): void
     {
-        $buffer = [];
+        $buffer           = [];
         $opts['returned'] = true;
-        $ignoreEmpty = $opts['ignoreEmpty'] ?? true;
-        $lastNewline = true;
+        $ignoreEmpty      = $opts['ignoreEmpty'] ?? true;
+        $lastNewline      = true;
 
         if (isset($opts['lastNewline'])) {
             $lastNewline = $opts['lastNewline'];
@@ -487,7 +487,7 @@ class Show
      */
     public static function helpPanel(array $config, $showAfterQuit = true): void
     {
-        $parts = [];
+        $parts  = [];
         $option = [
             'indentDes' => '  ',
         ];
@@ -542,7 +542,7 @@ class Show
             }
 
             if (\is_string($value)) {
-                $value = \trim($value);
+                $value   = \trim($value);
                 $section = \ucfirst($section);
                 $parts[] = "<comment>$section</comment>:\n  {$value}\n";
             }
@@ -577,17 +577,17 @@ class Show
         ], $opts);
 
         $borderChar = $opts['borderChar'];
-        $data = \is_array($data) ? array_filter($data) : [trim($data)];
-        $title = trim($title);
+        $data       = \is_array($data) ? array_filter($data) : [trim($data)];
+        $title      = trim($title);
 
-        $panelData = []; // [ 'label' => 'value' ]
+        $panelData     = []; // [ 'label' => 'value' ]
         $labelMaxWidth = 0; // if label exists, label max width
         $valueMaxWidth = 0; // value max width
 
         foreach ($data as $label => $value) {
             // label exists
             if (!\is_numeric($label)) {
-                $width = \mb_strlen($label, 'UTF-8');
+                $width         = \mb_strlen($label, 'UTF-8');
                 $labelMaxWidth = $width > $labelMaxWidth ? $width : $labelMaxWidth;
             }
 
@@ -615,22 +615,22 @@ class Show
 
             // get value width
             /** @var string $value */
-            $value = \trim($value);
-            $width = \mb_strlen(\strip_tags($value), 'UTF-8'); // must clear style tag
+            $value         = \trim($value);
+            $width         = \mb_strlen(\strip_tags($value), 'UTF-8'); // must clear style tag
             $valueMaxWidth = $width > $valueMaxWidth ? $width : $valueMaxWidth;
 
             $panelData[$label] = $value;
         }
 
-        $border = null;
+        $border     = null;
         $panelWidth = $labelMaxWidth + $valueMaxWidth;
         self::startBuffer();
 
         // output title
         if ($title) {
-            $title = \ucwords($title);
+            $title       = \ucwords($title);
             $titleLength = \mb_strlen($title, 'UTF-8');
-            $panelWidth = $panelWidth > $titleLength ? $panelWidth : $titleLength;
+            $panelWidth  = $panelWidth > $titleLength ? $panelWidth : $titleLength;
             $indentSpace = \str_pad(' ', ceil($panelWidth / 2) - ceil($titleLength / 2) + 2 * 2, ' ');
             self::write("  {$indentSpace}<bold>{$title}</bold>");
         }
@@ -676,14 +676,14 @@ class Show
 
         if ($started) {
             $started = 0;
-            $opts = \array_merge([
+            $opts    = \array_merge([
                 // 'char' => Cli::isSupportColor() ? '─' : '-', // ——
                 'char'        => '-',
                 'prefix'      => Cli::isSupportColor() ? '├' : '|',
                 'leftPadding' => '',
             ], $opts);
 
-            $opts['_level'] = 1;
+            $opts['_level']   = 1;
             $opts['_is_main'] = true;
 
             self::startBuffer();
@@ -696,7 +696,7 @@ class Show
 
                 self::write($leftString . ' ' . FormatUtil::typeToString($value));
             } elseif (\is_array($value)) {
-                $newOpts = $opts;
+                $newOpts             = $opts;
                 $newOpts['_is_main'] = false;
                 $newOpts['_level']++;
 
@@ -749,7 +749,7 @@ class Show
             return -404;
         }
 
-        $buf = new StrBuffer();
+        $buf  = new StrBuffer();
         $opts = \array_merge([
             'showBorder'     => true,
             'leftIndent'     => '  ',
@@ -763,12 +763,12 @@ class Show
             'columns'        => [],                  // custom column names
         ], $opts);
 
-        $hasHead = false;
-        $rowIndex = 0;
-        $head = [];
-        $tableHead = $opts['columns'];
-        $leftIndent = $opts['leftIndent'];
-        $showBorder = $opts['showBorder'];
+        $hasHead       = false;
+        $rowIndex      = 0;
+        $head          = [];
+        $tableHead     = $opts['columns'];
+        $leftIndent    = $opts['leftIndent'];
+        $showBorder    = $opts['showBorder'];
         $rowBorderChar = $opts['rowBorderChar'];
         $colBorderChar = $opts['colBorderChar'];
 
@@ -783,7 +783,7 @@ class Show
         foreach ($data as $row) {
             // collection all field name
             if ($rowIndex === 0) {
-                $head = $tableHead ?: \array_keys($row);
+                $head                = $tableHead ?: \array_keys($row);
                 $info['columnCount'] = \count($row);
 
                 foreach ($head as $index => $name) {
@@ -816,13 +816,13 @@ class Show
             $rowIndex++;
         }
 
-        $tableWidth = $info['tableWidth'] = \array_sum($info['columnMaxWidth']);
+        $tableWidth  = $info['tableWidth'] = \array_sum($info['columnMaxWidth']);
         $columnCount = $info['columnCount'];
 
         // output title
         if ($title) {
-            $tStyle = $opts['titleStyle'] ?: 'bold';
-            $title = \ucwords(trim($title));
+            $tStyle      = $opts['titleStyle'] ?: 'bold';
+            $title       = \ucwords(trim($title));
             $titleLength = \mb_strlen($title, 'UTF-8');
             $indentSpace = \str_pad(' ', \ceil($tableWidth / 2) - \ceil($titleLength / 2) + ($columnCount * 2), ' ');
             $buf->write("  {$indentSpace}<$tStyle>{$title}</$tStyle>\n");
@@ -843,9 +843,9 @@ class Show
 
             foreach ($head as $index => $name) {
                 $colMaxWidth = $info['columnMaxWidth'][$index];
-                $name = \str_pad($name, $colMaxWidth, ' ');
-                $name = ColorTag::wrap($name, $opts['headStyle']);
-                $headStr .= " {$name} {$colBorderChar}";
+                $name        = \str_pad($name, $colMaxWidth, ' ');
+                $name        = ColorTag::wrap($name, $opts['headStyle']);
+                $headStr     .= " {$name} {$colBorderChar}";
             }
 
             $buf->write($headStr . "\n");
@@ -863,13 +863,13 @@ class Show
         // output table info
         foreach ($data as $row) {
             $colIndex = 0;
-            $rowStr = "  $colBorderChar ";
+            $rowStr   = "  $colBorderChar ";
 
             foreach ((array)$row as $value) {
                 $colMaxWidth = $info['columnMaxWidth'][$colIndex];
-                $value = \str_pad($value, $colMaxWidth, ' ');
-                $value = ColorTag::wrap($value, $opts['bodyStyle']);
-                $rowStr .= " {$value} {$colBorderChar}";
+                $value       = \str_pad($value, $colMaxWidth, ' ');
+                $value       = ColorTag::wrap($value, $opts['bodyStyle']);
+                $rowStr      .= " {$value} {$colBorderChar}";
                 $colIndex++;
             }
 
@@ -1031,11 +1031,11 @@ class Show
      */
     public static function counterTxt(string $msg, $doneMsg = null): ?\Generator
     {
-        $counter = 0;
+        $counter  = 0;
         $finished = false;
-        $tpl = (Cli::isSupportColor() ? "\x0D\x1B[2K" : "\x0D\r") . '%d %s';
-        $msg = self::getStyle()->render($msg);
-        $doneMsg = $doneMsg ? self::getStyle()->render($doneMsg) : null;
+        $tpl      = (Cli::isSupportColor() ? "\x0D\x1B[2K" : "\x0D\r") . '%d %s';
+        $msg      = self::getStyle()->render($msg);
+        $doneMsg  = $doneMsg ? self::getStyle()->render($doneMsg) : null;
 
         while (true) {
             if ($finished) {
@@ -1047,7 +1047,7 @@ class Show
             if ((int)$step <= 0) {
                 $counter++;
                 $finished = true;
-                $msg = $doneMsg ?: $msg;
+                $msg      = $doneMsg ?: $msg;
             } else {
                 $counter += $step;
             }
@@ -1080,7 +1080,7 @@ class Show
      */
     public static function dynamicText(string $doneMsg, string $fixMsg = null): ?\Generator
     {
-        $counter = 0;
+        $counter  = 0;
         $finished = false;
         // $tpl = Cli::isSupportColor() ? "\x0D\x1B[2K" : "\x0D\r";
         $tpl = Cli::isSupportColor() ? "\x0D\x1B[2K" : "\x0D";
@@ -1089,7 +1089,7 @@ class Show
             $tpl .= self::getStyle()->render($fixMsg);
         }
 
-        $tpl .= '%s';
+        $tpl     .= '%s';
         $doneMsg = $doneMsg ? self::getStyle()->render($doneMsg) : '';
 
         while (true) {
@@ -1102,7 +1102,7 @@ class Show
             if ($msg === false) {
                 $counter++;
                 $finished = true;
-                $msg = $doneMsg ?: '';
+                $msg      = $doneMsg ?: '';
             }
 
             printf($tpl, $msg);
@@ -1124,11 +1124,11 @@ class Show
      */
     public static function progressTxt(int $total, string $msg, string $doneMsg = null): ?\Generator
     {
-        $current = 0;
+        $current  = 0;
         $finished = false;
-        $tpl = (Cli::isSupportColor() ? "\x0D\x1B[2K" : "\x0D\r") . "%' 3d%% %s";
-        $msg = self::getStyle()->render($msg);
-        $doneMsg = $doneMsg ? self::getStyle()->render($doneMsg) : null;
+        $tpl      = (Cli::isSupportColor() ? "\x0D\x1B[2K" : "\x0D\r") . "%' 3d%% %s";
+        $msg      = self::getStyle()->render($msg);
+        $doneMsg  = $doneMsg ? self::getStyle()->render($doneMsg) : null;
 
         while (true) {
             if ($finished) {
@@ -1145,9 +1145,9 @@ class Show
             $percent = ceil(($current / $total) * 100);
 
             if ($percent >= 100) {
-                $percent = 100;
+                $percent  = 100;
                 $finished = true;
-                $msg = $doneMsg ?: $msg;
+                $msg      = $doneMsg ?: $msg;
             }
 
             // printf("\r%d%% %s", $percent, $msg);
@@ -1187,10 +1187,10 @@ class Show
      */
     public static function progressBar(int $total, array $opts = []): ?\Generator
     {
-        $current = 0;
-        $finished = false;
+        $current   = 0;
+        $finished  = false;
         $tplPrefix = Cli::isSupportColor() ? "\x0D\x1B[2K" : "\x0D\r";
-        $opts = array_merge([
+        $opts      = array_merge([
             'doneChar' => '=',
             'waitChar' => ' ',
             'signChar' => '>',
@@ -1198,8 +1198,8 @@ class Show
             'doneMsg'  => '',
         ], $opts);
 
-        $msg = self::getStyle()->render($opts['msg']);
-        $doneMsg = self::getStyle()->render($opts['doneMsg']);
+        $msg      = self::getStyle()->render($opts['msg']);
+        $doneMsg  = self::getStyle()->render($opts['doneMsg']);
         $waitChar = $opts['waitChar'];
 
         while (true) {
@@ -1217,8 +1217,8 @@ class Show
             $percent = ceil(($current / $total) * 100);
 
             if ($percent >= 100) {
-                $msg = $doneMsg ?: $msg;
-                $percent = 100;
+                $msg      = $doneMsg ?: $msg;
+                $percent  = 100;
                 $finished = true;
             }
 
@@ -1360,15 +1360,25 @@ class Show
      ***********************************************************************************/
 
     /**
+     * @param string $format
+     * @param mixed  ...$args
+     * @return int
+     */
+    public static function writef(string $format, ...$args): int
+    {
+        return self::write(\sprintf($format, ...$args));
+    }
+
+    /**
      * Write a message to standard output stream.
      * @param string|array $messages Output message
      * @param boolean      $nl True 会添加换行符, False 原样输出，不添加换行符
      * @param int|boolean  $quit If is int, setting it is exit code. 'True' translate as code 0 and exit, 'False' will not exit.
      * @param array        $opts
      * [
-     *     'color' => bool, // whether render color, default is: True.
+     *     'color'  => bool, // whether render color, default is: True.
      *     'stream' => resource, // the stream resource, default is: STDOUT
-     *     'flush' => bool, // flush the stream data, default is: True
+     *     'flush'  => bool, // flush the stream data, default is: True
      * ]
      * @return int
      */
@@ -1381,7 +1391,7 @@ class Show
         $messages = (string)$messages;
 
         if (!isset($opts['color']) || $opts['color']) {
-            $messages = static::getStyle()->render($messages);
+            $messages = self::getStyle()->render($messages);
         } else {
             $messages = Style::stripColor($messages);
         }
@@ -1416,7 +1426,7 @@ class Show
     }
 
     /**
-     * write raw data to stdout
+     * Write raw data to stdout, will disable color render.
      * @param string|array $message
      * @param bool         $nl
      * @param bool|int     $quit
@@ -1426,12 +1436,11 @@ class Show
     public static function writeRaw($message, $nl = true, $quit = false, array $opts = []): int
     {
         $opts['color'] = false;
-
         return self::write($message, $nl, $quit, $opts);
     }
 
     /**
-     * Logs data to stdout
+     * Write data to stdout with newline.
      * @param string|array $message
      * @param array        $opts
      * @param bool|int     $quit

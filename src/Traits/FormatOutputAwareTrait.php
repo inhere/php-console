@@ -79,6 +79,16 @@ trait FormatOutputAwareTrait
     }
 
     /**
+     * @param string $text
+     * @param string $tag
+     * @return int
+     */
+    public function colored(string $text, string $tag = 'info'): int
+    {
+        return $this->writeln(\sprintf('<%s>%s</%s>', $tag, $text, $tag));
+    }
+
+    /**
      * @inheritdoc
      * @see Show::block()
      */
