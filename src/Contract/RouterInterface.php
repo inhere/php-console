@@ -18,44 +18,45 @@ interface RouterInterface
     public const NOT_FOUND = 2;
 
     public const TYPE_GROUP  = 1;
-    public const TYPE_SINGLE = 1;
+    public const TYPE_SINGLE = 2;
 
     /**
      * Register a app group command(by controller)
      * @param string                     $name The controller name
      * @param string|ControllerInterface $class The controller class
-     * @param null|array|string          $option
-     * string: define the description message.
+     * @param array                      $options
      * array:
      *  - aliases     The command aliases
      *  - description The description message
      * @return static
      * @throws \InvalidArgumentException
      */
-    public function controller(string $name, $class = null, $option = null);
+    public function addGroup(string $name, $class = null, array $options = []): self;
 
     /**
      * Register a app independent console command
      * @param string|CommandInterface          $name
      * @param string|\Closure|CommandInterface $handler
-     * @param null|array|string                $option
-     * string: define the description message.
+     * @param array                            $options
      * array:
      *  - aliases     The command aliases
      *  - description The description message
-     * @return mixed
+     * @return static
      * @throws \InvalidArgumentException
      */
-    public function command(string $name, $handler = null, $option = null);
+    public function addCommand(string $name, $handler = null, array $options = []): self;
 
     /**
-     * @param string $command
-     * @return array
+     * @param string $name The input command name
+     * @return array return route info array. If not found, will return empty array.
      * [
-     *  status,
-     *  type,
-     *  route info(array)
+     *  type    => 1, // 1 group 2 command
+     *  handler => handler class/object/func ...
+     *  options => [
+     *      aliases => [],
+     *      description => '',
+     *  ],
      * ]
      */
-    public function match(string $command): array;
+    public function match(string $name): array;
 }

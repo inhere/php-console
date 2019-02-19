@@ -164,7 +164,7 @@ class Application extends AbstractApplication
      */
     public function commands(array $commands): void
     {
-        $this->setCommands($commands);
+        $this->getRouter()->addCommands($commands);
     }
 
     /**
@@ -266,6 +266,7 @@ class Application extends AbstractApplication
      */
     protected function dispatch(string $name)
     {
+        $this->logf(Console::VERB_DEBUG, 'begin dispatch command - %s', $name);
         $sep = $this->delimiter ?: ':';
 
         // maybe is a command name

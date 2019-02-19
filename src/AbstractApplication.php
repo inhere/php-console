@@ -78,6 +78,11 @@ abstract class AbstractApplication implements ApplicationInterface
     public $delimiter = ':'; // '/' ':'
 
     /**
+     * @var Router
+     */
+    private $router;
+
+    /**
      * @var ErrorHandlerInterface Can custom error handler
      */
     private $errorHandler;
@@ -111,6 +116,7 @@ abstract class AbstractApplication implements ApplicationInterface
 
         $this->input  = $input ?: new Input();
         $this->output = $output ?: new Output();
+        $this->router = new Router();
 
         $this->init();
     }
@@ -416,6 +422,20 @@ abstract class AbstractApplication implements ApplicationInterface
         return $this->commands[$name] ?? $this->controllers[$name] ?? null;
     }
 
+    /**
+     * @param int    $level
+     * @param string $format
+     * @param mixed  ...$args
+     */
+    public function logf(int $level, string $format, ...$args): void
+    {
+        if ($this->getVerbLevel() < $level) {
+            return;
+        }
+
+        Console::logf($level, $format, ...$args);
+    }
+
     /**********************************************************
      * getter/setter methods
      **********************************************************/
@@ -576,6 +596,14 @@ abstract class AbstractApplication implements ApplicationInterface
     public function getVersion(): string
     {
         return $this->config['version'];
+    }
+
+    /**
+     * @return Router
+     */
+    public function getRouter(): Router
+    {
+        return $this->router;
     }
 
     /**

@@ -3,6 +3,8 @@
 namespace Inhere\Console;
 
 use Inhere\Console\Component\Style\Style;
+use Inhere\Console\IO\Input;
+use Inhere\Console\IO\Output;
 use Toolkit\Cli\ColorTag;
 
 /**
@@ -20,7 +22,7 @@ class Console
     public const VERB_CRAZY = 5;
 
     // level => name
-    public const VERB_NAMES = [
+    public const LEVEL_NAMES = [
         self::VERB_QUIET => 'QUIET',
         self::VERB_ERROR => 'ERROR',
         self::VERB_WARN  => 'WARN',
@@ -29,13 +31,13 @@ class Console
         self::VERB_CRAZY => 'CRAZY',
     ];
 
-    public const LOG_LEVEL2TAG = [
-        'info'    => 'info',
-        'warn'    => 'warning',
-        'warning' => 'warning',
-        'debug'   => 'cyan',
-        'notice'  => 'notice',
-        'error'   => 'error',
+    public const LEVEL2TAG = [
+        self::VERB_QUIET => 'normal',
+        self::VERB_ERROR => 'error',
+        self::VERB_WARN  => 'warning',
+        self::VERB_INFO  => 'info',
+        self::VERB_DEBUG => 'cyan',
+        self::VERB_CRAZY => 'magenta',
     ];
 
     /**
@@ -63,6 +65,20 @@ class Console
     public static function setApp(Application $app): void
     {
         self::$app = $app;
+    }
+
+    /**
+     * @param array       $config
+     * @param Input|null  $input
+     * @param Output|null $output
+     * @return Application
+     */
+    public static function newApp(
+        array $config = [],
+        Input $input = null,
+        Output $output = null
+    ): Application {
+        return new Application($config, $input, $output);
     }
 
     /**
@@ -150,8 +166,8 @@ class Console
             }
 
             $messages = self::$buffer;
-
-            self::clearBuffer();
+            // clear buffer
+            self::$buffer = '';
         } else {
             $messages .= $nl ? \PHP_EOL : '';
         }
@@ -196,10 +212,26 @@ class Console
     }
 
     /**
-     * print log to console
+     * @param int    $level
+     * @param string $format
+     * @param mixed  ...$args
+     */
+    public static function logf(int $level, string $format, ...$args): void
+    {
+        $levelName  = self::LEVEL_NAMES[$level] ?? 'INFO';
+        $colorName  = self::LEVEL2TAG[$level] ?? 'info';
+        $taggedName = ColorTag::add($levelName, $colorName);
+
+        $message = \strpos($format, '%') > 0 ? \sprintf($format, ...$args) : $format;
+
+        self::writef('[%s] %s', $taggedName, $message);
+    }
+
+    /**
+     * Print log message to console
      * @param string $msg
      * @param array  $data
-     * @param string $level
+     * @param int    $level
      * @param array  $opts
      * [
      *  '_category' => 'application',
@@ -208,11 +240,11 @@ class Console
      *  'coId' => 12,
      * ]
      */
-    public static function log(string $msg, array $data = [], string $level = 'info', array $opts = []): void
+    public static function log(string $msg, array $data = [], int $level = self::VERB_DEBUG, array $opts = []): void
     {
-        if (isset(self::LOG_LEVEL2TAG[$level])) {
-            $level = ColorTag::add(\strtoupper($level), self::LOG_LEVEL2TAG[$level]);
-        }
+        $levelName  = self::LEVEL_NAMES[$level] ?? 'INFO';
+        $colorName  = self::LEVEL2TAG[$level] ?? 'info';
+        $taggedName = ColorTag::add($levelName, $colorName);
 
         $userOpts = [];
         foreach ($opts as $n => $v) {
@@ -228,7 +260,7 @@ class Console
         self::write(\sprintf(
             '%s [%s]%s %s %s',
             \date('Y/m/d H:i:s'),
-            $level,
+            $taggedName,
             $optString,
             \trim($msg),
             $data ? \PHP_EOL . \json_encode($data, \JSON_UNESCAPED_SLASHES | \JSON_PRETTY_PRINT) : ''
