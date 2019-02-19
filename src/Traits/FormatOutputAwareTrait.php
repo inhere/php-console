@@ -73,7 +73,7 @@ trait FormatOutputAwareTrait
      * @inheritdoc
      * @see Show::writeRaw()
      */
-    public function writeRaw($text, $nl = true, $quit = false, array $opts = []): int
+    public function writeRaw($text, bool $nl = true, $quit = false, array $opts = []): int
     {
         return Show::writeRaw($text, $nl, $quit, $opts);
     }

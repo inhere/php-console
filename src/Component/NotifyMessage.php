@@ -34,4 +34,8 @@ class NotifyMessage
         $this->speed = (int)$speed;
     }
 
+    public function display(): void
+    {
+        throw new \RuntimeException('Please implement the method on sub-class');
+    }
 }

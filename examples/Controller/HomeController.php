@@ -7,7 +7,6 @@ use Inhere\Console\Component\Symbol\ArtFont;
 use Toolkit\Cli\Download;
 use Inhere\Console\Controller;
 use Inhere\Console\IO\Input;
-use Inhere\Console\Util\Helper;
 use Inhere\Console\Util\Interact;
 use Inhere\Console\Util\ProgressBar;
 use Inhere\Console\Util\Show;
@@ -231,11 +230,11 @@ class HomeController extends Controller
      */
     public function pendingCommand(): void
     {
-        $total = 8000;
+        $total = 800;
 
         while ($total--) {
             Show::pending();
-            usleep(200);
+            usleep(20000);
         }
 
         Show::pending('Done', true);

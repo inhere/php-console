@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: inhere
- * Date: 2017-03-10
- * Time: 11:59
- */
 
 namespace Inhere\Console\Util;
 
@@ -17,7 +11,12 @@ use Inhere\Console\Component\Formatter\SingleList;
 use Inhere\Console\Component\Formatter\Table;
 use Inhere\Console\Component\Formatter\Title;
 use Inhere\Console\Component\Formatter\Tree;
+use Inhere\Console\Component\Notify\CounterText;
+use Inhere\Console\Component\Notify\DynamicText;
+use Inhere\Console\Component\Progress\SimpleBar;
+use Inhere\Console\Component\Progress\SimpleTextBar;
 use Inhere\Console\Component\Style\Style;
+use Inhere\Console\Console;
 use Toolkit\Cli\Cli;
 use Toolkit\Cli\ColorTag;
 use Toolkit\StrUtil\Str;
@@ -46,30 +45,6 @@ use Toolkit\Sys\Sys;
  */
 class Show
 {
-    public const FINISHED = -1;
-
-    public const CHAR_SPACE     = ' ';
-    public const CHAR_HYPHEN    = '-';
-    public const CHAR_UNDERLINE = '_';
-    public const CHAR_VERTICAL  = '|';
-    public const CHAR_EQUAL     = '=';
-    public const CHAR_STAR      = '*';
-
-    public const POS_LEFT   = 'l';
-    public const POS_MIDDLE = 'm';
-    public const POS_RIGHT  = 'r';
-
-    /**
-     * help panel keys
-     */
-    public const HELP_DES       = 'description';
-    public const HELP_USAGE     = 'usage';
-    public const HELP_COMMANDS  = 'commands';
-    public const HELP_ARGUMENTS = 'arguments';
-    public const HELP_OPTIONS   = 'options';
-    public const HELP_EXAMPLES  = 'examples';
-    public const HELP_EXTRAS    = 'extras';
-
     /** @var string */
     private static $buffer;
 
@@ -131,14 +106,14 @@ class Show
 
         // add type
         if (null !== $type) {
-            $type = sprintf('[%s]', \strtoupper($type));
+            $type = \sprintf('[%s]', \strtoupper($type));
         }
 
-        $text  = implode(PHP_EOL, $messages);
+        $text  = \implode(\PHP_EOL, $messages);
         $color = static::getStyle();
 
         if (\is_string($style) && $color->hasStyle($style)) {
-            $type = sprintf('<%s>%s</%s> ', $style, $type, $style);
+            $type = \sprintf('<%s>%s</%s> ', $style, $type, $style);
         }
 
         return self::write($type . $text, true, $quit);
@@ -494,54 +469,14 @@ class Show
 
     /**
      * 与文本进度条相比，没有 total
-     * ```php
-     *  $total = 120;
-     *  $ctt = Show::counterTxt('handling ...', 'handled.');
-     *  $this->write('Counter:');
-     *  while ($total - 1) {
-     *      $ctt->send(1);
-     *      usleep(30000);
-     *      $total--;
-     *  }
-     *  // end of the counter.
-     *  $ctt->send(-1);
-     * ```
+     *
      * @param string      $msg
      * @param string|null $doneMsg
      * @return \Generator
      */
-    public static function counterTxt(string $msg, $doneMsg = null): ?\Generator
+    public static function counterTxt(string $msg, $doneMsg = ''): \Generator
     {
-        $counter  = 0;
-        $finished = false;
-        $tpl      = (Cli::isSupportColor() ? "\x0D\x1B[2K" : "\x0D\r") . '%d %s';
-        $msg      = self::getStyle()->render($msg);
-        $doneMsg  = $doneMsg ? self::getStyle()->render($doneMsg) : null;
-
-        while (true) {
-            if ($finished) {
-                return;
-            }
-
-            $step = yield;
-
-            if ((int)$step <= 0) {
-                $counter++;
-                $finished = true;
-                $msg      = $doneMsg ?: $msg;
-            } else {
-                $counter += $step;
-            }
-
-            printf($tpl, $counter, $msg);
-
-            if ($finished) {
-                echo "\n";
-                break;
-            }
-        }
-
-        yield false;
+        return CounterText::gen($msg, $doneMsg);
     }
 
     /**
@@ -556,111 +491,28 @@ class Show
 
     /**
      * @param string      $doneMsg
-     * @param string|null $fixMsg
+     * @param string|null $fixedMsg
      * @return \Generator
      */
-    public static function dynamicText(string $doneMsg, string $fixMsg = null): ?\Generator
+    public static function dynamicText(string $doneMsg, string $fixedMsg = null): \Generator
     {
-        $counter  = 0;
-        $finished = false;
-        // $tpl = Cli::isSupportColor() ? "\x0D\x1B[2K" : "\x0D\r";
-        $tpl = Cli::isSupportColor() ? "\x0D\x1B[2K" : "\x0D";
-
-        if ($fixMsg) {
-            $tpl .= self::getStyle()->render($fixMsg);
-        }
-
-        $tpl     .= '%s';
-        $doneMsg = $doneMsg ? self::getStyle()->render($doneMsg) : '';
-
-        while (true) {
-            if ($finished) {
-                return;
-            }
-
-            $msg = yield;
-
-            if ($msg === false) {
-                $counter++;
-                $finished = true;
-                $msg      = $doneMsg ?: '';
-            }
-
-            printf($tpl, $msg);
-
-            if ($finished) {
-                echo "\n";
-                break;
-            }
-        }
-
-        yield $counter;
+        return DynamicText::gen($doneMsg, $fixedMsg);
     }
 
     /**
-     * @param int         $total
-     * @param string      $msg
-     * @param string|null $doneMsg
+     * Render a simple text progress bar by 'yield'
+     * @param int    $total
+     * @param string $msg
+     * @param string $doneMsg
      * @return \Generator
      */
-    public static function progressTxt(int $total, string $msg, string $doneMsg = null): ?\Generator
+    public static function progressTxt(int $total, string $msg, string $doneMsg = ''): \Generator
     {
-        $current  = 0;
-        $finished = false;
-        $tpl      = (Cli::isSupportColor() ? "\x0D\x1B[2K" : "\x0D\r") . "%' 3d%% %s";
-        $msg      = self::getStyle()->render($msg);
-        $doneMsg  = $doneMsg ? self::getStyle()->render($doneMsg) : null;
-
-        while (true) {
-            if ($finished) {
-                return;
-            }
-
-            $step = yield;
-
-            if ((int)$step <= 0) {
-                $step = 1;
-            }
-
-            $current += $step;
-            $percent = ceil(($current / $total) * 100);
-
-            if ($percent >= 100) {
-                $percent  = 100;
-                $finished = true;
-                $msg      = $doneMsg ?: $msg;
-            }
-
-            // printf("\r%d%% %s", $percent, $msg);
-            // printf("\x0D\x2K %d%% %s", $percent, $msg);
-            // printf("\x0D\r%'2d%% %s", $percent, $msg);
-            printf($tpl, $percent, $msg);
-
-            if ($finished) {
-                echo "\n";
-                break;
-            }
-        }
-
-        yield false;
+        return SimpleTextBar::gen($total, $msg, $doneMsg);
     }
 
     /**
-     * a simple progress bar by 'yield'
-     * ```php
-     * $i = 0;
-     * $total = 120;
-     * $bar = Show::progressBar($total, [
-     *     'msg' => 'Msg Text',
-     *     'doneChar' => '#'
-     * ]);
-     * echo "progress:\n";
-     * while ($i <= $total) {
-     *      $bar->send(1); // 发送步进长度，通常是 1
-     *      usleep(50000);
-     *      $i++;
-     * }
-     * ```
+     * Render a simple progress bar by 'yield'
      * @param int   $total
      * @param array $opts
      * @internal int $current
@@ -668,61 +520,7 @@ class Show
      */
     public static function progressBar(int $total, array $opts = []): ?\Generator
     {
-        $current   = 0;
-        $finished  = false;
-        $tplPrefix = Cli::isSupportColor() ? "\x0D\x1B[2K" : "\x0D\r";
-        $opts      = array_merge([
-            'doneChar' => '=',
-            'waitChar' => ' ',
-            'signChar' => '>',
-            'msg'      => '',
-            'doneMsg'  => '',
-        ], $opts);
-
-        $msg      = self::getStyle()->render($opts['msg']);
-        $doneMsg  = self::getStyle()->render($opts['doneMsg']);
-        $waitChar = $opts['waitChar'];
-
-        while (true) {
-            if ($finished) {
-                return;
-            }
-
-            $step = yield;
-
-            if ((int)$step <= 0) {
-                $step = 1;
-            }
-
-            $current += $step;
-            $percent = ceil(($current / $total) * 100);
-
-            if ($percent >= 100) {
-                $msg      = $doneMsg ?: $msg;
-                $percent  = 100;
-                $finished = true;
-            }
-
-            /**
-             * \r, \x0D 回车，到行首
-             * \x1B ESC
-             * 2K 清除本行
-             */
-            // printf("\r[%'--100s] %d%% %s",
-            // printf("\x0D\x1B[2K[%'{$waitChar}-100s] %d%% %s",
-            printf("{$tplPrefix}[%'{$waitChar}-100s] %' 3d%% %s",
-                str_repeat($opts['doneChar'], $percent) . ($finished ? '' : $opts['signChar']),
-                $percent,
-                $msg
-            );// ♥ ■ ☺ ☻ = #
-
-            if ($finished) {
-                echo "\n";
-                break;
-            }
-        }
-
-        yield false;
+        return SimpleBar::gen($total, $opts);
     }
 
     /**
@@ -866,46 +664,7 @@ class Show
      */
     public static function write($messages, $nl = true, $quit = false, array $opts = []): int
     {
-        if (\is_array($messages)) {
-            $messages = \implode($nl ? \PHP_EOL : '', $messages);
-        }
-
-        $messages = (string)$messages;
-
-        if (!isset($opts['color']) || $opts['color']) {
-            $messages = self::getStyle()->render($messages);
-        } else {
-            $messages = Style::stripColor($messages);
-        }
-
-        // if open buffering
-        if (self::isBuffering()) {
-            self::$buffer .= $messages . ($nl ? \PHP_EOL : '');
-
-            if (!$quit) {
-                return 0;
-            }
-
-            $messages = self::$buffer;
-
-            self::clearBuffer();
-        } else {
-            $messages .= $nl ? \PHP_EOL : '';
-        }
-
-        \fwrite($stream = $opts['stream'] ?? \STDOUT, $messages);
-
-        if (!isset($opts['flush']) || $opts['flush']) {
-            \fflush($stream);
-        }
-
-        // if will quit.
-        if ($quit !== false) {
-            $code = true === $quit ? 0 : (int)$quit;
-            exit($code);
-        }
-
-        return 0;
+        return Console::write($messages, $nl, $quit, $opts);
     }
 
     /**
@@ -916,10 +675,10 @@ class Show
      * @param array        $opts
      * @return int
      */
-    public static function writeRaw($message, $nl = true, $quit = false, array $opts = []): int
+    public static function writeRaw($message, bool $nl = true, $quit = false, array $opts = []): int
     {
         $opts['color'] = false;
-        return self::write($message, $nl, $quit, $opts);
+        return Console::write($message, $nl, $quit, $opts);
     }
 
     /**
@@ -931,7 +690,7 @@ class Show
      */
     public static function writeln($message, $quit = false, array $opts = []): int
     {
-        return self::write($message, true, $quit, $opts);
+        return Console::write($message, true, $quit, $opts);
     }
 
     /**
@@ -941,35 +700,15 @@ class Show
      * @param array        $opts
      * @return int
      */
-    public static function color($message, string $style = 'info', $nl = true, array $opts = []): int
+    public static function colored($message, string $style = 'info', $nl = true, array $opts = []): int
     {
         $quit = isset($opts['quit']) ? (bool)$opts['quit'] : false;
 
+        if (\is_array($message)) {
+            $message = \implode($nl ? \PHP_EOL : '', $message);
+        }
+
         return self::write(ColorTag::wrap($message, $style), $nl, $quit, $opts);
-    }
-
-    /**
-     * Logs data to stdout
-     * @param string|array $text
-     * @param bool         $nl
-     * @param bool|int     $quit
-     */
-    public static function stdout($text, $nl = true, $quit = false): void
-    {
-        self::write($text, $nl, $quit);
-    }
-
-    /**
-     * Logs data to stderr
-     * @param string|array $text
-     * @param bool         $nl
-     * @param bool|int     $quit
-     */
-    public static function stderr($text, $nl = true, $quit = -200): void
-    {
-        self::write($text, $nl, $quit, [
-            'stream' => STDERR,
-        ]);
     }
 
     /**
