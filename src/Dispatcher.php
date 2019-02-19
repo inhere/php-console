@@ -1,25 +1,20 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: inhere
- * Date: 2019-02-02
- * Time: 23:47
- */
 
 namespace Inhere\Console;
 
-use Inhere\Console\Face\CommandInterface;
-use Inhere\Console\Face\ControllerInterface;
-use Inhere\Console\Face\RouterInterface;
+use Inhere\Console\Contract\CommandInterface;
+use Inhere\Console\Contract\ControllerInterface;
+use Inhere\Console\Contract\RouterInterface;
 
 /**
- * Class Router
+ * Class Dispatcher - match input command and dispatch command handler
  * @package Inhere\Console
  */
-class Router implements RouterInterface
+class Dispatcher implements RouterInterface
 {
     /**
-     * @var array The independent commands
+     * The independent commands
+     * @var array
      * [
      *  'name' => [
      *      'handler' => MyCommand::class,
@@ -27,10 +22,11 @@ class Router implements RouterInterface
      *  ]
      * ]
      */
-    protected $commands = [];
+    private $commands = [];
 
     /**
-     * @var array The group commands(controller)
+     * The group commands(controller)
+     * @var array
      * [
      *  'name' => [
      *      'handler' => MyController::class,
@@ -38,7 +34,7 @@ class Router implements RouterInterface
      *  ]
      * ]
      */
-    protected $controllers = [];
+    private $controllers = [];
 
     /**
      * Register a app group command(by controller)

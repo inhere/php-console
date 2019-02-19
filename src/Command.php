@@ -8,7 +8,7 @@
 
 namespace Inhere\Console;
 
-use Inhere\Console\Face\CommandInterface;
+use Inhere\Console\Contract\CommandInterface;
 
 /**
  * Class Command

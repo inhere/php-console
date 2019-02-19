@@ -6,11 +6,11 @@
  * Time: 16:51
  */
 
-namespace Inhere\Console\Face;
+namespace Inhere\Console\Contract;
 
 /**
  * Interface ApplicationInterface
- * @package Inhere\Console
+ * @package Inhere\Console\Contract
  */
 interface ApplicationInterface
 {

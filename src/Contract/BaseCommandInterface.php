@@ -6,14 +6,14 @@
  * Time: 18:57
  */
 
-namespace Inhere\Console\Face;
+namespace Inhere\Console\Contract;
 
 use Inhere\Console\AbstractApplication;
 use Inhere\Console\IO\InputDefinition;
 
 /**
  * Interface BaseCommandInterface
- * @package Inhere\Console\Face
+ * @package Inhere\Console\Contract
  */
 interface BaseCommandInterface
 {

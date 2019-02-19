@@ -9,7 +9,7 @@
 namespace Inhere\Console\Traits;
 
 use Inhere\Console\Component\Style\Style;
-use Inhere\Console\Face\CommandInterface;
+use Inhere\Console\Contract\CommandInterface;
 use Inhere\Console\Util\FormatUtil;
 use Toolkit\Cli\ColorTag;
 

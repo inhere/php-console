@@ -6,13 +6,13 @@
  * Time: 13:32
  */
 
-namespace Inhere\Console\Component\Notify;
+namespace Inhere\Console\Component\Progress;
 
 use Inhere\Console\Component\NotifyMessage;
 
 /**
  * Class Spinner
- * @package Inhere\Console\Component\Notify
+ * @package Inhere\Console\Component\Progress
  */
 class Spinner extends NotifyMessage
 {

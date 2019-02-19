@@ -199,7 +199,7 @@ class Console
      * print log to console
      * @param string $msg
      * @param array  $data
-     * @param string $type
+     * @param string $level
      * @param array  $opts
      * [
      *  '_category' => 'application',
@@ -208,14 +208,13 @@ class Console
      *  'coId' => 12,
      * ]
      */
-    public static function log(string $msg, array $data = [], string $type = 'info', array $opts = []): void
+    public static function log(string $msg, array $data = [], string $level = 'info', array $opts = []): void
     {
-        if (isset(self::LOG_LEVEL2TAG[$type])) {
-            $type = ColorTag::add(\strtoupper($type), self::LOG_LEVEL2TAG[$type]);
+        if (isset(self::LOG_LEVEL2TAG[$level])) {
+            $level = ColorTag::add(\strtoupper($level), self::LOG_LEVEL2TAG[$level]);
         }
 
         $userOpts = [];
-
         foreach ($opts as $n => $v) {
             if (\is_numeric($n) || \strpos($n, '_') === 0) {
                 $userOpts[] = "[$v]";
@@ -229,7 +228,7 @@ class Console
         self::write(\sprintf(
             '%s [%s]%s %s %s',
             \date('Y/m/d H:i:s'),
-            $type,
+            $level,
             $optString,
             \trim($msg),
             $data ? \PHP_EOL . \json_encode($data, \JSON_UNESCAPED_SLASHES | \JSON_PRETTY_PRINT) : ''

@@ -6,14 +6,14 @@
  * Time: 13:12
  */
 
-namespace Inhere\Console\Face;
+namespace Inhere\Console\Contract;
 
 use Inhere\Console\AbstractApplication;
 use Inhere\Console\Application;
 
 /**
  * Interface ErrorHandlerInterface
- * @package Inhere\Console\Face
+ * @package Inhere\Console\Contract
  */
 interface ErrorHandlerInterface
 {

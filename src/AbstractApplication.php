@@ -10,8 +10,8 @@ namespace Inhere\Console;
 
 use Inhere\Console\Component\ErrorHandler;
 use Inhere\Console\Component\Style\Style;
-use Inhere\Console\Face\ApplicationInterface;
-use Inhere\Console\Face\ErrorHandlerInterface;
+use Inhere\Console\Contract\ApplicationInterface;
+use Inhere\Console\Contract\ErrorHandlerInterface;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\InputInterface;
 use Inhere\Console\IO\Output;

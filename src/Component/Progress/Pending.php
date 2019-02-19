@@ -6,13 +6,13 @@
  * Time: 13:31
  */
 
-namespace Inhere\Console\Component\Notify;
+namespace Inhere\Console\Component\Progress;
 
 use Inhere\Console\Component\NotifyMessage;
 
 /**
  * Class Pending
- * @package Inhere\Console\Component\Notify
+ * @package Inhere\Console\Component\Progress
  */
 class Pending extends NotifyMessage
 {

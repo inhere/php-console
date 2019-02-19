@@ -9,7 +9,7 @@
 namespace Inhere\Console\Component;
 
 use Inhere\Console\AbstractApplication;
-use Inhere\Console\Face\ErrorHandlerInterface;
+use Inhere\Console\Contract\ErrorHandlerInterface;
 use Toolkit\Cli\Highlighter;
 
 /**

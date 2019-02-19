@@ -11,8 +11,8 @@ use Inhere\Console\Component\Formatter\SingleList;
 use Inhere\Console\Component\Formatter\Table;
 use Inhere\Console\Component\Formatter\Title;
 use Inhere\Console\Component\Formatter\Tree;
-use Inhere\Console\Component\Notify\CounterText;
-use Inhere\Console\Component\Notify\DynamicText;
+use Inhere\Console\Component\Progress\CounterText;
+use Inhere\Console\Component\Progress\DynamicText;
 use Inhere\Console\Component\Progress\SimpleBar;
 use Inhere\Console\Component\Progress\SimpleTextBar;
 use Inhere\Console\Component\Style\Style;
@@ -23,8 +23,7 @@ use Toolkit\StrUtil\Str;
 use Toolkit\Sys\Sys;
 
 /**
- * Class Show
- *  show formatted message text
+ * Class Show - render and display formatted message text
  * @package Inhere\Console\Util
  * @method static int info($messages, $quit = false)
  * @method static int note($messages, $quit = false)

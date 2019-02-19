@@ -1,14 +1,14 @@
 <?php
 
-namespace Inhere\Console\Component\Notify;
+namespace Inhere\Console\Component\Progress;
 
 use Inhere\Console\Component\NotifyMessage;
 use Inhere\Console\Console;
-use Inhere\Library\Helpers\Cli;
+use Toolkit\Cli\Cli;
 
 /**
  * Class CounterText
- * @package Inhere\Console\Component\Notify
+ * @package Inhere\Console\Component\Progress
  */
 class CounterText extends NotifyMessage
 {

@@ -8,8 +8,8 @@
 
 namespace Inhere\Console;
 
-use Inhere\Console\Face\BaseCommandInterface;
-use Inhere\Console\Face\CommandInterface;
+use Inhere\Console\Contract\BaseCommandInterface;
+use Inhere\Console\Contract\CommandInterface;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\InputDefinition;
 use Inhere\Console\IO\Output;

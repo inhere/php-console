@@ -1,14 +1,14 @@
 <?php
 
-namespace Inhere\Console\Component\Notify;
+namespace Inhere\Console\Component\Progress;
 
 use Inhere\Console\Component\NotifyMessage;
-use Inhere\Console\Component\Style\Style;
+use Inhere\Console\Console;
 use Toolkit\Cli\Cli;
 
 /**
  * Class DynamicText
- * @package Inhere\Console\Component\Notify
+ * @package Inhere\Console\Component\Progress
  */
 class DynamicText extends NotifyMessage
 {
@@ -25,11 +25,11 @@ class DynamicText extends NotifyMessage
         $template = Cli::isSupportColor() ? "\x0D\x1B[2K" : "\x0D";
 
         if ($fixedMsg) {
-            $template .= Style::instance()->render($fixedMsg);
+            $template .= Console::style()->render($fixedMsg);
         }
 
         $template .= '%s';
-        $doneMsg  = $doneMsg ? Style::instance()->render($doneMsg) : '';
+        $doneMsg  = $doneMsg ? Console::style()->render($doneMsg) : '';
 
         while (true) {
             if ($finished) {

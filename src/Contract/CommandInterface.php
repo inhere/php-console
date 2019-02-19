@@ -6,11 +6,11 @@
  * Time: 9:23
  */
 
-namespace Inhere\Console\Face;
+namespace Inhere\Console\Contract;
 
 /**
  * Interface CommandInterface
- * @package Inhere\Console\Face
+ * @package Inhere\Console\Contract
  */
 interface CommandInterface extends BaseCommandInterface
 {

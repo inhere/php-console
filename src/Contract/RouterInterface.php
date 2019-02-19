@@ -6,11 +6,11 @@
  * Time: 23:52
  */
 
-namespace Inhere\Console\Face;
+namespace Inhere\Console\Contract;
 
 /**
  * Interface RouterInterface
- * @package Inhere\Console\Face
+ * @package Inhere\Console\Contract
  */
 interface RouterInterface
 {

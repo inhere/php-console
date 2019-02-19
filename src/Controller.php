@@ -8,7 +8,7 @@
 
 namespace Inhere\Console;
 
-use Inhere\Console\Face\ControllerInterface;
+use Inhere\Console\Contract\ControllerInterface;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
 use Inhere\Console\Util\FormatUtil;
