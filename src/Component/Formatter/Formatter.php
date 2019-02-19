@@ -8,13 +8,14 @@
 
 namespace Inhere\Console\Component\Formatter;
 
+use Inhere\Console\Util\Show;
 use Toolkit\PhpUtil\PhpHelper;
 
 /**
  * Class Formatter - message formatter
  * @package Inhere\Console\Component\Formatter
  */
-abstract class Formatter
+abstract class Formatter implements FormatterInterface
 {
     // content align
     public const ALIGN_LEFT   = 'left';
@@ -26,7 +27,11 @@ abstract class Formatter
      */
     protected $config = [];
 
-    public static function create(array $config = [])
+    /**
+     * @param array $config
+     * @return Formatter
+     */
+    public static function create(array $config = []): Formatter
     {
         return new static($config);
     }
@@ -50,15 +55,41 @@ abstract class Formatter
         return $this->toString();
     }
 
-    public function render(): void
+    /**
+     * @return string
+     */
+    public function format(): string
     {
+        throw new \RuntimeException('Please implement the method on sub-class');
+    }
 
+    /**
+     * Format and output message to steam.
+     *
+     * @return int
+     */
+    public function render(): int
+    {
+        return $this->display();
+    }
+
+    /**
+     * Format and output message to steam.
+     *
+     * @return int
+     */
+    public function display(): int
+    {
+        return Show::write($this->toString());
     }
 
     /**
      * @return string
      */
-    abstract public function toString(): string;
+    public function toString(): string
+    {
+        return $this->format();
+    }
 
     /**
      * @return array

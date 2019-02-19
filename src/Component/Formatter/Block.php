@@ -12,7 +12,7 @@ namespace Inhere\Console\Component\Formatter;
  * Class Block
  * @package Inhere\Console\Component\Formatter
  */
-class Block
+class Block extends Formatter
 {
 
 }

@@ -54,7 +54,7 @@ trait FormatOutputAwareTrait
      */
     public function write($messages, $nl = true, $quit = false, array $opts = []): int
     {
-        return Show::write($messages, $nl, $quit, array([
+        return Show::write($messages, $nl, $quit, \array_merge([
             'flush'  => true,
             'stream' => $this->outputStream,
         ], $opts));
@@ -156,9 +156,9 @@ trait FormatOutputAwareTrait
      * @inheritdoc
      * @see Show::helpPanel()
      */
-    public function helpPanel(array $config, $showAfterQuit = true): void
+    public function helpPanel(array $config): void
     {
-        Show::helpPanel($config, $showAfterQuit);
+        Show::helpPanel($config);
     }
 
     /**

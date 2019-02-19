@@ -8,12 +8,14 @@
 
 namespace Inhere\Console\Examples\Controller;
 
+use Inhere\Console\Component\Formatter\HelpPanel;
+use Inhere\Console\Component\Formatter\Panel;
 use Inhere\Console\Component\Symbol\Char;
 use Inhere\Console\Component\Symbol\Emoji;
-use Toolkit\Cli\Color;
 use Inhere\Console\Controller;
 use Inhere\Console\IO\Input;
 use Inhere\Console\Util\Show;
+use Toolkit\Cli\Color;
 use Toolkit\Cli\Highlighter;
 
 /**
@@ -28,9 +30,9 @@ class ShowController extends Controller
     public static function commandAliases(): array
     {
         return [
-            'hp' => 'helpPanel',
+            'hp'  => 'helpPanel',
             'hpl' => 'helpPanel',
-            'hl' => 'highlight',
+            'hl'  => 'highlight',
         ];
     }
 
@@ -93,8 +95,8 @@ class ShowController extends Controller
     {
         $data = [
             'application version' => '1.2.0',
-            'system version' => '5.2.3',
-            'key' => 'value ...',
+            'system version'      => '5.2.3',
+            'key'                 => 'value ...',
             'a only value message text',
         ];
 
@@ -105,6 +107,13 @@ class ShowController extends Controller
         Show::panel($data, 'panel show', [
             'borderChar' => '='
         ]);
+
+        Panel::create([
+            'data'        => $data,
+            'title'       => 'panel show',
+            'titleBorder' => '=',
+            'footBorder'  => '=',
+        ])->display();
     }
 
     /**
@@ -209,7 +218,7 @@ class ShowController extends Controller
     {
         // $file = $this->app->getRootPath() . '/examples/routes.php';
         $file = $this->app->getRootPath() . '/src/Utils/Show.php';
-        $src = \file_get_contents($file);
+        $src  = \file_get_contents($file);
 
         $code = Highlighter::create()->highlight($src, $in->getBoolOpt('ln'));
 
@@ -222,19 +231,19 @@ class ShowController extends Controller
     public function helpPanelCommand(): void
     {
         Show::helpPanel([
-            Show::HELP_DES => 'a help panel description text. (help panel show)',
-            Show::HELP_USAGE => 'a usage text',
-            Show::HELP_ARGUMENTS => [
+            HelpPanel::DESC      => 'a help panel description text. (help panel show)',
+            HelpPanel::USAGE     => 'a usage text',
+            HelpPanel::ARGUMENTS => [
                 'arg1' => 'arg1 description',
                 'arg2' => 'arg2 description',
             ],
-            Show::HELP_OPTIONS => [
-                '--opt1' => 'a long option',
-                '-s' => 'a short option',
-                '-d' => 'Run the server on daemon.(default: <comment>false</comment>)',
+            HelpPanel::OPTIONS   => [
+                '--opt1'     => 'a long option',
+                '-s'         => 'a short option',
+                '-d'         => 'Run the server on daemon.(default: <comment>false</comment>)',
                 '-h, --help' => 'Display this help message'
             ],
-        ], false);
+        ]);
     }
 
     /**
@@ -272,22 +281,22 @@ class ShowController extends Controller
     {
         $data = [
             [
-                'id' => 1,
-                'name' => 'john',
+                'id'     => 1,
+                'name'   => 'john',
                 'status' => 2,
-                'email' => 'john@email.com',
+                'email'  => 'john@email.com',
             ],
             [
-                'id' => 2,
-                'name' => 'tom',
+                'id'     => 2,
+                'name'   => 'tom',
                 'status' => 0,
-                'email' => 'tom@email.com',
+                'email'  => 'tom@email.com',
             ],
             [
-                'id' => 3,
-                'name' => 'jack',
+                'id'     => 3,
+                'name'   => 'jack',
                 'status' => 1,
-                'email' => 'jack-test@email.com',
+                'email'  => 'jack-test@email.com',
             ],
         ];
 

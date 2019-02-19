@@ -19,7 +19,7 @@ interface OutputInterface
      * @param  mixed       $messages Output message
      * @param  bool        $nl true 会添加换行符 false 原样输出，不添加换行符
      * @param  int|boolean $quit If is int, setting it is exit code.
-     * @return static
+     * @return int
      */
-    public function write($messages, $nl = true, $quit = false);
+    public function write($messages, $nl = true, $quit = false): int;
 }

@@ -14,11 +14,4 @@ namespace Inhere\Console\Component\Formatter;
  */
 class Alert extends Formatter
 {
-    /**
-     * @return string
-     */
-    public function toString(): string
-    {
-        return '';
-    }
 }

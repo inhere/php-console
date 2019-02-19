@@ -94,17 +94,6 @@ class Helper
     }
 
     /**
-     * @param string $string
-     * @param int    $indent
-     * @param string $padStr
-     * @return string
-     */
-    public static function strPad(string $string, $indent, $padStr): string
-    {
-        return $indent > 0 ? \str_pad($string, $indent, $padStr) : $string;
-    }
-
-    /**
      * find similar text from an array|Iterator
      * @param string          $need
      * @param \Iterator|array $iterator
