@@ -88,21 +88,6 @@ abstract class AbstractApplication implements ApplicationInterface
     private $errorHandler;
 
     /**
-     * @var array Some metadata for command
-     * - description
-     */
-    private $commandsMeta = [];
-
-    /** @var array Save command aliases */
-    private $commandAliases = [];
-
-    /** @var array The independent commands */
-    protected $commands = [];
-
-    /** @var array The group commands(controller) */
-    protected $controllers = [];
-
-    /**
      * Class constructor.
      * @param array  $config
      * @param Input  $input
@@ -218,13 +203,6 @@ abstract class AbstractApplication implements ApplicationInterface
 
         return $result;
     }
-
-    /**
-     * dispatch command
-     * @param string $command A command name
-     * @return int|mixed
-     */
-    abstract protected function dispatch(string $command);
 
     protected function afterRun(): void
     {
@@ -367,59 +345,17 @@ abstract class AbstractApplication implements ApplicationInterface
     }
 
     /**
-     * @param      $name
-     * @param bool $isGroup
-     * @throws \InvalidArgumentException
-     */
-    protected function validateName(string $name, bool $isGroup = false): void
-    {
-        $pattern = $isGroup ? '/^[a-z][\w-]+$/' : '/^[a-z][\w-]*:?([a-z][\w-]+)?$/';
-
-        if (1 !== \preg_match($pattern, $name)) {
-            throw new \InvalidArgumentException("The command name '$name' is must match: $pattern");
-        }
-
-        if ($this->isInternalCommand($name)) {
-            throw new \InvalidArgumentException("The command name '$name' is not allowed. It is a built in command.");
-        }
-    }
-
-    /**
      * @param string       $name
      * @param string|array $aliases
      * @return $this
      */
-    public function addCommandAliases(string $name, $aliases): self
+    public function addAliases(string $name, $aliases): self
     {
-        if (!$name || !$aliases) {
-            return $this;
-        }
-
-        foreach ((array)$aliases as $alias) {
-            if ($alias = trim($alias)) {
-                $this->commandAliases[$alias] = $name;
-            }
+        if ($name && $aliases) {
+            $this->router->setAlias($name, $aliases);
         }
 
         return $this;
-    }
-
-    /**
-     * @param string $name
-     * @return string
-     */
-    protected function getRealCommandName(string $name): string
-    {
-        return $this->commandAliases[$name] ?? $name;
-    }
-
-    /**
-     * @param string $name
-     * @return mixed|null
-     */
-    public function findCommand(string $name)
-    {
-        return $this->commands[$name] ?? $this->controllers[$name] ?? null;
     }
 
     /**
@@ -439,86 +375,6 @@ abstract class AbstractApplication implements ApplicationInterface
     /**********************************************************
      * getter/setter methods
      **********************************************************/
-
-    /**
-     * @return array
-     */
-    public function getControllerNames(): array
-    {
-        return \array_keys($this->controllers);
-    }
-
-    /**
-     * @return array
-     */
-    public function getCommandNames(): array
-    {
-        return \array_keys($this->commands);
-    }
-
-    /**
-     * @param array $controllers
-     * @throws \InvalidArgumentException
-     */
-    public function setControllers(array $controllers): void
-    {
-        foreach ($controllers as $name => $controller) {
-            if (\is_int($name)) {
-                $this->controller($controller);
-            } else {
-                $this->controller($name, $controller);
-            }
-        }
-    }
-
-    /**
-     * @return array
-     */
-    public function getControllers(): array
-    {
-        return $this->controllers;
-    }
-
-    /**
-     * @param $name
-     * @return bool
-     */
-    public function isController(string $name): bool
-    {
-        return isset($this->controllers[$name]);
-    }
-
-    /**
-     * @param array $commands
-     * @throws \InvalidArgumentException
-     */
-    public function setCommands(array $commands): void
-    {
-        foreach ($commands as $name => $handler) {
-            if (\is_int($name)) {
-                $this->command($handler);
-            } else {
-                $this->command($name, $handler);
-            }
-        }
-    }
-
-    /**
-     * @return array
-     */
-    public function getCommands(): array
-    {
-        return $this->commands;
-    }
-
-    /**
-     * @param $name
-     * @return bool
-     */
-    public function isCommand(string $name): bool
-    {
-        return isset($this->commands[$name]);
-    }
 
     /**
      * @return string|null
@@ -651,80 +507,6 @@ abstract class AbstractApplication implements ApplicationInterface
     public function isProfile(): bool
     {
         return (bool)$this->input->getOpt('profile', $this->getParam('profile'));
-    }
-
-    /**
-     * @param null|string $name
-     * @return array
-     */
-    public function getCommandAliases(string $name = null): array
-    {
-        if (!$name) {
-            return $this->commandAliases;
-        }
-
-        return \array_keys($this->commandAliases, $name, true);
-    }
-
-    /**
-     * @param array $commandAliases
-     */
-    public function setCommandAliases(array $commandAliases): void
-    {
-        $this->commandAliases = $commandAliases;
-    }
-
-    /**
-     * @return array
-     */
-    public function getCommandsMeta(): array
-    {
-        return $this->commandsMeta;
-    }
-
-    /**
-     * @param string $command
-     * @param array  $meta
-     */
-    public function setCommandMeta(string $command, array $meta): void
-    {
-        if (isset($this->commandsMeta[$command])) {
-            $this->commandsMeta[$command] = \array_merge($this->commandsMeta[$command], $meta);
-        } else {
-            $this->commandsMeta[$command] = $meta;
-        }
-    }
-
-    /**
-     * @param string $command
-     * @return array
-     */
-    public function getCommandMeta(string $command): array
-    {
-        return $this->commandsMeta[$command] ?? [];
-    }
-
-    /**
-     * @param string $command
-     * @param string $key
-     * @param        $value
-     */
-    public function setCommandMetaValue(string $command, string $key, $value): void
-    {
-        if ($value !== null) {
-            $this->commandsMeta[$command][$key] = $value;
-        }
-    }
-
-    /**
-     * @param string $command
-     * @param string $key
-     * @param mixed  $default
-     * @return mixed
-     */
-    public function getCommandMetaValue(string $command, string $key, $default = null)
-    {
-        return $this->commandsMeta[$command][$key] ?? $default;
     }
 
     /**

@@ -10,6 +10,7 @@ namespace Inhere\Console\Traits;
 
 use Inhere\Console\Component\Style\Style;
 use Inhere\Console\Contract\CommandInterface;
+use Inhere\Console\Router;
 use Inhere\Console\Util\FormatUtil;
 use Toolkit\Cli\ColorTag;
 
@@ -19,8 +20,12 @@ use Toolkit\Cli\ColorTag;
  */
 trait ApplicationHelpTrait
 {
+    /***************************************************************************
+     * Show information for the application
+     ***************************************************************************/
+
     /**
-     * show the application version information
+     * Display the application version information
      */
     public function showVersionInfo(): void
     {
@@ -49,12 +54,8 @@ trait ApplicationHelpTrait
         ]);
     }
 
-    /***************************************************************************
-     * some information for the application
-     ***************************************************************************/
-
     /**
-     * show the application help information
+     * Display the application help information
      * @param string $command
      */
     public function showHelpInfo(string $command = ''): void
@@ -89,14 +90,12 @@ trait ApplicationHelpTrait
     }
 
     /**
-     * show the application command list information
+     * Display the application group/command list information
      */
     public function showCommandList(): void
     {
         /** @var \Inhere\Console\IO\Input $input */
         $input = $this->input;
-        /** @var \Inhere\Console\IO\Output $output */
-        $output = $this->output;
         // has option: --auto-completion
         $autoComp = $input->getBoolOpt('auto-completion');
         // has option: --shell-env
@@ -108,53 +107,62 @@ trait ApplicationHelpTrait
             return;
         }
 
-        $script        = $this->getScriptName();
-        $hasGroup      = $hasCommand = false;
-        $controllerArr = $commandArr = [];
-        $placeholder   = 'No description of the command';
+        /** @var \Inhere\Console\IO\Output $output */
+        $output = $this->output;
+        /** @var Router $router */
+        $router = $this->getRouter();
+        $script = $this->getScriptName();
 
-        // all console controllers
-        if ($controllers = $this->controllers) {
+        $hasGroup    = $hasCommand = false;
+        $groupArr    = $commandArr = [];
+        $placeholder = 'No description of the command';
+
+        // all console groups/controllers
+        if ($groups = $router->getControllers()) {
             $hasGroup = true;
-            \ksort($controllers);
+            \ksort($groups);
         }
 
         // all independent commands, Independent, Single, Alone
-        if ($commands = $this->commands) {
+        if ($commands = $router->getCommands()) {
             $hasCommand = true;
             \ksort($commands);
         }
 
         // add split title on both exists.
         if (!$autoComp && $hasCommand && $hasGroup) {
-            $commandArr[]    = \PHP_EOL . '- <bold>Alone Commands</bold>';
-            $controllerArr[] = \PHP_EOL . '- <bold>Group Commands</bold>';
+            $groupArr[]   = \PHP_EOL . '- <bold>Group Commands</bold>';
+            $commandArr[] = \PHP_EOL . '- <bold>Alone Commands</bold>';
         }
 
-        foreach ($controllers as $name => $controller) {
+        foreach ($groups as $name => $info) {
+            $options    = $info['options'];
+            $controller = $info['handler'];
             /** @var \Inhere\Console\AbstractCommand $controller */
             $desc    = $controller::getDescription() ?: $placeholder;
-            $aliases = $this->getCommandAliases($name);
+            $aliases = $options['aliases'];
             $extra   = $aliases ? ColorTag::wrap(
                 ' [alias: ' . \implode(',', $aliases) . ']',
                 'info'
             ) : '';
 
             // collect
-            $controllerArr[$name] = $desc . $extra;
+            $groupArr[$name] = $desc . $extra;
         }
 
         if (!$hasGroup && $this->isDebug()) {
-            $controllerArr[] = '... Not register any group command(controller)';
+            $groupArr[] = '... Not register any group command(controller)';
         }
 
-        foreach ($commands as $name => $command) {
-            $desc = $placeholder;
+        foreach ($commands as $name => $info) {
+            $desc    = $placeholder;
+            $options = $info['options'];
+            $command = $info['handler'];
 
             /** @var \Inhere\Console\AbstractCommand $command */
             if (\is_subclass_of($command, CommandInterface::class)) {
                 $desc = $command::getDescription() ?: $placeholder;
-            } elseif ($msg = $this->getCommandMetaValue($name, 'description')) {
+            } elseif ($msg = $options['description'] ?? '') {
                 $desc = $msg;
             } elseif (\is_string($command)) {
                 $desc = 'A handler : ' . $command;
@@ -162,8 +170,9 @@ trait ApplicationHelpTrait
                 $desc = 'A handler by ' . \get_class($command);
             }
 
-            $aliases           = $this->getCommandAliases($name);
-            $extra             = $aliases ? ColorTag::wrap(' [alias: ' . \implode(',', $aliases) . ']', 'info') : '';
+            $aliases = $options['aliases'];
+            $extra   = $aliases ? ColorTag::wrap(' [alias: ' . \implode(',', $aliases) . ']', 'info') : '';
+
             $commandArr[$name] = $desc . $extra;
         }
 
@@ -175,7 +184,7 @@ trait ApplicationHelpTrait
         $internalCommands = static::$internalCommands;
 
         if ($autoComp && $shellEnv === 'zsh') {
-            $map = \array_merge($internalCommands, $controllerArr, $commandArr);
+            $map = \array_merge($internalCommands, $groupArr, $commandArr);
             $this->dumpAutoCompletion('zsh', $map);
             return;
         }
@@ -189,12 +198,12 @@ trait ApplicationHelpTrait
             'Usage:'              => "$script <info>{command}</info> [--opt -v -h ...] [arg0 arg1 arg2=value2 ...]",
             'Options:'            => $internalOptions,
             'Internal Commands:'  => $internalCommands,
-            'Available Commands:' => \array_merge($controllerArr, $commandArr),
+            'Available Commands:' => \array_merge($groupArr, $commandArr),
         ], [
             'sepChar' => '  ',
         ]);
 
-        unset($controllerArr, $commandArr, $internalCommands);
+        unset($groupArr, $commandArr, $internalCommands);
         $output->write("More command information, please use: <cyan>$script {command} -h</cyan>");
     }
 
@@ -216,6 +225,8 @@ trait ApplicationHelpTrait
         $input = $this->input;
         /** @var \Inhere\Console\IO\Output $output */
         $output = $this->output;
+        /** @var Router $router */
+        $router = $this->getRouter();
 
         // info
         $glue     = ' ';
@@ -226,8 +237,8 @@ trait ApplicationHelpTrait
         if ($shellEnv === 'bash') {
             $tplFile = $tplDir . '/bash-completion.tpl';
             $list    = \array_merge(
-                $this->getCommandNames(),
-                $this->getControllerNames(),
+                $router->getCommandNames(),
+                $router->getControllerNames(),
                 $this->getInternalCommands()
             );
         } else {

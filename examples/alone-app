@@ -5,6 +5,7 @@
  */
 
 use Inhere\Console\Examples\Controller\HomeController;
+use Toolkit\Cli\Color;
 
 define('BASE_PATH', dirname(__DIR__));
 
@@ -18,11 +19,13 @@ try {
     ], $input);
 
     $app->controller('home', HomeController::class);
-    $code = $app->runAction('home', $input->getCommand(), false, true);
 
-    exit((int)$code);
+    $subCmd = $input->getCommand();
+    $result = $app->dispatch('home:' . $subCmd, true);
+
+    exit((int)$result);
 } catch (\Exception $e) {
-    $message = \Toolkit\Cli\Color::apply('error', $e->getMessage());
+    $message = Color::apply('error', $e->getMessage());
 
     echo sprintf("%s\nFile %s:%d\nTrace:\n%s\n",
         $message, $e->getFile(), $e->getLine(), $e->getTraceAsString()

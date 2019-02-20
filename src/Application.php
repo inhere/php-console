@@ -25,59 +25,30 @@ class Application extends AbstractApplication
      */
     public function controller(string $name, $class = null, $option = null)
     {
-        /** @var Controller $class */
-        if (!$class && \class_exists($name)) {
-            $class = $name;
-            $name = $class::getName();
+        if (\is_string($option)) {
+            $option = [
+                'description' => $option,
+            ];
         }
 
-        if (!$name || !$class) {
-            Helper::throwInvalidArgument(
-                'Group-command "name" and "controller" cannot be empty! name: %s, controller: %s',
-                $name,
-                $class
-            );
-        }
-
-        $this->validateName($name, true);
-
-        if (\is_string($class) && !\class_exists($class)) {
-            Helper::throwInvalidArgument("The console controller class [$class] not exists!");
-        }
-
-        if (!\is_subclass_of($class, Controller::class)) {
-            Helper::throwInvalidArgument('The console controller class must is subclass of the: ' . Controller::class);
-        }
-
-        // not enable
-        if (!$class::isEnabled()) {
-            return $this;
-        }
-
-        // allow define aliases in Command class by Controller::aliases()
-        if ($aliases = $class::aliases()) {
-            $option['aliases'] = isset($option['aliases']) ? \array_merge($option['aliases'], $aliases) : $aliases;
-        }
-
-        $this->controllers[$name] = $class;
-
-        // has option information
-        if ($option) {
-            if (\is_string($option)) {
-                $this->setCommandMetaValue($name, 'description', $option);
-            } elseif (\is_array($option)) {
-                $this->addCommandAliases($name, $option['aliases'] ?? null);
-                unset($option['aliases']);
-                $this->setCommandMeta($name, $option);
-            }
-        }
+        $this->getRouter()->addGroup($name, $class, (array)$option);
 
         return $this;
     }
 
     /**
+     * add group/controller
+     * @inheritdoc
+     * @see controller()
+     */
+    public function addGroup(string $name, $controller = null, $option = null)
+    {
+        return $this->controller($name, $controller, $option);
+    }
+
+    /**
      * {@inheritdoc}
-     * @see Application::controller()
+     * @see controller()
      * @throws \InvalidArgumentException
      */
     public function addController(string $name, $class = null, $option = null)
@@ -91,7 +62,26 @@ class Application extends AbstractApplication
      */
     public function controllers(array $controllers): void
     {
-        $this->setControllers($controllers);
+        $this->addControllers($controllers);
+    }
+
+    /**
+     * @param array $controllers
+     * @throws \InvalidArgumentException
+     * @deprecated please use addControllers() instead it.
+     */
+    public function setControllers(array $controllers): void
+    {
+        $this->addControllers($controllers);
+    }
+
+    /**
+     * @param array $controllers
+     * @throws \InvalidArgumentException
+     */
+    public function addControllers(array $controllers): void
+    {
+        $this->getRouter()->addControllers($controllers);
     }
 
     /**
@@ -99,72 +89,15 @@ class Application extends AbstractApplication
      */
     public function command(string $name, $handler = null, $option = null)
     {
-        /** @var Command $name */
-        if (!$handler && \class_exists($name)) {
-            $handler = $name;
-            $name = $name::getName();
+        if (\is_string($option)) {
+            $option = [
+                'description' => $option,
+            ];
         }
 
-        if (!$name || !$handler) {
-            Helper::throwInvalidArgument("Command 'name' and 'handler' cannot be empty! name: $name");
-        }
-
-        $this->validateName($name);
-
-        if (isset($this->commands[$name])) {
-            Helper::throwInvalidArgument("Command '$name' have been registered!");
-        }
-
-        if (\is_string($handler)) {
-            if (!\class_exists($handler)) {
-                Helper::throwInvalidArgument("The console command class [$handler] not exists!");
-            }
-
-            if (!\is_subclass_of($handler, Command::class)) {
-                Helper::throwInvalidArgument('The console command class must is subclass of the: ' . Command::class);
-            }
-
-            // not enable
-            /** @var Command $handler */
-            if (!$handler::isEnabled()) {
-                return $this;
-            }
-
-            // allow define aliases in Command class by Command::aliases()
-            if ($aliases = $handler::aliases()) {
-                $option['aliases'] = isset($option['aliases']) ? \array_merge($option['aliases'], $aliases) : $aliases;
-            }
-        } elseif (!\is_object($handler) || !\method_exists($handler, '__invoke')) {
-            Helper::throwInvalidArgument(
-                'The console command handler must is an subclass of %s OR a Closure OR a object have method __invoke()',
-                Command::class
-            );
-        }
-
-        // is an class name string
-        $this->commands[$name] = $handler;
-
-        // have option information
-        if ($option) {
-            if (\is_string($option)) {
-                $this->setCommandMetaValue($name, 'description', $option);
-            } elseif (\is_array($option)) {
-                $this->addCommandAliases($name, $option['aliases'] ?? null);
-                unset($option['aliases']);
-                $this->setCommandMeta($name, $option);
-            }
-        }
+        $this->getRouter()->addCommand($name, $handler, (array)$option);
 
         return $this;
-    }
-
-    /**
-     * @param array $commands
-     * @throws \InvalidArgumentException
-     */
-    public function commands(array $commands): void
-    {
-        $this->getRouter()->addCommands($commands);
     }
 
     /**
@@ -178,13 +111,21 @@ class Application extends AbstractApplication
     }
 
     /**
-     * add group/controller
-     * @inheritdoc
-     * @see controller()
+     * @param array $commands
+     * @throws \InvalidArgumentException
      */
-    public function addGroup(string $name, $controller = null, $option = null)
+    public function addCommands(array $commands): void
     {
-        return $this->controller($name, $controller, $option);
+        $this->getRouter()->addCommands($commands);
+    }
+
+    /**
+     * @param array $commands
+     * @throws \InvalidArgumentException
+     */
+    public function commands(array $commands): void
+    {
+        $this->addCommands($commands);
     }
 
     /**
@@ -201,7 +142,7 @@ class Application extends AbstractApplication
      */
     public function registerCommands(string $namespace, string $basePath): self
     {
-        $length = \strlen($basePath) + 1;
+        $length   = \strlen($basePath) + 1;
         $iterator = Helper::directoryIterator($basePath, $this->getFileFilter());
 
         foreach ($iterator as $file) {
@@ -221,7 +162,7 @@ class Application extends AbstractApplication
      */
     public function registerGroups(string $namespace, string $basePath): self
     {
-        $length = \strlen($basePath) + 1;
+        $length   = \strlen($basePath) + 1;
         $iterator = Helper::directoryIterator($basePath, $this->getFileFilter());
 
         foreach ($iterator as $file) {
@@ -256,7 +197,7 @@ class Application extends AbstractApplication
     }
 
     /****************************************************************************
-     * dispatch and run console controller/command
+     * Dispatch and run console controller/command
      ****************************************************************************/
 
     /**
@@ -264,71 +205,53 @@ class Application extends AbstractApplication
      * @throws \ReflectionException
      * @throws \InvalidArgumentException
      */
-    protected function dispatch(string $name)
+    public function dispatch(string $name, bool $standAlone = false)
     {
         $this->logf(Console::VERB_DEBUG, 'begin dispatch command - %s', $name);
-        $sep = $this->delimiter ?: ':';
 
-        // maybe is a command name
-        $realName = $this->getRealCommandName($name);
-
-        if ($this->isCommand($realName)) {
-            return $this->runCommand($realName, true);
-        }
-
-        // maybe is a controller/group name
-        $action = '';
-
-        // like 'home:index'
-        if (\strpos($realName, $sep) > 0) {
-            $input = \array_values(\array_filter(\explode($sep, $realName)));
-            [$realName, $action] = \count($input) > 2 ? \array_splice($input, 2) : $input;
-            $realName = $this->getRealCommandName($realName);
-        }
-
-        if ($this->isController($realName)) {
-            return $this->runAction($realName, $action, true);
-        }
+        // match handler by input name
+        $info = $this->getRouter()->match($name);
 
         // command not found
-        if (true !== $this->fire(self::ON_NOT_FOUND, $this)) {
+        if (!$info && true !== $this->fire(self::ON_NOT_FOUND, $this)) {
             $this->output->liteError("The command '{$name}' is not exists in the console application!");
 
-            $commands = \array_merge($this->getControllerNames(), $this->getCommandNames());
+            $commands = $this->getRouter()->getAllNames();
 
             // find similar command names by similar_text()
             if ($similar = Helper::findSimilar($name, $commands)) {
-                $this->write(\sprintf("\nMaybe what you mean is:\n    <info>%s</info>", implode(', ', $similar)));
+                $this->write(\sprintf("\nMaybe what you mean is:\n    <info>%s</info>", \implode(', ', $similar)));
             } else {
                 $this->showCommandList();
             }
+
+            return 2;
         }
 
-        return 2;
+        // is command
+        if ($info['type'] === Router::TYPE_SINGLE) {
+            return $this->runCommand($info['name'], $info['handler'], $info['options']);
+        }
+
+        // is controller/group
+        return $this->runAction($info['group'], $info['action'], $info['handler'], $info['options'], $standAlone);
     }
 
     /**
-     * run a command
-     * @param string $name Command name
-     * @param bool   $believable The `$name` is believable
+     * run a independent command
+     * @param string          $name Command name
+     * @param \Closure|string $handler Command class
+     * @param array           $options
      * @return mixed
      * @throws \InvalidArgumentException
      */
-    public function runCommand(string $name, bool $believable = false)
+    protected function runCommand(string $name, $handler, array $options)
     {
-        // if $believable = true, will skip check.
-        if (!$believable && $this->isCommand($name)) {
-            Helper::throwInvalidArgument("The console independent-command [$name] not exists!");
-        }
-
-        /** @var \Closure|string $handler Command class */
-        $handler = $this->commands[$name];
-
         if (\is_object($handler) && \method_exists($handler, '__invoke')) {
             if ($this->input->getSameOpt(['h', 'help'])) {
-                $des = $this->getCommandMetaValue($name, 'description', 'No command description message.');
+                $desc = $options['description'] ?? 'No command description message';
 
-                return $this->output->write($des);
+                return $this->output->write($desc);
             }
 
             $result = $handler($this->input, $this->output);
@@ -353,49 +276,46 @@ class Application extends AbstractApplication
     }
 
     /**
-     * exec an action in a group command(controller)
-     * @param string $name group name
+     * Execute an action in a group command(controller)
+     * @param string $group The group name
      * @param string $action Command method, no suffix
-     * @param bool   $believable The `$name` is believable
+     * @param mixed  $handler The controller class or object
+     * @param array  $options
      * @param bool   $standAlone
      * @return mixed
-     * @throws \InvalidArgumentException
      * @throws \ReflectionException
      */
-    public function runAction(string $name, string $action, bool $believable = false, bool $standAlone = false)
+    protected function runAction(string $group, string $action, $handler, array $options, bool $standAlone = false)
     {
-        // if $believable = true, will skip check.
-        if (!$believable && !$this->isController($name)) {
-            Helper::throwInvalidArgument('The console controller-command [%s] not exists!', $name);
-        }
-
-        // Controller class
-        $object = $this->controllers[$name];
-
-        if (\is_string($object)) {
-            $class = $object;
+        /** @var Controller $handler */
+        if (\is_string($handler)) {
+            $class = $handler;
 
             if (!\class_exists($class)) {
                 Helper::throwInvalidArgument('The console controller class [%s] not exists!', $class);
             }
 
-            /** @var Controller $object */
-            $object = new $class($this->input, $this->output);
+            $handler = new $class($this->input, $this->output);
         }
 
-        if (!($object instanceof Controller)) {
+        if (!($handler instanceof Controller)) {
             Helper::throwInvalidArgument(
                 'The console controller class [%s] must instanceof the %s',
-                $object,
+                $handler,
                 Controller::class
             );
         }
 
-        $object::setName($name);
-        $object->setApp($this);
-        $object->setDelimiter($this->delimiter);
-        $object->setExecutionAlone($standAlone);
+        $handler::setName($group);
 
-        return $object->run($action);
+        if ($desc = $options['description'] ?? '') {
+            $handler::setDescription($desc);
+        }
+
+        $handler->setApp($this);
+        $handler->setDelimiter($this->delimiter);
+        $handler->setExecutionAlone($standAlone);
+
+        return $handler->run($action);
     }
 }

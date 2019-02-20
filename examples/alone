@@ -19,7 +19,7 @@ try {
 } catch (\Exception $e) {
     $message = \Toolkit\Cli\Color::apply('error', $e->getMessage());
 
-    echo sprintf("%s\nFile %s:%d\nTrace:\n%s\n",
+    echo \sprintf("%s\nFile %s:%d\nTrace:\n%s\n",
         $message, $e->getFile(), $e->getLine(), $e->getTraceAsString()
     );
 }

@@ -42,10 +42,12 @@ class ApplicationTest extends TestCase
             return 0;
         });
 
-        $this->assertTrue($app->isCommand('test'));
-        $this->assertFalse($app->isController('test'));
-        $this->assertArrayHasKey('test', $app->getCommands());
-        $this->assertContains('test', $app->getCommandNames());
+        $router = $app->getRouter();
+
+        $this->assertTrue($router->isCommand('test'));
+        $this->assertFalse($router->isController('test'));
+        $this->assertArrayHasKey('test', $router->getCommands());
+        $this->assertContains('test', $router->getCommandNames());
     }
 
     public function testAddCommandError()
@@ -82,11 +84,13 @@ class ApplicationTest extends TestCase
 
         $app->addGroup('test', TestController::class);
 
-        $this->assertTrue($app->isController('test'));
-        $this->assertFalse($app->isCommand('test'));
-        $this->assertArrayHasKey('test', $app->getControllers());
-        $this->assertContains('test', $app->getControllerNames());
-        $this->assertSame(TestController::class, $app->getControllers()['test']);
+        $router = $app->getRouter();
+
+        $this->assertTrue($app->getRouter()->isController('test'));
+        $this->assertFalse($app->getRouter()->isCommand('test'));
+        $this->assertArrayHasKey('test', $router->getControllers());
+        $this->assertContains('test', $router->getControllerNames());
+        $this->assertSame(TestController::class, $router->getControllers()['test']);
     }
 
     public function testAddControllerError()

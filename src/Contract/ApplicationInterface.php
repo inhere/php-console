@@ -28,28 +28,18 @@ interface ApplicationInterface
     public function run(bool $exit = true);
 
     /**
+     * Dispatch input command, exec found command handler.
+     * @param string $name Inputted command name
+     * @param bool   $standAlone Use for an group commands execution alone
+     * @return int|mixed
+     */
+    public function dispatch(string $name, bool $standAlone = false);
+
+    /**
      * @param int $code
      * @return mixed
      */
     public function stop(int $code = 0);
-
-    /**
-     * run a independent command
-     * @param string $name
-     * @param bool   $believable
-     * @return mixed
-     */
-    public function runCommand(string $name, bool $believable = false);
-
-    /**
-     * run a controller's action
-     * @param string $name Controller name
-     * @param string $action Command
-     * @param bool   $believable The `$name` is believable
-     * @param bool   $standAlone
-     * @return mixed
-     */
-    public function runAction(string $name, string $action, bool $believable = false, bool $standAlone = false);
 
     /**
      * Register a app group command(by controller)

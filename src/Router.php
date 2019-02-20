@@ -99,9 +99,11 @@ class Router implements RouterInterface
             return $this;
         }
 
+        $options['aliases'] = isset($options['aliases']) ? (array)$options['aliases'] : [];
+
         // allow define aliases in group class by Controller::aliases()
         if ($aliases = $class::aliases()) {
-            $options['aliases'] = isset($options['aliases']) ? \array_merge($options['aliases'], $aliases) : $aliases;
+            $options['aliases'] = \array_merge($options['aliases'], $aliases);
         }
 
         $this->controllers[$name] = [
@@ -149,6 +151,8 @@ class Router implements RouterInterface
             Helper::throwInvalidArgument("Command '$name' have been registered!");
         }
 
+        $options['aliases'] = isset($options['aliases']) ? (array)$options['aliases'] : [];
+
         if (\is_string($handler)) {
             if (!\class_exists($handler)) {
                 Helper::throwInvalidArgument("The console command class [$handler] not exists!");
@@ -166,9 +170,7 @@ class Router implements RouterInterface
 
             // allow define aliases in Command class by Command::aliases()
             if ($aliases = $handler::aliases()) {
-                $options['aliases'] = isset($options['aliases']) ?
-                    \array_merge($options['aliases'], $aliases) :
-                    $aliases;
+                $options['aliases'] = \array_merge($options['aliases'], $aliases);
             }
         } elseif (!\is_object($handler) || !\method_exists($handler, '__invoke')) {
             Helper::throwInvalidArgument(
@@ -223,7 +225,7 @@ class Router implements RouterInterface
     }
 
     /**********************************************************
-     * getter/setter methods
+     * match command methods
      **********************************************************/
 
     /**
@@ -231,6 +233,7 @@ class Router implements RouterInterface
      * @return array return route info array. If not found, will return empty array.
      * [
      *  type    => 1, // 1 group 2 command
+     *  name    => '', // formatted $name
      *  handler => handler class/object/func ...
      *  options => [
      *      aliases => [],
@@ -247,6 +250,7 @@ class Router implements RouterInterface
 
         // is a command name
         if ($route = $this->commands[$realName] ?? []) {
+            $route['name'] = $realName;
             return $route;
         }
 
@@ -265,6 +269,8 @@ class Router implements RouterInterface
 
         // is group name
         if ($route = $this->controllers[$group] ?? []) {
+            $route['name']   = $realName;
+            $route['group']  = $group;
             $route['action'] = $action;
             return $route;
         }
@@ -274,8 +280,60 @@ class Router implements RouterInterface
     }
 
     /**********************************************************
+     * helper methods
+     **********************************************************/
+
+    /**
+     * @param      $name
+     * @throws \InvalidArgumentException
+     */
+    protected function validateName(string $name): void
+    {
+        // '/^[a-z][\w-]*:?([a-z][\w-]+)?$/'
+        $pattern = '/^[a-z][\w:-]+$/';
+
+        if (1 !== \preg_match($pattern, $name)) {
+            throw new \InvalidArgumentException("The command name '$name' is must match: $pattern");
+        }
+
+        // cannot be override. like: help, version
+        if ($this->isBlocked($name)) {
+            throw new \InvalidArgumentException("The command name '$name' is not allowed. It is a built in command.");
+        }
+    }
+
+    public function each(callable $fn)
+    {
+
+    }
+
+    /**********************************************************
      * getter/setter methods
      **********************************************************/
+
+    /**
+     * @return array
+     */
+    public function getAllNames(): array
+    {
+        return \array_merge($this->getCommandNames(), $this->getControllerNames());
+    }
+
+    /**
+     * @return array
+     */
+    public function getControllerNames(): array
+    {
+        return \array_keys($this->controllers);
+    }
+
+    /**
+     * @return array
+     */
+    public function getCommandNames(): array
+    {
+        return \array_keys($this->commands);
+    }
 
     /**
      * @return array
@@ -334,24 +392,6 @@ class Router implements RouterInterface
     public function setBlocked(array $blocked): void
     {
         $this->blocked = $blocked;
-    }
-
-    /**
-     * @param      $name
-     * @throws \InvalidArgumentException
-     */
-    protected function validateName(string $name): void
-    {
-        // '/^[a-z][\w-]*:?([a-z][\w-]+)?$/'
-        $pattern = '/^[a-z][\w-:]+$/';
-
-        if (1 !== \preg_match($pattern, $name)) {
-            throw new \InvalidArgumentException("The command name '$name' is must match: $pattern");
-        }
-
-        if ($this->isBlocked($name)) {
-            throw new \InvalidArgumentException("The command name '$name' is not allowed. It is a built in command.");
-        }
     }
 
     /**

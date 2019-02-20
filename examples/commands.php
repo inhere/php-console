@@ -46,4 +46,4 @@ $app->controller(\Inhere\Console\Examples\Controller\ShowController::class);
 $app->controller(\Inhere\Console\Examples\Controller\InteractController::class);
 
 // add alias for a group command.
-$app->addCommandAliases('home:test', 'h-test');
+$app->addAliases('home:test', 'h-test');
