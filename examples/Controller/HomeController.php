@@ -2,14 +2,14 @@
 
 namespace Inhere\Console\Examples\Controller;
 
-use Toolkit\Cli\Cli;
 use Inhere\Console\Component\Symbol\ArtFont;
-use Toolkit\Cli\Download;
 use Inhere\Console\Controller;
 use Inhere\Console\IO\Input;
 use Inhere\Console\Util\Interact;
 use Inhere\Console\Util\ProgressBar;
 use Inhere\Console\Util\Show;
+use Toolkit\Cli\Cli;
+use Toolkit\Cli\Download;
 use Toolkit\PhpUtil\Php;
 
 /**
@@ -29,14 +29,14 @@ class HomeController extends Controller
     {
         return [
             // now, 'home:i' is equals to 'home:index'
-            'i' => 'index',
+            'i'   => 'index',
             'prg' => 'progress',
             'pgb' => 'progressBar',
-            'l' => 'list',
-            'af' => 'artFont',
-            'ml' => 'multiList',
-            'sl' => 'splitLine',
-            'dt' => 'dynamicText',
+            'l'   => 'list',
+            'af'  => 'artFont',
+            'ml'  => 'multiList',
+            'sl'  => 'splitLine',
+            'dt'  => 'dynamicText',
         ];
     }
 
@@ -49,7 +49,7 @@ class HomeController extends Controller
 
     protected function disabledCommands(): array
     {
-         return ['disabled'];
+        return ['disabled'];
     }
 
     protected function afterExecute(): void
@@ -154,8 +154,8 @@ class HomeController extends Controller
 
         $this->output->aList([
             'basic color output?' => Cli::isSupportColor() ? '<info>Y</info>' : 'N',
-            'ansi char output?' => Cli::isAnsiSupport() ? 'Y' : 'N',
-            '256 color output?' => Cli::isSupport256Color() ? 'Y' : 'N',
+            'ansi char output?'   => Cli::isAnsiSupport() ? 'Y' : 'N',
+            '256 color output?'   => Cli::isSupport256Color() ? 'Y' : 'N',
             'font symbol output?' => Cli::isSupport256Color() ? 'Y' : 'N',
         ], 'color support check');
     }
@@ -176,8 +176,8 @@ class HomeController extends Controller
             return $this->output->liteError("Your input font name: $name, is not exists. Please use '-h' see allowed.");
         }
 
-        ArtFont::create()->show($name, ArtFont::INTERNAL_GROUP,[
-            'type' => $this->input->getBoolOpt('italic') ? 'italic' : '',
+        ArtFont::create()->show($name, ArtFont::INTERNAL_GROUP, [
+            'type'  => $this->input->getBoolOpt('italic') ? 'italic' : '',
             'style' => $this->input->getOpt('style'),
         ]);
 
@@ -193,7 +193,7 @@ class HomeController extends Controller
     public function counterCommand(): int
     {
         $total = 120;
-        $ctt = Show::counterTxt('handling ...', 'handled.');
+        $ctt   = Show::counterTxt('handling ...', 'handled.');
         $this->write('Counter:');
 
         while ($total - 1) {
@@ -263,7 +263,7 @@ class HomeController extends Controller
         $dt = Show::dynamicText('Complete', 'Download file: xyz.zip ... ');
         $dt->send('Start');
 
-        foreach (['Request','Downloading', 'Save'] as $txt) {
+        foreach (['Request', 'Downloading', 'Save'] as $txt) {
             \sleep(2);
             $dt->send($txt);
         }
@@ -287,12 +287,12 @@ class HomeController extends Controller
      */
     public function progressCommand($input): int
     {
-        $i = 0;
+        $i     = 0;
         $total = 120;
         if ($input->getOpt('type') === 'bar') {
             $bar = $this->output->progressBar($total, [
-                'msg' => 'Msg Text',
-                'doneMsg' => 'Done Msg Text',
+                'msg'      => 'Msg Text',
+                'doneMsg'  => 'Done Msg Text',
                 'doneChar' => $input->getOpt('done-char', '='), // ▓
                 'waitChar' => $input->getOpt('wait-char', '-'), // ░
                 'signChar' => $input->getOpt('sign-char', '>'),
@@ -318,9 +318,9 @@ class HomeController extends Controller
      */
     public function progressBarCommand(): void
     {
-        $i = 0;
+        $i     = 0;
         $total = 120;
-        $bar = new ProgressBar();
+        $bar   = new ProgressBar();
         $bar->start(120);
 
         while ($i <= $total) {
@@ -348,8 +348,8 @@ class HomeController extends Controller
 
         $commands = [
             'version' => 'Show application version information',
-            'help' => 'Show application help information',
-            'list' => 'List all group and independent commands',
+            'help'    => 'Show application help information',
+            'list'    => 'List all group and independent commands',
             'a only value message text'
         ];
 
@@ -364,18 +364,18 @@ class HomeController extends Controller
         Show::multiList([
             'list0' => [
                 'value in the list 0',
-                'key' => 'value in the list 0',
+                'key'  => 'value in the list 0',
                 'key1' => 'value1 in the list 0',
                 'key2' => 'value2 in the list 0',
             ],
             'list1' => [
-                'key' => 'value in the list 1',
+                'key'  => 'value in the list 1',
                 'key1' => 'value1 in the list 1',
                 'key2' => 'value2 in the list 1',
                 'value in the list 1',
             ],
             'list2' => [
-                'key' => 'value in the list 2',
+                'key'  => 'value in the list 2',
                 'value in the list 2',
                 'key1' => 'value1 in the list 2',
                 'key2' => 'value2 in the list 2',
@@ -390,22 +390,22 @@ class HomeController extends Controller
     {
         $data = [
             [
-                'id' => 1,
-                'name' => 'john',
+                'id'     => 1,
+                'name'   => 'john',
                 'status' => 2,
-                'email' => 'john@email.com',
+                'email'  => 'john@email.com',
             ],
             [
-                'id' => 2,
-                'name' => 'tom',
+                'id'     => 2,
+                'name'   => 'tom',
                 'status' => 0,
-                'email' => 'tom@email.com',
+                'email'  => 'tom@email.com',
             ],
             [
-                'id' => 3,
-                'name' => 'jack',
+                'id'     => 3,
+                'name'   => 'jack',
                 'status' => 1,
-                'email' => 'jack-test@email.com',
+                'email'  => 'jack-test@email.com',
             ],
         ];
         Show::table($data, 'table show');
@@ -445,9 +445,9 @@ class HomeController extends Controller
     public function paddingCommand(): void
     {
         $data = [
-            'Eggs' => '$1.99',
+            'Eggs'    => '$1.99',
             'Oatmeal' => '$4.99',
-            'Bacon' => '$2.99',
+            'Bacon'   => '$2.99',
         ];
 
         Show::padding($data, 'padding data show');
@@ -482,8 +482,8 @@ class HomeController extends Controller
     {
         $info = [
             'phpVersion' => PHP_VERSION,
-            'env' => 'test',
-            'debug' => true,
+            'env'        => 'test',
+            'debug'      => true,
         ];
 
         Show::panel($info);
@@ -505,7 +505,7 @@ class HomeController extends Controller
         }
 
         $saveAs = $this->input->getArg('saveAs');
-        $type = $this->input->getArg('type', 'text');
+        $type   = $this->input->getArg('type', 'text');
 
         if (!$saveAs) {
             $saveAs = __DIR__ . '/' . basename($url);

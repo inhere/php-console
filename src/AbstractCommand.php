@@ -103,7 +103,7 @@ abstract class AbstractCommand implements BaseCommandInterface
      */
     public function __construct(Input $input, Output $output, InputDefinition $definition = null)
     {
-        $this->input = $input;
+        $this->input  = $input;
         $this->output = $output;
 
         if ($definition) {
@@ -233,7 +233,7 @@ abstract class AbstractCommand implements BaseCommandInterface
     public function coroutineRun(): bool
     {
         // $ch = new Coroutine\Channel(1);
-        $ok = Coroutine::create(function (){
+        $ok = Coroutine::create(function () {
             $this->execute($this->input, $this->output);
             // $ch->push($result);
         });
@@ -313,8 +313,8 @@ abstract class AbstractCommand implements BaseCommandInterface
             return true;
         }
 
-        $in = $this->input;
-        $out = $this->output;
+        $in        = $this->input;
+        $out       = $this->output;
         $givenArgs = $errArgs = [];
 
         foreach ($in->getArgs() as $key => $value) {
@@ -330,7 +330,7 @@ abstract class AbstractCommand implements BaseCommandInterface
             return false;
         }
 
-        $defArgs = $def->getArguments();
+        $defArgs     = $def->getArguments();
         $missingArgs = \array_filter(\array_keys($defArgs), function ($name, $key) use ($def, $givenArgs) {
             return !\array_key_exists($key, $givenArgs) && $def->argumentIsRequired($name);
         }, \ARRAY_FILTER_USE_BOTH);
@@ -341,7 +341,7 @@ abstract class AbstractCommand implements BaseCommandInterface
         }
 
         $index = 0;
-        $args = [];
+        $args  = [];
 
         foreach ($defArgs as $name => $conf) {
             $args[$name] = $givenArgs[$index] ?? $conf['default'];
@@ -351,9 +351,9 @@ abstract class AbstractCommand implements BaseCommandInterface
         $in->setArgs($args);
 
         // check options
-        $opts = $missingOpts = [];
+        $opts      = $missingOpts = [];
         $givenOpts = $in->getOptions();
-        $defOpts = $def->getOptions();
+        $defOpts   = $def->getOptions();
 
         // check unknown options
         if ($unknown = \array_diff_key($givenOpts, $defOpts)) {
@@ -396,7 +396,7 @@ abstract class AbstractCommand implements BaseCommandInterface
      **************************************************************************/
 
     /**
-     * @param string $name
+     * @param string       $name
      * @param string|array $value
      */
     protected function addCommentsVar(string $name, $value): void
@@ -441,7 +441,7 @@ abstract class AbstractCommand implements BaseCommandInterface
 
         if ($map === null) {
             foreach ($this->commentsVars as $key => $value) {
-                $key = \sprintf(self::ANNOTATION_VAR, $key);
+                $key       = \sprintf(self::ANNOTATION_VAR, $key);
                 $map[$key] = $value;
             }
         }
@@ -462,7 +462,7 @@ abstract class AbstractCommand implements BaseCommandInterface
      **********************************************************/
 
     /**
-     * display help information
+     * Display help information
      * @return bool
      */
     protected function showHelp(): bool
@@ -471,9 +471,16 @@ abstract class AbstractCommand implements BaseCommandInterface
             return false;
         }
 
-        // 创建了 InputDefinition , 则使用它的信息(此时不会再解析和使用命令的注释)
+        // if has InputDefinition object. (The comment of the command will not be parsed and used at this time.)
         $help = $definition->getSynopsis();
-        $help['usage:'] = \sprintf('%s %s %s', $this->getScriptName(), $this->getCommandName(), $help['usage:']);
+        // build usage
+        $help['usage:'] = \sprintf(
+            '%s %s %s',
+            $this->getScriptName(),
+            $this->getCommandName(),
+            $help['usage:']
+        );
+        // align global options
         $help['global options:'] = FormatUtil::alignOptions(Application::getGlobalOptions());
 
         if (empty($help[0]) && $this->isAlone()) {
@@ -493,17 +500,23 @@ abstract class AbstractCommand implements BaseCommandInterface
     }
 
     /**
-     * show help by parse method annotations
-     * @param string      $method
-     * @param null|string $action
-     * @param array       $aliases
+     * Display command/action help by parse method annotations
+     * @param string $method
+     * @param string $action
+     * @param array  $aliases
      * @return int
      * @throws \ReflectionException
      */
-    protected function showHelpByMethodAnnotations(string $method, string $action = null, array $aliases = []): int
+    protected function showHelpByMethodAnnotations(string $method, string $action = '', array $aliases = []): int
     {
-        $ref = new \ReflectionClass($this);
+        $ref  = new \ReflectionClass($this);
         $name = $this->input->getCommand();
+
+        $this->logf(
+            Console::VERB_CRAZY,
+            'display help info for the method=%s, action=%s, class=%s',
+            $method, $action, static::class
+        );
 
         if (!$ref->hasMethod($method)) {
             $this->write("The command [<info>$name</info>] don't exist in the group: " . static::getName());
@@ -516,13 +529,13 @@ abstract class AbstractCommand implements BaseCommandInterface
             return 0;
         }
 
-        $doc = $ref->getMethod($method)->getDocComment();
-        $tags = PhpDoc::getTags($this->parseCommentsVars($doc));
+        $doc     = $ref->getMethod($method)->getDocComment();
+        $tags    = PhpDoc::getTags($this->parseCommentsVars($doc));
         $isAlone = $ref->isSubclassOf(CommandInterface::class);
-        $help = [];
+        $help    = [];
 
         if ($aliases) {
-            $realName = $action ?: self::getName();
+            $realName         = $action ?: self::getName();
             $help['Command:'] = \sprintf('%s(alias: <info>%s</info>)', $realName, \implode(',', $aliases));
         }
 
@@ -563,7 +576,7 @@ abstract class AbstractCommand implements BaseCommandInterface
 
         $help['Global Options:'] = FormatUtil::alignOptions(
             \array_merge(Application::getGlobalOptions(),
-            $this->commonOptions)
+                $this->commonOptions)
         );
         $this->output->mList($help, [
             'sepChar'     => '  ',
@@ -649,7 +662,34 @@ abstract class AbstractCommand implements BaseCommandInterface
      */
     public static function setAnnotationTags(array $annotationTags, $replace = false): void
     {
-        self::$annotationTags = $replace ? $annotationTags : array_merge(self::$annotationTags, $annotationTags);
+        self::$annotationTags = $replace ? $annotationTags : \array_merge(self::$annotationTags, $annotationTags);
+    }
+
+    /**
+     * get current debug level value
+     * @return int
+     */
+    public function getVerbLevel(): int
+    {
+        if ($this->app) {
+            return $this->app->getVerbLevel();
+        }
+
+        return (int)$this->input->getLongOpt('debug', Console::VERB_ERROR);
+    }
+
+    /**
+     * @param int    $level
+     * @param string $format
+     * @param mixed  ...$args
+     */
+    public function logf(int $level, string $format, ...$args): void
+    {
+        if ($this->getVerbLevel() < $level) {
+            return;
+        }
+
+        Console::logf($level, $format, ...$args);
     }
 
     /**

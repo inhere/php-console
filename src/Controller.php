@@ -67,7 +67,9 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
     protected function init(): void
     {
         $list = $this->disabledCommands();
+        // save to property
         $this->disabledCommands = $list ? \array_flip($list) : [];
+        self::$commandAliases   = static::commandAliases();
 
         if (!$this->actionSuffix) {
             $this->actionSuffix = 'Command';
@@ -127,7 +129,7 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
     protected function execute($input, $output)
     {
         $action = $this->action;
-        $group = static::getName();
+        $group  = static::getName();
 
         if ($this->isDisabled($action)) {
             $output->liteError(\sprintf("Sorry, The command '%s' is invalid in the group '%s'!", $action, $group));
@@ -207,17 +209,17 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
     {
         $action = $this->action;
 
-        // show all commands of the controller
+        // For all sub-commands of the controller
         if (!$action && !($action = $this->getFirstArg())) {
             $this->showCommandList();
             return 0;
         }
 
-        $action = Str::camelCase($action);
-        $method = $this->actionSuffix ? $action . \ucfirst($this->actionSuffix) : $action;
-        $aliases = self::getCommandAliases($action);
+        $action  = Str::camelCase($action);
+        $method  = $this->actionSuffix ? $action . \ucfirst($this->actionSuffix) : $action;
+        $aliases = $this->getCommandAliases($action);
 
-        // show help info for a sub-command.
+        // For a specified sub-command.
         return $this->showHelpByMethodAnnotations($method, $action, $aliases);
     }
 
@@ -227,23 +229,23 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
     }
 
     /**
-     * show sub-command list of the controller class
+     * Display all sub-commands list of the controller class
      * @throws \ReflectionException
      */
     final public function showCommandList(): void
     {
         $this->beforeShowCommandList();
 
-        $ref = new \ReflectionClass($this);
+        $ref   = new \ReflectionClass($this);
         $sName = \lcfirst(self::getName() ?: $ref->getShortName());
 
         if (!($classDes = self::getDescription())) {
             $classDes = PhpDoc::description($ref->getDocComment()) ?: 'No description for the console controller';
         }
 
-        $commands = [];
+        $commands     = [];
         $showDisabled = (bool)$this->getOpt('show-disabled', false);
-        $defaultDes = 'No description message';
+        $defaultDes   = 'No description message';
 
         foreach ($this->getAllCommandMethods($ref) as $cmd => $m) {
             if (!$cmd) {
@@ -265,8 +267,9 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
                 $desc .= '[<red>DISABLED</red>]';
             }
 
-            $aliases = self::getCommandAliases($cmd);
-            $desc .= $aliases ? ColorTag::wrap(' [alias: ' . \implode(',', $aliases) . ']', 'info') : '';
+            $aliases = $this->getCommandAliases($cmd);
+            $desc    .= $aliases ? ColorTag::wrap(' [alias: ' . \implode(',', $aliases) . ']', 'info') : '';
+
             $commands[$cmd] = $desc;
         }
 
@@ -282,10 +285,10 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
         $script = $this->getScriptName();
 
         if ($this->executionAlone) {
-            $name = $sName . ' ';
+            $name  = $sName . ' ';
             $usage = "$script <info>{command}</info> [--options ...] [arguments ...]";
         } else {
-            $name = $sName . $this->delimiter;
+            $name  = $sName . $this->delimiter;
             $usage = "$script {$name}<info>{command}</info> [--options ...] [arguments ...]";
         }
 
@@ -315,11 +318,11 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
      * @param bool                  $onlyName
      * @return \Generator
      */
-    protected function getAllCommandMethods(\ReflectionClass $ref = null, $onlyName = false): ?\Generator
+    protected function getAllCommandMethods(\ReflectionClass $ref = null, bool $onlyName = false): ?\Generator
     {
         $ref = $ref ?: new \ReflectionObject($this);
 
-        $suffix = $this->actionSuffix;
+        $suffix    = $this->actionSuffix;
         $suffixLen = Str::len($suffix);
 
         foreach ($ref->getMethods() as $m) {
@@ -345,10 +348,10 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
     protected function getRealCommandName(string $name)
     {
         if (!$name) {
-            return $name;
+            return '';
         }
 
-        $map = self::getCommandAliases();
+        $map = $this->getCommandAliases();
 
         return $map[$name] ?? $name;
     }
@@ -378,12 +381,8 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
      * @param string|null $name
      * @return array
      */
-    public static function getCommandAliases(string $name = null): array
+    public function getCommandAliases(string $name = ''): array
     {
-        if (null === self::$commandAliases) {
-            self::$commandAliases = static::commandAliases();
-        }
-
         if ($name) {
             return self::$commandAliases ? \array_keys(self::$commandAliases, $name, true) : [];
         }
