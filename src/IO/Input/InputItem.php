@@ -45,12 +45,6 @@ class InputItem
     public $default;
 
     /**
-     * allow multi value
-     * @var bool
-     */
-    private $isArray;
-
-    /**
      * @param string   $name
      * @param int|null $mode
      * @param string   $description
@@ -73,7 +67,7 @@ class InputItem
      */
     public function __construct(string $name, int $mode = null, string $description = '', $default = null)
     {
-        $this->isArray = $mode === Input::ARG_IS_ARRAY;
+        $this->mode = Input::ARG_IS_ARRAY;
     }
 
     /**
@@ -81,6 +75,6 @@ class InputItem
      */
     public function isArray(): bool
     {
-        return $this->isArray;
+        return $this->mode === Input::ARG_IS_ARRAY;
     }
 }

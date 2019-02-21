@@ -46,7 +46,7 @@ class InteractController extends Controller
     public function confirmCommand(): void
     {
         // can also: $this->confirm();
-        $a = Interact::confirm('continue');
+        $a = Interact::confirm('ensure continue');
 
         $this->write('Your answer is: ' . ($a ? 'yes' : 'no'));
     }
@@ -81,10 +81,9 @@ class InteractController extends Controller
      */
     public function askCommand(): void
     {
-        $a = Interact::ask('you name is: ', null, function ($val, &$err) {
+        $a = Interact::ask('you name is: ', '', function ($val, &$err) {
             if (!preg_match('/^\w{2,}$/', $val)) {
                 $err = 'Your input must match /^\w{2,}$/';
-
                 return false;
             }
 
@@ -105,9 +104,9 @@ class InteractController extends Controller
         $times = (int)$this->input->getOpt('limit', 3);
 
         if ($this->input->getBoolOpt('nv')) {
-            $a = Interact::limitedAsk('you name is: ', null, null, $times);
+            $a = Interact::limitedAsk('you name is: ', '', null, $times);
         } else {
-            $a = Interact::limitedAsk('you name is: ', null, function ($val) {
+            $a = Interact::limitedAsk('you name is: ', '', function ($val) {
                 if (!\preg_match('/^\w{2,}$/', $val)) {
                     Show::error('Your input must match /^\w{2,}$/');
                     return false;

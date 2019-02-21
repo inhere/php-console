@@ -16,7 +16,7 @@ use Inhere\Console\Util\Interact;
  * @see Interact
  *
  * @method string readRow($message = null, $nl = false)
- * @method string read($message = null, $nl = false, array $opts = [])
+ * @method string readln($message = null, $nl = false, array $opts = [])
  *
  * @method array checkbox(string $description, $options, $default = null, $allowExit = true)
  * @method array multiSelect(string $description, $options, $default = null, $allowExit = true)
@@ -49,7 +49,7 @@ trait UserInteractAwareTrait
      * @inheritdoc
      * @see Interact::confirm()
      */
-    public function confirm(string $question, $default = true): bool
+    public function confirm(string $question, bool $default = true): bool
     {
         return Interact::confirm($question, $default);
     }
@@ -58,12 +58,12 @@ trait UserInteractAwareTrait
      * @inheritdoc
      * @see Interact::question()
      */
-    public function ask(string $question, $default = null, \Closure $validator = null): ?string
+    public function ask(string $question, string $default = '', \Closure $validator = null): ?string
     {
         return $this->question($question, $default, $validator);
     }
 
-    public function question(string $question, $default = null, \Closure $validator = null): ?string
+    public function question(string $question, string $default = '', \Closure $validator = null): ?string
     {
         return Interact::question($question, $default, $validator);
     }
@@ -72,7 +72,7 @@ trait UserInteractAwareTrait
      * @inheritdoc
      * @see Interact::limitedAsk()
      */
-    public function limitedAsk(string $question, $default = null, \Closure $validator = null, $times = 3): ?string
+    public function limitedAsk(string $question, string $default = '', \Closure $validator = null, $times = 3): ?string
     {
         return Interact::limitedAsk($question, $default, $validator, $times);
     }
