@@ -52,6 +52,7 @@ abstract class Command extends AbstractHandler implements CommandInterface
      */
     protected function showHelp(): bool
     {
+        // help info has been build by input definition.
         if (true === parent::showHelp()) {
             return true;
         }

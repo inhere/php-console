@@ -39,11 +39,11 @@ class ShowController extends Controller
     /**
      * @return array
      */
-    protected function commonOptions(): array
+    protected function groupOptions(): array
     {
-        return \array_merge(parent::commonOptions(), [
-            '-c, --command' => 'This is a common option for all sub-commands',
-        ]);
+        return [
+            '-c, --common' => 'This is a common option for all sub-commands',
+        ];
     }
 
     /**

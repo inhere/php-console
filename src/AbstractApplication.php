@@ -62,6 +62,7 @@ abstract class AbstractApplication implements ApplicationInterface
         'publishAt'    => '2017.03.24',
         'updateAt'     => '2019.01.01',
         'rootPath'     => '',
+        'strictMode'   => false,
         'hideRootPath' => true,
 
         // 'timeZone' => 'Asia/Shanghai',
@@ -481,7 +482,7 @@ abstract class AbstractApplication implements ApplicationInterface
     }
 
     /**
-     * get config param value
+     * Get config param value
      * @param null|string $name
      * @param null|string $default
      * @return array|string
@@ -489,6 +490,14 @@ abstract class AbstractApplication implements ApplicationInterface
     public function getParam(string $name, $default = null)
     {
         return $this->config[$name] ?? $default;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isStrictMode(): bool
+    {
+        return (bool)$this->config['strictMode'];
     }
 
     /**

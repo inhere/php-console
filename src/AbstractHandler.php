@@ -64,9 +64,6 @@ abstract class AbstractHandler implements CommandHandlerInterface
     /** @var Application */
     protected $app;
 
-    /** @var array common options for all sub-commands */
-    private $commonOptions;
-
     /** @var InputDefinition|null */
     private $definition;
 
@@ -110,7 +107,6 @@ abstract class AbstractHandler implements CommandHandlerInterface
             $this->definition = $definition;
         }
 
-        $this->commonOptions = $this->commonOptions();
         $this->commentsVars  = $this->annotationVars();
 
         $this->init();
@@ -140,17 +136,6 @@ abstract class AbstractHandler implements CommandHandlerInterface
         }
 
         return $this->definition;
-    }
-
-    /**
-     * you can set common options for all sub-commands
-     * @return array
-     */
-    protected function commonOptions(): array
-    {
-        return [
-            '--skip-invalid' => 'Whether ignore invalid arguments and options, when use input definition',
-        ];
     }
 
     /**
@@ -574,15 +559,21 @@ abstract class AbstractHandler implements CommandHandlerInterface
             unset($help['Description:']);
         }
 
-        $help['Global Options:'] = FormatUtil::alignOptions(
-            \array_merge(Application::getGlobalOptions(), $this->commonOptions)
-        );
+        $help['Group Options:'] = null;
+        $help['Global Options:'] = FormatUtil::alignOptions(Application::getGlobalOptions());
+
+        $this->beforeRenderCommandHelp($help);
+
         $this->output->mList($help, [
             'sepChar'     => '  ',
             'lastNewline' => 0,
         ]);
 
         return 0;
+    }
+
+    protected function beforeRenderCommandHelp(array &$help): void
+    {
     }
 
     /**************************************************************************
@@ -705,14 +696,6 @@ abstract class AbstractHandler implements CommandHandlerInterface
     public function setDefinition(InputDefinition $definition): void
     {
         $this->definition = $definition;
-    }
-
-    /**
-     * @return array
-     */
-    public function getCommonOptions(): array
-    {
-        return $this->commonOptions;
     }
 
     /**

@@ -47,6 +47,16 @@ class HomeController extends Controller
         $this->addCommentsVar('internalFonts', implode(',', ArtFont::getInternalFonts()));
     }
 
+    /**
+     * @return array
+     */
+    protected function groupOptions(): array
+    {
+        return [
+            '-c, --common' => 'This is a common option for all sub-commands',
+        ];
+    }
+
     protected function disabledCommands(): array
     {
         return ['disabled'];

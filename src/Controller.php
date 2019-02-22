@@ -49,8 +49,11 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
     /** @var string */
     protected $notFoundCallback = 'notFound';
 
+    /** @var array Common options for all sub-commands in the group */
+    private $groupOptions = [];
+
     /** @var array From disabledCommands() */
-    protected $disabledCommands = [];
+    private $disabledCommands = [];
 
     /**
      * define command alias map
@@ -70,10 +73,24 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
         // save to property
         $this->disabledCommands = $list ? \array_flip($list) : [];
         self::$commandAliases   = static::commandAliases();
+        $this->groupOptions = $this->groupOptions();
 
         if (!$this->actionSuffix) {
             $this->actionSuffix = 'Command';
         }
+    }
+
+    /**
+     * Options for the group all commands.
+     * you can set common options for all sub-commands
+     *
+     * @return array
+     */
+    protected function groupOptions(): array
+    {
+        return [
+            // '--skip-invalid' => 'Whether ignore invalid arguments and options, when use input definition',
+        ];
     }
 
     /**
@@ -184,11 +201,25 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
      */
     protected function showHelp(): bool
     {
+        // help info has been build by input definition.
         if (true === parent::showHelp()) {
             return true;
         }
 
         return $this->helpCommand();
+    }
+
+    protected function beforeRenderCommandHelp(array &$help): void
+    {
+        $help['Group Options:'] = FormatUtil::alignOptions($this->groupOptions);
+    }
+
+    /**
+     * @return array
+     */
+    public function getGroupOptions(): array
+    {
+        return $this->groupOptions;
     }
 
     /**
