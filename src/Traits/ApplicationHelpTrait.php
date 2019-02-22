@@ -232,7 +232,7 @@ trait ApplicationHelpTrait
         $glue     = ' ';
         $genFile  = (string)$input->getLongOpt('gen-file');
         $filename = 'auto-completion.' . $shellEnv;
-        $tplDir   = \dirname(__DIR__, 2) . '/res/templates';
+        $tplDir   = \dirname(__DIR__, 2) . '/resource/templates';
 
         if ($shellEnv === 'bash') {
             $tplFile = $tplDir . '/bash-completion.tpl';
