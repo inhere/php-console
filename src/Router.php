@@ -302,9 +302,13 @@ class Router implements RouterInterface
         }
     }
 
-    public function each(callable $fn)
+    /**
+     * @param callable $grpFunc
+     * @param callable $cmdFunc
+     */
+    public function sortedEach(callable $grpFunc, callable $cmdFunc): void
     {
-
+        // todo ...
     }
 
     /**********************************************************

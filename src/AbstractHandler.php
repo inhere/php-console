@@ -8,7 +8,7 @@
 
 namespace Inhere\Console;
 
-use Inhere\Console\Contract\BaseCommandInterface;
+use Inhere\Console\Contract\CommandHandlerInterface;
 use Inhere\Console\Contract\CommandInterface;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\InputDefinition;
@@ -22,10 +22,10 @@ use Swoole\Event;
 use Toolkit\PhpUtil\PhpDoc;
 
 /**
- * Class AbstractCommand
+ * Class AbstractHandler
  * @package Inhere\Console
  */
-abstract class AbstractCommand implements BaseCommandInterface
+abstract class AbstractHandler implements CommandHandlerInterface
 {
     use InputOutputAwareTrait, UserInteractAwareTrait;
 
@@ -257,7 +257,7 @@ abstract class AbstractCommand implements BaseCommandInterface
     }
 
     /**
-     * before command execute
+     * Before command execute
      * @return boolean It MUST return TRUE to continue execute.
      */
     protected function beforeExecute(): bool
@@ -266,7 +266,7 @@ abstract class AbstractCommand implements BaseCommandInterface
     }
 
     /**
-     * do execute command
+     * Do execute command
      * @param  Input  $input
      * @param  Output $output
      * @return int|mixed
@@ -274,7 +274,7 @@ abstract class AbstractCommand implements BaseCommandInterface
     abstract protected function execute($input, $output);
 
     /**
-     * after command execute
+     * After command execute
      */
     protected function afterExecute(): void
     {
@@ -575,8 +575,7 @@ abstract class AbstractCommand implements BaseCommandInterface
         }
 
         $help['Global Options:'] = FormatUtil::alignOptions(
-            \array_merge(Application::getGlobalOptions(),
-                $this->commonOptions)
+            \array_merge(Application::getGlobalOptions(), $this->commonOptions)
         );
         $this->output->mList($help, [
             'sepChar'     => '  ',

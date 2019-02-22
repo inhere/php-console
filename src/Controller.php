@@ -21,7 +21,7 @@ use Toolkit\StrUtil\Str;
  * Class Controller
  * @package Inhere\Console
  */
-abstract class Controller extends AbstractCommand implements ControllerInterface
+abstract class Controller extends AbstractHandler implements ControllerInterface
 {
     /** @var array sub-command aliases */
     private static $commandAliases = [];
@@ -108,10 +108,11 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
     }
 
     /**
-     * load command configure
+     * Load command configure
      */
     protected function configure(): void
     {
+        // eg. IndexConfigure() for indexCommand()
         $method = $this->action . 'Configure';
 
         if (\method_exists($this, $method)) {
@@ -120,13 +121,14 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
     }
 
     /**
-     * 运行控制器的 action
+     * Run command action in the group
+     *
      * @param  Input  $input
      * @param  Output $output
      * @return mixed
      * @throws \ReflectionException
      */
-    protected function execute($input, $output)
+    final public function execute($input, $output)
     {
         $action = $this->action;
         $group  = static::getName();
@@ -240,7 +242,7 @@ abstract class Controller extends AbstractCommand implements ControllerInterface
         $sName = \lcfirst(self::getName() ?: $ref->getShortName());
 
         if (!($classDes = self::getDescription())) {
-            $classDes = PhpDoc::description($ref->getDocComment()) ?: 'No description for the console controller';
+            $classDes = PhpDoc::description($ref->getDocComment()) ?: 'No description for the command group';
         }
 
         $commands     = [];

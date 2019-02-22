@@ -9,13 +9,15 @@
 namespace Inhere\Console\Contract;
 
 use Inhere\Console\AbstractApplication;
+use Inhere\Console\IO\Input;
 use Inhere\Console\IO\InputDefinition;
+use Inhere\Console\IO\Output;
 
 /**
- * Interface BaseCommandInterface
+ * Interface CommandHandlerInterface
  * @package Inhere\Console\Contract
  */
-interface BaseCommandInterface
+interface CommandHandlerInterface
 {
     public const OK  = 0;
     public const ERR = 2;
@@ -24,7 +26,7 @@ interface BaseCommandInterface
     public const ANNOTATION_VAR = '{%s}'; // '{$%s}';
 
     /**
-     * run command
+     * Run command
      * @param string $command
      * @return int|mixed return int is exit code. other is command exec result.
      */

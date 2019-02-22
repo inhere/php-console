@@ -138,7 +138,7 @@ trait ApplicationHelpTrait
         foreach ($groups as $name => $info) {
             $options    = $info['options'];
             $controller = $info['handler'];
-            /** @var \Inhere\Console\AbstractCommand $controller */
+            /** @var \Inhere\Console\AbstractHandler $controller */
             $desc    = $controller::getDescription() ?: $placeholder;
             $aliases = $options['aliases'];
             $extra   = $aliases ? ColorTag::wrap(
@@ -159,7 +159,7 @@ trait ApplicationHelpTrait
             $options = $info['options'];
             $command = $info['handler'];
 
-            /** @var \Inhere\Console\AbstractCommand $command */
+            /** @var \Inhere\Console\AbstractHandler $command */
             if (\is_subclass_of($command, CommandInterface::class)) {
                 $desc = $command::getDescription() ?: $placeholder;
             } elseif ($msg = $options['description'] ?? '') {

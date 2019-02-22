@@ -24,13 +24,10 @@ use Inhere\Console\Contract\CommandInterface;
  *  }
  * ```
  */
-abstract class Command extends AbstractCommand implements CommandInterface
+abstract class Command extends AbstractHandler implements CommandInterface
 {
     /*
-     * do execute
-     * @param  \Inhere\Console\IO\Input $input
-     * @param  \Inhere\Console\IO\Output $output
-     * @return int
+     * Do execute command
      */
     // protected function execute($input, $output)
     // {
@@ -38,7 +35,7 @@ abstract class Command extends AbstractCommand implements CommandInterface
     // }
 
     /*
-     * configure
+     * Configure command
      */
     // protected function configure()
     // {
@@ -49,6 +46,7 @@ abstract class Command extends AbstractCommand implements CommandInterface
     // }
 
     /**
+     * Show help information
      * @return bool
      * @throws \ReflectionException
      */
