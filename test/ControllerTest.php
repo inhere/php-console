@@ -17,7 +17,6 @@ class ControllerTest extends TestCase
         $c = new TestController(new Input(), new Output());
 
         $this->assertSame('test', $c::getName());
-        $this->assertContains('desc', $c::getDescription());
+        $this->assertStringContainsString('desc', $c::getDescription());
     }
-
 }

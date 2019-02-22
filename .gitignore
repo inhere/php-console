@@ -18,3 +18,4 @@ composer.lock
 .interactive_history
 *.bash
 *.zsh
+*.cache

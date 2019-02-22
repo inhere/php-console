@@ -12,12 +12,11 @@ use PHPUnit\Framework\TestCase;
  */
 class CommandTest extends TestCase
 {
-    public function testBasic()
+    public function testBasic(): void
     {
         $c = new TestCommand(new Input(), new Output());
 
         $this->assertSame('test1', $c::getName());
-        $this->assertContains('desc', $c::getDescription());
+        $this->assertStringContainsString('desc', $c::getDescription());
     }
-
 }

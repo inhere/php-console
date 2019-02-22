@@ -6,11 +6,12 @@ use Inhere\Console\Application;
 use Inhere\Console\Console;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\InputInterface;
+use Inhere\Console\Router;
 use PHPUnit\Framework\TestCase;
 
 class ApplicationTest extends TestCase
 {
-    private function newApp(array $args = null)
+    private function newApp(array $args = null): Application
     {
         $input = new Input($args);
 
@@ -21,7 +22,7 @@ class ApplicationTest extends TestCase
         ], $input);
     }
 
-    public function testApp()
+    public function testApp(): void
     {
         $app = Console::newApp([
             'name' => 'Tests',
@@ -34,7 +35,7 @@ class ApplicationTest extends TestCase
         $this->assertInstanceOf(InputInterface::class, $app->getInput());
     }
 
-    public function testAddCommand()
+    public function testAddCommand(): void
     {
         $app = $this->newApp();
 
@@ -50,7 +51,7 @@ class ApplicationTest extends TestCase
         $this->assertContains('test', $router->getCommandNames());
     }
 
-    public function testAddCommandError()
+    public function testAddCommandError(): void
     {
         $app = $this->newApp();
 
@@ -63,7 +64,7 @@ class ApplicationTest extends TestCase
         $app->addCommand('test', 'invalid');
     }
 
-    public function testRunCommand()
+    public function testRunCommand(): void
     {
         $app = $this->newApp([
             './app',
@@ -78,7 +79,7 @@ class ApplicationTest extends TestCase
         $this->assertSame('hello', $ret);
     }
 
-    public function testAddController()
+    public function testAddController(): void
     {
         $app = $this->newApp();
 
@@ -89,11 +90,13 @@ class ApplicationTest extends TestCase
         $this->assertTrue($app->getRouter()->isController('test'));
         $this->assertFalse($app->getRouter()->isCommand('test'));
         $this->assertArrayHasKey('test', $router->getControllers());
-        $this->assertContains('test', $router->getControllerNames());
-        $this->assertSame(TestController::class, $router->getControllers()['test']);
+
+        $group = $router->getControllers()['test'];
+        $this->assertSame(TestController::class, $group['handler']);
+        $this->assertSame(Router::TYPE_GROUP, $group['type']);
     }
 
-    public function testAddControllerError()
+    public function testAddControllerError(): void
     {
         $app = $this->newApp();
 
@@ -106,7 +109,7 @@ class ApplicationTest extends TestCase
         $app->controller('test', 'invalid');
     }
 
-    public function testRunController()
+    public function testRunController(): void
     {
         $app = $this->newApp([
             './app',
