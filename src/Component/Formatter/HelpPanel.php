@@ -8,6 +8,7 @@
 
 namespace Inhere\Console\Component\Formatter;
 
+use Inhere\Console\Component\MessageFormatter;
 use Inhere\Console\Util\FormatUtil;
 use Inhere\Console\Util\Show;
 
@@ -16,7 +17,7 @@ use Inhere\Console\Util\Show;
  * - method version please {@see \Inhere\Console\Util\Show::helpPanel()}
  * @package Inhere\Console\Component\Formatter
  */
-class HelpPanel extends Formatter
+class HelpPanel extends MessageFormatter
 {
     /**
      * help panel keys

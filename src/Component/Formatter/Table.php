@@ -8,7 +8,8 @@
 
 namespace Inhere\Console\Component\Formatter;
 
-use Inhere\Console\Util\Show;
+use Inhere\Console\Component\MessageFormatter;
+use Inhere\Console\Console;
 use Toolkit\Cli\ColorTag;
 use Toolkit\StrUtil\StrBuffer;
 
@@ -16,7 +17,7 @@ use Toolkit\StrUtil\StrBuffer;
  * Class Table - Tabular data display
  * @package Inhere\Console\Component\Formatter
  */
-class Table extends Formatter
+class Table extends MessageFormatter
 {
     /** @var array */
     public $data = [];
@@ -212,6 +213,6 @@ class Table extends Formatter
             $buf->write($border . "\n");
         }
 
-        return Show::write($buf);
+        return Console::write($buf);
     }
 }

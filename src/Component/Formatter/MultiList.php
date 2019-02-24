@@ -2,13 +2,14 @@
 
 namespace Inhere\Console\Component\Formatter;
 
-use Inhere\Console\Util\Show;
+use Inhere\Console\Component\MessageFormatter;
+use Inhere\Console\Console;
 
 /**
  * Class MultiList
  * @package Inhere\Console\Component\Formatter
  */
-class MultiList extends Formatter
+class MultiList extends MessageFormatter
 {
     /**
      * Format and render multi list
@@ -49,6 +50,6 @@ class MultiList extends Formatter
             $stringList[] = SingleList::show($list, $title, $opts);
         }
 
-        Show::write(\implode("\n", $stringList), $lastNewline);
+        Console::write(\implode("\n", $stringList), $lastNewline);
     }
 }

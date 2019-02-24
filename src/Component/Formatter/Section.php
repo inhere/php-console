@@ -2,15 +2,16 @@
 
 namespace Inhere\Console\Component\Formatter;
 
+use Inhere\Console\Component\MessageFormatter;
+use Inhere\Console\Console;
 use Inhere\Console\Util\FormatUtil;
-use Inhere\Console\Util\Show;
 use Toolkit\StrUtil\Str;
 
 /**
  * Class Section
  * @package Inhere\Console\Component\Formatter
  */
-class Section extends Formatter
+class Section extends MessageFormatter
 {
     /**
      * @param string       $title The title text
@@ -71,6 +72,6 @@ class Section extends Formatter
         $body = \is_array($body) ? \implode(\PHP_EOL, $body) : $body;
         $body = FormatUtil::wrapText($body, 4, $opts['width']);
 
-        Show::writef($template, $titleLine, $topBorder, $body, $bottomBorder);
+        Console::writef($template, $titleLine, $topBorder, $body, $bottomBorder);
     }
 }

@@ -2,15 +2,16 @@
 
 namespace Inhere\Console\Component\Formatter;
 
+use Inhere\Console\Component\MessageFormatter;
+use Inhere\Console\Console;
 use Inhere\Console\Util\FormatUtil;
-use Inhere\Console\Util\Show;
 use Toolkit\Cli\ColorTag;
 
 /**
  * Class SingleList - Format and render a single list
  * @package Inhere\Console\Component\Formatter
  */
-class SingleList extends Formatter
+class SingleList extends MessageFormatter
 {
     /**
      * Format and render a single list
@@ -55,6 +56,6 @@ class SingleList extends Formatter
             return $string;
         }
 
-        return Show::write($string, $opts['lastNewline']);
+        return Console::write($string, $opts['lastNewline']);
     }
 }

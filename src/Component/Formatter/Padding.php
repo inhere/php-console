@@ -2,15 +2,16 @@
 
 namespace Inhere\Console\Component\Formatter;
 
+use Inhere\Console\Component\MessageFormatter;
+use Inhere\Console\Console;
 use Inhere\Console\Util\Helper;
-use Inhere\Console\Util\Show;
 use Toolkit\Cli\ColorTag;
 
 /**
  * Class Padding
  * @package Inhere\Console\Component\Formatter
  */
-class Padding extends Formatter
+class Padding extends MessageFormatter
 {
     /**
      * ```php
@@ -47,6 +48,6 @@ class Padding extends Formatter
             $string .= $opts['indent'] . \str_pad($label, $paddingLen, $opts['char']) . " $value\n";
         }
 
-        Show::write(\trim($string));
+        Console::write(\trim($string));
     }
 }

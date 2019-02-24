@@ -8,10 +8,12 @@
 
 namespace Inhere\Console\Component\Formatter;
 
+use Inhere\Console\Component\MessageFormatter;
+
 /**
  * Class Alert
  * @package Inhere\Console\Component\Formatter
  */
-class Alert extends Formatter
+class Alert extends MessageFormatter
 {
 }

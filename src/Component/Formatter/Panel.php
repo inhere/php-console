@@ -8,6 +8,7 @@
 
 namespace Inhere\Console\Component\Formatter;
 
+use Inhere\Console\Component\MessageFormatter;
 use Inhere\Console\Util\FormatUtil;
 use Inhere\Console\Util\Show;
 use Toolkit\StrUtil\StrBuffer;
@@ -17,7 +18,7 @@ use Toolkit\StrUtil\StrBuffer;
  * - method version please {@see \Inhere\Console\Util\Show::panel()}
  * @package Inhere\Console\Component\Formatter
  */
-class Panel extends Formatter
+class Panel extends MessageFormatter
 {
     /** @var string */
     public $title = '';

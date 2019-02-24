@@ -8,11 +8,13 @@
 
 namespace Inhere\Console\Component\Formatter;
 
+use Inhere\Console\Component\MessageFormatter;
+
 /**
  * Class Block
  * @package Inhere\Console\Component\Formatter
  */
-class Block extends Formatter
+class Block extends MessageFormatter
 {
 
 }

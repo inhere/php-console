@@ -100,7 +100,7 @@ class Helper
      * @param int             $similarPercent
      * @return array
      */
-    public static function findSimilar(string $need, $iterator, $similarPercent = 45): array
+    public static function findSimilar(string $need, $iterator, int $similarPercent = 45): array
     {
         if (!$need) {
             return [];
@@ -158,34 +158,6 @@ class Helper
      * @param string $optsStr
      */
     public static function formatOptions(string $optsStr): void
-    {
-
-    }
-
-    /**
-     * this is a command's description message
-     * the second line text
-     * @format
-     * @usage usage message
-     * @arguments(format=true)
-     *  arg1  argument description 1
-     *        the second line
-     *  a2,arg2  argument description 2
-     *        the second line
-     * @arguments(
-     *  arg1="argument description 1
-     *        the second line",
-     *  "a2,arg2"="argument description 2
-     *        the second line"
-     * )
-     * @options
-     *  -s, --long | LONG | option description 1
-     *  --opt  |   OPT |  option description 2
-     * @example example text one
-     *  the second line example
-     * @param string $argsStr
-     */
-    public static function formatArguments(string $argsStr): void
     {
 
     }

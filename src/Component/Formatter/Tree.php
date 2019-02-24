@@ -8,15 +8,16 @@
 
 namespace Inhere\Console\Component\Formatter;
 
+use Inhere\Console\Component\MessageFormatter;
+use Inhere\Console\Console;
 use Inhere\Console\Util\FormatUtil;
-use Inhere\Console\Util\Show;
 use Toolkit\Cli\Cli;
 
 /**
  * Class Tree
  * @package Inhere\Console\Component\Formatter
  */
-class Tree extends Formatter
+class Tree extends MessageFormatter
 {
     /** @var int */
     private $counter = 0;
@@ -48,7 +49,7 @@ class Tree extends Formatter
             $opts['_level']   = 1;
             $opts['_is_main'] = true;
 
-            Show::startBuffer();
+            Console::startBuffer();
         }
 
         foreach ($data as $key => $value) {
@@ -56,7 +57,7 @@ class Tree extends Formatter
                 $counter++;
                 $leftString = $opts['leftPadding'] . \str_pad($opts['prefix'], $opts['_level'] + 1, $opts['char']);
 
-                Show::write($leftString . ' ' . FormatUtil::typeToString($value));
+                Console::write($leftString . ' ' . FormatUtil::typeToString($value));
             } elseif (\is_array($value)) {
                 $newOpts             = $opts;
                 $newOpts['_is_main'] = false;
@@ -67,9 +68,9 @@ class Tree extends Formatter
         }
 
         if ($opts['_is_main']) {
-            Show::write('node count: ' . $counter);
+            Console::write('node count: ' . $counter);
             // var_dump('f');
-            Show::flushBuffer();
+            Console::flushBuffer();
 
             // reset.
             $counter = $started = 0;

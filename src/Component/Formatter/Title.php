@@ -2,6 +2,8 @@
 
 namespace Inhere\Console\Component\Formatter;
 
+use Inhere\Console\Component\MessageFormatter;
+use Inhere\Console\Console;
 use Inhere\Console\Util\Show;
 use Toolkit\StrUtil\Str;
 
@@ -9,7 +11,7 @@ use Toolkit\StrUtil\Str;
  * Class Title
  * @package Inhere\Console\Component\Formatter
  */
-class Title extends Formatter
+class Title extends MessageFormatter
 {
     /**
      * @param string $title The title text
@@ -49,6 +51,6 @@ class Title extends Formatter
         $titleLine = "$titleIndent<bold>$title</bold>\n";
         $border    = $indentStr . \str_pad($char, $width, $char);
 
-        Show::write($titleLine . $border);
+        Console::write($titleLine . $border);
     }
 }

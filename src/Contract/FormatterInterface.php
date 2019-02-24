@@ -6,11 +6,11 @@
  * Time: 13:41
  */
 
-namespace Inhere\Console\Component\Formatter;
+namespace Inhere\Console\Contract;
 
 /**
  * Interface FormatterInterface
- * @package Inhere\Console\Component\Formatter
+ * @package Inhere\Console\Contract
  */
 interface FormatterInterface
 {

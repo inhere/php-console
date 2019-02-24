@@ -6,16 +6,17 @@
  * Time: 21:44
  */
 
-namespace Inhere\Console\Component\Formatter;
+namespace Inhere\Console\Component;
 
-use Inhere\Console\Util\Show;
+use Inhere\Console\Console;
+use Inhere\Console\Contract\FormatterInterface;
 use Toolkit\PhpUtil\PhpHelper;
 
 /**
  * Class Formatter - message formatter
- * @package Inhere\Console\Component\Formatter
+ * @package Inhere\Console\Component
  */
-abstract class Formatter implements FormatterInterface
+abstract class MessageFormatter implements FormatterInterface
 {
     // content align
     public const ALIGN_LEFT   = 'left';
@@ -29,9 +30,9 @@ abstract class Formatter implements FormatterInterface
 
     /**
      * @param array $config
-     * @return Formatter
+     * @return MessageFormatter
      */
-    public static function create(array $config = []): Formatter
+    public static function create(array $config = []): self
     {
         return new static($config);
     }
@@ -80,7 +81,7 @@ abstract class Formatter implements FormatterInterface
      */
     public function display(): int
     {
-        return Show::write($this->toString());
+        return Console::write($this->toString());
     }
 
     /**
