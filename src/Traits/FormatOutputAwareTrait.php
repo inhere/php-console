@@ -9,6 +9,7 @@
 namespace Inhere\Console\Traits;
 
 use Inhere\Console\Component\Style\Style;
+use Inhere\Console\Console;
 use Inhere\Console\Util\Show;
 use Toolkit\PhpUtil\Php;
 
@@ -50,11 +51,11 @@ trait FormatOutputAwareTrait
 {
     /**
      * @inheritdoc
-     * @see Show::write()
+     * @see Console::write()
      */
     public function write($messages, $nl = true, $quit = false, array $opts = []): int
     {
-        return Show::write($messages, $nl, $quit, \array_merge([
+        return Console::write($messages, $nl, $quit, \array_merge([
             'flush'  => true,
             'stream' => $this->outputStream,
         ], $opts));
@@ -62,20 +63,20 @@ trait FormatOutputAwareTrait
 
     /**
      * @inheritdoc
-     * @see Show::writeln()
+     * @see Console::writeln()
      */
     public function writeln($text, $quit = false, array $opts = []): int
     {
-        return Show::writeln($text, $quit, $opts);
+        return Console::writeln($text, $quit, $opts);
     }
 
     /**
      * @inheritdoc
-     * @see Show::writeRaw()
+     * @see Console::writeRaw()
      */
     public function writeRaw($text, bool $nl = true, $quit = false, array $opts = []): int
     {
-        return Show::writeRaw($text, $nl, $quit, $opts);
+        return Console::writeRaw($text, $nl, $quit, $opts);
     }
 
     /**
@@ -235,13 +236,13 @@ trait FormatOutputAwareTrait
      */
     public function json(
         $data,
-        $echo = true,
+        bool $echo = true,
         int $flags = JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
     ) {
         $string = \json_encode($data, $flags);
 
         if ($echo) {
-            return Show::write($string);
+            return Console::write($string);
         }
 
         return $string;
@@ -252,7 +253,7 @@ trait FormatOutputAwareTrait
      */
     public function dump(...$vars): void
     {
-        Show::write(Php::dumpVars(...$vars));
+        Console::write(Php::dumpVars(...$vars));
     }
 
     /**
@@ -260,6 +261,6 @@ trait FormatOutputAwareTrait
      */
     public function prints(...$vars): void
     {
-        Show::write(Php::printVars(...$vars));
+        Console::write(Php::printVars(...$vars));
     }
 }

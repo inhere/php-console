@@ -68,17 +68,17 @@ class Show
 
     /**
      * @param mixed       $messages
-     * @param string|null $type
+     * @param string $type
      * @param string      $style
      * @param int|boolean $quit If is int, setting it is exit code.
      * @return int
      */
-    public static function block($messages, $type = 'MESSAGE', string $style = Style::NORMAL, $quit = false): int
+    public static function block($messages, string $type = 'MESSAGE', string $style = Style::NORMAL, $quit = false): int
     {
         $messages = \is_array($messages) ? \array_values($messages) : [$messages];
 
         // add type
-        if (null !== $type) {
+        if ($type) {
             $messages[0] = \sprintf('[%s] %s', strtoupper($type), $messages[0]);
         }
 
@@ -94,12 +94,12 @@ class Show
 
     /**
      * @param mixed       $messages
-     * @param string|null $type
+     * @param string $type
      * @param string      $style
      * @param int|boolean $quit If is int, setting it is exit code.
      * @return int
      */
-    public static function liteBlock($messages, $type = 'MESSAGE', string $style = Style::NORMAL, $quit = false): int
+    public static function liteBlock($messages, string $type = 'MESSAGE', string $style = Style::NORMAL, $quit = false): int
     {
         $messages = \is_array($messages) ? \array_values($messages) : [$messages];
 
@@ -111,8 +111,9 @@ class Show
         $text  = \implode(\PHP_EOL, $messages);
         $color = static::getStyle();
 
-        if (\is_string($style) && $color->hasStyle($style)) {
-            $type = \sprintf('<%s>%s</%s> ', $style, $type, $style);
+        // add type
+        if ($type && \is_string($style) && $color->hasStyle($style)) {
+            $type = \sprintf('<%s>[%s]</%s> ', $style, \strtoupper($type), $style);
         }
 
         return self::write($type . $text, true, $quit);
@@ -169,6 +170,21 @@ class Show
     /**************************************************************************************************
      * Output Format Message(section/list/helpPanel/panel/table)
      **************************************************************************************************/
+
+    /**
+     * Print JSON
+     * @param mixed $data
+     * @param int   $flags
+     * @return int
+     */
+    public static function prettyJSON(
+        $data,
+        int $flags = \JSON_PRETTY_PRINT | \JSON_UNESCAPED_UNICODE | \JSON_UNESCAPED_SLASHES
+    ): int {
+        $string = (string)\json_encode($data, $flags);
+
+        return Console::write($string);
+    }
 
     /**
      * @param string $title
@@ -454,7 +470,7 @@ class Show
         static $counter = 0;
 
         if ($ended) {
-            return self::write(sprintf(' (%s %d)', $msg ?: 'Total', $counter));
+            return Console::writef(' (%s %d)', $msg ?: 'Total', $counter);
         }
 
         if ($counter === 0 && $msg) {
@@ -556,6 +572,7 @@ class Show
 
     /**
      * @return bool
+     * @deprecated Please use \Inhere\Console\Console method instead it.
      */
     public static function isBuffering(): bool
     {
@@ -564,6 +581,7 @@ class Show
 
     /**
      * @return string
+     * @deprecated Please use \Inhere\Console\Console method instead it.
      */
     public static function getBuffer(): string
     {
@@ -572,6 +590,7 @@ class Show
 
     /**
      * @param string $buffer
+     * @deprecated Please use \Inhere\Console\Console method instead it.
      */
     public static function setBuffer(string $buffer): void
     {
@@ -580,6 +599,7 @@ class Show
 
     /**
      * start buffering
+     * @deprecated Please use \Inhere\Console\Console method instead it.
      */
     public static function startBuffer(): void
     {
@@ -588,6 +608,7 @@ class Show
 
     /**
      * start buffering
+     * @deprecated Please use \Inhere\Console\Console method instead it.
      */
     public static function clearBuffer(): void
     {
@@ -602,6 +623,7 @@ class Show
      * @param bool  $quit
      * @param array $opts
      * @return null|string If flush = False, will return all buffer text.
+     * @deprecated Please use \Inhere\Console\Console method instead it.
      */
     public static function stopBuffer($flush = true, $nl = false, $quit = false, array $opts = []): ?string
     {
@@ -627,6 +649,7 @@ class Show
      * @param bool  $nl
      * @param bool  $quit
      * @param array $opts
+     * @deprecated Please use \Inhere\Console\Console method instead it.
      */
     public static function flushBuffer($nl = false, $quit = false, array $opts = []): void
     {

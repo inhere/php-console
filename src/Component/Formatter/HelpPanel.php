@@ -9,6 +9,7 @@
 namespace Inhere\Console\Component\Formatter;
 
 use Inhere\Console\Component\MessageFormatter;
+use Inhere\Console\Console;
 use Inhere\Console\Util\FormatUtil;
 use Inhere\Console\Util\Show;
 
@@ -124,7 +125,7 @@ class HelpPanel extends MessageFormatter
         }
 
         if ($parts) {
-            Show::write(\implode("\n", $parts), false);
+            Console::write(\implode("\n", $parts), false);
         }
     }
 }

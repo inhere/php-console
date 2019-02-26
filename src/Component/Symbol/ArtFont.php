@@ -8,6 +8,7 @@
 
 namespace Inhere\Console\Component\Symbol;
 
+use Inhere\Console\Console;
 use Inhere\Console\Util\Helper;
 use Inhere\Console\Util\Show;
 use Toolkit\Cli\ColorTag;
@@ -145,14 +146,14 @@ class ArtFont
         } elseif (isset($this->groups[$group])) {
             $font = $this->groups[$group] . $name . $pfxType . '.txt';
 
-            if (is_file($font)) {
-                $txt = file_get_contents($font);
+            if (\is_file($font)) {
+                $txt = \file_get_contents($font);
             }
         }
 
         // var_dump($txt, $this);
         if ($txt) {
-            return Show::write(ColorTag::wrap($txt, $opts['style']));
+            return Console::write(ColorTag::wrap($txt, $opts['style']));
         }
 
         return 0;

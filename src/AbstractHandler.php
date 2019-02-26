@@ -107,7 +107,7 @@ abstract class AbstractHandler implements CommandHandlerInterface
             $this->definition = $definition;
         }
 
-        $this->commentsVars  = $this->annotationVars();
+        $this->commentsVars = $this->annotationVars();
 
         $this->init();
     }
@@ -418,7 +418,7 @@ abstract class AbstractHandler implements CommandHandlerInterface
     protected function parseCommentsVars(string $str): string
     {
         // not use vars
-        if (false === \strpos($str, '{')) {
+        if (false === \strpos($str, self::HELP_VAR_LEFT)) {
             return $str;
         }
 
@@ -426,7 +426,8 @@ abstract class AbstractHandler implements CommandHandlerInterface
 
         if ($map === null) {
             foreach ($this->commentsVars as $key => $value) {
-                $key       = \sprintf(self::ANNOTATION_VAR, $key);
+                $key = self::HELP_VAR_LEFT . $key . self::HELP_VAR_RIGHT;
+                // save
                 $map[$key] = $value;
             }
         }
@@ -559,7 +560,7 @@ abstract class AbstractHandler implements CommandHandlerInterface
             unset($help['Description:']);
         }
 
-        $help['Group Options:'] = null;
+        $help['Group Options:']  = null;
         $help['Global Options:'] = FormatUtil::alignOptions(Application::getGlobalOptions());
 
         $this->beforeRenderCommandHelp($help);

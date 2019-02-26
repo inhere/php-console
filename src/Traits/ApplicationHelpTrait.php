@@ -9,9 +9,11 @@
 namespace Inhere\Console\Traits;
 
 use Inhere\Console\Component\Style\Style;
+use Inhere\Console\Console;
 use Inhere\Console\Contract\CommandInterface;
 use Inhere\Console\Router;
 use Inhere\Console\Util\FormatUtil;
+use Inhere\Console\Util\Show;
 use Toolkit\Cli\ColorTag;
 
 /**
@@ -190,11 +192,17 @@ trait ApplicationHelpTrait
         }
 
         \ksort($internalCommands);
+        Console::startBuffer();
+
+        if ($appDesc = $this->getParam('description', '')) {
+            $appVer = $this->getParam('version', '');
+            Console::writeln(\sprintf('%s%s' . \PHP_EOL, $appDesc, $appVer ? " (Version: <info>$appVer</info>)" : ''));
+        }
 
         // built in options
         $internalOptions = FormatUtil::alignOptions(self::$globalOptions);
 
-        $output->mList([
+        Show::mList([
             'Usage:'              => "$script <info>{command}</info> [--opt -v -h ...] [arg0 arg1 arg2=value2 ...]",
             'Options:'            => $internalOptions,
             'Internal Commands:'  => $internalCommands,
@@ -204,7 +212,8 @@ trait ApplicationHelpTrait
         ]);
 
         unset($groupArr, $commandArr, $internalCommands);
-        $output->write("More command information, please use: <cyan>$script {command} -h</cyan>");
+        Console::write("More command information, please use: <cyan>$script {command} -h</cyan>");
+        Console::flushBuffer();
     }
 
     /**

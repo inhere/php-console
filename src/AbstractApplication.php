@@ -56,6 +56,7 @@ abstract class AbstractApplication implements ApplicationInterface
     /** @var array Application config data */
     private $config = [
         'name'         => 'My Console Application',
+        'description'  => 'This is my console application',
         'debug'        => Console::VERB_ERROR,
         'profile'      => false,
         'version'      => '0.5.1',

@@ -35,7 +35,7 @@ class Interact extends Show
     public static function readln($message = null, $nl = false, array $opts = []): string
     {
         if ($message) {
-            self::write($message, $nl);
+            Console::write($message, $nl);
         }
 
         $stream = $opts['stream'] ?? \STDIN;

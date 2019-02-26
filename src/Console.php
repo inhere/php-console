@@ -46,7 +46,7 @@ class Console
     private static $app;
 
     /** @var string */
-    private static $buffer;
+    private static $buffer = '';
 
     /** @var bool */
     private static $buffering = false;
@@ -94,7 +94,7 @@ class Console
      ***********************************************************************************/
 
     /**
-     * Format and write message to terminal
+     * Format and write message to terminal. like printf()
      * @param string $format
      * @param mixed  ...$args
      * @return int
@@ -279,7 +279,7 @@ class Console
      * @param array $opts
      * @return string
      */
-    public static function read($message = null, $nl = false, array $opts = []): string
+    public static function read($message = null, bool $nl = false, array $opts = []): string
     {
         if ($message) {
             self::write($message, $nl);
@@ -405,7 +405,7 @@ class Console
     }
 
     /**
-     * start buffering
+     * Start buffering
      */
     public static function startBuffer(): void
     {
@@ -413,23 +413,23 @@ class Console
     }
 
     /**
-     * start buffering
+     * Clear buffering
      */
     public static function clearBuffer(): void
     {
-        self::$buffer = null;
+        self::$buffer = '';
     }
 
     /**
-     * stop buffering
-     * @see Show::write()
+     * Stop buffering
+     * @see write()
      * @param bool  $flush Whether flush buffer to output stream
      * @param bool  $nl Default is False, because the last write() have been added "\n"
      * @param bool  $quit
      * @param array $opts
-     * @return null|string If flush = False, will return all buffer text.
+     * @return string If flush = False, will return all buffer text.
      */
-    public static function stopBuffer($flush = true, $nl = false, $quit = false, array $opts = []): ?string
+    public static function stopBuffer($flush = true, $nl = false, $quit = false, array $opts = []): string
     {
         self::$buffering = false;
 
@@ -441,15 +441,15 @@ class Console
             self::write(self::$buffer, $nl, $quit, $opts);
 
             // clear buffer
-            self::$buffer = null;
+            self::$buffer = '';
         }
 
         return self::$buffer;
     }
 
     /**
-     * stop buffering and flush buffer text
-     * @see Show::write()
+     * Stop buffering and flush buffer text
+     * @see write()
      * @param bool  $nl
      * @param bool  $quit
      * @param array $opts

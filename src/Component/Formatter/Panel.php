@@ -9,6 +9,7 @@
 namespace Inhere\Console\Component\Formatter;
 
 use Inhere\Console\Component\MessageFormatter;
+use Inhere\Console\Console;
 use Inhere\Console\Util\FormatUtil;
 use Inhere\Console\Util\Show;
 use Toolkit\StrUtil\StrBuffer;
@@ -80,7 +81,7 @@ EOF;
     public static function show($data, string $title = 'Information Panel', array $opts = []): int
     {
         if (!$data) {
-            Show::write('<info>No data to display!</info>');
+            Console::write('<info>No data to display!</info>');
             return -2;
         }
 
@@ -138,7 +139,7 @@ EOF;
 
         $border     = null;
         $panelWidth = $labelMaxWidth + $valueMaxWidth;
-        Show::startBuffer();
+        Console::startBuffer();
 
         // output title
         if ($title) {
@@ -146,13 +147,13 @@ EOF;
             $titleLength = \mb_strlen($title, 'UTF-8');
             $panelWidth  = $panelWidth > $titleLength ? $panelWidth : $titleLength;
             $indentSpace = \str_pad(' ', \ceil($panelWidth / 2) - \ceil($titleLength / 2) + 2 * 2, ' ');
-            Show::write("  {$indentSpace}<bold>{$title}</bold>");
+            Console::write("  {$indentSpace}<bold>{$title}</bold>");
         }
 
         // output panel top border
         if ($borderChar) {
             $border = \str_pad($borderChar, $panelWidth + (3 * 3), $borderChar);
-            Show::write('  ' . $border);
+            Console::write('  ' . $border);
         }
 
         // output panel body
@@ -164,14 +165,14 @@ EOF;
         ]);
 
         // already exists "\n"
-        Show::write($panelStr, false);
+        Console::write($panelStr, false);
 
         // output panel bottom border
         if ($border) {
-            Show::write("  $border\n");
+            Console::write("  $border\n");
         }
 
-        Show::flushBuffer();
+        Console::flushBuffer();
         unset($panelData);
         return 0;
     }

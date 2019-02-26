@@ -25,6 +25,10 @@ interface CommandHandlerInterface
     // name -> {name}
     public const ANNOTATION_VAR = '{%s}'; // '{$%s}';
 
+    // {$%s} name -> {name}
+    public const HELP_VAR_LEFT  = '{';
+    public const HELP_VAR_RIGHT = '}';
+
     /**
      * Run command
      * @param string $command
