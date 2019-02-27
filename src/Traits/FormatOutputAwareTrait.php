@@ -35,8 +35,6 @@ use Toolkit\PhpUtil\Php;
  * @method int liteDanger($messages, $quit = false)
  * @method int liteError($messages, $quit = false)
  *
- * @method int color($message, $style = 'info', $nl = true, array $opts = [])
- *
  * @method padding(array $data, string $title = null, array $opts = [])
  *
  * @method splitLine(string $title, string $char = '-', int $width = 0)

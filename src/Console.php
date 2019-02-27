@@ -105,6 +105,17 @@ class Console
     }
 
     /**
+     * Format and write message to terminal. like printf()
+     * @param string $format
+     * @param mixed  ...$args
+     * @return int
+     */
+    public static function printf(string $format, ...$args): int
+    {
+        return self::write(\sprintf($format, ...$args));
+    }
+
+    /**
      * Write raw data to stdout, will disable color render.
      * @param string|array $message
      * @param bool         $nl
