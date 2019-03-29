@@ -1,5 +1,13 @@
 # CHANGELOG
 
+## v2.4.1 - v2.4.3
+
+> publish at: 2019.03.29
+
+- fix: no add error handle before use
+- fix some bugs
+- update some
+
 ## v2.4.0
 
 > publish at: 2018.07.03

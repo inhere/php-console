@@ -126,6 +126,10 @@ abstract class AbstractApplication implements ApplicationInterface
             'endMemory' => 0,
         ];
 
+        if (!$this->errorHandler) {
+            $this->errorHandler = new ErrorHandler();
+        }
+
         $this->commandName = $this->input->getCommand();
 
         $this->registerErrorHandle();
@@ -145,10 +149,6 @@ abstract class AbstractApplication implements ApplicationInterface
 
     protected function prepareRun()
     {
-        if (!$this->errorHandler) {
-            $this->errorHandler = new ErrorHandler();
-        }
-
         // date_default_timezone_set($this->config('timeZone', 'UTC'));
         //new AutoCompletion(array_merge($this->getCommandNames(), $this->getControllerNames()));
     }

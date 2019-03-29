@@ -14,5 +14,6 @@ composer.lock
 *.swo
 *.zip
 *.phar
+*.cache
 .DS_Store
 .interactive_history
