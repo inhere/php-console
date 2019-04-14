@@ -143,10 +143,12 @@ class Console
 
     /**
      * Write a message to standard output stream.
+     *
      * @param string|array $messages Output message
-     * @param boolean      $nl True 会添加换行符, False 原样输出，不添加换行符
-     * @param int|boolean  $quit If is int, setting it is exit code. 'True' translate as code 0 and exit, 'False' will not exit.
-     * @param array        $opts
+     * @param boolean      $nl       True 会添加换行符, False 原样输出，不添加换行符
+     * @param int|boolean $quit      If is int, setting it is exit code.
+     *                               'True' translate as code 0 and exit, 'False' will not exit.
+     * @param array        $opts     Some options for write
      * [
      *     'color'  => bool, // whether render color, default is: True.
      *     'stream' => resource, // the stream resource, default is: STDOUT

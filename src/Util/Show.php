@@ -68,7 +68,7 @@ class Show
 
     /**
      * @param mixed       $messages
-     * @param string $type
+     * @param string      $type
      * @param string      $style
      * @param int|boolean $quit If is int, setting it is exit code.
      * @return int
@@ -94,13 +94,17 @@ class Show
 
     /**
      * @param mixed       $messages
-     * @param string $type
+     * @param string      $type
      * @param string      $style
      * @param int|boolean $quit If is int, setting it is exit code.
      * @return int
      */
-    public static function liteBlock($messages, string $type = 'MESSAGE', string $style = Style::NORMAL, $quit = false): int
-    {
+    public static function liteBlock(
+        $messages,
+        string $type = 'MESSAGE',
+        string $style = Style::NORMAL,
+        $quit = false
+    ): int {
         $messages = \is_array($messages) ? \array_values($messages) : [$messages];
 
         // add type
@@ -220,7 +224,7 @@ class Show
 
     /**
      * @param string       $title The title text
-     * @param string|array $body The section body message
+     * @param string|array $body  The section body message
      * @param array        $opts
      */
     public static function section(string $title, $body, array $opts = []): void
@@ -617,9 +621,9 @@ class Show
 
     /**
      * stop buffering
-     * @see Show::write()
+     * @see        Show::write()
      * @param bool  $flush Whether flush buffer to output stream
-     * @param bool  $nl Default is False, because the last write() have been added "\n"
+     * @param bool  $nl    Default is False, because the last write() have been added "\n"
      * @param bool  $quit
      * @param array $opts
      * @return null|string If flush = False, will return all buffer text.
@@ -645,7 +649,7 @@ class Show
 
     /**
      * stop buffering and flush buffer text
-     * @see Show::write()
+     * @see        Show::write()
      * @param bool  $nl
      * @param bool  $quit
      * @param array $opts
@@ -674,9 +678,10 @@ class Show
     /**
      * Write a message to standard output stream.
      * @param string|array $messages Output message
-     * @param boolean      $nl True 会添加换行符, False 原样输出，不添加换行符
-     * @param int|boolean  $quit If is int, setting it is exit code. 'True' translate as code 0 and exit, 'False' will not exit.
-     * @param array        $opts
+     * @param boolean      $nl       True 会添加换行符, False 原样输出，不添加换行符
+     * @param int|boolean  $quit     If is int, setting it is exit code. 'True' translate as code 0 and exit, 'False' will not exit.
+     * @param array        $opts     Some options for write
+     * refer:
      * [
      *     'color'  => bool, // whether render color, default is: True.
      *     'stream' => resource, // the stream resource, default is: STDOUT
