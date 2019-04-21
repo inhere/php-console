@@ -111,13 +111,13 @@ class Show
         $text  = \implode(\PHP_EOL, $messages);
         $color = static::getStyle();
 
-        // add type
+        // format type
         if ($type) {
-            $fmtType = \sprintf('[%s]', $upType = \strtoupper($type));
-
             // add style
             if ($style && $color->hasStyle($style)) {
                 $fmtType = \sprintf('<%s>[%s]</%s> ', $style, $upType, $style);
+            } else {
+                $fmtType = \sprintf('[%s]', $upType = \strtoupper($type));
             }
         }
 
