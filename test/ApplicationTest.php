@@ -7,6 +7,7 @@ use Inhere\Console\Console;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\InputInterface;
 use Inhere\Console\Router;
+use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 
 class ApplicationTest extends TestCase
@@ -55,11 +56,11 @@ class ApplicationTest extends TestCase
     {
         $app = $this->newApp();
 
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessageRegExp("/'name' and 'handler' cannot be empty/");
         $app->addCommand('');
 
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessageRegExp('/"name" and "controller" cannot be empty/');
         $app->addCommand('test', 'invalid');
     }
@@ -100,11 +101,11 @@ class ApplicationTest extends TestCase
     {
         $app = $this->newApp();
 
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessageRegExp('/"name" and "controller" cannot be empty/');
         $app->addController('');
 
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessageRegExp('/"name" and "controller" cannot be empty/');
         $app->controller('test', 'invalid');
     }

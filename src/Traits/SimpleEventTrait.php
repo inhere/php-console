@@ -8,8 +8,12 @@
 
 namespace Inhere\Console\Traits;
 
+use function count;
+use function in_array;
+
 /**
  * Class SimpleEventStaticTrait
+ *
  * @package Inhere\Console\Traits
  */
 trait SimpleEventTrait
@@ -17,12 +21,14 @@ trait SimpleEventTrait
     /**
      * set the supported events, if you need.
      *  if it is empty, will allow register any event.
+     *
      * @var array
      */
     protected static $supportedEvents = [];
 
     /**
      * registered Events
+     *
      * @var array
      * [
      *  'event' => bool, // is once event
@@ -32,6 +38,7 @@ trait SimpleEventTrait
 
     /**
      * events and handlers
+     *
      * @var array
      * [
      *  'event' => callable, // event handler
@@ -41,6 +48,7 @@ trait SimpleEventTrait
 
     /**
      * register a event handler
+     *
      * @param          $event
      * @param callable $handler
      * @param bool     $once
@@ -58,6 +66,7 @@ trait SimpleEventTrait
 
     /**
      * register a once event handler
+     *
      * @param          $event
      * @param callable $handler
      */
@@ -68,8 +77,10 @@ trait SimpleEventTrait
 
     /**
      * trigger event
+     *
      * @param string $event
      * @param array  ...$args
+     *
      * @return bool
      */
     public function fire(string $event, ...$args): bool
@@ -96,7 +107,9 @@ trait SimpleEventTrait
 
     /**
      * remove event and it's handlers
+     *
      * @param $event
+     *
      * @return bool
      */
     public function off(string $event): bool
@@ -112,6 +125,7 @@ trait SimpleEventTrait
 
     /**
      * @param $event
+     *
      * @return bool
      */
     public function hasEvent(string $event): bool
@@ -121,6 +135,7 @@ trait SimpleEventTrait
 
     /**
      * @param $event
+     *
      * @return bool
      */
     public function isOnce(string $event): bool
@@ -134,7 +149,9 @@ trait SimpleEventTrait
 
     /**
      * check $name is a supported event name
+     *
      * @param string $event
+     *
      * @return bool
      */
     public static function isSupportedEvent(string $event): bool
@@ -144,7 +161,7 @@ trait SimpleEventTrait
         }
 
         if ($ets = self::$supportedEvents) {
-            return \in_array($event, $ets, true);
+            return in_array($event, $ets, true);
         }
 
         return true;
@@ -179,6 +196,6 @@ trait SimpleEventTrait
      */
     public static function countEvents(): int
     {
-        return \count(self::$events);
+        return count(self::$events);
     }
 }

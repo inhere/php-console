@@ -2,9 +2,13 @@
 
 namespace Inhere\Console\Component\Interact;
 
+use Closure;
 use Inhere\Console\Component\InteractMessage;
 use Inhere\Console\Console;
 use Inhere\Console\Util\Show;
+use function sprintf;
+use function trim;
+use function ucfirst;
 
 /**
  * Class LimitedAsk
@@ -19,7 +23,7 @@ class LimitedAsk extends InteractMessage
      *   否则，会连续询问 $times 次， 若仍然错误，退出
      * @param string   $question 问题
      * @param string   $default 默认值
-     * @param \Closure $validator (默认验证输入是否为空)自定义回调验证输入是否符合要求; 验证成功返回true 否则 可返回错误消息
+     * @param Closure $validator (默认验证输入是否为空)自定义回调验证输入是否符合要求; 验证成功返回true 否则 可返回错误消息
      * @example This is an example
      *
      * ```php
@@ -50,17 +54,17 @@ class LimitedAsk extends InteractMessage
     public static function ask(
         string $question,
         string $default = '',
-        \Closure $validator = null,
+        Closure $validator = null,
         int $times = 3
     ): string {
-        if (!$question = \trim($question)) {
+        if (!$question = trim($question)) {
             Show::error('Please provide a question text!', 1);
         }
 
         $answer = '';
         $back   = $times = ($times > 6 || $times < 1) ? 3 : $times;
 
-        $question   = \ucfirst($question);
+        $question   = ucfirst($question);
         $hasDefault = '' !== $default;
 
         if ($hasDefault) {
@@ -80,7 +84,7 @@ class LimitedAsk extends InteractMessage
                 }
             } else {
                 $num    = $times + 1;
-                $answer = Console::readln(\sprintf('(You have [<bold>%s</bold>] chances to enter!) ', $num));
+                $answer = Console::readln(sprintf('(You have [<bold>%s</bold>] chances to enter!) ', $num));
             }
 
             // If setting verify callback

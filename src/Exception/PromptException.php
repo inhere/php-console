@@ -8,11 +8,14 @@
 
 namespace Inhere\Console\Exception;
 
+use RuntimeException;
+
 /**
  * Class PromptException
+ *
  * @package Inhere\Console\Exception
  */
-class PromptException extends \RuntimeException
+class PromptException extends RuntimeException
 {
 
 }

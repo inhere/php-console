@@ -8,8 +8,12 @@
 
 namespace Inhere\Console\Contract;
 
+use Closure;
+use InvalidArgumentException;
+
 /**
  * Interface ApplicationInterface
+ *
  * @package Inhere\Console\Contract
  */
 interface ApplicationInterface
@@ -51,21 +55,23 @@ interface ApplicationInterface
      *  - aliases     The command aliases
      *  - description The description message
      * @return static
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function controller(string $name, $class = null, $option = null);
 
     /**
      * Register a app independent console command
-     * @param string|CommandInterface          $name
-     * @param string|\Closure|CommandInterface $handler
-     * @param null|array|string                $option
+     *
+     * @param string|CommandInterface         $name
+     * @param string|Closure|CommandInterface $handler
+     * @param null|array|string               $option
      * string: define the description message.
      * array:
      *  - aliases     The command aliases
      *  - description The description message
+     *
      * @return mixed
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function command(string $name, $handler = null, $option = null);
 

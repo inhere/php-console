@@ -2,6 +2,7 @@
 
 namespace Inhere\Console\Component\Progress;
 
+use Generator;
 use Inhere\Console\Component\NotifyMessage;
 use Inhere\Console\Console;
 use Toolkit\Cli\Cli;
@@ -17,9 +18,9 @@ class SimpleTextBar extends NotifyMessage
      * @param int    $total
      * @param string $msg
      * @param string $doneMsg
-     * @return \Generator
+     * @return Generator
      */
-    public static function gen(int $total, string $msg, string $doneMsg = ''): \Generator
+    public static function gen(int $total, string $msg, string $doneMsg = ''): Generator
     {
         $current  = 0;
         $finished = false;

@@ -10,7 +10,24 @@
 
 namespace Inhere\Console\Util;
 
+use function class_exists;
+use function file_exists;
+use FilesystemIterator;
 use Inhere\Console\Traits\RuntimeProfileTrait;
+use InvalidArgumentException;
+use function is_dir;
+use function is_numeric;
+use Iterator;
+use function mb_strlen;
+use function mkdir;
+use function preg_match;
+use RecursiveCallbackFilterIterator;
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
+use RuntimeException;
+use function similar_text;
+use function sprintf;
+use function strpos;
 use Swoole\Coroutine;
 
 /**
@@ -26,7 +43,7 @@ class Helper
      */
     public static function isSupportCoroutine(): bool
     {
-        return \class_exists(Coroutine::class, false);
+        return class_exists(Coroutine::class, false);
     }
 
     /**
@@ -47,18 +64,18 @@ class Helper
      */
     public static function isAbsPath(string $path): bool
     {
-        return \strpos($path, '/') === 0 || 1 === \preg_match('#^[a-z]:[\/|\\\]{1}.+#i', $path);
+        return strpos($path, '/') === 0 || 1 === preg_match('#^[a-z]:[\/|\\\]{1}.+#i', $path);
     }
 
     /**
      * @param string $dir
      * @param int    $mode
-     * @throws \RuntimeException
+     * @throws RuntimeException
      */
     public static function mkdir(string $dir, int $mode = 0775): void
     {
-        if (!\file_exists($dir) && !\mkdir($dir, $mode, true) && !\is_dir($dir)) {
-            throw new \RuntimeException(sprintf('Directory "%s" was not created', $dir));
+        if (!file_exists($dir) && !mkdir($dir, $mode, true) && !is_dir($dir)) {
+            throw new RuntimeException(sprintf('Directory "%s" was not created', $dir));
         }
     }
 
@@ -66,22 +83,22 @@ class Helper
      * @param string   $srcDir
      * @param callable $filter
      * @param int      $flags
-     * @return \RecursiveIteratorIterator
-     * @throws \InvalidArgumentException
+     * @return RecursiveIteratorIterator
+     * @throws InvalidArgumentException
      */
     public static function directoryIterator(
         string $srcDir,
         callable $filter,
-        $flags = \FilesystemIterator::KEY_AS_PATHNAME | \FilesystemIterator::CURRENT_AS_FILEINFO
-    ): \RecursiveIteratorIterator {
+        $flags = FilesystemIterator::KEY_AS_PATHNAME | FilesystemIterator::CURRENT_AS_FILEINFO
+    ): RecursiveIteratorIterator {
         if (!$srcDir || !file_exists($srcDir)) {
-            throw new \InvalidArgumentException('Please provide a exists source directory.');
+            throw new InvalidArgumentException('Please provide a exists source directory.');
         }
 
-        $directory = new \RecursiveDirectoryIterator($srcDir, $flags);
-        $filterIterator = new \RecursiveCallbackFilterIterator($directory, $filter);
+        $directory = new RecursiveDirectoryIterator($srcDir, $flags);
+        $filterIterator = new RecursiveCallbackFilterIterator($directory, $filter);
 
-        return new \RecursiveIteratorIterator($filterIterator);
+        return new RecursiveIteratorIterator($filterIterator);
     }
 
     /**
@@ -96,7 +113,7 @@ class Helper
     /**
      * find similar text from an array|Iterator
      * @param string          $need
-     * @param \Iterator|array $iterator
+     * @param Iterator|array $iterator
      * @param int             $similarPercent
      * @return array
      */
@@ -110,7 +127,7 @@ class Helper
         $similar = [];
 
         foreach ($iterator as $name) {
-            \similar_text($need, $name, $percent);
+            similar_text($need, $name, $percent);
 
             if ($similarPercent <= (int)$percent) {
                 $similar[] = $name;
@@ -136,8 +153,8 @@ class Helper
 
         foreach ($data as $key => $value) {
             // key is not a integer
-            if (!$expectInt || !\is_numeric($key)) {
-                $width = \mb_strlen($key, 'UTF-8');
+            if (!$expectInt || !is_numeric($key)) {
+                $width = mb_strlen($key, 'UTF-8');
                 $keyMaxWidth = $width > $keyMaxWidth ? $width : $keyMaxWidth;
             }
         }
@@ -151,7 +168,7 @@ class Helper
      */
     public static function throwInvalidArgument(string $format, ...$args): void
     {
-        throw new \InvalidArgumentException(\sprintf($format, ...$args));
+        throw new InvalidArgumentException(sprintf($format, ...$args));
     }
 
     /**

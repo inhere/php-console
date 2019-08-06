@@ -8,10 +8,19 @@
 
 namespace Inhere\Console\Component\Formatter;
 
+use function array_keys;
+use function array_merge;
+use function array_sum;
+use function ceil;
+use function count;
 use Inhere\Console\Component\MessageFormatter;
 use Inhere\Console\Console;
+use function is_string;
+use function mb_strlen;
+use function str_pad;
 use Toolkit\Cli\ColorTag;
 use Toolkit\StrUtil\StrBuffer;
+use function ucwords;
 
 /**
  * Class Table - Tabular data display
@@ -78,7 +87,7 @@ class Table extends MessageFormatter
         }
 
         $buf  = new StrBuffer();
-        $opts = \array_merge([
+        $opts = array_merge([
             'showBorder'     => true,
             'leftIndent'     => '  ',
             'titlePos'       => self::POS_LEFT,
@@ -101,7 +110,7 @@ class Table extends MessageFormatter
         $colBorderChar = $opts['colBorderChar'];
 
         $info = [
-            'rowCount'       => \count($data),
+            'rowCount'       => count($data),
             'columnCount'    => 0,     // how many column in the table.
             'columnMaxWidth' => [], // table column max width
             'tableWidth'     => 0,      // table width. equals to all max column width's sum.
@@ -111,16 +120,16 @@ class Table extends MessageFormatter
         foreach ($data as $row) {
             // collection all field name
             if ($rowIndex === 0) {
-                $head = $tableHead ?: \array_keys($row);
+                $head = $tableHead ?: array_keys($row);
                 //
-                $info['columnCount'] = \count($row);
+                $info['columnCount'] = count($row);
 
                 foreach ($head as $index => $name) {
-                    if (\is_string($name)) {// maybe no column name.
+                    if (is_string($name)) {// maybe no column name.
                         $hasHead = true;
                     }
 
-                    $info['columnMaxWidth'][$index] = \mb_strlen($name, 'UTF-8');
+                    $info['columnMaxWidth'][$index] = mb_strlen($name, 'UTF-8');
                 }
             }
 
@@ -129,14 +138,14 @@ class Table extends MessageFormatter
             foreach ((array)$row as $value) {
                 // collection column max width
                 if (isset($info['columnMaxWidth'][$colIndex])) {
-                    $colWidth = \mb_strlen($value, 'UTF-8');
+                    $colWidth = mb_strlen($value, 'UTF-8');
 
                     // If current column width gt old column width. override old width.
                     if ($colWidth > $info['columnMaxWidth'][$colIndex]) {
                         $info['columnMaxWidth'][$colIndex] = $colWidth;
                     }
                 } else {
-                    $info['columnMaxWidth'][$colIndex] = \mb_strlen($value, 'UTF-8');
+                    $info['columnMaxWidth'][$colIndex] = mb_strlen($value, 'UTF-8');
                 }
 
                 $colIndex++;
@@ -145,19 +154,19 @@ class Table extends MessageFormatter
             $rowIndex++;
         }
 
-        $tableWidth  = $info['tableWidth'] = \array_sum($info['columnMaxWidth']);
+        $tableWidth  = $info['tableWidth'] = array_sum($info['columnMaxWidth']);
         $columnCount = $info['columnCount'];
 
         // output title
         if ($title) {
             $tStyle      = $opts['titleStyle'] ?: 'bold';
-            $title       = \ucwords(trim($title));
-            $titleLength = \mb_strlen($title, 'UTF-8');
-            $indentSpace = \str_pad(' ', \ceil($tableWidth / 2) - \ceil($titleLength / 2) + ($columnCount * 2), ' ');
+            $title       = ucwords(trim($title));
+            $titleLength = mb_strlen($title, 'UTF-8');
+            $indentSpace = str_pad(' ', ceil($tableWidth / 2) - ceil($titleLength / 2) + ($columnCount * 2), ' ');
             $buf->write("  {$indentSpace}<$tStyle>{$title}</$tStyle>\n");
         }
 
-        $border = $leftIndent . \str_pad($rowBorderChar, $tableWidth + ($columnCount * 3) + 2, $rowBorderChar);
+        $border = $leftIndent . str_pad($rowBorderChar, $tableWidth + ($columnCount * 3) + 2, $rowBorderChar);
 
         // output table top border
         if ($showBorder) {
@@ -173,7 +182,7 @@ class Table extends MessageFormatter
             foreach ($head as $index => $name) {
                 $colMaxWidth = $info['columnMaxWidth'][$index];
                 // format
-                $name    = \str_pad($name, $colMaxWidth, ' ');
+                $name    = str_pad($name, $colMaxWidth, ' ');
                 $name    = ColorTag::wrap($name, $opts['headStyle']);
                 $headStr .= " {$name} {$colBorderChar}";
             }
@@ -182,7 +191,7 @@ class Table extends MessageFormatter
 
             // head border: split head and body
             if ($headBorderChar = $opts['headBorderChar']) {
-                $headBorder = $leftIndent . \str_pad($headBorderChar, $tableWidth + ($columnCount * 3) + 2,
+                $headBorder = $leftIndent . str_pad($headBorderChar, $tableWidth + ($columnCount * 3) + 2,
                         $headBorderChar);
                 $buf->write($headBorder . "\n");
             }
@@ -198,7 +207,7 @@ class Table extends MessageFormatter
             foreach ((array)$row as $value) {
                 $colMaxWidth = $info['columnMaxWidth'][$colIndex];
                 // format
-                $value  = \str_pad($value, $colMaxWidth, ' ');
+                $value  = str_pad($value, $colMaxWidth, ' ');
                 $value  = ColorTag::wrap($value, $opts['bodyStyle']);
                 $rowStr .= " {$value} {$colBorderChar}";
                 $colIndex++;

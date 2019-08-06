@@ -8,13 +8,24 @@
 
 namespace Inhere\Console\Traits;
 
+use Closure;
+use Generator;
 use Inhere\Console\Component\Style\Style;
 use Inhere\Console\Console;
+use Inhere\Console\Util\Interact;
 use Inhere\Console\Util\Show;
+use LogicException;
 use Toolkit\PhpUtil\Php;
+use function array_merge;
+use function json_encode;
+use function method_exists;
+use function sprintf;
+use function strpos;
+use function substr;
 
 /**
  * Class FormatOutputAwareTrait
+ *
  * @package Inhere\Console\Traits
  *
  * @method int info($messages, $quit = false)
@@ -43,7 +54,13 @@ use Toolkit\PhpUtil\Php;
  * @method pending($msg = 'Pending ', $ended = false)
  * @method pointing($msg = 'handling ', $ended = false)
  *
- * @method \Generator counterTxt($msg = 'Pending ', $ended = false)
+ * @method Generator counterTxt($msg = 'Pending ', $ended = false)
+ *
+ * @method confirm(string $question, bool $default = true, bool $nl = true): bool
+ * @method select(string $description, $options, $default = null, bool $allowExit = true): string
+ * @method checkbox(string $description, $options, $default = null, bool $allowExit = true): array
+ * @method ask(string $question, string $default = '', Closure $validator = null): string
+ * @method askPassword(string $prompt = 'Enter Password:'): string
  */
 trait FormatOutputAwareTrait
 {
@@ -53,7 +70,7 @@ trait FormatOutputAwareTrait
      */
     public function write($messages, $nl = true, $quit = false, array $opts = []): int
     {
-        return Console::write($messages, $nl, $quit, \array_merge([
+        return Console::write($messages, $nl, $quit, array_merge([
             'flush'  => true,
             'stream' => $this->outputStream,
         ], $opts));
@@ -80,11 +97,12 @@ trait FormatOutputAwareTrait
     /**
      * @param string $text
      * @param string $tag
+     *
      * @return int
      */
     public function colored(string $text, string $tag = 'info'): int
     {
-        return $this->writeln(\sprintf('<%s>%s</%s>', $tag, $text, $tag));
+        return $this->writeln(sprintf('<%s>%s</%s>', $tag, $text, $tag));
     }
 
     /**
@@ -152,6 +170,7 @@ trait FormatOutputAwareTrait
 
     /**
      * helpPanel
+     *
      * @inheritdoc
      * @see Show::helpPanel()
      */
@@ -182,7 +201,7 @@ trait FormatOutputAwareTrait
      * @inheritdoc
      * @see Show::progressBar()
      */
-    public function progressTxt($total, $msg, $doneMsg = ''): \Generator
+    public function progressTxt($total, $msg, $doneMsg = ''): Generator
     {
         return Show::progressTxt($total, $msg, $doneMsg);
     }
@@ -191,7 +210,7 @@ trait FormatOutputAwareTrait
      * @inheritdoc
      * @see Show::progressBar()
      */
-    public function progressBar($total, array $opts = []): \Generator
+    public function progressBar($total, array $opts = []): Generator
     {
         return Show::progressBar($total, $opts);
     }
@@ -199,37 +218,43 @@ trait FormatOutputAwareTrait
     /**
      * @param string $method
      * @param array  $args
+     *
      * @return int
-     * @throws \LogicException
+     * @throws LogicException
      */
     public function __call($method, array $args = [])
     {
         $map = Show::getBlockMethods(false);
 
         if (isset($map[$method])) {
-            $msg = $args[0];
-            $quit = $args[1] ?? false;
+            $msg   = $args[0];
+            $quit  = $args[1] ?? false;
             $style = $map[$method];
 
-            if (0 === \strpos($method, 'lite')) {
-                $type = \substr($method, 4);
+            if (0 === strpos($method, 'lite')) {
+                $type = substr($method, 4);
                 return Show::liteBlock($msg, $type === 'Primary' ? 'IMPORTANT' : $type, $style, $quit);
             }
 
             return Show::block($msg, $style === 'primary' ? 'IMPORTANT' : $style, $style, $quit);
         }
 
-        if (\method_exists(Show::class, $method)) {
+        if (method_exists(Show::class, $method)) {
             return Show::$method(...$args);
         }
 
-        throw new \LogicException("Call a not exists method: $method of the " . static::class);
+        if (method_exists(Interact::class, $method)) {
+            return Interact::$method(...$args);
+        }
+
+        throw new LogicException("Call a not exists method: $method of the " . static::class);
     }
 
     /**
      * @param mixed $data
      * @param bool  $echo
      * @param int   $flags
+     *
      * @return int|string
      */
     public function json(
@@ -237,7 +262,7 @@ trait FormatOutputAwareTrait
         bool $echo = true,
         int $flags = JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
     ) {
-        $string = \json_encode($data, $flags);
+        $string = json_encode($data, $flags);
 
         if ($echo) {
             return Console::write($string);

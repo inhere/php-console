@@ -4,9 +4,11 @@ namespace Inhere\Console\Component\Formatter;
 
 use Inhere\Console\Component\MessageFormatter;
 use Inhere\Console\Console;
+use function implode;
 
 /**
  * Class MultiList
+ *
  * @package Inhere\Console\Component\Formatter
  */
 class MultiList extends MessageFormatter
@@ -27,12 +29,13 @@ class MultiList extends MessageFormatter
      *   ... ...
      * ]
      * ```
+     *
      * @param array $data
      * @param array $opts
      */
     public static function show(array $data, array $opts = []): void
     {
-        $stringList = [];
+        $stringList  = [];
         $ignoreEmpty = $opts['ignoreEmpty'] ?? true;
         $lastNewline = true;
 
@@ -50,6 +53,6 @@ class MultiList extends MessageFormatter
             $stringList[] = SingleList::show($list, $title, $opts);
         }
 
-        Console::write(\implode("\n", $stringList), $lastNewline);
+        Console::write(implode("\n", $stringList), $lastNewline);
     }
 }

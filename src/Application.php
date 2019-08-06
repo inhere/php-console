@@ -8,7 +8,20 @@
 
 namespace Inhere\Console;
 
+use Closure;
 use Inhere\Console\Util\Helper;
+use InvalidArgumentException;
+use ReflectionException;
+use SplFileInfo;
+use function class_exists;
+use function implode;
+use function is_object;
+use function is_string;
+use function method_exists;
+use function sprintf;
+use function strlen;
+use function strpos;
+use function substr;
 
 /**
  * Class App
@@ -25,7 +38,7 @@ class Application extends AbstractApplication
      */
     public function controller(string $name, $class = null, $option = null)
     {
-        if (\is_string($option)) {
+        if (is_string($option)) {
             $option = [
                 'description' => $option,
             ];
@@ -49,7 +62,7 @@ class Application extends AbstractApplication
     /**
      * {@inheritdoc}
      * @see controller()
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function addController(string $name, $class = null, $option = null)
     {
@@ -58,7 +71,7 @@ class Application extends AbstractApplication
 
     /**
      * @param array $controllers
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function controllers(array $controllers): void
     {
@@ -67,7 +80,7 @@ class Application extends AbstractApplication
 
     /**
      * @param array $controllers
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      * @deprecated please use addControllers() instead it.
      */
     public function setControllers(array $controllers): void
@@ -77,7 +90,7 @@ class Application extends AbstractApplication
 
     /**
      * @param array $controllers
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function addControllers(array $controllers): void
     {
@@ -89,7 +102,7 @@ class Application extends AbstractApplication
      */
     public function command(string $name, $handler = null, $option = null)
     {
-        if (\is_string($option)) {
+        if (is_string($option)) {
             $option = [
                 'description' => $option,
             ];
@@ -112,7 +125,7 @@ class Application extends AbstractApplication
 
     /**
      * @param array $commands
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function addCommands(array $commands): void
     {
@@ -121,7 +134,7 @@ class Application extends AbstractApplication
 
     /**
      * @param array $commands
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function commands(array $commands): void
     {
@@ -138,15 +151,15 @@ class Application extends AbstractApplication
      * @param string $namespace
      * @param string $basePath
      * @return $this
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function registerCommands(string $namespace, string $basePath): self
     {
-        $length   = \strlen($basePath) + 1;
+        $length   = strlen($basePath) + 1;
         $iterator = Helper::directoryIterator($basePath, $this->getFileFilter());
 
         foreach ($iterator as $file) {
-            $class = $namespace . '\\' . \substr($file, $length, -4);
+            $class = $namespace . '\\' . substr($file, $length, -4);
             $this->addCommand($class);
         }
 
@@ -158,15 +171,15 @@ class Application extends AbstractApplication
      * @param string $namespace
      * @param string $basePath
      * @return $this
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function registerGroups(string $namespace, string $basePath): self
     {
-        $length   = \strlen($basePath) + 1;
+        $length   = strlen($basePath) + 1;
         $iterator = Helper::directoryIterator($basePath, $this->getFileFilter());
 
         foreach ($iterator as $file) {
-            $class = $namespace . '\\' . \substr($file, $length, -4);
+            $class = $namespace . '\\' . substr($file, $length, -4);
             $this->addController($class);
         }
 
@@ -174,15 +187,15 @@ class Application extends AbstractApplication
     }
 
     /**
-     * @return \Closure
+     * @return Closure
      */
     protected function getFileFilter(): callable
     {
-        return function (\SplFileInfo $f) {
+        return function (SplFileInfo $f) {
             $name = $f->getFilename();
 
             // Skip hidden files and directories.
-            if (\strpos($name, '.') === 0) {
+            if (strpos($name, '.') === 0) {
                 return false;
             }
 
@@ -192,7 +205,7 @@ class Application extends AbstractApplication
             }
 
             // php file
-            return $f->isFile() && \substr($name, -4) === '.php';
+            return $f->isFile() && substr($name, -4) === '.php';
         };
     }
 
@@ -202,8 +215,8 @@ class Application extends AbstractApplication
 
     /**
      * @inheritdoc
-     * @throws \ReflectionException
-     * @throws \InvalidArgumentException
+     * @throws ReflectionException
+     * @throws InvalidArgumentException
      */
     public function dispatch(string $name, bool $standAlone = false)
     {
@@ -220,7 +233,7 @@ class Application extends AbstractApplication
 
             // find similar command names by similar_text()
             if ($similar = Helper::findSimilar($name, $commands)) {
-                $this->write(\sprintf("\nMaybe what you mean is:\n    <info>%s</info>", \implode(', ', $similar)));
+                $this->write(sprintf("\nMaybe what you mean is:\n    <info>%s</info>", implode(', ', $similar)));
             } else {
                 $this->showCommandList();
             }
@@ -240,14 +253,14 @@ class Application extends AbstractApplication
     /**
      * run a independent command
      * @param string          $name Command name
-     * @param \Closure|string $handler Command class
+     * @param Closure|string $handler Command class
      * @param array           $options
      * @return mixed
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     protected function runCommand(string $name, $handler, array $options)
     {
-        if (\is_object($handler) && \method_exists($handler, '__invoke')) {
+        if (is_object($handler) && method_exists($handler, '__invoke')) {
             if ($this->input->getSameOpt(['h', 'help'])) {
                 $desc = $options['description'] ?? 'No command description message';
 
@@ -256,7 +269,7 @@ class Application extends AbstractApplication
 
             $result = $handler($this->input, $this->output);
         } else {
-            if (!\class_exists($handler)) {
+            if (!class_exists($handler)) {
                 Helper::throwInvalidArgument("The console command class [$handler] not exists!");
             }
 
@@ -283,15 +296,15 @@ class Application extends AbstractApplication
      * @param array  $options
      * @param bool   $standAlone
      * @return mixed
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
     protected function runAction(string $group, string $action, $handler, array $options, bool $standAlone = false)
     {
         /** @var Controller $handler */
-        if (\is_string($handler)) {
+        if (is_string($handler)) {
             $class = $handler;
 
-            if (!\class_exists($class)) {
+            if (!class_exists($class)) {
                 Helper::throwInvalidArgument('The console controller class [%s] not exists!', $class);
             }
 

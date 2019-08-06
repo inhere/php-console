@@ -8,9 +8,13 @@
 
 namespace Inhere\Console\Component\Symbol;
 
+use function dirname;
+use function file_get_contents;
+use function in_array;
 use Inhere\Console\Console;
 use Inhere\Console\Util\Helper;
 use Inhere\Console\Util\Show;
+use function is_file;
 use Toolkit\Cli\ColorTag;
 
 /**
@@ -74,7 +78,7 @@ class ArtFont
      */
     protected function loadInternalFonts(): void
     {
-        $path = \dirname(__DIR__) . '/BuiltIn/Resources/art-fonts/';
+        $path = dirname(__DIR__) . '/BuiltIn/Resources/art-fonts/';
         $group = self::INTERNAL_GROUP;
 
         foreach (self::$internalFonts as $font) {
@@ -146,8 +150,8 @@ class ArtFont
         } elseif (isset($this->groups[$group])) {
             $font = $this->groups[$group] . $name . $pfxType . '.txt';
 
-            if (\is_file($font)) {
-                $txt = \file_get_contents($font);
+            if (is_file($font)) {
+                $txt = file_get_contents($font);
             }
         }
 
@@ -247,7 +251,7 @@ class ArtFont
      */
     public static function isInternalFont($name): bool
     {
-        return \in_array((string)$name, self::$internalFonts, true);
+        return in_array((string)$name, self::$internalFonts, true);
     }
 
     /**

@@ -10,6 +10,16 @@
 
 namespace Inhere\Console\Component\Style;
 
+use function array_key_exists;
+use function array_keys;
+use function array_merge;
+use function array_values;
+use InvalidArgumentException;
+use function is_array;
+use function is_object;
+use function sprintf;
+use function str_replace;
+use function strpos;
 use Toolkit\Cli\Cli;
 use Toolkit\Cli\ColorTag;
 
@@ -98,15 +108,15 @@ class Style
      * @param string $method
      * @param array  $args
      * @return mixed|string
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function __call($method, array $args)
     {
         if (isset($args[0]) && $this->hasStyle($method)) {
-            return $this->format(\sprintf('<%s>%s</%s>', $method, $args[0], $method));
+            return $this->format(sprintf('<%s>%s</%s>', $method, $args[0], $method));
         }
 
-        throw new \InvalidArgumentException("You called method is not exists: $method");
+        throw new InvalidArgumentException("You called method is not exists: $method");
     }
 
     /**
@@ -177,7 +187,7 @@ class Style
      */
     public function format(string $text)
     {
-        if (!$text || false === \strpos($text, '</')) {
+        if (!$text || false === strpos($text, '</')) {
             return $text;
         }
 
@@ -193,11 +203,11 @@ class Style
         foreach ((array)$matches[0] as $i => $m) {
             $key = $matches[1][$i];
 
-            if (\array_key_exists($key, $this->styles)) {
+            if (array_key_exists($key, $this->styles)) {
                 $text = $this->replaceColor($text, $key, $matches[2][$i], (string)$this->styles[$key]);
 
                 /** Custom style format @see Color::makeByString() */
-            } elseif (\strpos($key, '=')) {
+            } elseif (strpos($key, '=')) {
                 $text = $this->replaceColor($text, $key, $matches[2][$i], (string)Color::makeByString($key));
             }
         }
@@ -217,7 +227,7 @@ class Style
     {
         $replace = self::$noColor ? $match : sprintf("\033[%sm%s\033[0m", $style, $match);
 
-        return \str_replace("<$tag>$match</$tag>", $replace, $text);
+        return str_replace("<$tag>$match</$tag>", $replace, $text);
         // return sprintf("\033[%sm%s\033[%sm", implode(';', $setCodes), $text, implode(';', $unsetCodes));
     }
 
@@ -247,11 +257,11 @@ class Style
      */
     public function add(string $name, $fg = '', $bg = '', array $options = [], bool $extra = false): self
     {
-        if (\is_array($fg)) {
+        if (is_array($fg)) {
             return $this->addByArray($name, $fg);
         }
 
-        if (\is_object($fg) && $fg instanceof Color) {
+        if (is_object($fg) && $fg instanceof Color) {
             $this->styles[$name] = $fg;
         } else {
             $this->styles[$name] = Color::make($fg, $bg, $options, $extra);
@@ -282,8 +292,8 @@ class Style
             'options' => []
         ];
 
-        $config = \array_merge($style, $styleConfig);
-        [$fg, $bg, $extra, $options] = \array_values($config);
+        $config = array_merge($style, $styleConfig);
+        [$fg, $bg, $extra, $options] = array_values($config);
 
         $this->styles[$name] = Color::make($fg, $bg, $options, (bool)$extra);
 
@@ -295,7 +305,7 @@ class Style
      */
     public function getStyleNames(): array
     {
-        return \array_keys($this->styles);
+        return array_keys($this->styles);
     }
 
     /**
@@ -303,7 +313,7 @@ class Style
      */
     public function getNames(): array
     {
-        return \array_keys($this->styles);
+        return array_keys($this->styles);
     }
 
     /**

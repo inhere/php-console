@@ -8,8 +8,12 @@
 
 namespace Inhere\Console\Component\Symbol;
 
+use ReflectionClass;
+use ReflectionException;
+
 /**
  * Class Emoji
+ *
  * @package Inhere\Console\Component\Symbol
  */
 final class Emoji
@@ -91,12 +95,12 @@ final class Emoji
 
     /**
      * @return array
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
     public static function getConstants(): array
     {
         if (!self::$constants) {
-            $objClass = new \ReflectionClass(__CLASS__);
+            $objClass = new ReflectionClass(__CLASS__);
 
             // 此处获取类中定义的全部常量 返回的是 [key=>value,...] 的数组
             // key是常量名 value是常量值

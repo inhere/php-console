@@ -10,6 +10,7 @@ namespace Inhere\Console\Traits;
 
 /**
  * Trait AdvancedFormatOutputTrait
+ *
  * @package Inhere\Console\Traits
  */
 trait AdvancedFormatOutputTrait

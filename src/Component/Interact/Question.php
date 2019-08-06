@@ -2,9 +2,12 @@
 
 namespace Inhere\Console\Component\Interact;
 
+use Closure;
 use Inhere\Console\Component\InteractMessage;
 use Inhere\Console\Console;
 use Inhere\Console\Util\Show;
+use function trim;
+use function ucfirst;
 
 /**
  * Class Question
@@ -46,17 +49,17 @@ class Question extends InteractMessage
      * ```
      * @param string        $question
      * @param string        $default
-     * @param \Closure|null $validator Validator, must return bool.
+     * @param Closure|null $validator Validator, must return bool.
      * @return string
      */
-    public static function ask(string $question, string $default = '', \Closure $validator = null): string
+    public static function ask(string $question, string $default = '', Closure $validator = null): string
     {
-        if (!$question = \trim($question)) {
+        if (!$question = trim($question)) {
             Show::error('Please provide a question text!', 1);
         }
 
         $defText = '' !== $default ? "(default: <info>$default</info>)" : '';
-        $message = '<comment>' . \ucfirst($question) . "</comment>$defText ";
+        $message = '<comment>' . ucfirst($question) . "</comment>$defText ";
 
         askQuestion:
         $answer = Console::readln($message);

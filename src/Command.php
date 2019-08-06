@@ -9,6 +9,7 @@
 namespace Inhere\Console;
 
 use Inhere\Console\Contract\CommandInterface;
+use ReflectionException;
 
 /**
  * Class Command
@@ -48,7 +49,7 @@ abstract class Command extends AbstractHandler implements CommandInterface
     /**
      * Show help information
      * @return bool
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
     protected function showHelp(): bool
     {

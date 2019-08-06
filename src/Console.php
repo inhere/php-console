@@ -6,6 +6,26 @@ use Inhere\Console\Component\Style\Style;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
 use Toolkit\Cli\ColorTag;
+use function array_merge;
+use function date;
+use function fflush;
+use function fgets;
+use function fgetss;
+use function file_get_contents;
+use function fwrite;
+use function implode;
+use function is_array;
+use function is_numeric;
+use function json_encode;
+use function sprintf;
+use function strpos;
+use function trim;
+use const JSON_PRETTY_PRINT;
+use const JSON_UNESCAPED_SLASHES;
+use const PHP_EOL;
+use const STDERR;
+use const STDIN;
+use const STDOUT;
 
 /**
  * Class Console
@@ -101,7 +121,7 @@ class Console
      */
     public static function writef(string $format, ...$args): int
     {
-        return self::write(\sprintf($format, ...$args));
+        return self::write(sprintf($format, ...$args));
     }
 
     /**
@@ -112,7 +132,7 @@ class Console
      */
     public static function printf(string $format, ...$args): int
     {
-        return self::write(\sprintf($format, ...$args));
+        return self::write(sprintf($format, ...$args));
     }
 
     /**
@@ -158,8 +178,8 @@ class Console
      */
     public static function write($messages, $nl = true, $quit = false, array $opts = []): int
     {
-        if (\is_array($messages)) {
-            $messages = \implode($nl ? \PHP_EOL : '', $messages);
+        if (is_array($messages)) {
+            $messages = implode($nl ? PHP_EOL : '', $messages);
         }
 
         $messages = (string)$messages;
@@ -172,7 +192,7 @@ class Console
 
         // if open buffering
         if (self::isBuffering()) {
-            self::$buffer .= $messages . ($nl ? \PHP_EOL : '');
+            self::$buffer .= $messages . ($nl ? PHP_EOL : '');
 
             if (!$quit) {
                 return 0;
@@ -182,13 +202,13 @@ class Console
             // clear buffer
             self::$buffer = '';
         } else {
-            $messages .= $nl ? \PHP_EOL : '';
+            $messages .= $nl ? PHP_EOL : '';
         }
 
-        \fwrite($stream = $opts['stream'] ?? \STDOUT, $messages);
+        fwrite($stream = $opts['stream'] ?? STDOUT, $messages);
 
         if (!isset($opts['flush']) || $opts['flush']) {
-            \fflush($stream);
+            fflush($stream);
         }
 
         // if will quit.
@@ -220,7 +240,7 @@ class Console
     public static function stderr($text, $nl = true, $quit = -200): void
     {
         self::write($text, $nl, $quit, [
-            'stream' => \STDERR,
+            'stream' => STDERR,
         ]);
     }
 
@@ -235,7 +255,7 @@ class Console
         $colorName  = self::LEVEL2TAG[$level] ?? 'info';
         $taggedName = ColorTag::add($levelName, $colorName);
 
-        $message = \strpos($format, '%') > 0 ? \sprintf($format, ...$args) : $format;
+        $message = strpos($format, '%') > 0 ? sprintf($format, ...$args) : $format;
 
         self::writef('[%s] %s', $taggedName, $message);
     }
@@ -261,22 +281,22 @@ class Console
 
         $userOpts = [];
         foreach ($opts as $n => $v) {
-            if (\is_numeric($n) || \strpos($n, '_') === 0) {
+            if (is_numeric($n) || strpos($n, '_') === 0) {
                 $userOpts[] = "[$v]";
             } else {
                 $userOpts[] = "[$n:$v]";
             }
         }
 
-        $optString = $userOpts ? ' ' . \implode(' ', $userOpts) : '';
+        $optString = $userOpts ? ' ' . implode(' ', $userOpts) : '';
 
-        self::write(\sprintf(
+        self::write(sprintf(
             '%s [%s]%s %s %s',
-            \date('Y/m/d H:i:s'),
+            date('Y/m/d H:i:s'),
             $taggedName,
             $optString,
-            \trim($msg),
-            $data ? \PHP_EOL . \json_encode($data, \JSON_UNESCAPED_SLASHES | \JSON_PRETTY_PRINT) : ''
+            trim($msg),
+            $data ? PHP_EOL . json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) : ''
         ));
     }
 
@@ -298,12 +318,12 @@ class Console
             self::write($message, $nl);
         }
 
-        $opts = \array_merge([
+        $opts = array_merge([
             'length' => 1024,
-            'stream' => \STDIN,
+            'stream' => STDIN,
         ], $opts);
 
-        return \file_get_contents($opts['stream'], $opts['length']);
+        return file_get_contents($opts['stream'], $opts['length']);
     }
 
     /**
@@ -323,12 +343,12 @@ class Console
             self::write($message, $nl);
         }
 
-        $opts = \array_merge([
+        $opts = array_merge([
             'length' => 1024,
-            'stream' => \STDIN,
+            'stream' => STDIN,
         ], $opts);
 
-        return \trim(\fgets($opts['stream'], $opts['length']));
+        return trim(fgets($opts['stream'], $opts['length']));
     }
 
     /**
@@ -356,13 +376,13 @@ class Console
             self::write($message, $nl);
         }
 
-        $opts = \array_merge([
+        $opts = array_merge([
             'length' => 1024,
-            'stream' => \STDIN,
+            'stream' => STDIN,
             'allowTags' => null,
         ], $opts);
 
-        return \trim(\fgetss($opts['stream'], $opts['length'], $opts['allowTags']));
+        return trim(fgetss($opts['stream'], $opts['length'], $opts['allowTags']));
     }
 
     /**

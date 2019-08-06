@@ -10,6 +10,7 @@ namespace Inhere\Console\Traits;
 
 /**
  * Class NameAliasTrait
+ *
  * @package Inhere\Console\Traits
  */
 trait NameAliasTrait
@@ -21,6 +22,7 @@ trait NameAliasTrait
 
     /**
      * set name alias(es)
+     *
      * @param string       $name
      * @param string|array $alias
      */
@@ -35,7 +37,9 @@ trait NameAliasTrait
 
     /**
      * get real name by alias
+     *
      * @param string $alias
+     *
      * @return mixed
      */
     public function resolveAlias(string $alias): string
@@ -45,6 +49,7 @@ trait NameAliasTrait
 
     /**
      * @param string $alias
+     *
      * @return bool
      */
     public function hasAlias(string $alias): bool

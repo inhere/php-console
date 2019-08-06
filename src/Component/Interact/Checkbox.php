@@ -2,9 +2,15 @@
 
 namespace Inhere\Console\Component\Interact;
 
+use function array_filter;
+use function explode;
 use Inhere\Console\Component\InteractMessage;
 use Inhere\Console\Console;
 use Inhere\Console\Util\Show;
+use function is_array;
+use function str_replace;
+use function strpos;
+use function trim;
 
 /**
  * Class Checkbox
@@ -24,12 +30,12 @@ class Checkbox extends InteractMessage
      */
     public static function select(string $description, $options, $default = null, $allowExit = true): array
     {
-        if (!$description = \trim($description)) {
+        if (!$description = trim($description)) {
             Show::error('Please provide a description text!', 1);
         }
 
         $sep     = ','; // ',' ' '
-        $options = \is_array($options) ? $options : \explode(',', $options);
+        $options = is_array($options) ? $options : explode(',', $options);
 
         // If default option is error
         if (null !== $default && !isset($options[$default])) {
@@ -53,7 +59,7 @@ class Checkbox extends InteractMessage
 
         beginChoice:
         $r = Console::readln("Your choice{$defText} : ");
-        $r = $r !== '' ? \str_replace(' ', '', \trim($r, $sep)) : '';
+        $r = $r !== '' ? str_replace(' ', '', trim($r, $sep)) : '';
 
         // empty
         if ($r === '') {
@@ -65,7 +71,7 @@ class Checkbox extends InteractMessage
             Console::write("\n  Quit,ByeBye.", true, true);
         }
 
-        $rs = \strpos($r, $sep) ? \array_filter(\explode($sep, $r), $filter) : [$r];
+        $rs = strpos($r, $sep) ? array_filter(explode($sep, $r), $filter) : [$r];
 
         // error, try again
         if (!$rs) {

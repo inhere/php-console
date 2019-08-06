@@ -12,6 +12,8 @@ use Inhere\Console\Component\Style\Style;
 use Inhere\Console\Console;
 use Inhere\Console\Traits\FormatOutputAwareTrait;
 use Inhere\Console\Util\Show;
+use const STDERR;
+use const STDOUT;
 use Toolkit\Cli\Cli;
 
 /**
@@ -27,14 +29,14 @@ class Output implements OutputInterface
      *
      * @var resource
      */
-    protected $outputStream = \STDOUT;
+    protected $outputStream = STDOUT;
 
     /**
      * Error output stream
      *
      * @var resource
      */
-    protected $errorStream = \STDERR;
+    protected $errorStream = STDERR;
 
     /**
      * 控制台窗口(字体/背景)颜色添加处理

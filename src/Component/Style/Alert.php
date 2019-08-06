@@ -8,8 +8,11 @@
 
 namespace Inhere\Console\Component\Style;
 
+use function array_merge;
+
 /**
  * Class Alert
+ *
  * @package Inhere\Console\Component\Style
  */
 class Alert
@@ -27,7 +30,7 @@ class Alert
 
     public static function block(string $message, string $style = 'info', array $opts = []): void
     {
-        $opts = \array_merge([
+        $opts = array_merge([
             'paddingX' => 1, // line
             'paddingY' => 1, // space
 

@@ -11,12 +11,25 @@ namespace Inhere\Console\Component\Formatter;
 use Inhere\Console\Component\MessageFormatter;
 use Inhere\Console\Console;
 use Inhere\Console\Util\FormatUtil;
-use Inhere\Console\Util\Show;
 use Toolkit\StrUtil\StrBuffer;
+use function array_filter;
+use function array_merge;
+use function ceil;
+use function is_array;
+use function is_bool;
+use function is_numeric;
+use function mb_strlen;
+use function rtrim;
+use function str_pad;
+use function strip_tags;
+use function trim;
+use function ucwords;
+use const PHP_EOL;
 
 /**
  * Class Panel
  * - method version please {@see \Inhere\Console\Util\Show::panel()}
+ *
  * @package Inhere\Console\Component\Formatter
  */
 class Panel extends MessageFormatter
@@ -73,9 +86,11 @@ EOF;
 
     /**
      * Show information data panel
-     * @param  mixed  $data
-     * @param  string $title
-     * @param  array  $opts
+     *
+     * @param mixed  $data
+     * @param string $title
+     * @param array  $opts
+     *
      * @return int
      */
     public static function show($data, string $title = 'Information Panel', array $opts = []): int
@@ -85,13 +100,13 @@ EOF;
             return -2;
         }
 
-        $opts = \array_merge([
+        $opts = array_merge([
             'borderChar' => '*',
             'ucFirst'    => true,
         ], $opts);
 
-        $data  = \is_array($data) ? \array_filter($data) : [\trim($data)];
-        $title = \trim($title);
+        $data  = is_array($data) ? array_filter($data) : [trim($data)];
+        $title = trim($title);
 
         $panelData  = []; // [ 'label' => 'value' ]
         $borderChar = $opts['borderChar'];
@@ -101,37 +116,37 @@ EOF;
 
         foreach ($data as $label => $value) {
             // label exists
-            if (!\is_numeric($label)) {
-                $width         = \mb_strlen($label, 'UTF-8');
+            if (!is_numeric($label)) {
+                $width         = mb_strlen($label, 'UTF-8');
                 $labelMaxWidth = $width > $labelMaxWidth ? $width : $labelMaxWidth;
             }
 
             // translate array to string
-            if (\is_array($value)) {
+            if (is_array($value)) {
                 $temp = '';
 
                 /** @var array $value */
                 foreach ($value as $key => $val) {
-                    if (\is_bool($val)) {
+                    if (is_bool($val)) {
                         $val = $val ? 'True' : 'False';
                     } else {
                         $val = (string)$val;
                     }
 
-                    $temp .= (!\is_numeric($key) ? "$key: " : '') . "<info>$val</info>, ";
+                    $temp .= (!is_numeric($key) ? "$key: " : '') . "<info>$val</info>, ";
                 }
 
-                $value = \rtrim($temp, ' ,');
-            } elseif (\is_bool($value)) {
+                $value = rtrim($temp, ' ,');
+            } elseif (is_bool($value)) {
                 $value = $value ? 'True' : 'False';
             } else {
-                $value = \trim((string)$value);
+                $value = trim((string)$value);
             }
 
             // get value width
             /** @var string $value */
-            $value = \trim($value);
-            $width = \mb_strlen(\strip_tags($value), 'UTF-8'); // must clear style tag
+            $value = trim($value);
+            $width = mb_strlen(strip_tags($value), 'UTF-8'); // must clear style tag
 
             $valueMaxWidth     = $width > $valueMaxWidth ? $width : $valueMaxWidth;
             $panelData[$label] = $value;
@@ -143,16 +158,16 @@ EOF;
 
         // output title
         if ($title) {
-            $title       = \ucwords($title);
-            $titleLength = \mb_strlen($title, 'UTF-8');
+            $title       = ucwords($title);
+            $titleLength = mb_strlen($title, 'UTF-8');
             $panelWidth  = $panelWidth > $titleLength ? $panelWidth : $titleLength;
-            $indentSpace = \str_pad(' ', \ceil($panelWidth / 2) - \ceil($titleLength / 2) + 2 * 2, ' ');
+            $indentSpace = str_pad(' ', ceil($panelWidth / 2) - ceil($titleLength / 2) + 2 * 2, ' ');
             Console::write("  {$indentSpace}<bold>{$title}</bold>");
         }
 
         // output panel top border
         if ($borderChar) {
-            $border = \str_pad($borderChar, $panelWidth + (3 * 3), $borderChar);
+            $border = str_pad($borderChar, $panelWidth + (3 * 3), $borderChar);
             Console::write('  ' . $border);
         }
 
@@ -188,8 +203,8 @@ EOF;
         }
 
         $buffer = new StrBuffer();
-        $data  = \is_array($this->data) ? \array_filter($this->data) : [\trim($this->data)];
-        $title = \trim($this->title);
+        $data   = is_array($this->data) ? array_filter($this->data) : [trim($this->data)];
+        $title  = trim($this->title);
 
         $panelData  = []; // [ 'label' => 'value' ]
         $borderChar = $this->borderXChar;
@@ -199,37 +214,37 @@ EOF;
 
         foreach ($data as $label => $value) {
             // label exists
-            if (!\is_numeric($label)) {
-                $width         = \mb_strlen($label, 'UTF-8');
+            if (!is_numeric($label)) {
+                $width         = mb_strlen($label, 'UTF-8');
                 $labelMaxWidth = $width > $labelMaxWidth ? $width : $labelMaxWidth;
             }
 
             // translate array to string
-            if (\is_array($value)) {
+            if (is_array($value)) {
                 $temp = '';
 
                 /** @var array $value */
                 foreach ($value as $key => $val) {
-                    if (\is_bool($val)) {
+                    if (is_bool($val)) {
                         $val = $val ? 'True' : 'False';
                     } else {
                         $val = (string)$val;
                     }
 
-                    $temp .= (!\is_numeric($key) ? "$key: " : '') . "<info>$val</info>, ";
+                    $temp .= (!is_numeric($key) ? "$key: " : '') . "<info>$val</info>, ";
                 }
 
-                $value = \rtrim($temp, ' ,');
-            } elseif (\is_bool($value)) {
+                $value = rtrim($temp, ' ,');
+            } elseif (is_bool($value)) {
                 $value = $value ? 'True' : 'False';
             } else {
-                $value = \trim((string)$value);
+                $value = trim((string)$value);
             }
 
             // get value width
             /** @var string $value */
-            $value = \trim($value);
-            $width = \mb_strlen(\strip_tags($value), 'UTF-8'); // must clear style tag
+            $value = trim($value);
+            $width = mb_strlen(strip_tags($value), 'UTF-8'); // must clear style tag
 
             $valueMaxWidth     = $width > $valueMaxWidth ? $width : $valueMaxWidth;
             $panelData[$label] = $value;
@@ -239,17 +254,17 @@ EOF;
 
         // output title
         if ($title) {
-            $title       = \ucwords($title);
-            $titleLength = \mb_strlen($title, 'UTF-8');
+            $title       = ucwords($title);
+            $titleLength = mb_strlen($title, 'UTF-8');
             $panelWidth  = $panelWidth > $titleLength ? $panelWidth : $titleLength;
-            $indentSpace = \str_pad(' ', \ceil($panelWidth / 2) - \ceil($titleLength / 2) + 2 * 2, ' ');
+            $indentSpace = str_pad(' ', ceil($panelWidth / 2) - ceil($titleLength / 2) + 2 * 2, ' ');
             $buffer->write("  {$indentSpace}<bold>{$title}</bold>\n");
         }
 
         // output panel top border
         if ($topBorder = $this->titleBorder) {
-            $border = \str_pad($topBorder, $panelWidth + (3 * 3), $topBorder);
-            $buffer->write('  ' . $border . \PHP_EOL);
+            $border = str_pad($topBorder, $panelWidth + (3 * 3), $topBorder);
+            $buffer->write('  ' . $border . PHP_EOL);
         }
 
         // output panel body
@@ -265,8 +280,8 @@ EOF;
 
         // output panel bottom border
         if ($footBorder = $this->footerBorder) {
-            $border = \str_pad($footBorder, $panelWidth + (3 * 3), $footBorder);
-            $buffer->write('  ' . $border . \PHP_EOL);
+            $border = str_pad($footBorder, $panelWidth + (3 * 3), $footBorder);
+            $buffer->write('  ' . $border . PHP_EOL);
         }
 
         unset($panelData);
@@ -275,6 +290,7 @@ EOF;
 
     /**
      * @param bool $border
+     *
      * @return $this
      */
     public function showBorder($border): self

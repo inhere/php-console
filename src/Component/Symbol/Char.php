@@ -8,9 +8,13 @@
 
 namespace Inhere\Console\Component\Symbol;
 
+use ReflectionClass;
+use ReflectionException;
+
 /**
  * Class FontSymbol
  * - 字体符号
+ *
  * @package Inhere\Console\Component\Symbol
  */
 final class Char
@@ -50,12 +54,12 @@ final class Char
 
     /**
      * @return array
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
     public static function getConstants(): array
     {
         if (!self::$constants) {
-            $objClass = new \ReflectionClass(__CLASS__);
+            $objClass = new ReflectionClass(__CLASS__);
 
             self::$constants = $objClass->getConstants();
         }

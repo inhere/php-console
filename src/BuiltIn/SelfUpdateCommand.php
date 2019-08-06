@@ -8,6 +8,7 @@
 
 namespace Inhere\Console\BuiltIn;
 
+use Exception;
 use Humbug\SelfUpdate\Strategy\GithubStrategy;
 use Humbug\SelfUpdate\Strategy\ShaStrategy;
 use Humbug\SelfUpdate\Updater;
@@ -15,6 +16,7 @@ use Humbug\SelfUpdate\VersionParser;
 use Inhere\Console\Command;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
+use function strlen;
 
 /**
  * Class SelfUpdateCommand
@@ -180,11 +182,11 @@ class SelfUpdateCommand extends Command
             $newVersion = $updater->getNewVersion();
             $oldVersion = $updater->getOldVersion();
 
-            if (\strlen($newVersion) === 40) {
+            if (strlen($newVersion) === 40) {
                 $newVersion = 'dev-' . $newVersion;
             }
 
-            if (\strlen($oldVersion) === 40) {
+            if (strlen($oldVersion) === 40) {
                 $oldVersion = 'dev-' . $oldVersion;
             }
 
@@ -205,7 +207,7 @@ class SelfUpdateCommand extends Command
                     $oldVersion
                 ));
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->output->writeln(sprintf('Error: <fg=yellow>%s</fg=yellow>', $e->getMessage()));
         }
         $this->output->write(PHP_EOL);
@@ -222,7 +224,7 @@ class SelfUpdateCommand extends Command
             } else {
                 $this->output->writeln('<fg=red>Rollback failed for reasons unknown.</fg=red>');
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->output->writeln(sprintf('Error: <fg=yellow>%s</fg=yellow>', $e->getMessage()));
         }
     }
@@ -281,7 +283,7 @@ class SelfUpdateCommand extends Command
             } else {
                 $this->output->writeln(sprintf('You have the current %s build installed.', $stability));
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->output->writeln(sprintf('Error: <fg=yellow>%s</fg=yellow>', $e->getMessage()));
         }
     }

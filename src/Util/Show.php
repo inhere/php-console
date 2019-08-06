@@ -2,6 +2,12 @@
 
 namespace Inhere\Console\Util;
 
+use function array_keys;
+use function array_values;
+use function ceil;
+use function count;
+use Generator;
+use function implode;
 use Inhere\Console\Component\Formatter\HelpPanel;
 use Inhere\Console\Component\Formatter\MultiList;
 use Inhere\Console\Component\Formatter\Padding;
@@ -17,10 +23,26 @@ use Inhere\Console\Component\Progress\SimpleBar;
 use Inhere\Console\Component\Progress\SimpleTextBar;
 use Inhere\Console\Component\Style\Style;
 use Inhere\Console\Console;
+use function is_array;
+use function is_string;
+use function json_encode;
+use const JSON_PRETTY_PRINT;
+use const JSON_UNESCAPED_SLASHES;
+use const JSON_UNESCAPED_UNICODE;
+use LogicException;
+use function microtime;
+use const PHP_EOL;
+use function sprintf;
+use function str_repeat;
+use function strlen;
+use function strpos;
+use function strtoupper;
+use function substr;
 use Toolkit\Cli\Cli;
 use Toolkit\Cli\ColorTag;
 use Toolkit\StrUtil\Str;
 use Toolkit\Sys\Sys;
+use function ucwords;
 
 /**
  * Class Show - render and display formatted message text
@@ -75,18 +97,18 @@ class Show
      */
     public static function block($messages, string $type = 'MESSAGE', string $style = Style::NORMAL, $quit = false): int
     {
-        $messages = \is_array($messages) ? \array_values($messages) : [$messages];
+        $messages = is_array($messages) ? array_values($messages) : [$messages];
 
         // add type
         if ($type) {
-            $messages[0] = \sprintf('[%s] %s', \strtoupper($type), $messages[0]);
+            $messages[0] = sprintf('[%s] %s', strtoupper($type), $messages[0]);
         }
 
-        $text  = \implode(\PHP_EOL, $messages);
+        $text  = implode(PHP_EOL, $messages);
         $color = static::getStyle();
 
-        if (\is_string($style) && $color->hasStyle($style)) {
-            $text = \sprintf('<%s>%s</%s>', $style, $text, $style);
+        if (is_string($style) && $color->hasStyle($style)) {
+            $text = sprintf('<%s>%s</%s>', $style, $text, $style);
         }
 
         return self::write($text, true, $quit);
@@ -106,18 +128,18 @@ class Show
         $quit = false
     ): int {
         $fmtType  = '';
-        $messages = \is_array($messages) ? \array_values($messages) : [$messages];
+        $messages = is_array($messages) ? array_values($messages) : [$messages];
 
-        $text  = \implode(\PHP_EOL, $messages);
+        $text  = implode(PHP_EOL, $messages);
         $color = static::getStyle();
 
         // format type
         if ($type) {
             // add style
             if ($style && $color->hasStyle($style)) {
-                $fmtType = \sprintf('<%s>[%s]</%s> ', $style, $upType, $style);
+                $fmtType = sprintf('<%s>[%s]</%s> ', $style, $upType, $style);
             } else {
-                $fmtType = \sprintf('[%s]', $upType = \strtoupper($type));
+                $fmtType = sprintf('[%s]', $upType = strtoupper($type));
             }
         }
 
@@ -153,7 +175,7 @@ class Show
      * @param string $method
      * @param array  $args
      * @return int
-     * @throws \LogicException
+     * @throws LogicException
      */
     public static function __callStatic($method, array $args = [])
     {
@@ -162,8 +184,8 @@ class Show
             $quit  = $args[1] ?? false;
             $style = self::$blockMethods[$method];
 
-            if (0 === \strpos($method, 'lite')) {
-                $type = \substr($method, 4);
+            if (0 === strpos($method, 'lite')) {
+                $type = substr($method, 4);
 
                 return self::liteBlock($msg, $type === 'primary' ? 'IMPORTANT' : $type, $style, $quit);
             }
@@ -171,7 +193,7 @@ class Show
             return self::block($msg, $style === 'primary' ? 'IMPORTANT' : $style, $style, $quit);
         }
 
-        throw new \LogicException("Call a not exists method: $method");
+        throw new LogicException("Call a not exists method: $method");
     }
 
     /**************************************************************************************************
@@ -186,9 +208,9 @@ class Show
      */
     public static function prettyJSON(
         $data,
-        int $flags = \JSON_PRETTY_PRINT | \JSON_UNESCAPED_UNICODE | \JSON_UNESCAPED_SLASHES
+        int $flags = JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
     ): int {
-        $string = (string)\json_encode($data, $flags);
+        $string = (string)json_encode($data, $flags);
 
         return Console::write($string);
     }
@@ -207,13 +229,13 @@ class Show
         }
 
         if (!$title) {
-            return self::write(\str_repeat($char, $width));
+            return self::write(str_repeat($char, $width));
         }
 
-        $strLen = \ceil(($width - Str::len($title) - 2) / 2);
-        $padStr = $strLen > 0 ? \str_repeat($char, $strLen) : '';
+        $strLen = ceil(($width - Str::len($title) - 2) / 2);
+        $padStr = $strLen > 0 ? str_repeat($char, $strLen) : '';
 
-        return self::write($padStr . ' ' . \ucwords($title) . ' ' . $padStr);
+        return self::write($padStr . ' ' . ucwords($title) . ' ' . $padStr);
     }
 
     /**
@@ -395,7 +417,7 @@ class Show
             return;
         }
 
-        $now = \microtime(true);
+        $now = microtime(true);
 
         if (null === $lastTime || ($lastTime < $now - 0.1)) {
             $lastTime = $now;
@@ -403,7 +425,7 @@ class Show
             printf($tpl, $chars[$counter] . $msg);
             $counter++;
 
-            if ($counter > \strlen($chars) - 1) {
+            if ($counter > strlen($chars) - 1) {
                 $counter = 0;
             }
         }
@@ -445,14 +467,14 @@ class Show
             return;
         }
 
-        $now = \microtime(true);
+        $now = microtime(true);
 
         if (null === $lastTime || ($lastTime < $now - 0.8)) {
             $lastTime = $now;
             printf($tpl, $msg . $chars[$counter]);
             $counter++;
 
-            if ($counter > \count($chars) - 1) {
+            if ($counter > count($chars) - 1) {
                 $counter = 0;
             }
         }
@@ -494,9 +516,9 @@ class Show
      *
      * @param string      $msg
      * @param string|null $doneMsg
-     * @return \Generator
+     * @return Generator
      */
-    public static function counterTxt(string $msg, $doneMsg = ''): \Generator
+    public static function counterTxt(string $msg, $doneMsg = ''): Generator
     {
         return CounterText::gen($msg, $doneMsg);
     }
@@ -504,9 +526,9 @@ class Show
     /**
      * @param string      $doneMsg
      * @param string|null $fixMsg
-     * @return \Generator
+     * @return Generator
      */
-    public static function dynamicTxt(string $doneMsg, string $fixMsg = null): \Generator
+    public static function dynamicTxt(string $doneMsg, string $fixMsg = null): Generator
     {
         return self::dynamicText($doneMsg, $fixMsg);
     }
@@ -514,9 +536,9 @@ class Show
     /**
      * @param string      $doneMsg
      * @param string|null $fixedMsg
-     * @return \Generator
+     * @return Generator
      */
-    public static function dynamicText(string $doneMsg, string $fixedMsg = null): \Generator
+    public static function dynamicText(string $doneMsg, string $fixedMsg = null): Generator
     {
         return DynamicText::gen($doneMsg, $fixedMsg);
     }
@@ -526,9 +548,9 @@ class Show
      * @param int    $total
      * @param string $msg
      * @param string $doneMsg
-     * @return \Generator
+     * @return Generator
      */
-    public static function progressTxt(int $total, string $msg, string $doneMsg = ''): \Generator
+    public static function progressTxt(int $total, string $msg, string $doneMsg = ''): Generator
     {
         return SimpleTextBar::gen($total, $msg, $doneMsg);
     }
@@ -538,9 +560,9 @@ class Show
      * @param int   $total
      * @param array $opts
      * @internal int $current
-     * @return \Generator
+     * @return Generator
      */
-    public static function progressBar(int $total, array $opts = []): ?\Generator
+    public static function progressBar(int $total, array $opts = []): ?Generator
     {
         return SimpleBar::gen($total, $opts);
     }
@@ -560,7 +582,7 @@ class Show
      * @param int  $max
      * @param bool $start
      * @return ProgressBar
-     * @throws \LogicException
+     * @throws LogicException
      */
     public static function createProgressBar($max = 0, $start = true): ProgressBar
     {
@@ -675,7 +697,7 @@ class Show
      */
     public static function writef(string $format, ...$args): int
     {
-        return self::write(\sprintf($format, ...$args));
+        return self::write(sprintf($format, ...$args));
     }
 
     /**
@@ -734,8 +756,8 @@ class Show
     {
         $quit = isset($opts['quit']) ? (bool)$opts['quit'] : false;
 
-        if (\is_array($message)) {
-            $message = \implode($nl ? \PHP_EOL : '', $message);
+        if (is_array($message)) {
+            $message = implode($nl ? PHP_EOL : '', $message);
         }
 
         return self::write(ColorTag::wrap($message, $style), $nl, $quit, $opts);
@@ -747,7 +769,7 @@ class Show
      */
     public static function getBlockMethods($onlyKey = true): array
     {
-        return $onlyKey ? \array_keys(self::$blockMethods) : self::$blockMethods;
+        return $onlyKey ? array_keys(self::$blockMethods) : self::$blockMethods;
     }
 
     /**

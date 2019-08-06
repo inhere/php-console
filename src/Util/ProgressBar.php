@@ -8,8 +8,12 @@
 
 namespace Inhere\Console\Util;
 
+use Closure;
 use Inhere\Console\IO\Output;
 use Inhere\Console\IO\OutputInterface;
+use LogicException;
+use function max;
+use RuntimeException;
 use Toolkit\StrUtil\Str;
 
 /**
@@ -81,7 +85,7 @@ class ProgressBar
 
     /**
      * section parsers
-     * @var \Closure[]
+     * @var Closure[]
      */
     private static $parsers = [
         // 'precent' => function () { ... },
@@ -114,12 +118,12 @@ class ProgressBar
     /**
      * 开始
      * @param null $maxSteps
-     * @throws \LogicException
+     * @throws LogicException
      */
     public function start($maxSteps = null): void
     {
         if ($this->started) {
-            throw new \LogicException('Progress bar already started.');
+            throw new LogicException('Progress bar already started.');
         }
 
         $this->startTime = time();
@@ -137,12 +141,12 @@ class ProgressBar
     /**
      * 前进，按步长前进几步
      * @param int $step 前进几步
-     * @throws \LogicException
+     * @throws LogicException
      */
     public function advance(int $step = 1): void
     {
         if (!$this->started) {
-            throw new \LogicException('Progress indicator has not yet been started.');
+            throw new LogicException('Progress indicator has not yet been started.');
         }
 
         $this->advanceTo($this->step + $step);
@@ -172,12 +176,12 @@ class ProgressBar
 
     /**
      * Finishes the progress output.
-     * @throws \LogicException
+     * @throws LogicException
      */
     public function finish(): void
     {
         if (!$this->started) {
-            throw new \LogicException('Progress bar has not yet been started.');
+            throw new LogicException('Progress bar has not yet been started.');
         }
 
         if (!$this->maxSteps) {
@@ -246,7 +250,7 @@ class ProgressBar
 
     /**
      * @return mixed
-     * @throws \RuntimeException
+     * @throws RuntimeException
      */
     protected function buildLine()
     {
@@ -283,7 +287,7 @@ class ProgressBar
      * @param  string       $section
      * @param  bool|boolean $throwException
      * @return mixed
-     * @throws \RuntimeException
+     * @throws RuntimeException
      */
     public function getParser(string $section, bool $throwException = false)
     {
@@ -296,7 +300,7 @@ class ProgressBar
         }
 
         if ($throwException) {
-            throw new \RuntimeException("The section($section) formatter is not registered!", -500);
+            throw new RuntimeException("The section($section) formatter is not registered!", -500);
         }
 
         return null;
@@ -373,7 +377,7 @@ class ProgressBar
      */
     private function setMaxSteps(int $maxSteps): void
     {
-        $this->maxSteps = \max(0, $maxSteps);
+        $this->maxSteps = max(0, $maxSteps);
         $this->stepWidth = $this->maxSteps ? Str::len($this->maxSteps) : 2;
     }
 
@@ -512,7 +516,7 @@ class ProgressBar
 
     /**
      * @return array
-     * @throws \LogicException
+     * @throws LogicException
      */
     private static function loadDefaultParsers(): array
     {
@@ -533,7 +537,7 @@ class ProgressBar
             },
             'remaining' => function (self $bar) {
                 if (!$bar->getMaxSteps()) {
-                    throw new \LogicException('Unable to display the remaining time if the maximum number of steps is not set.');
+                    throw new LogicException('Unable to display the remaining time if the maximum number of steps is not set.');
                 }
 
                 if (!$bar->getProgress()) {

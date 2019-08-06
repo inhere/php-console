@@ -10,6 +10,7 @@ namespace Inhere\Console\Contract;
 
 use Inhere\Console\AbstractApplication;
 use Inhere\Console\Application;
+use Throwable;
 
 /**
  * Interface ErrorHandlerInterface
@@ -18,8 +19,8 @@ use Inhere\Console\Application;
 interface ErrorHandlerInterface
 {
     /**
-     * @param \Throwable                      $e
+     * @param Throwable                      $e
      * @param Application|AbstractApplication $app
      */
-    public function handle(\Throwable $e, AbstractApplication $app): void;
+    public function handle(Throwable $e, AbstractApplication $app): void;
 }

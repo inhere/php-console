@@ -8,8 +8,11 @@
 
 namespace Inhere\Console\Component;
 
+use RuntimeException;
+
 /**
  * Class NotifyMessage - like progress, spinner ....
+ *
  * @package Inhere\Console\Component
  * @link https://github.com/wp-cli/php-cli-tools/tree/master/lib/cli
  */
@@ -36,6 +39,6 @@ class NotifyMessage
 
     public function display(): void
     {
-        throw new \RuntimeException('Please implement the method on sub-class');
+        throw new RuntimeException('Please implement the method on sub-class');
     }
 }

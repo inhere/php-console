@@ -2,9 +2,13 @@
 
 namespace Inhere\Console\Component\Interact;
 
+use function array_key_exists;
+use function explode;
 use Inhere\Console\Component\InteractMessage;
 use Inhere\Console\Console;
 use Inhere\Console\Util\Show;
+use function is_array;
+use function trim;
 
 /**
  * Class Choose
@@ -28,11 +32,11 @@ class Choose extends InteractMessage
      */
     public static function one(string $description, $options, $default = null, bool $allowExit = true): string
     {
-        if (!$description = \trim($description)) {
+        if (!$description = trim($description)) {
             Show::error('Please provide a description text!', 1);
         }
 
-        $options = \is_array($options) ? $options : \explode(',', $options);
+        $options = is_array($options) ? $options : explode(',', $options);
 
         // If default option is error
         if (null !== $default && !isset($options[$default])) {
@@ -55,7 +59,7 @@ class Choose extends InteractMessage
         $r = Console::readln("Your choice{$defaultText} : ");
 
         // error, allow try again once.
-        if (!\array_key_exists($r, $options)) {
+        if (!array_key_exists($r, $options)) {
             goto beginChoice;
         }
 

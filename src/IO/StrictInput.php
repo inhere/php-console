@@ -8,12 +8,16 @@
 
 namespace Inhere\Console\IO;
 
+use function array_shift;
+use function strpos;
+
 /**
  * Class StrictInput
  * - 严格按照定义解析
  * - 初始化时不全部解析，只取出 '-h' '--help' 还有命令名
  * - 到运行命令时根据命令的参数选项配置(InputDefinition)来进行解析
  * - @todo un-completed
+ *
  * @package Inhere\Console\IO
  */
 class StrictInput extends Input
@@ -51,7 +55,7 @@ class StrictInput extends Input
         $copy = $args;
 
         // command name
-        if (!empty($copy[1]) && $copy[1][0] !== '-' && false === \strpos($copy[1], '=')) {
+        if (!empty($copy[1]) && $copy[1][0] !== '-' && false === strpos($copy[1], '=')) {
             $this->setCommand($copy[1]);
 
             // unset command
@@ -59,7 +63,7 @@ class StrictInput extends Input
         }
 
         // pop script name
-        \array_shift($copy);
+        array_shift($copy);
 
         $this->cleanedTokens = $copy;
         $this->collectPreParsed($copy);
@@ -79,7 +83,7 @@ class StrictInput extends Input
     public function parseTokens(array $allowArray = [], array $noValues = []): void
     {
         $params = $this->getTokens();
-        \array_shift($params); // pop script name
+        array_shift($params); // pop script name
     }
 
     /**

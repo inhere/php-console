@@ -2,6 +2,9 @@
 
 namespace Inhere\Console\Component\Progress;
 
+use function array_merge;
+use function ceil;
+use Generator;
 use Inhere\Console\Component\NotifyMessage;
 use Inhere\Console\Console;
 use Toolkit\Cli\Cli;
@@ -33,15 +36,15 @@ class SimpleBar extends NotifyMessage
      * @param int   $total
      * @param array $opts
      * @internal int $current
-     * @return \Generator
+     * @return Generator
      */
-    public static function gen(int $total, array $opts = []): \Generator
+    public static function gen(int $total, array $opts = []): Generator
     {
         $current   = 0;
         $finished  = false;
         $tplPrefix = Cli::isSupportColor() ? "\x0D\x1B[2K" : "\x0D\r";
 
-        $opts = \array_merge([
+        $opts = array_merge([
             'doneChar' => '=',
             'waitChar' => ' ',
             'signChar' => '>',
@@ -65,7 +68,7 @@ class SimpleBar extends NotifyMessage
             }
 
             $current += $step;
-            $percent = \ceil(($current / $total) * 100);
+            $percent = ceil(($current / $total) * 100);
 
             if ($percent >= 100) {
                 $msg      = $doneMsg ?: $msg;

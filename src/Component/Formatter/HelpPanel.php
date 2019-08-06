@@ -11,11 +11,18 @@ namespace Inhere\Console\Component\Formatter;
 use Inhere\Console\Component\MessageFormatter;
 use Inhere\Console\Console;
 use Inhere\Console\Util\FormatUtil;
-use Inhere\Console\Util\Show;
+use function array_merge;
+use function implode;
+use function is_array;
+use function is_string;
+use function trim;
+use function ucfirst;
+use const PHP_EOL;
 
 /**
  * Class HelpPanel
  * - method version please {@see \Inhere\Console\Util\Show::helpPanel()}
+ *
  * @package Inhere\Console\Component\Formatter
  */
 class HelpPanel extends MessageFormatter
@@ -33,7 +40,7 @@ class HelpPanel extends MessageFormatter
 
     /**
      * Show console help message
-     * @param  array $config The config data
+     *
      * There are config structure. you can setting some or ignore some. will only render it when value is not empty.
      * [
      *  description string         The description text. e.g 'Composer version 1.3.2'
@@ -60,6 +67,8 @@ class HelpPanel extends MessageFormatter
      *      ]
      *  examples    array|string  The command usage example. e.g 'php server.php {start|reload|restart|stop} [-d]'
      * ]
+     *
+     * @param array $config The config data
      */
     public static function show(array $config): void
     {
@@ -67,7 +76,7 @@ class HelpPanel extends MessageFormatter
         $option = [
             'indentDes' => '  ',
         ];
-        $config = \array_merge([
+        $config = array_merge([
             'description' => '',
             'usage'       => '',
 
@@ -85,7 +94,7 @@ class HelpPanel extends MessageFormatter
 
         // some option for show.
         if (isset($config['_opts'])) {
-            $option = \array_merge($option, $config['_opts']);
+            $option = array_merge($option, $config['_opts']);
             unset($config['_opts']);
         }
 
@@ -102,10 +111,10 @@ class HelpPanel extends MessageFormatter
             }
 
             // if $value is array, translate array to string
-            if (\is_array($value)) {
+            if (is_array($value)) {
                 // is natural key ['text1', 'text2'](like usage,examples)
                 if (isset($value[0])) {
-                    $value = \implode(\PHP_EOL . '  ', $value);
+                    $value = implode(PHP_EOL . '  ', $value);
 
                     // is key-value [ 'key1' => 'text1', 'key2' => 'text2']
                 } else {
@@ -117,15 +126,15 @@ class HelpPanel extends MessageFormatter
                 }
             }
 
-            if (\is_string($value)) {
-                $value   = \trim($value);
-                $section = \ucfirst($section);
+            if (is_string($value)) {
+                $value   = trim($value);
+                $section = ucfirst($section);
                 $parts[] = "<comment>$section</comment>:\n  {$value}\n";
             }
         }
 
         if ($parts) {
-            Console::write(\implode("\n", $parts), false);
+            Console::write(implode("\n", $parts), false);
         }
     }
 }

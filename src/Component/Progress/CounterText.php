@@ -2,6 +2,7 @@
 
 namespace Inhere\Console\Component\Progress;
 
+use Generator;
 use Inhere\Console\Component\NotifyMessage;
 use Inhere\Console\Console;
 use Toolkit\Cli\Cli;
@@ -30,9 +31,9 @@ class CounterText extends NotifyMessage
      *
      * @param string $msg
      * @param string $doneMsg
-     * @return \Generator
+     * @return Generator
      */
-    public static function gen(string $msg, $doneMsg = ''): \Generator
+    public static function gen(string $msg, $doneMsg = ''): Generator
     {
         $counter  = 0;
         $finished = false;

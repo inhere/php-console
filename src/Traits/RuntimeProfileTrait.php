@@ -8,16 +8,24 @@
 
 namespace Inhere\Console\Traits;
 
+use InvalidArgumentException;
 use Toolkit\PhpUtil\PhpHelper;
+use function array_pop;
+use function explode;
+use function in_array;
+use function memory_get_usage;
+use function microtime;
 
 /**
  * Trait RuntimeProfileTrait
+ *
  * @package Inhere\Library\Traits
  */
 trait RuntimeProfileTrait
 {
     /**
      * profile data
+     *
      * @var array
      */
     private static $profiles = [];
@@ -35,17 +43,19 @@ trait RuntimeProfileTrait
 
     /**
      * mark data analysis start
+     *
      * @param        $name
      * @param array  $context
      * @param string $category
-     * @throws \InvalidArgumentException
+     *
+     * @throws InvalidArgumentException
      */
     public static function profile($name, array $context = [], $category = 'application'): void
     {
         $data = [
             '_profile_stats' => [
-                'startTime' => \microtime(true),
-                'startMem'  => \memory_get_usage(),
+                'startTime' => microtime(true),
+                'startMem'  => memory_get_usage(),
             ],
             '_profile_start' => $context,
             '_profile_end'   => null,
@@ -54,35 +64,37 @@ trait RuntimeProfileTrait
 
         $profileKey = $category . '|' . $name;
 
-        if (\in_array($profileKey, self::$keyQueue, 1)) {
-            throw new \InvalidArgumentException("Your added profile name [$name] have been exists!");
+        if (in_array($profileKey, self::$keyQueue, 1)) {
+            throw new InvalidArgumentException("Your added profile name [$name] have been exists!");
         }
 
-        self::$keyQueue[] = $profileKey;
+        self::$keyQueue[]                 = $profileKey;
         self::$profiles[$category][$name] = $data;
     }
 
     /**
      * mark data analysis end
+     *
      * @param string|null $msg
      * @param array       $context
+     *
      * @return bool|array
      */
     public static function profileEnd(string $msg = null, array $context = [])
     {
-        if (!$latestKey = \array_pop(self::$keyQueue)) {
+        if (!$latestKey = array_pop(self::$keyQueue)) {
             return false;
         }
 
-        [$category, $name] = \explode('|', $latestKey);
+        [$category, $name] = explode('|', $latestKey);
 
         if (isset(self::$profiles[$category][$name])) {
             $data = self::$profiles[$category][$name];
 
-            $old = $data['_profile_stats'];
+            $old                    = $data['_profile_stats'];
             $data['_profile_stats'] = PhpHelper::runtime($old['startTime'], $old['startMem']);
-            $data['_profile_end'] = $context;
-            $data['_profile_msg'] = $msg;
+            $data['_profile_end']   = $context;
+            $data['_profile_msg']   = $msg;
 
             // $title = $category . ' - ' . ($title ?: $name);
 
@@ -98,6 +110,7 @@ trait RuntimeProfileTrait
     /**
      * @param null|string $name
      * @param string      $category
+     *
      * @return array
      */
     public static function getProfileData(string $name = null, string $category = 'application'): array

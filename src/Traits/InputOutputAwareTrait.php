@@ -13,9 +13,11 @@ use Inhere\Console\IO\Input;
 use Inhere\Console\IO\InputInterface;
 use Inhere\Console\IO\Output;
 use Inhere\Console\IO\OutputInterface;
+use InvalidArgumentException;
 
 /**
  * Class InputOutputAwareTrait
+ *
  * @package Inhere\Console\Traits
  */
 trait InputOutputAwareTrait
@@ -62,8 +64,8 @@ trait InputOutputAwareTrait
 
     /**
      * {@inheritdoc}
+     * @throws InvalidArgumentException
      * @see Input::getRequiredArg()
-     * @throws \InvalidArgumentException
      */
     public function getRequiredArg($name)
     {
@@ -99,8 +101,8 @@ trait InputOutputAwareTrait
 
     /**
      * {@inheritdoc}
+     * @throws InvalidArgumentException
      * @see Input::getRequiredOpt()
-     * @throws \InvalidArgumentException
      */
     public function getRequiredOpt(string $name)
     {
@@ -110,6 +112,7 @@ trait InputOutputAwareTrait
     /**
      * @param string $question
      * @param bool   $nl
+     *
      * @return string
      */
     public function read(string $question = '', bool $nl = false): string
@@ -121,6 +124,7 @@ trait InputOutputAwareTrait
      * @param mixed    $message
      * @param bool     $nl
      * @param bool|int $quit
+     *
      * @return int
      */
     public function write($message, $nl = true, $quit = false): int
@@ -131,6 +135,7 @@ trait InputOutputAwareTrait
     /**
      * @param mixed    $message
      * @param bool|int $quit
+     *
      * @return int
      */
     public function writeln($message, $quit = false): int
@@ -172,6 +177,7 @@ trait InputOutputAwareTrait
 
     /**
      * get debug level value
+     *
      * @return int
      */
     public function getVerbLevel(): int
@@ -181,7 +187,9 @@ trait InputOutputAwareTrait
 
     /**
      * check is given verbose level
+     *
      * @param int $level
+     *
      * @return bool
      */
     public function isDebug(int $level = Console::VERB_DEBUG): bool

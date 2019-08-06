@@ -9,6 +9,10 @@
 namespace Inhere\Console\BuiltIn;
 
 use Inhere\Console\Command;
+use Inhere\Console\IO\Input;
+use Inhere\Console\IO\Output;
+use const PHP_VERSION;
+use function strpos;
 use Toolkit\Sys\Sys;
 
 /**
@@ -41,8 +45,8 @@ class DevServerCommand extends Command
      *  file=STRING         The entry file for server. e.g web/index.php
      * @example
      *  {command} -S 127.0.0.1:8552 web/index.php
-     * @param  \Inhere\Console\IO\Input  $in
-     * @param  \Inhere\Console\IO\Output $out
+     * @param  Input  $in
+     * @param  Output $out
      * @return int|mixed|void
      */
     public function execute($in, $out)
@@ -51,12 +55,12 @@ class DevServerCommand extends Command
             $server = $this->getSameOpt(['H', 'host'], '127.0.0.1');
         }
 
-        if (!\strpos($server, ':')) {
+        if (!strpos($server, ':')) {
             $port = $this->getSameOpt(['p', 'port'], 8552);
             $server .= ':' . $port;
         }
 
-        $version = \PHP_VERSION;
+        $version = PHP_VERSION;
         $workDir = $this->input->getPwd();
         $docDir = $this->getOpt('t');
         $docRoot = $docDir ? $workDir . '/' . $docDir : $workDir;

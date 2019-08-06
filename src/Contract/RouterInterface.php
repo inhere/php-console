@@ -8,8 +8,12 @@
 
 namespace Inhere\Console\Contract;
 
+use Closure;
+use InvalidArgumentException;
+
 /**
  * Interface RouterInterface
+ *
  * @package Inhere\Console\Contract
  */
 interface RouterInterface
@@ -29,20 +33,22 @@ interface RouterInterface
      *  - aliases     The command aliases
      *  - description The description message
      * @return static
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function addGroup(string $name, $class = null, array $options = []): self;
 
     /**
      * Register a app independent console command
-     * @param string|CommandInterface          $name
-     * @param string|\Closure|CommandInterface $handler
-     * @param array                            $options
+     *
+     * @param string|CommandInterface         $name
+     * @param string|Closure|CommandInterface $handler
+     * @param array                           $options
      * array:
      *  - aliases     The command aliases
      *  - description The description message
+     *
      * @return static
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function addCommand(string $name, $handler = null, array $options = []): self;
 

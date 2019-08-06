@@ -8,6 +8,7 @@
 
 namespace Inhere\Console;
 
+use ErrorException;
 use Inhere\Console\Component\ErrorHandler;
 use Inhere\Console\Component\Style\Style;
 use Inhere\Console\Contract\ApplicationInterface;
@@ -19,7 +20,22 @@ use Inhere\Console\IO\OutputInterface;
 use Inhere\Console\Traits\ApplicationHelpTrait;
 use Inhere\Console\Traits\InputOutputAwareTrait;
 use Inhere\Console\Traits\SimpleEventTrait;
+use InvalidArgumentException;
+use Throwable;
 use Toolkit\PhpUtil\PhpHelper;
+use function array_keys;
+use function array_merge;
+use function error_get_last;
+use function header;
+use function in_array;
+use function is_int;
+use function memory_get_usage;
+use function microtime;
+use function register_shutdown_function;
+use function set_error_handler;
+use function set_exception_handler;
+use function trim;
+use const PHP_SAPI;
 
 /**
  * Class AbstractApplication
@@ -94,7 +110,7 @@ abstract class AbstractApplication implements ApplicationInterface
      * @param array  $config
      * @param Input  $input
      * @param Output $output
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function __construct(array $config = [], Input $input = null, Output $output = null)
     {
@@ -109,14 +125,14 @@ abstract class AbstractApplication implements ApplicationInterface
     }
 
     /**
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     protected function init(): void
     {
         $this->stats = [
-            'startTime'   => \microtime(1),
+            'startTime'   => microtime(1),
             'endTime'     => 0,
-            'startMemory' => \memory_get_usage(),
+            'startMemory' => memory_get_usage(),
             'endMemory'   => 0,
         ];
 
@@ -141,7 +157,7 @@ abstract class AbstractApplication implements ApplicationInterface
     public function addGlobalOptions(array $options): void
     {
         if ($options) {
-            self::$globalOptions = \array_merge(self::$globalOptions, $options);
+            self::$globalOptions = array_merge(self::$globalOptions, $options);
         }
     }
 
@@ -167,11 +183,11 @@ abstract class AbstractApplication implements ApplicationInterface
      * run application
      * @param bool $exit
      * @return int|mixed
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function run(bool $exit = true)
     {
-        $command = \trim($this->input->getCommand(), $this->delimiter);
+        $command = trim($this->input->getCommand(), $this->delimiter);
 
         $this->prepareRun();
 
@@ -187,20 +203,20 @@ abstract class AbstractApplication implements ApplicationInterface
         // do run ...
         try {
             $result = $this->dispatch($command);
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             $this->fire(self::ON_RUN_ERROR, $e, $this);
             $result = $e->getCode() === 0 ? $e->getLine() : $e->getCode();
             $this->handleException($e);
         }
 
-        $this->stats['endTime'] = \microtime(1);
+        $this->stats['endTime'] = microtime(1);
 
         // call 'onAfterRun' service, if it is registered.
         $this->fire(self::ON_AFTER_RUN, $this);
         $this->afterRun();
 
         if ($exit) {
-            $this->stop(\is_int($result) ? $result : 0);
+            $this->stop(is_int($result) ? $result : 0);
         }
 
         return $result;
@@ -256,8 +272,8 @@ abstract class AbstractApplication implements ApplicationInterface
     protected function runtimeCheck(): void
     {
         // check env
-        if (!\in_array(\PHP_SAPI, ['cli', 'phpdbg', 'cli-server'], true)) {
-            \header('HTTP/1.1 403 Forbidden');
+        if (!in_array(PHP_SAPI, ['cli', 'phpdbg', 'cli-server'], true)) {
+            header('HTTP/1.1 403 Forbidden');
             exit("  403 Forbidden \n\n"
                 . " current environment is CLI. \n"
                 . " :( Sorry! Run this script is only allowed in the terminal environment!\n,You are not allowed to access this file.\n");
@@ -266,14 +282,14 @@ abstract class AbstractApplication implements ApplicationInterface
 
     /**
      * register error handle
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     protected function registerErrorHandle(): void
     {
-        \set_error_handler([$this, 'handleError']);
-        \set_exception_handler([$this, 'handleException']);
-        \register_shutdown_function(function () {
-            if ($e = \error_get_last()) {
+        set_error_handler([$this, 'handleError']);
+        set_exception_handler([$this, 'handleException']);
+        register_shutdown_function(function () {
+            if ($e = error_get_last()) {
                 $this->handleError($e['type'], $e['message'], $e['file'], $e['line']);
             }
         });
@@ -285,18 +301,18 @@ abstract class AbstractApplication implements ApplicationInterface
      * @param string $str
      * @param string $file
      * @param int    $line
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function handleError(int $num, string $str, string $file, int $line): void
     {
-        $this->handleException(new \ErrorException($str, 0, $num, $file, $line));
+        $this->handleException(new ErrorException($str, 0, $num, $file, $line));
         $this->stop(-1);
     }
 
     /**
      * Running exception handling
-     * @param \Throwable $e
-     * @throws \InvalidArgumentException
+     * @param Throwable $e
+     * @throws InvalidArgumentException
      */
     public function handleException($e): void
     {
@@ -428,7 +444,7 @@ abstract class AbstractApplication implements ApplicationInterface
      */
     public function getInternalCommands(): array
     {
-        return \array_keys(static::$internalCommands);
+        return array_keys(static::$internalCommands);
     }
 
     /**
@@ -470,7 +486,7 @@ abstract class AbstractApplication implements ApplicationInterface
     public function setConfig(array $config): void
     {
         if ($config) {
-            $this->config = \array_merge($this->config, $config);
+            $this->config = array_merge($this->config, $config);
         }
     }
 

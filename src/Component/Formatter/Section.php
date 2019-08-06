@@ -6,21 +6,30 @@ use Inhere\Console\Component\MessageFormatter;
 use Inhere\Console\Console;
 use Inhere\Console\Util\FormatUtil;
 use Toolkit\StrUtil\Str;
+use function array_merge;
+use function ceil;
+use function implode;
+use function is_array;
+use function str_pad;
+use function trim;
+use function ucwords;
+use const PHP_EOL;
 
 /**
  * Class Section
+ *
  * @package Inhere\Console\Component\Formatter
  */
 class Section extends MessageFormatter
 {
     /**
      * @param string       $title The title text
-     * @param string|array $body The section body message
+     * @param string|array $body  The section body message
      * @param array        $opts
      */
     public static function show(string $title, $body, array $opts = []): void
     {
-        $opts = \array_merge([
+        $opts = array_merge([
             'width'        => 80,
             'char'         => self::CHAR_HYPHEN,
             'titlePos'     => self::POS_LEFT,
@@ -31,11 +40,11 @@ class Section extends MessageFormatter
 
         // list($sW, $sH) = Helper::getScreenSize();
         $width     = (int)$opts['width'];
-        $char      = \trim($opts['char']);
+        $char      = trim($opts['char']);
         $indent    = (int)$opts['indent'] >= 0 ? $opts['indent'] : 2;
         $indentStr = Str::pad(self::CHAR_SPACE, $indent, self::CHAR_SPACE);
 
-        $title   = \ucwords(\trim($title));
+        $title   = ucwords(trim($title));
         $tLength = Str::len($title);
         $width   = $width > 10 ? $width : 80;
 
@@ -43,9 +52,9 @@ class Section extends MessageFormatter
         if ($tLength >= $width) {
             $titleIndent = Str::pad(self::CHAR_SPACE, $indent, self::CHAR_SPACE);
         } elseif ($opts['titlePos'] === self::POS_RIGHT) {
-            $titleIndent = \str_pad(self::CHAR_SPACE, \ceil($width - $tLength) + $indent, self::CHAR_SPACE);
+            $titleIndent = str_pad(self::CHAR_SPACE, ceil($width - $tLength) + $indent, self::CHAR_SPACE);
         } elseif ($opts['titlePos'] === self::POS_MIDDLE) {
-            $titleIndent = \str_pad(self::CHAR_SPACE, \ceil(($width - $tLength) / 2) + $indent, self::CHAR_SPACE);
+            $titleIndent = str_pad(self::CHAR_SPACE, ceil(($width - $tLength) / 2) + $indent, self::CHAR_SPACE);
         } else {
             $titleIndent = Str::pad(self::CHAR_SPACE, $indent, self::CHAR_SPACE);
         }
@@ -58,7 +67,7 @@ class Section extends MessageFormatter
         $showBBorder = (bool)$opts['bottomBorder'];
 
         if ($showTBorder || $showBBorder) {
-            $border = \str_pad($char, $width, $char);
+            $border = str_pad($char, $width, $char);
 
             if ($showTBorder) {
                 $topBorder = "{$indentStr}$border\n";
@@ -69,7 +78,7 @@ class Section extends MessageFormatter
             }
         }
 
-        $body = \is_array($body) ? \implode(\PHP_EOL, $body) : $body;
+        $body = is_array($body) ? implode(PHP_EOL, $body) : $body;
         $body = FormatUtil::wrapText($body, 4, $opts['width']);
 
         Console::writef($template, $titleLine, $topBorder, $body, $bottomBorder);

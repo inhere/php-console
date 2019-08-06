@@ -5,6 +5,9 @@ namespace Inhere\Console\Component\Interact;
 use Inhere\Console\Component\InteractMessage;
 use Inhere\Console\Console;
 use Inhere\Console\Util\Show;
+use function stripos;
+use function trim;
+use function ucfirst;
 
 /**
  * Class Confirm
@@ -20,13 +23,13 @@ class Confirm extends InteractMessage
      */
     public static function ask(string $question, bool $default = true): bool
     {
-        if (!$question = \trim($question)) {
+        if (!$question = trim($question)) {
             Show::warning('Please provide a question message!', 1);
             return false;
         }
 
         $defText  = $default ? 'yes' : 'no';
-        $question = \ucfirst(\trim($question, '?'));
+        $question = ucfirst(trim($question, '?'));
         $message  = "<comment>$question ?</comment>\nPlease confirm (yes|no)[default:<info>$defText</info>]: ";
 
         while (true) {
@@ -36,11 +39,11 @@ class Confirm extends InteractMessage
                 return $default;
             }
 
-            if (0 === \stripos($answer, 'y')) {
+            if (0 === stripos($answer, 'y')) {
                 return true;
             }
 
-            if (0 === \stripos($answer, 'n')) {
+            if (0 === stripos($answer, 'n')) {
                 return false;
             }
         }

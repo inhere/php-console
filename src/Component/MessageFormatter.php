@@ -10,6 +10,7 @@ namespace Inhere\Console\Component;
 
 use Inhere\Console\Console;
 use Inhere\Console\Contract\FormatterInterface;
+use RuntimeException;
 use Toolkit\PhpUtil\PhpHelper;
 
 /**
@@ -61,7 +62,7 @@ abstract class MessageFormatter implements FormatterInterface
      */
     public function format(): string
     {
-        throw new \RuntimeException('Please implement the method on sub-class');
+        throw new RuntimeException('Please implement the method on sub-class');
     }
 
     /**

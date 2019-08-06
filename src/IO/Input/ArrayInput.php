@@ -8,6 +8,8 @@
 
 namespace Inhere\Console\IO\Input;
 
+use function array_shift;
+use function implode;
 use Inhere\Console\IO\Input;
 use Toolkit\Cli\Flags;
 
@@ -27,8 +29,8 @@ class ArrayInput extends Input
         parent::__construct([], false);
 
         $this->tokens = $args;
-        $this->script = \array_shift($args);
-        $this->fullScript = \implode(' ', $args);
+        $this->script = array_shift($args);
+        $this->fullScript = implode(' ', $args);
 
         if ($parsing && $args) {
             [$this->args, $this->sOpts, $this->lOpts] = Flags::parseArray($args);

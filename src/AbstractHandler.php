@@ -17,9 +17,37 @@ use Inhere\Console\Traits\InputOutputAwareTrait;
 use Inhere\Console\Traits\UserInteractAwareTrait;
 use Inhere\Console\Util\FormatUtil;
 use Inhere\Console\Util\Helper;
+use InvalidArgumentException;
+use LogicException;
+use ReflectionClass;
+use ReflectionException;
+use RuntimeException;
 use Swoole\Coroutine;
 use Swoole\Event;
 use Toolkit\PhpUtil\PhpDoc;
+use function array_diff_key;
+use function array_filter;
+use function array_key_exists;
+use function array_keys;
+use function array_merge;
+use function array_shift;
+use function cli_set_process_title;
+use function count;
+use function error_get_last;
+use function function_exists;
+use function implode;
+use function is_array;
+use function is_int;
+use function is_string;
+use function preg_replace;
+use function setproctitle;
+use function sprintf;
+use function strpos;
+use function strtr;
+use function ucfirst;
+use const ARRAY_FILTER_USE_BOTH;
+use const PHP_EOL;
+use const PHP_OS;
 
 /**
  * Class AbstractHandler
@@ -125,8 +153,8 @@ abstract class AbstractHandler implements CommandHandlerInterface
 
     /**
      * @return InputDefinition
-     * @throws \LogicException
-     * @throws \InvalidArgumentException
+     * @throws LogicException
+     * @throws InvalidArgumentException
      */
     protected function createDefinition(): InputDefinition
     {
@@ -176,8 +204,8 @@ abstract class AbstractHandler implements CommandHandlerInterface
      * run command
      * @param string $command
      * @return int|mixed
-     * @throws \RuntimeException
-     * @throws \InvalidArgumentException
+     * @throws RuntimeException
+     * @throws InvalidArgumentException
      */
     public function run(string $command = '')
     {
@@ -267,20 +295,20 @@ abstract class AbstractHandler implements CommandHandlerInterface
 
     /**
      * prepare run
-     * @throws \InvalidArgumentException
-     * @throws \RuntimeException
+     * @throws InvalidArgumentException
+     * @throws RuntimeException
      */
     protected function prepare(): bool
     {
-        if ($this->processTitle && 'Darwin' !== \PHP_OS) {
-            if (\function_exists('cli_set_process_title')) {
-                \cli_set_process_title($this->processTitle);
-            } elseif (\function_exists('setproctitle')) {
-                \setproctitle($this->processTitle);
+        if ($this->processTitle && 'Darwin' !== PHP_OS) {
+            if (function_exists('cli_set_process_title')) {
+                cli_set_process_title($this->processTitle);
+            } elseif (function_exists('setproctitle')) {
+                setproctitle($this->processTitle);
             }
 
-            if ($error = \error_get_last()) {
-                throw new \RuntimeException($error['message']);
+            if ($error = error_get_last()) {
+                throw new RuntimeException($error['message']);
             }
         }
 
@@ -290,7 +318,7 @@ abstract class AbstractHandler implements CommandHandlerInterface
     /**
      * validate input arguments and options
      * @return bool
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function validateInput(): bool
     {
@@ -303,25 +331,25 @@ abstract class AbstractHandler implements CommandHandlerInterface
         $givenArgs = $errArgs = [];
 
         foreach ($in->getArgs() as $key => $value) {
-            if (\is_int($key)) {
+            if (is_int($key)) {
                 $givenArgs[$key] = $value;
             } else {
                 $errArgs[] = $key;
             }
         }
 
-        if (\count($errArgs) > 0) {
-            $out->liteError(\sprintf('Unknown arguments (error: "%s").', \implode(', ', $errArgs)));
+        if (count($errArgs) > 0) {
+            $out->liteError(sprintf('Unknown arguments (error: "%s").', implode(', ', $errArgs)));
             return false;
         }
 
         $defArgs     = $def->getArguments();
-        $missingArgs = \array_filter(\array_keys($defArgs), function ($name, $key) use ($def, $givenArgs) {
-            return !\array_key_exists($key, $givenArgs) && $def->argumentIsRequired($name);
-        }, \ARRAY_FILTER_USE_BOTH);
+        $missingArgs = array_filter(array_keys($defArgs), function ($name, $key) use ($def, $givenArgs) {
+            return !array_key_exists($key, $givenArgs) && $def->argumentIsRequired($name);
+        }, ARRAY_FILTER_USE_BOTH);
 
-        if (\count($missingArgs) > 0) {
-            $out->liteError(\sprintf('Not enough arguments (missing: "%s").', \implode(', ', $missingArgs)));
+        if (count($missingArgs) > 0) {
+            $out->liteError(sprintf('Not enough arguments (missing: "%s").', implode(', ', $missingArgs)));
             return false;
         }
 
@@ -341,11 +369,11 @@ abstract class AbstractHandler implements CommandHandlerInterface
         $defOpts   = $def->getOptions();
 
         // check unknown options
-        if ($unknown = \array_diff_key($givenOpts, $defOpts)) {
-            $names = \array_keys($unknown);
-            $first = \array_shift($names);
+        if ($unknown = array_diff_key($givenOpts, $defOpts)) {
+            $names = array_keys($unknown);
+            $first = array_shift($names);
 
-            throw new \InvalidArgumentException(\sprintf(
+            throw new InvalidArgumentException(sprintf(
                 'Input option is not exists (unknown: "%s").',
                 (isset($first[1]) ? '--' : '-') . $first
             ));
@@ -361,10 +389,10 @@ abstract class AbstractHandler implements CommandHandlerInterface
             }
         }
 
-        if (\count($missingOpts) > 0) {
+        if (count($missingOpts) > 0) {
             $out->liteError(
-                \sprintf('Not enough options parameters (missing: "%s").',
-                    \implode(', ', $missingOpts))
+                sprintf('Not enough options parameters (missing: "%s").',
+                    implode(', ', $missingOpts))
             );
             return false;
         }
@@ -407,7 +435,7 @@ abstract class AbstractHandler implements CommandHandlerInterface
      */
     protected function setCommentsVar(string $name, $value): void
     {
-        $this->commentsVars[$name] = \is_array($value) ? \implode(',', $value) : (string)$value;
+        $this->commentsVars[$name] = is_array($value) ? implode(',', $value) : (string)$value;
     }
 
     /**
@@ -418,7 +446,7 @@ abstract class AbstractHandler implements CommandHandlerInterface
     protected function parseCommentsVars(string $str): string
     {
         // not use vars
-        if (false === \strpos($str, self::HELP_VAR_LEFT)) {
+        if (false === strpos($str, self::HELP_VAR_LEFT)) {
             return $str;
         }
 
@@ -432,7 +460,7 @@ abstract class AbstractHandler implements CommandHandlerInterface
             }
         }
 
-        return $map ? \strtr($str, $map) : $str;
+        return $map ? strtr($str, $map) : $str;
     }
 
     /**
@@ -460,7 +488,7 @@ abstract class AbstractHandler implements CommandHandlerInterface
         // if has InputDefinition object. (The comment of the command will not be parsed and used at this time.)
         $help = $definition->getSynopsis();
         // build usage
-        $help['usage:'] = \sprintf(
+        $help['usage:'] = sprintf(
             '%s %s %s',
             $this->getScriptName(),
             $this->getCommandName(),
@@ -478,7 +506,7 @@ abstract class AbstractHandler implements CommandHandlerInterface
         }
 
         // output description
-        $this->write(\ucfirst($help[0]) . \PHP_EOL);
+        $this->write(ucfirst($help[0]) . PHP_EOL);
         unset($help[0]);
 
         $this->output->mList($help, ['sepChar' => '  ']);
@@ -491,11 +519,11 @@ abstract class AbstractHandler implements CommandHandlerInterface
      * @param string $action
      * @param array  $aliases
      * @return int
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
     protected function showHelpByMethodAnnotations(string $method, string $action = '', array $aliases = []): int
     {
-        $ref  = new \ReflectionClass($this);
+        $ref  = new ReflectionClass($this);
         $name = $this->input->getCommand();
 
         $this->logf(
@@ -522,11 +550,11 @@ abstract class AbstractHandler implements CommandHandlerInterface
 
         if ($aliases) {
             $realName         = $action ?: self::getName();
-            $help['Command:'] = \sprintf('%s(alias: <info>%s</info>)', $realName, \implode(',', $aliases));
+            $help['Command:'] = sprintf('%s(alias: <info>%s</info>)', $realName, implode(',', $aliases));
         }
 
-        foreach (\array_keys(self::$annotationTags) as $tag) {
-            if (empty($tags[$tag]) || !\is_string($tags[$tag])) {
+        foreach (array_keys(self::$annotationTags) as $tag) {
+            if (empty($tags[$tag]) || !is_string($tags[$tag])) {
                 // for alone command
                 if ($tag === 'description' && $isAlone) {
                     $help['Description:'] = self::getDescription();
@@ -542,13 +570,13 @@ abstract class AbstractHandler implements CommandHandlerInterface
 
             // $msg = trim($tags[$tag]);
             $msg = $tags[$tag];
-            $tag = \ucfirst($tag);
+            $tag = ucfirst($tag);
 
             // for alone command
             if (!$msg && $tag === 'description' && $isAlone) {
                 $msg = self::getDescription();
             } else {
-                $msg = \preg_replace('#(\n)#', '$1 ', $msg);
+                $msg = preg_replace('#(\n)#', '$1 ', $msg);
             }
 
             $help[$tag . ':'] = $msg;
@@ -556,7 +584,7 @@ abstract class AbstractHandler implements CommandHandlerInterface
 
         if (isset($help['Description:'])) {
             $description = $help['Description:'] ?: 'No description message for the command';
-            $this->write(\ucfirst($description) . \PHP_EOL);
+            $this->write(ucfirst($description) . PHP_EOL);
             unset($help['Description:']);
         }
 
@@ -653,7 +681,7 @@ abstract class AbstractHandler implements CommandHandlerInterface
      */
     public static function setAnnotationTags(array $annotationTags, $replace = false): void
     {
-        self::$annotationTags = $replace ? $annotationTags : \array_merge(self::$annotationTags, $annotationTags);
+        self::$annotationTags = $replace ? $annotationTags : array_merge(self::$annotationTags, $annotationTags);
     }
 
     /**

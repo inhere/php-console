@@ -10,7 +10,12 @@ namespace Inhere\Console\Component;
 
 use Inhere\Console\AbstractApplication;
 use Inhere\Console\Contract\ErrorHandlerInterface;
+use Throwable;
 use Toolkit\Cli\Highlighter;
+use function file_get_contents;
+use function get_class;
+use function sprintf;
+use function str_replace;
 
 /**
  * Class ErrorHandler
@@ -21,9 +26,9 @@ class ErrorHandler implements ErrorHandlerInterface
     /**
      * @inheritdoc
      */
-    public function handle(\Throwable $e, AbstractApplication $app): void
+    public function handle(Throwable $e, AbstractApplication $app): void
     {
-        $class = \get_class($e);
+        $class = get_class($e);
 
         // open debug, throw exception
         if ($app->isDebug()) {
@@ -37,8 +42,8 @@ Exception class is <magenta>$class</magenta>
 ERR;
             $line = $e->getLine();
             $file = $e->getFile();
-            $snippet = Highlighter::create()->highlightSnippet(\file_get_contents($file), $line, 3, 3);
-            $message = \sprintf(
+            $snippet = Highlighter::create()->highlightSnippet(file_get_contents($file), $line, 3, 3);
+            $message = sprintf(
                 $tpl,
                 // $e->getCode(),
                 $e->getMessage(),
@@ -51,7 +56,7 @@ ERR;
             );
 
             if ($app->getParam('hideRootPath') && ($rootPath = $app->getParam('rootPath'))) {
-                $message = \str_replace($rootPath, '{ROOT}', $message);
+                $message = str_replace($rootPath, '{ROOT}', $message);
             }
 
             $app->write($message, false);

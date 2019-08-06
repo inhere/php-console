@@ -2,11 +2,30 @@
 
 namespace Inhere\Console;
 
+use Closure;
 use Inhere\Console\Contract\CommandInterface;
 use Inhere\Console\Contract\ControllerInterface;
 use Inhere\Console\Contract\RouterInterface;
 use Inhere\Console\Traits\NameAliasTrait;
 use Inhere\Console\Util\Helper;
+use InvalidArgumentException;
+use function array_filter;
+use function array_keys;
+use function array_merge;
+use function array_splice;
+use function array_values;
+use function class_exists;
+use function count;
+use function explode;
+use function in_array;
+use function is_int;
+use function is_object;
+use function is_string;
+use function is_subclass_of;
+use function method_exists;
+use function preg_match;
+use function strpos;
+use function trim;
 
 /**
  * Class Router - match input command find command handler
@@ -64,14 +83,14 @@ class Router implements RouterInterface
      *  - aliases     The command aliases
      *  - description The description message
      * @return Router
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function addGroup(string $name, $class = null, array $options = []): RouterInterface
     {
         /**
          * @var Controller $class name is an controller class
          */
-        if (!$class && \class_exists($name)) {
+        if (!$class && class_exists($name)) {
             $class = $name;
             $name  = $class::getName();
         }
@@ -86,11 +105,11 @@ class Router implements RouterInterface
 
         $this->validateName($name);
 
-        if (\is_string($class) && !\class_exists($class)) {
+        if (is_string($class) && !class_exists($class)) {
             Helper::throwInvalidArgument("The console controller class [$class] not exists!");
         }
 
-        if (!\is_subclass_of($class, Controller::class)) {
+        if (!is_subclass_of($class, Controller::class)) {
             Helper::throwInvalidArgument('The console controller class must is subclass of the: ' . Controller::class);
         }
 
@@ -103,7 +122,7 @@ class Router implements RouterInterface
 
         // allow define aliases in group class by Controller::aliases()
         if ($aliases = $class::aliases()) {
-            $options['aliases'] = \array_merge($options['aliases'], $aliases);
+            $options['aliases'] = array_merge($options['aliases'], $aliases);
         }
 
         $this->controllers[$name] = [
@@ -122,21 +141,23 @@ class Router implements RouterInterface
 
     /**
      * Register a app independent console command
-     * @param string|CommandInterface          $name
-     * @param string|\Closure|CommandInterface $handler
-     * @param array                            $options
+     *
+     * @param string|CommandInterface         $name
+     * @param string|Closure|CommandInterface $handler
+     * @param array                           $options
      * array:
      *  - aliases     The command aliases
      *  - description The description message
+     *
      * @return Router|RouterInterface
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function addCommand(string $name, $handler = null, array $options = []): RouterInterface
     {
         /**
          * @var Command $name name is an command class
          */
-        if (!$handler && \class_exists($name)) {
+        if (!$handler && class_exists($name)) {
             $handler = $name;
             $name    = $name::getName();
         }
@@ -153,12 +174,12 @@ class Router implements RouterInterface
 
         $options['aliases'] = isset($options['aliases']) ? (array)$options['aliases'] : [];
 
-        if (\is_string($handler)) {
-            if (!\class_exists($handler)) {
+        if (is_string($handler)) {
+            if (!class_exists($handler)) {
                 Helper::throwInvalidArgument("The console command class [$handler] not exists!");
             }
 
-            if (!\is_subclass_of($handler, Command::class)) {
+            if (!is_subclass_of($handler, Command::class)) {
                 Helper::throwInvalidArgument('The console command class must is subclass of the: ' . Command::class);
             }
 
@@ -170,9 +191,9 @@ class Router implements RouterInterface
 
             // allow define aliases in Command class by Command::aliases()
             if ($aliases = $handler::aliases()) {
-                $options['aliases'] = \array_merge($options['aliases'], $aliases);
+                $options['aliases'] = array_merge($options['aliases'], $aliases);
             }
-        } elseif (!\is_object($handler) || !\method_exists($handler, '__invoke')) {
+        } elseif (!is_object($handler) || !method_exists($handler, '__invoke')) {
             Helper::throwInvalidArgument(
                 'The console command handler must is an subclass of %s OR a Closure OR a object have method __invoke()',
                 Command::class
@@ -196,12 +217,12 @@ class Router implements RouterInterface
 
     /**
      * @param array $commands
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function addCommands(array $commands): void
     {
         foreach ($commands as $name => $handler) {
-            if (\is_int($name)) {
+            if (is_int($name)) {
                 $this->addCommand($handler);
             } else {
                 $this->addCommand($name, $handler);
@@ -211,12 +232,12 @@ class Router implements RouterInterface
 
     /**
      * @param array $controllers
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function addControllers(array $controllers): void
     {
         foreach ($controllers as $name => $controller) {
-            if (\is_int($name)) {
+            if (is_int($name)) {
                 $this->addGroup($controller);
             } else {
                 $this->addGroup($name, $controller);
@@ -244,7 +265,7 @@ class Router implements RouterInterface
     public function match(string $name): array
     {
         $sep  = $this->delimiter;
-        $name = \trim($name, $sep);
+        $name = trim($name, $sep);
         // resolve alias
         $realName = $this->resolveAlias($name);
 
@@ -259,10 +280,10 @@ class Router implements RouterInterface
         $group  = $realName;
 
         // like 'home:index'
-        if (\strpos($realName, $sep) > 0) {
-            $input = \array_values(\array_filter(\explode($sep, $realName)));
+        if (strpos($realName, $sep) > 0) {
+            $input = array_values(array_filter(explode($sep, $realName)));
 
-            [$group, $action] = \count($input) > 2 ? \array_splice($input, 2) : $input;
+            [$group, $action] = count($input) > 2 ? array_splice($input, 2) : $input;
             // resolve alias
             $group = $this->resolveAlias($group);
         }
@@ -285,20 +306,20 @@ class Router implements RouterInterface
 
     /**
      * @param      $name
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     protected function validateName(string $name): void
     {
         // '/^[a-z][\w-]*:?([a-z][\w-]+)?$/'
         $pattern = '/^[a-z][\w:-]+$/';
 
-        if (1 !== \preg_match($pattern, $name)) {
-            throw new \InvalidArgumentException("The command name '$name' is must match: $pattern");
+        if (1 !== preg_match($pattern, $name)) {
+            throw new InvalidArgumentException("The command name '$name' is must match: $pattern");
         }
 
         // cannot be override. like: help, version
         if ($this->isBlocked($name)) {
-            throw new \InvalidArgumentException("The command name '$name' is not allowed. It is a built in command.");
+            throw new InvalidArgumentException("The command name '$name' is not allowed. It is a built in command.");
         }
     }
 
@@ -320,7 +341,7 @@ class Router implements RouterInterface
      */
     public function getAllNames(): array
     {
-        return \array_merge($this->getCommandNames(), $this->getControllerNames());
+        return array_merge($this->getCommandNames(), $this->getControllerNames());
     }
 
     /**
@@ -328,7 +349,7 @@ class Router implements RouterInterface
      */
     public function getControllerNames(): array
     {
-        return \array_keys($this->controllers);
+        return array_keys($this->controllers);
     }
 
     /**
@@ -336,7 +357,7 @@ class Router implements RouterInterface
      */
     public function getCommandNames(): array
     {
-        return \array_keys($this->commands);
+        return array_keys($this->commands);
     }
 
     /**
@@ -379,7 +400,7 @@ class Router implements RouterInterface
      */
     public function isBlocked(string $name): bool
     {
-        return \in_array($name, $this->blocked, true);
+        return in_array($name, $this->blocked, true);
     }
 
     /**
@@ -411,6 +432,6 @@ class Router implements RouterInterface
      */
     public function setDelimiter(string $delimiter): void
     {
-        $this->delimiter = \trim($delimiter) ?: ':';
+        $this->delimiter = trim($delimiter) ?: ':';
     }
 }
