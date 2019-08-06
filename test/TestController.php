@@ -12,6 +12,7 @@ use Inhere\Console\Controller;
 
 /**
  * Class TestController
+ *
  * @package Inhere\ConsoleTest
  */
 class TestController extends Controller
@@ -21,6 +22,7 @@ class TestController extends Controller
 
     /**
      * this is an demo command in test
+     *
      * @return mixed
      */
     public function demoCommand()

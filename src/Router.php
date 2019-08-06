@@ -271,7 +271,7 @@ class Router implements RouterInterface
 
         // is a command name
         if ($route = $this->commands[$realName] ?? []) {
-            $route['name'] = $realName;
+            $route['name'] = $route['cmdId'] = $realName;
             return $route;
         }
 
@@ -293,6 +293,7 @@ class Router implements RouterInterface
             $route['name']   = $realName;
             $route['group']  = $group;
             $route['action'] = $action;
+            $route['cmdId']  = $group . $sep . $action;
             return $route;
         }
 

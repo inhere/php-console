@@ -14,6 +14,7 @@ use Inhere\Console\IO\Output;
 
 /**
  * Class TestCommand
+ *
  * @package Inhere\ConsoleTest
  */
 class TestCommand extends Command
@@ -23,8 +24,10 @@ class TestCommand extends Command
 
     /**
      * do execute command
-     * @param  Input  $input
-     * @param  Output $output
+     *
+     * @param Input  $input
+     * @param Output $output
+     *
      * @return int|mixed
      */
     protected function execute($input, $output)

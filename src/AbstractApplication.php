@@ -39,6 +39,7 @@ use const PHP_SAPI;
 
 /**
  * Class AbstractApplication
+ *
  * @package Inhere\Console
  */
 abstract class AbstractApplication implements ApplicationInterface
@@ -107,9 +108,11 @@ abstract class AbstractApplication implements ApplicationInterface
 
     /**
      * Class constructor.
+     *
      * @param array  $config
      * @param Input  $input
      * @param Output $output
+     *
      * @throws InvalidArgumentException
      */
     public function __construct(array $config = [], Input $input = null, Output $output = null)
@@ -181,7 +184,9 @@ abstract class AbstractApplication implements ApplicationInterface
 
     /**
      * run application
+     *
      * @param bool $exit
+     *
      * @return int|mixed
      * @throws InvalidArgumentException
      */
@@ -251,6 +256,7 @@ abstract class AbstractApplication implements ApplicationInterface
      * @param string          $command
      * @param InputInterface  $input
      * @param OutputInterface $output
+     *
      * @return int|mixed
      */
     public function subRun(string $command, InputInterface $input, OutputInterface $output)
@@ -274,14 +280,13 @@ abstract class AbstractApplication implements ApplicationInterface
         // check env
         if (!in_array(PHP_SAPI, ['cli', 'phpdbg', 'cli-server'], true)) {
             header('HTTP/1.1 403 Forbidden');
-            exit("  403 Forbidden \n\n"
-                . " current environment is CLI. \n"
-                . " :( Sorry! Run this script is only allowed in the terminal environment!\n,You are not allowed to access this file.\n");
+            exit("  403 Forbidden \n\n" . " current environment is CLI. \n" . " :( Sorry! Run this script is only allowed in the terminal environment!\n,You are not allowed to access this file.\n");
         }
     }
 
     /**
      * register error handle
+     *
      * @throws InvalidArgumentException
      */
     protected function registerErrorHandle(): void
@@ -296,11 +301,13 @@ abstract class AbstractApplication implements ApplicationInterface
     }
 
     /**
-     * 运行异常处理
+     * Running error handling
+     *
      * @param int    $num
      * @param string $str
      * @param string $file
      * @param int    $line
+     *
      * @throws InvalidArgumentException
      */
     public function handleError(int $num, string $str, string $file, int $line): void
@@ -311,18 +318,20 @@ abstract class AbstractApplication implements ApplicationInterface
 
     /**
      * Running exception handling
+     *
      * @param Throwable $e
+     *
      * @throws InvalidArgumentException
      */
     public function handleException($e): void
     {
         // you can log error on sub class ...
-
         $this->errorHandler->handle($e, $this);
     }
 
     /**
      * @param string $command
+     *
      * @return bool True will stop run, False will goon run give command.
      */
     protected function filterSpecialCommand(string $command): bool
@@ -365,6 +374,7 @@ abstract class AbstractApplication implements ApplicationInterface
     /**
      * @param string       $name
      * @param string|array $aliases
+     *
      * @return $this
      */
     public function addAliases(string $name, $aliases): self
@@ -449,6 +459,7 @@ abstract class AbstractApplication implements ApplicationInterface
 
     /**
      * @param $name
+     *
      * @return bool
      */
     public function isInternalCommand(string $name): bool
@@ -500,8 +511,10 @@ abstract class AbstractApplication implements ApplicationInterface
 
     /**
      * Get config param value
+     *
      * @param null|string $name
      * @param null|string $default
+     *
      * @return array|string
      */
     public function getParam(string $name, $default = null)
@@ -519,6 +532,7 @@ abstract class AbstractApplication implements ApplicationInterface
 
     /**
      * get current debug level value
+     *
      * @return int
      */
     public function getVerbLevel(): int
@@ -528,6 +542,7 @@ abstract class AbstractApplication implements ApplicationInterface
 
     /**
      * is profile
+     *
      * @return boolean
      */
     public function isProfile(): bool

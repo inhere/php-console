@@ -26,12 +26,13 @@ interface RouterInterface
 
     /**
      * Register a app group command(by controller)
-     * @param string                     $name The controller name
-     * @param string|ControllerInterface $class The controller class
-     * @param array                      $options
-     * array:
-     *  - aliases     The command aliases
-     *  - description The description message
+     *
+     * @param string                     $name    The controller name
+     * @param string|ControllerInterface $class   The controller class
+     * @param array                      $options array:
+     *                                            - aliases     The command aliases
+     *                                            - description The description message
+     *
      * @return static
      * @throws InvalidArgumentException
      */
@@ -43,7 +44,7 @@ interface RouterInterface
      * @param string|CommandInterface         $name
      * @param string|Closure|CommandInterface $handler
      * @param array                           $options
-     * array:
+     *  array:
      *  - aliases     The command aliases
      *  - description The description message
      *
@@ -54,6 +55,7 @@ interface RouterInterface
 
     /**
      * @param string $name The input command name
+     *
      * @return array return route info array. If not found, will return empty array.
      * [
      *  type    => 1, // 1 group 2 command

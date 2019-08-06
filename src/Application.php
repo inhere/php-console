@@ -25,6 +25,7 @@ use function substr;
 
 /**
  * Class App
+ *
  * @package Inhere\Console
  */
 class Application extends AbstractApplication
@@ -50,7 +51,8 @@ class Application extends AbstractApplication
     }
 
     /**
-     * add group/controller
+     * Add group/controller
+     *
      * @inheritdoc
      * @see controller()
      */
@@ -61,8 +63,8 @@ class Application extends AbstractApplication
 
     /**
      * {@inheritdoc}
-     * @see controller()
      * @throws InvalidArgumentException
+     * @see controller()
      */
     public function addController(string $name, $class = null, $option = null)
     {
@@ -71,6 +73,7 @@ class Application extends AbstractApplication
 
     /**
      * @param array $controllers
+     *
      * @throws InvalidArgumentException
      */
     public function controllers(array $controllers): void
@@ -80,6 +83,7 @@ class Application extends AbstractApplication
 
     /**
      * @param array $controllers
+     *
      * @throws InvalidArgumentException
      * @deprecated please use addControllers() instead it.
      */
@@ -90,6 +94,7 @@ class Application extends AbstractApplication
 
     /**
      * @param array $controllers
+     *
      * @throws InvalidArgumentException
      */
     public function addControllers(array $controllers): void
@@ -115,6 +120,7 @@ class Application extends AbstractApplication
 
     /**
      * add command
+     *
      * @inheritdoc
      * @see command()
      */
@@ -125,6 +131,7 @@ class Application extends AbstractApplication
 
     /**
      * @param array $commands
+     *
      * @throws InvalidArgumentException
      */
     public function addCommands(array $commands): void
@@ -134,6 +141,7 @@ class Application extends AbstractApplication
 
     /**
      * @param array $commands
+     *
      * @throws InvalidArgumentException
      */
     public function commands(array $commands): void
@@ -150,6 +158,7 @@ class Application extends AbstractApplication
      *
      * @param string $namespace
      * @param string $basePath
+     *
      * @return $this
      * @throws InvalidArgumentException
      */
@@ -168,8 +177,10 @@ class Application extends AbstractApplication
 
     /**
      * auto register controllers from a dir.
+     *
      * @param string $namespace
      * @param string $basePath
+     *
      * @return $this
      * @throws InvalidArgumentException
      */
@@ -241,6 +252,9 @@ class Application extends AbstractApplication
             return 2;
         }
 
+        // save command ID
+        $this->input->setCommandId($info['cmdId']);
+
         // is command
         if ($info['type'] === Router::TYPE_SINGLE) {
             return $this->runCommand($info['name'], $info['handler'], $info['options']);
@@ -252,9 +266,11 @@ class Application extends AbstractApplication
 
     /**
      * run a independent command
-     * @param string          $name Command name
+     *
+     * @param string         $name    Command name
      * @param Closure|string $handler Command class
-     * @param array           $options
+     * @param array          $options
+     *
      * @return mixed
      * @throws InvalidArgumentException
      */
@@ -290,11 +306,13 @@ class Application extends AbstractApplication
 
     /**
      * Execute an action in a group command(controller)
-     * @param string $group The group name
-     * @param string $action Command method, no suffix
+     *
+     * @param string $group   The group name
+     * @param string $action  Command method, no suffix
      * @param mixed  $handler The controller class or object
      * @param array  $options
      * @param bool   $standAlone
+     *
      * @return mixed
      * @throws ReflectionException
      */
@@ -312,11 +330,8 @@ class Application extends AbstractApplication
         }
 
         if (!($handler instanceof Controller)) {
-            Helper::throwInvalidArgument(
-                'The console controller class [%s] must instanceof the %s',
-                $handler,
-                Controller::class
-            );
+            Helper::throwInvalidArgument('The console controller class [%s] must instanceof the %s', $handler,
+                Controller::class);
         }
 
         $handler::setName($group);

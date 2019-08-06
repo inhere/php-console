@@ -122,4 +122,21 @@ class ApplicationTest extends TestCase
         $ret = $app->run(false);
         $this->assertSame('Inhere\ConsoleTest\TestController::demoCommand', $ret);
     }
+
+    public function testTriggerEvent(): void
+    {
+        $app = $this->newApp([
+            './app',
+            'test1'
+        ]);
+
+        $app->on(Application::ON_BEFORE_RUN, function (Application $app) {
+            $this->assertEquals('Tests', $app->getName());
+        });
+
+        $app->addCommand('test1', TestCommand::class);
+
+        $ret = $app->run(false);
+        $this->assertSame('Inhere\ConsoleTest\TestCommand::execute', $ret);
+    }
 }
