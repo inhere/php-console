@@ -5,13 +5,13 @@
 
 namespace Inhere\Console\Component\Style;
 
+use InvalidArgumentException;
+use RuntimeException;
 use function array_key_exists;
 use function array_keys;
 use function count;
 use function explode;
 use function implode;
-use InvalidArgumentException;
-use RuntimeException;
 use function str_replace;
 
 /**

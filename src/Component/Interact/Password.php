@@ -2,15 +2,15 @@
 
 namespace Inhere\Console\Component\Interact;
 
+use Inhere\Console\Component\InteractMessage;
+use RuntimeException;
+use Toolkit\Sys\Sys;
 use function addslashes;
 use function escapeshellarg;
 use function file_put_contents;
-use Inhere\Console\Component\InteractMessage;
 use function rtrim;
-use RuntimeException;
 use function shell_exec;
 use function sprintf;
-use Toolkit\Sys\Sys;
 use function unlink;
 
 /**

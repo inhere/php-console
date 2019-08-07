@@ -8,10 +8,11 @@
 
 namespace Inhere\Console\Component;
 
-use Inhere\Console\Component\Formatter\FormatterInterface;
+use Inhere\Console\Contract\FormatterInterface;
 
 /**
  * Class ConsoleRenderer
+ *
  * @package Inhere\Console\Component
  */
 class ConsoleRenderer

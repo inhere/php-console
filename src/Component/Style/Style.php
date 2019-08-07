@@ -10,18 +10,18 @@
 
 namespace Inhere\Console\Component\Style;
 
+use InvalidArgumentException;
+use Toolkit\Cli\Cli;
+use Toolkit\Cli\ColorTag;
 use function array_key_exists;
 use function array_keys;
 use function array_merge;
 use function array_values;
-use InvalidArgumentException;
 use function is_array;
 use function is_object;
 use function sprintf;
 use function str_replace;
 use function strpos;
-use Toolkit\Cli\Cli;
-use Toolkit\Cli\ColorTag;
 
 /**
  * Class Style

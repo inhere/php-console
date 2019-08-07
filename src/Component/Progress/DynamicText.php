@@ -5,8 +5,8 @@ namespace Inhere\Console\Component\Progress;
 use Generator;
 use Inhere\Console\Component\NotifyMessage;
 use Inhere\Console\Console;
-use function printf;
 use Toolkit\Cli\Cli;
+use function printf;
 
 /**
  * Class DynamicText

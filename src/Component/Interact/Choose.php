@@ -2,11 +2,11 @@
 
 namespace Inhere\Console\Component\Interact;
 
-use function array_key_exists;
-use function explode;
 use Inhere\Console\Component\InteractMessage;
 use Inhere\Console\Console;
 use Inhere\Console\Util\Show;
+use function array_key_exists;
+use function explode;
 use function is_array;
 use function trim;
 

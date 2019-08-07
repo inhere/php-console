@@ -8,14 +8,12 @@
 
 namespace Inhere\Console\Component\Symbol;
 
+use Inhere\Console\Console;
+use Toolkit\Cli\ColorTag;
 use function dirname;
 use function file_get_contents;
 use function in_array;
-use Inhere\Console\Console;
-use Inhere\Console\Util\Helper;
-use Inhere\Console\Util\Show;
 use function is_file;
-use Toolkit\Cli\ColorTag;
 
 /**
  * Class ArtFont art fonts Manager

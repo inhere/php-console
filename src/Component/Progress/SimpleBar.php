@@ -2,12 +2,12 @@
 
 namespace Inhere\Console\Component\Progress;
 
-use function array_merge;
-use function ceil;
 use Generator;
 use Inhere\Console\Component\NotifyMessage;
 use Inhere\Console\Console;
 use Toolkit\Cli\Cli;
+use function array_merge;
+use function ceil;
 
 /**
  * Class SimpleBar

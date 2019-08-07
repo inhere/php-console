@@ -12,9 +12,9 @@ use Inhere\Console\Component\Style\Style;
 use Inhere\Console\Console;
 use Inhere\Console\Traits\FormatOutputAwareTrait;
 use Inhere\Console\Util\Show;
+use Toolkit\Cli\Cli;
 use const STDERR;
 use const STDOUT;
-use Toolkit\Cli\Cli;
 
 /**
  * Class Output
