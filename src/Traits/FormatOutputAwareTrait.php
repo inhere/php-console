@@ -192,9 +192,9 @@ trait FormatOutputAwareTrait
      * @inheritdoc
      * @see Show::table()
      */
-    public function table(array $data, $title = 'Data Table', $showBorder = true): void
+    public function table(array $data, $title = 'Data Table', array $opts = []): void
     {
-        Show::table($data, $title, ['showBorder' => $showBorder]);
+        Show::table($data, $title, $opts);
     }
 
     /**
