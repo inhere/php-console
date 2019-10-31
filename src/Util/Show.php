@@ -135,11 +135,12 @@ class Show
 
         // format type
         if ($type) {
+            $upType = strtoupper($type);
             // add style
             if ($style && $color->hasStyle($style)) {
                 $fmtType = sprintf('<%s>[%s]</%s> ', $style, $upType, $style);
             } else {
-                $fmtType = sprintf('[%s]', $upType = strtoupper($type));
+                $fmtType = sprintf('[%s]', $upType);
             }
         }
 
