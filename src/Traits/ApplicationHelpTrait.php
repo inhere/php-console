@@ -71,7 +71,7 @@ trait ApplicationHelpTrait
             "$logo\n  <info>{$name}</info>, Version <comment>$version</comment>\n",
             'System Info'      => "PHP version <info>$phpVersion</info>, on <info>$os</info> system",
             'Application Info' => "Update at <info>$updateAt</info>, publish at <info>$publishAt</info>(current $date)",
-        ], null, [
+        ], '', [
             'leftChar' => '',
             'sepChar'  => ' :  '
         ]);
