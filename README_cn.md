@@ -59,10 +59,10 @@ composer require inhere/console
 - **[错误/异常捕获](https://github.com/inhere/php-console/wiki/error-handle)**
 - **[输入对象](https://github.com/inhere/php-console/wiki/input-instance)**
 - **[输出对象](https://github.com/inhere/php-console/wiki/output-instance)**
-- **[格式化输出](https://github.com/inhere/php-console/wiki/format-output)**
-- **[进度动态输出](https://github.com/inhere/php-console/wiki/process-output)**
-- **[用户交互](https://github.com/inhere/php-console/wiki/user-interactive)**
-- **[扩展工具](https://github.com/inhere/php-console/wiki/extra-tools)**
+- **[格式化输出](https://github.com/inhere/php-console/wiki/format-output)** `section`, `panel`, `padding`, `helpPanel`, `table`, `tree`, `title`, `list`, `multiList` 等风格信息输出
+- **[进度动态输出](https://github.com/inhere/php-console/wiki/process-output)** 动态信息显示(`pending/loading`, `pointing`, `spinner`, `counterTxt`, `dynamicText`, `progressTxt`, `progressBar`)
+- **[用户交互](https://github.com/inhere/php-console/wiki/user-interactive)** 用户信息交互支持(`select`, `multiSelect`, `confirm`, `ask/question`, `askPassword/askHiddenInput`)
+- **[扩展工具](https://github.com/inhere/php-console/wiki/extra-tools)** 打包phar, 命令行下的文件下载, 命令行的php代码高亮
 
 ## 项目地址
 

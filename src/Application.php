@@ -9,6 +9,7 @@
 namespace Inhere\Console;
 
 use Closure;
+use Inhere\Console\Contract\ControllerInterface;
 use Inhere\Console\Util\Helper;
 use InvalidArgumentException;
 use ReflectionException;
@@ -53,17 +54,24 @@ class Application extends AbstractApplication
     /**
      * Add group/controller
      *
-     * @inheritdoc
+     * @param string $name
+     * @param string|ControllerInterface $class The controller class
+     * @param null|array|string          $option
+     *
+     * @return Application|Contract\ApplicationInterface
      * @see controller()
      */
-    public function addGroup(string $name, $controller = null, $option = null)
+    public function addGroup(string $name, $class = null, $option = null)
     {
-        return $this->controller($name, $controller, $option);
+        return $this->controller($name, $class, $option);
     }
 
     /**
-     * {@inheritdoc}
-     * @throws InvalidArgumentException
+     * @param string $name
+     * @param string|ControllerInterface $class The controller class
+     * @param null|array|string          $option
+     *
+     * @return Application|Contract\ApplicationInterface
      * @see controller()
      */
     public function addController(string $name, $class = null, $option = null)
@@ -121,7 +129,11 @@ class Application extends AbstractApplication
     /**
      * add command
      *
-     * @inheritdoc
+     * @param string $name
+     * @param null   $handler
+     * @param null   $option
+     *
+     * @return Application
      * @see command()
      */
     public function addCommand(string $name, $handler = null, $option = null): self
