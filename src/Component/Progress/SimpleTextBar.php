@@ -9,15 +9,18 @@ use Toolkit\Cli\Cli;
 
 /**
  * Class SimpleTextBar
+ *
  * @package Inhere\Console\Component\Progress
  */
 class SimpleTextBar extends NotifyMessage
 {
     /**
      * Render a simple text progress bar by 'yield'
+     *
      * @param int    $total
      * @param string $msg
      * @param string $doneMsg
+     *
      * @return Generator
      */
     public static function gen(int $total, string $msg, string $doneMsg = ''): Generator

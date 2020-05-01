@@ -10,28 +10,29 @@
 
 namespace Inhere\Console\Util;
 
-use function class_exists;
-use function file_exists;
 use FilesystemIterator;
 use Inhere\Console\Traits\RuntimeProfileTrait;
 use InvalidArgumentException;
-use function is_dir;
-use function is_numeric;
 use Iterator;
-use function mb_strlen;
-use function mkdir;
-use function preg_match;
 use RecursiveCallbackFilterIterator;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use RuntimeException;
+use Swoole\Coroutine;
+use function class_exists;
+use function file_exists;
+use function is_dir;
+use function is_numeric;
+use function mb_strlen;
+use function mkdir;
+use function preg_match;
 use function similar_text;
 use function sprintf;
 use function strpos;
-use Swoole\Coroutine;
 
 /**
  * Class Helper
+ *
  * @package Inhere\Console\Util
  */
 class Helper
@@ -60,6 +61,7 @@ class Helper
 
     /**
      * @param string $path
+     *
      * @return bool
      */
     public static function isAbsPath(string $path): bool
@@ -70,6 +72,7 @@ class Helper
     /**
      * @param string $dir
      * @param int    $mode
+     *
      * @throws RuntimeException
      */
     public static function mkdir(string $dir, int $mode = 0775): void
@@ -83,6 +86,7 @@ class Helper
      * @param string   $srcDir
      * @param callable $filter
      * @param int      $flags
+     *
      * @return RecursiveIteratorIterator
      * @throws InvalidArgumentException
      */
@@ -95,7 +99,7 @@ class Helper
             throw new InvalidArgumentException('Please provide a exists source directory.');
         }
 
-        $directory = new RecursiveDirectoryIterator($srcDir, $flags);
+        $directory      = new RecursiveDirectoryIterator($srcDir, $flags);
         $filterIterator = new RecursiveCallbackFilterIterator($directory, $filter);
 
         return new RecursiveIteratorIterator($filterIterator);
@@ -112,9 +116,11 @@ class Helper
 
     /**
      * find similar text from an array|Iterator
-     * @param string          $need
+     *
+     * @param string         $need
      * @param Iterator|array $iterator
-     * @param int             $similarPercent
+     * @param int            $similarPercent
+     *
      * @return array
      */
     public static function findSimilar(string $need, $iterator, int $similarPercent = 45): array
@@ -139,12 +145,14 @@ class Helper
 
     /**
      * get key Max Width
-     * @param  array $data
-     * [
+     *
+     * @param array $data
+     *     [
      *     'key1'      => 'value1',
      *     'key2-test' => 'value2',
-     * ]
-     * @param bool   $expectInt
+     *     ]
+     * @param bool  $expectInt
+     *
      * @return int
      */
     public static function getKeyMaxWidth(array $data, bool $expectInt = false): int
@@ -154,7 +162,7 @@ class Helper
         foreach ($data as $key => $value) {
             // key is not a integer
             if (!$expectInt || !is_numeric($key)) {
-                $width = mb_strlen($key, 'UTF-8');
+                $width       = mb_strlen($key, 'UTF-8');
                 $keyMaxWidth = $width > $keyMaxWidth ? $width : $keyMaxWidth;
             }
         }

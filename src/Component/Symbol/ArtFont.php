@@ -17,6 +17,7 @@ use function is_file;
 
 /**
  * Class ArtFont art fonts Manager
+ *
  * @package Inhere\Console\Component\Symbol
  */
 class ArtFont
@@ -76,7 +77,7 @@ class ArtFont
      */
     protected function loadInternalFonts(): void
     {
-        $path = dirname(__DIR__) . '/BuiltIn/Resources/art-fonts/';
+        $path  = dirname(__DIR__) . '/BuiltIn/Resources/art-fonts/';
         $group = self::INTERNAL_GROUP;
 
         foreach (self::$internalFonts as $font) {
@@ -88,8 +89,10 @@ class ArtFont
 
     /**
      * display the internal art font
+     *
      * @param string $name
      * @param array  $opts
+     *
      * @return int
      */
     public function showInternal(string $name, array $opts = []): int
@@ -101,6 +104,7 @@ class ArtFont
      * @param string $name
      * @param string $group
      * @param array  $opts
+     *
      * @return int
      */
     public function showItalic(string $name, string $group = null, array $opts = []): int
@@ -112,6 +116,7 @@ class ArtFont
 
     /**
      * display the art font
+     *
      * @param string $name
      * @param string $group
      * @param array  $opts
@@ -119,6 +124,7 @@ class ArtFont
      * - type => '', // 'italic'
      * - indent => 2,
      * - style => '', // 'info' 'error'
+     *
      * @return int
      */
     public function show(string $name, string $group = null, array $opts = []): int
@@ -129,12 +135,12 @@ class ArtFont
             'style'  => '',
         ], $opts);
 
-        $type = $opts['type'];
+        $type    = $opts['type'];
         $pfxType = $type ? '_' . $type : '';
 
-        $txt = '';
-        $group = trim($group);
-        $group = $group ?: self::DEFAULT_GROUP;
+        $txt     = '';
+        $group   = trim($group);
+        $group   = $group ?: self::DEFAULT_GROUP;
         $longKey = $group . '.' . $name . $pfxType;
 
         if (isset($this->fontContents[$longKey])) {
@@ -164,6 +170,7 @@ class ArtFont
     /**
      * @param string $name
      * @param string $group
+     *
      * @return string
      */
     public function font(string $name, string $group = null): string
@@ -174,6 +181,7 @@ class ArtFont
     /**
      * @param string $group
      * @param string $path
+     *
      * @return $this
      */
     public function addGroup(string $group, string $path): self
@@ -194,6 +202,7 @@ class ArtFont
     /**
      * @param string $group
      * @param string $path
+     *
      * @return $this
      */
     public function setGroup(string $group, string $path): self
@@ -213,6 +222,7 @@ class ArtFont
      * @param string      $name
      * @param string      $file font file path
      * @param string|null $group
+     *
      * @return $this
      */
     public function addFont(string $name, string $file, string $group = null): self
@@ -221,7 +231,7 @@ class ArtFont
 
         if (is_file($file)) {
             $info = pathinfo($file);
-            $ext = !empty($info['extension']) ? $info['extension'] : 'txt';
+            $ext  = !empty($info['extension']) ? $info['extension'] : 'txt';
 
             $this->fonts[$group][$name] = $info['dirname'] . '/' . $info['filename'] . '.' . $ext;
         }
@@ -232,6 +242,7 @@ class ArtFont
     /**
      * @param string $name
      * @param string $content
+     *
      * @return $this
      */
     public function addFontContent(string $name, string $content): self
@@ -245,6 +256,7 @@ class ArtFont
 
     /**
      * @param string $name
+     *
      * @return bool
      */
     public static function isInternalFont($name): bool

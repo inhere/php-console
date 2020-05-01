@@ -93,6 +93,7 @@ class Color
      * @param string $bg
      * @param array  $options
      * @param bool   $extra
+     *
      * @return Color
      * @throws InvalidArgumentException
      */
@@ -105,16 +106,17 @@ class Color
      * Create a color style from a parameter string.
      *
      * @param string $string e.g 'fg=white;bg=black;options=bold,underscore;extra=1'
+     *
      * @return static
      * @throws InvalidArgumentException
      * @throws RuntimeException
      */
     public static function makeByString($string)
     {
-        $fg = $bg = '';
-        $extra = false;
+        $fg      = $bg = '';
+        $extra   = false;
         $options = [];
-        $parts = explode(';', str_replace(' ', '', $string));
+        $parts   = explode(';', str_replace(' ', '', $string));
 
         foreach ($parts as $part) {
             $subParts = explode('=', $part);
@@ -147,22 +149,20 @@ class Color
 
     /**
      * Constructor
-     * @param string $fg Foreground color.  e.g 'white'
-     * @param string $bg Background color.  e.g 'black'
+     *
+     * @param string $fg      Foreground color.  e.g 'white'
+     * @param string $bg      Background color.  e.g 'black'
      * @param array  $options Style options. e.g ['bold', 'underscore']
      * @param bool   $extra
+     *
      * @throws InvalidArgumentException
      */
     public function __construct($fg = '', $bg = '', array $options = [], bool $extra = false)
     {
         if ($fg) {
             if (false === array_key_exists($fg, static::$knownColors)) {
-                throw new InvalidArgumentException(
-                    sprintf('Invalid foreground color "%1$s" [%2$s]',
-                        $fg,
-                        implode(', ', $this->getKnownColors())
-                    )
-                );
+                throw new InvalidArgumentException(sprintf('Invalid foreground color "%1$s" [%2$s]', $fg,
+                        implode(', ', $this->getKnownColors())));
             }
 
             $this->fgColor = ($extra ? self::FG_EXTRA : self::FG_BASE) + static::$knownColors[$fg];
@@ -170,12 +170,8 @@ class Color
 
         if ($bg) {
             if (false === array_key_exists($bg, static::$knownColors)) {
-                throw new InvalidArgumentException(
-                    sprintf('Invalid background color "%1$s" [%2$s]',
-                        $bg,
-                        implode(', ', $this->getKnownColors())
-                    )
-                );
+                throw new InvalidArgumentException(sprintf('Invalid background color "%1$s" [%2$s]', $bg,
+                        implode(', ', $this->getKnownColors())));
             }
 
             $this->bgColor = ($extra ? self::BG_EXTRA : self::BG_BASE) + static::$knownColors[$bg];
@@ -183,12 +179,8 @@ class Color
 
         foreach ($options as $option) {
             if (false === array_key_exists($option, static::$knownOptions)) {
-                throw new InvalidArgumentException(
-                    sprintf('Invalid option "%1$s" [%2$s]',
-                        $option,
-                        implode(', ', $this->getKnownOptions())
-                    )
-                );
+                throw new InvalidArgumentException(sprintf('Invalid option "%1$s" [%2$s]', $option,
+                        implode(', ', $this->getKnownOptions())));
             }
 
             $this->options[] = $option;
@@ -227,7 +219,9 @@ class Color
 
     /**
      * Get the known colors.
+     *
      * @param bool $onlyName
+     *
      * @return array
      */
     public function getKnownColors(bool $onlyName = true): array
@@ -237,7 +231,9 @@ class Color
 
     /**
      * Get the known options.
+     *
      * @param bool $onlyName
+     *
      * @return array
      */
     public function getKnownOptions(bool $onlyName = true): array

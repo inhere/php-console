@@ -159,7 +159,7 @@ class Input extends AbstractInput
     /**
      * Set command ID e.g `http:start`
      *
-     * @param  string  $commandId  e.g `http:start`
+     * @param string $commandId e.g `http:start`
      *
      * @return void
      */

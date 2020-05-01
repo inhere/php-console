@@ -12,6 +12,7 @@ use Inhere\Console\Component\NotifyMessage;
 
 /**
  * Class Pending
+ *
  * @package Inhere\Console\Component\Progress
  */
 class Pending extends NotifyMessage

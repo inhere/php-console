@@ -79,7 +79,7 @@ trait SimpleEventTrait
      * trigger event
      *
      * @param string $event
-     * @param array  ...$args
+     * @param mixed  ...$args
      *
      * @return bool
      */

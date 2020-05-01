@@ -15,6 +15,7 @@ use Toolkit\PhpUtil\PhpHelper;
 
 /**
  * Class Formatter - message formatter
+ *
  * @package Inhere\Console\Component
  */
 abstract class MessageFormatter implements FormatterInterface
@@ -31,6 +32,7 @@ abstract class MessageFormatter implements FormatterInterface
 
     /**
      * @param array $config
+     *
      * @return MessageFormatter
      */
     public static function create(array $config = []): self
@@ -40,6 +42,7 @@ abstract class MessageFormatter implements FormatterInterface
 
     /**
      * Formatter constructor.
+     *
      * @param array $config
      */
     public function __construct(array $config = [])

@@ -10,6 +10,7 @@ use function printf;
 
 /**
  * Class DynamicText
+ *
  * @package Inhere\Console\Component\Progress
  */
 class DynamicText extends NotifyMessage
@@ -17,6 +18,7 @@ class DynamicText extends NotifyMessage
     /**
      * @param string $doneMsg
      * @param string $fixedMsg
+     *
      * @return Generator
      */
     public static function gen(string $doneMsg, string $fixedMsg = ''): Generator

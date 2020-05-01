@@ -11,12 +11,13 @@ namespace Inhere\Console\BuiltIn;
 use Inhere\Console\Command;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
-use const PHP_VERSION;
-use function strpos;
 use Toolkit\Sys\Sys;
+use function strpos;
+use const PHP_VERSION;
 
 /**
  * Class DevServerCommand
+ *
  * @package Inhere\Console\BuiltIn
  */
 class DevServerCommand extends Command
@@ -31,6 +32,7 @@ class DevServerCommand extends Command
 
     /**
      * start a php built-in http server for development
+     *
      * @usage
      *  {command} [-S HOST:PORT]
      *  {command} [-H HOST] [-p PORT]
@@ -43,11 +45,13 @@ class DevServerCommand extends Command
      *  -b,--php-bin STRING     The php binary file(<comment>php</comment>)
      * @arguments
      *  file=STRING         The entry file for server. e.g web/index.php
+     *
+     * @param Input  $in
+     * @param Output $out
+     *
+     * @return int|mixed|void
      * @example
      *  {command} -S 127.0.0.1:8552 web/index.php
-     * @param  Input  $in
-     * @param  Output $out
-     * @return int|mixed|void
      */
     public function execute($in, $out)
     {
@@ -56,13 +60,13 @@ class DevServerCommand extends Command
         }
 
         if (!strpos($server, ':')) {
-            $port = $this->getSameOpt(['p', 'port'], 8552);
+            $port   = $this->getSameOpt(['p', 'port'], 8552);
             $server .= ':' . $port;
         }
 
         $version = PHP_VERSION;
         $workDir = $this->input->getPwd();
-        $docDir = $this->getOpt('t');
+        $docDir  = $this->getOpt('t');
         $docRoot = $docDir ? $workDir . '/' . $docDir : $workDir;
 
         $this->write([

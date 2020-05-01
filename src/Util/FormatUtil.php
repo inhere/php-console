@@ -8,6 +8,8 @@
 
 namespace Inhere\Console\Util;
 
+use Toolkit\Cli\ColorTag;
+use Toolkit\Sys\Sys;
 use function array_keys;
 use function array_merge;
 use function count;
@@ -27,20 +29,20 @@ use function str_pad;
 use function str_repeat;
 use function str_replace;
 use function strpos;
-use Toolkit\Cli\ColorTag;
-use Toolkit\Sys\Sys;
 use function trim;
 use function ucfirst;
 use function wordwrap;
 
 /**
  * Class FormatUtil
+ *
  * @package Inhere\Console\Util
  */
 final class FormatUtil
 {
     /**
      * @param mixed $val
+     *
      * @return string
      */
     public static function typeToString($val): string
@@ -60,6 +62,7 @@ final class FormatUtil
      * @param string $string
      * @param int    $indent
      * @param string $indentChar
+     *
      * @return string
      */
     public static function applyIndent(string $string, int $indent = 2, string $indentChar = ' '): string
@@ -68,8 +71,8 @@ final class FormatUtil
             return $string;
         }
 
-        $new = '';
-        $list = explode("\n", $string);
+        $new       = '';
+        $list      = explode("\n", $string);
         $indentStr = str_repeat($indentChar ?: ' ', $indent);
 
         foreach ($list as $value) {
@@ -93,9 +96,10 @@ final class FormatUtil
      *     amet.
      * ```
      *
-     * @param string  $text the text to be wrapped
+     * @param string  $text   the text to be wrapped
      * @param integer $indent number of spaces to use for indentation.
      * @param integer $width
+     *
      * @return string the wrapped text.
      * @from yii2
      */
@@ -115,7 +119,7 @@ final class FormatUtil
             $width = $size[0];
         }
 
-        $pad = str_repeat(' ', $indent);
+        $pad   = str_repeat(' ', $indent);
         $lines = explode("\n", wordwrap($text, $width - $indent, "\n", true));
         $first = true;
 
@@ -132,6 +136,7 @@ final class FormatUtil
 
     /**
      * @param array $options
+     *
      * @return array
      */
     public static function alignOptions(array $options): array
@@ -164,6 +169,7 @@ final class FormatUtil
 
     /**
      * @param float $memory
+     *
      * @return string
      * ```
      * FormatUtil::memoryUsage(memory_get_usage(true));
@@ -188,7 +194,9 @@ final class FormatUtil
 
     /**
      * format timestamp to how long ago
-     * @param  int $secs
+     *
+     * @param int $secs
+     *
      * @return string
      */
     public static function howLongAgo(int $secs): string
@@ -224,12 +232,14 @@ final class FormatUtil
 
     /**
      * splice Array
-     * @param  array $data
-     * e.g [
+     *
+     * @param array $data
+     *     e.g [
      *     'system'  => 'Linux',
      *     'version'  => '4.4.5',
-     * ]
-     * @param  array $opts
+     *     ]
+     * @param array $opts
+     *
      * @return string
      */
     public static function spliceKeyValue(array $data, array $opts = []): string
@@ -258,10 +268,10 @@ final class FormatUtil
 
         foreach ($data as $key => $value) {
             $hasKey = !is_int($key);
-            $text .= $opts['leftChar'];
+            $text   .= $opts['leftChar'];
 
             if ($hasKey && $opts['keyMaxWidth']) {
-                $key = str_pad($key, $opts['keyMaxWidth'], ' ');
+                $key  = str_pad($key, $opts['keyMaxWidth'], ' ');
                 $text .= ColorTag::wrap($key, $keyStyle) . $opts['sepChar'];
             }
 
@@ -288,7 +298,7 @@ final class FormatUtil
             }
 
             $value = $hasKey && $opts['ucFirst'] ? ucfirst($value) : $value;
-            $text .= ColorTag::wrap($value, $opts['valStyle']) . "\n";
+            $text  .= ColorTag::wrap($value, $opts['valStyle']) . "\n";
         }
 
         return $text;

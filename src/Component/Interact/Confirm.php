@@ -11,14 +11,17 @@ use function ucfirst;
 
 /**
  * Class Confirm
+ *
  * @package Inhere\Console\Component\Interact
  */
 class Confirm extends InteractMessage
 {
     /**
      * Send a message request confirmation
+     *
      * @param string $question The question message
-     * @param bool   $default Default value
+     * @param bool   $default  Default value
+     *
      * @return bool
      */
     public static function ask(string $question, bool $default = true): bool

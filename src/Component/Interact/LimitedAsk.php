@@ -12,6 +12,7 @@ use function ucfirst;
 
 /**
  * Class LimitedAsk
+ *
  * @package Inhere\Console\Component\Interact
  */
 class LimitedAsk extends InteractMessage
@@ -21,9 +22,13 @@ class LimitedAsk extends InteractMessage
      * Ask a question, ask for a limited number of times
      *   若输入了值且验证成功则返回 输入的结果
      *   否则，会连续询问 $times 次， 若仍然错误，退出
-     * @param string   $question 问题
-     * @param string   $default 默认值
+     *
+     * @param string  $question  问题
+     * @param string  $default   默认值
      * @param Closure $validator (默认验证输入是否为空)自定义回调验证输入是否符合要求; 验证成功返回true 否则 可返回错误消息
+     * @param int     $times     Allow input times
+     *
+     * @return string
      * @example This is an example
      *
      * ```php
@@ -48,8 +53,6 @@ class LimitedAsk extends InteractMessage
      * } );
      * ```
      *
-     * @param int      $times Allow input times
-     * @return string
      */
     public static function ask(
         string $question,
@@ -88,7 +91,7 @@ class LimitedAsk extends InteractMessage
             }
 
             // If setting verify callback
-            if ($validator && true === $validator($answer) ) {
+            if ($validator && true === $validator($answer)) {
                 break;
             }
 

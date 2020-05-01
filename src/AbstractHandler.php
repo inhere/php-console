@@ -51,6 +51,7 @@ use const PHP_OS;
 
 /**
  * Class AbstractHandler
+ *
  * @package Inhere\Console
  */
 abstract class AbstractHandler implements CommandHandlerInterface
@@ -59,6 +60,7 @@ abstract class AbstractHandler implements CommandHandlerInterface
 
     /**
      * command name e.g 'test' 'test:one'
+     *
      * @var string
      */
     protected static $name = '';
@@ -66,6 +68,7 @@ abstract class AbstractHandler implements CommandHandlerInterface
     /**
      * command/controller description message
      * please use the property setting current controller/command description
+     *
      * @var string
      */
     protected static $description = '';
@@ -77,6 +80,7 @@ abstract class AbstractHandler implements CommandHandlerInterface
 
     /**
      * Allow display message tags in the command annotation
+     *
      * @var array
      */
     protected static $annotationTags = [
@@ -103,6 +107,7 @@ abstract class AbstractHandler implements CommandHandlerInterface
 
     /**
      * Whether enabled
+     *
      * @return bool
      */
     public static function isEnabled(): bool
@@ -112,6 +117,7 @@ abstract class AbstractHandler implements CommandHandlerInterface
 
     /**
      * Setting current command/group name aliases
+     *
      * @return string[]
      */
     public static function aliases(): array
@@ -122,6 +128,7 @@ abstract class AbstractHandler implements CommandHandlerInterface
 
     /**
      * Command constructor.
+     *
      * @param Input                $input
      * @param Output               $output
      * @param InputDefinition|null $definition
@@ -180,6 +187,7 @@ abstract class AbstractHandler implements CommandHandlerInterface
      *      ]);
      * }
      * ```
+     *
      * @return array
      */
     protected function annotationVars(): array
@@ -202,7 +210,9 @@ abstract class AbstractHandler implements CommandHandlerInterface
 
     /**
      * run command
+     *
      * @param string $command
+     *
      * @return int|mixed
      * @throws RuntimeException
      * @throws InvalidArgumentException
@@ -241,6 +251,7 @@ abstract class AbstractHandler implements CommandHandlerInterface
 
     /**
      * coroutine run by swoole go()
+     *
      * @return bool
      */
     public function coroutineRun(): bool
@@ -271,6 +282,7 @@ abstract class AbstractHandler implements CommandHandlerInterface
 
     /**
      * Before command execute
+     *
      * @return boolean It MUST return TRUE to continue execute.
      */
     protected function beforeExecute(): bool
@@ -280,8 +292,10 @@ abstract class AbstractHandler implements CommandHandlerInterface
 
     /**
      * Do execute command
-     * @param  Input  $input
-     * @param  Output $output
+     *
+     * @param Input  $input
+     * @param Output $output
+     *
      * @return int|mixed
      */
     abstract protected function execute($input, $output);
@@ -295,6 +309,7 @@ abstract class AbstractHandler implements CommandHandlerInterface
 
     /**
      * prepare run
+     *
      * @throws InvalidArgumentException
      * @throws RuntimeException
      */
@@ -317,6 +332,7 @@ abstract class AbstractHandler implements CommandHandlerInterface
 
     /**
      * validate input arguments and options
+     *
      * @return bool
      * @throws InvalidArgumentException
      */
@@ -373,10 +389,8 @@ abstract class AbstractHandler implements CommandHandlerInterface
             $names = array_keys($unknown);
             $first = array_shift($names);
 
-            throw new InvalidArgumentException(sprintf(
-                'Input option is not exists (unknown: "%s").',
-                (isset($first[1]) ? '--' : '-') . $first
-            ));
+            throw new InvalidArgumentException(sprintf('Input option is not exists (unknown: "%s").',
+                (isset($first[1]) ? '--' : '-') . $first));
         }
 
         foreach ($defOpts as $name => $conf) {
@@ -390,10 +404,7 @@ abstract class AbstractHandler implements CommandHandlerInterface
         }
 
         if (count($missingOpts) > 0) {
-            $out->liteError(
-                sprintf('Not enough options parameters (missing: "%s").',
-                    implode(', ', $missingOpts))
-            );
+            $out->liteError(sprintf('Not enough options parameters (missing: "%s").', implode(', ', $missingOpts)));
             return false;
         }
 
@@ -440,7 +451,9 @@ abstract class AbstractHandler implements CommandHandlerInterface
 
     /**
      * 替换注解中的变量为对应的值
+     *
      * @param string $str
+     *
      * @return string
      */
     protected function parseCommentsVars(string $str): string
@@ -477,6 +490,7 @@ abstract class AbstractHandler implements CommandHandlerInterface
 
     /**
      * Display help information
+     *
      * @return bool
      */
     protected function showHelp(): bool
@@ -488,12 +502,7 @@ abstract class AbstractHandler implements CommandHandlerInterface
         // if has InputDefinition object. (The comment of the command will not be parsed and used at this time.)
         $help = $definition->getSynopsis();
         // build usage
-        $help['usage:'] = sprintf(
-            '%s %s %s',
-            $this->getScriptName(),
-            $this->getCommandName(),
-            $help['usage:']
-        );
+        $help['usage:'] = sprintf('%s %s %s', $this->getScriptName(), $this->getCommandName(), $help['usage:']);
         // align global options
         $help['global options:'] = FormatUtil::alignOptions(Application::getGlobalOptions());
 
@@ -515,9 +524,11 @@ abstract class AbstractHandler implements CommandHandlerInterface
 
     /**
      * Display command/action help by parse method annotations
+     *
      * @param string $method
      * @param string $action
      * @param array  $aliases
+     *
      * @return int
      * @throws ReflectionException
      */
@@ -526,11 +537,8 @@ abstract class AbstractHandler implements CommandHandlerInterface
         $ref  = new ReflectionClass($this);
         $name = $this->input->getCommand();
 
-        $this->logf(
-            Console::VERB_CRAZY,
-            'display help info for the method=%s, action=%s, class=%s',
-            $method, $action, static::class
-        );
+        $this->logf(Console::VERB_CRAZY, 'display help info for the method=%s, action=%s, class=%s', $method, $action,
+            static::class);
 
         if (!$ref->hasMethod($method)) {
             $this->write("The command [<info>$name</info>] don't exist in the group: " . static::getName());
@@ -686,6 +694,7 @@ abstract class AbstractHandler implements CommandHandlerInterface
 
     /**
      * get current debug level value
+     *
      * @return int
      */
     public function getVerbLevel(): int

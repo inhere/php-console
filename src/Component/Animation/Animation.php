@@ -10,6 +10,7 @@ namespace Inhere\Console\Component\Animation;
 
 /**
  * Class Animation
+ *
  * @package Inhere\Console\Component\Animation
  */
 class Animation

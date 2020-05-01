@@ -10,6 +10,7 @@ namespace Inhere\Console\Component\Formatter;
 
 /**
  * Class Body
+ *
  * @package Inhere\Console\Component\Formatter
  */
 class Body

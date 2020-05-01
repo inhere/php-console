@@ -10,6 +10,7 @@ namespace Inhere\Console\Contract;
 
 /**
  * interface ControllerInterface
+ *
  * @package Inhere\Console\Contract
  */
 interface ControllerInterface

@@ -25,8 +25,9 @@ use function strpos;
 
 /**
  * Class Style
+ *
  * @package Inhere\Console\Component\Style
- * @link https://github.com/ventoviro/windwalker-IO
+ * @link    https://github.com/ventoviro/windwalker-IO
  *
  * @method string info(string $message)
  * @method string comment(string $message)
@@ -56,6 +57,7 @@ class Style
 
     /**
      * Regex to match tags
+     *
      * @var string
      */
     public const COLOR_TAG = '/<([a-zA-Z=;]+)>(.*?)<\/\\1>/s';
@@ -67,12 +69,14 @@ class Style
 
     /**
      * Flag to remove color codes from the output
+     *
      * @var bool
      */
     protected static $noColor = false;
 
     /**
      * Array of Color objects
+     *
      * @var Color[]
      */
     private $styles = [];
@@ -91,9 +95,10 @@ class Style
 
     /**
      * Constructor
-     * @param  string $fg 前景色(字体颜色)
-     * @param  string $bg 背景色
-     * @param  array  $options 其它选项
+     *
+     * @param string $fg      前景色(字体颜色)
+     * @param string $bg      背景色
+     * @param array  $options 其它选项
      */
     public function __construct($fg = '', $bg = '', array $options = [])
     {
@@ -107,6 +112,7 @@ class Style
     /**
      * @param string $method
      * @param array  $args
+     *
      * @return mixed|string
      * @throws InvalidArgumentException
      */
@@ -125,35 +131,31 @@ class Style
      */
     protected function loadDefaultStyles(): void
     {
-        $this
-            ->addByArray(self::NORMAL, ['fg' => 'normal'])
+        $this->addByArray(self::NORMAL, ['fg' => 'normal'])
             // 不明显的 浅灰色的
-            ->addByArray(self::FAINTLY, ['fg' => 'normal', 'options' => ['italic']])
-            ->addByArray(self::BOLD, ['options' => ['bold']])
-            ->addByArray(self::INFO, ['fg' => 'green',])//'options' => ['bold']
-            ->addByArray(self::NOTE, ['fg' => 'cyan', 'options' => ['bold']])//'options' => ['bold']
-            ->addByArray(self::PRIMARY, ['fg' => 'yellow', 'options' => ['bold']])//
-            ->addByArray(self::SUCCESS, ['fg' => 'green', 'options' => ['bold']])
-            ->addByArray(self::NOTICE, ['options' => ['bold', 'underscore'],])
-            ->addByArray(self::WARNING, ['fg' => 'black', 'bg' => 'yellow',])//'options' => ['bold']
-            ->addByArray(self::COMMENT, ['fg' => 'yellow',])//'options' => ['bold']
-            ->addByArray(self::QUESTION, ['fg' => 'black', 'bg' => 'cyan'])
-            ->addByArray(self::DANGER, ['fg' => 'red',])// 'bg' => 'magenta', 'options' => ['bold']
-            ->add(self::ERROR, 'white', 'red', [], true)
-            ->add('underline', 'normal', '', ['underscore'])
-            ->add('blue', 'blue')
-            ->add('cyan', 'cyan')
-            ->add('magenta', 'magenta')
-            ->add('mga', 'magenta')
-            ->add('red', 'red')
-            ->addByArray('yellow', ['fg' => 'yellow'])
-            ->addByArray('darkGray', ['fg' => 'black', 'extra' => true]);
+             ->addByArray(self::FAINTLY, ['fg' => 'normal', 'options' => ['italic']])
+             ->addByArray(self::BOLD, ['options' => ['bold']])
+             ->addByArray(self::INFO, ['fg' => 'green',])//'options' => ['bold']
+             ->addByArray(self::NOTE, ['fg' => 'cyan', 'options' => ['bold']])//'options' => ['bold']
+             ->addByArray(self::PRIMARY, ['fg' => 'yellow', 'options' => ['bold']])//
+             ->addByArray(self::SUCCESS, ['fg' => 'green', 'options' => ['bold']])
+             ->addByArray(self::NOTICE, ['options' => ['bold', 'underscore'],])
+             ->addByArray(self::WARNING, ['fg' => 'black', 'bg' => 'yellow',])//'options' => ['bold']
+             ->addByArray(self::COMMENT, ['fg' => 'yellow',])//'options' => ['bold']
+             ->addByArray(self::QUESTION, ['fg' => 'black', 'bg' => 'cyan'])
+             ->addByArray(self::DANGER, ['fg' => 'red',])// 'bg' => 'magenta', 'options' => ['bold']
+             ->add(self::ERROR, 'white', 'red', [], true)->add('underline', 'normal', '', ['underscore'])
+             ->add('blue', 'blue')->add('cyan', 'cyan')->add('magenta', 'magenta')->add('mga', 'magenta')
+             ->add('red', 'red')->addByArray('yellow', ['fg' => 'yellow'])
+             ->addByArray('darkGray', ['fg' => 'black', 'extra' => true]);
     }
 
     /**
      * Process a string use style
+     *
      * @param string $style
      * @param string $text
+     *
      * @return string
      */
     public function apply(string $style, string $text): string
@@ -163,7 +165,9 @@ class Style
 
     /**
      * Process a string.
+     *
      * @param string $text
+     *
      * @return mixed
      */
     public function t(string $text)
@@ -173,7 +177,9 @@ class Style
 
     /**
      * Process a string.
+     *
      * @param string $text
+     *
      * @return mixed
      */
     public function render(string $text)
@@ -183,6 +189,7 @@ class Style
 
     /**
      * @param string $text
+     *
      * @return mixed|string
      */
     public function format(string $text)
@@ -217,10 +224,12 @@ class Style
 
     /**
      * Replace color tags in a string.
-     * @param string   $text
-     * @param   string $tag The matched tag.
-     * @param   string $match The match.
-     * @param   string $style The color style to apply.
+     *
+     * @param string $text
+     * @param string $tag   The matched tag.
+     * @param string $match The match.
+     * @param string $style The color style to apply.
+     *
      * @return  string
      */
     protected function replaceColor($text, $tag, $match, $style): string
@@ -233,7 +242,9 @@ class Style
 
     /**
      * Strip color tags from a string.
+     *
      * @param string $string
+     *
      * @return mixed
      */
     public static function stripColor(string $string)
@@ -247,12 +258,14 @@ class Style
 
     /**
      * Add a style.
+     *
      * @param string             $name
-     * @param string|Color|array $fg 前景色|Color对象|也可以是style配置数组(@see self::addByArray())
-     *                               当它为Color对象或配置数组时，后面两个参数无效
-     * @param string             $bg 背景色
+     * @param string|Color|array $fg      前景色|Color对象|也可以是style配置数组(@see self::addByArray())
+     *                                    当它为Color对象或配置数组时，后面两个参数无效
+     * @param string             $bg      背景色
      * @param array              $options 其它选项
      * @param bool               $extra
+     *
      * @return $this
      */
     public function add(string $name, $fg = '', $bg = '', array $options = [], bool $extra = false): self
@@ -272,15 +285,17 @@ class Style
 
     /**
      * Add a style by an array config
+     *
      * @param string $name
      * @param array  $styleConfig 样式设置信息
-     * e.g
-     * [
-     *     'fg' => 'white',
-     *     'bg' => 'black',
-     *     'extra' => true,
-     *     'options' => ['bold', 'underscore']
-     * ]
+     *                            e.g
+     *                            [
+     *                            'fg' => 'white',
+     *                            'bg' => 'black',
+     *                            'extra' => true,
+     *                            'options' => ['bold', 'underscore']
+     *                            ]
+     *
      * @return $this
      */
     public function addByArray(string $name, array $styleConfig): self
@@ -326,6 +341,7 @@ class Style
 
     /**
      * @param $name
+     *
      * @return Color|null
      */
     public function getStyle($name): ?Color
@@ -339,6 +355,7 @@ class Style
 
     /**
      * @param $name
+     *
      * @return bool
      */
     public function hasStyle($name): bool
@@ -348,8 +365,10 @@ class Style
 
     /**
      * wrap a color style tag
+     *
      * @param string $text
      * @param string $tag
+     *
      * @return string
      */
     public static function wrap(string $text, string $tag): string
@@ -371,6 +390,7 @@ class Style
 
     /**
      * Method to set property noColor
+     *
      * @param $noColor
      */
     public static function setNoColor($noColor = true): void

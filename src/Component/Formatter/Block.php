@@ -12,6 +12,7 @@ use Inhere\Console\Component\MessageFormatter;
 
 /**
  * Class Block
+ *
  * @package Inhere\Console\Component\Formatter
  */
 class Block extends MessageFormatter

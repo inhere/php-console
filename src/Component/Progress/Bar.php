@@ -10,6 +10,7 @@ namespace Inhere\Console\Component\Progress;
 
 /**
  * Class Bar
+ *
  * @package Inhere\Console\Component\Progress
  */
 class Bar extends TextBar

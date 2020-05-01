@@ -9,6 +9,7 @@ use Toolkit\Cli\Cli;
 
 /**
  * Class CounterText
+ *
  * @package Inhere\Console\Component\Progress
  */
 class CounterText extends NotifyMessage
@@ -31,6 +32,7 @@ class CounterText extends NotifyMessage
      *
      * @param string $msg
      * @param string $doneMsg
+     *
      * @return Generator
      */
     public static function gen(string $msg, $doneMsg = ''): Generator

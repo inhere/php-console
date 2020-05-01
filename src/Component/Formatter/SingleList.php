@@ -2,17 +2,18 @@
 
 namespace Inhere\Console\Component\Formatter;
 
-use function array_merge;
 use Inhere\Console\Component\MessageFormatter;
 use Inhere\Console\Console;
 use Inhere\Console\Util\FormatUtil;
-use const PHP_EOL;
 use Toolkit\Cli\ColorTag;
+use function array_merge;
 use function trim;
 use function ucwords;
+use const PHP_EOL;
 
 /**
  * Class SingleList - Format and render a single list
+ *
  * @package Inhere\Console\Component\Formatter
  */
 class SingleList extends MessageFormatter
@@ -31,6 +32,7 @@ class SingleList extends MessageFormatter
      * @param array  $data
      * @param string $title
      * @param array  $opts More {@see FormatUtil::spliceKeyValue()}
+     *
      * @return int|string
      */
     public static function show($data, string $title = '', array $opts = [])

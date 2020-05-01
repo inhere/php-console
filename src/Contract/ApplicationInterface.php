@@ -27,33 +27,39 @@ interface ApplicationInterface
 
     /**
      * @param bool $exit
+     *
      * @return int|mixed
      */
     public function run(bool $exit = true);
 
     /**
      * Dispatch input command, exec found command handler.
-     * @param string $name Inputted command name
+     *
+     * @param string $name       Inputted command name
      * @param bool   $standAlone Use for an group commands execution alone
+     *
      * @return int|mixed
      */
     public function dispatch(string $name, bool $standAlone = false);
 
     /**
      * @param int $code
+     *
      * @return mixed
      */
     public function stop(int $code = 0);
 
     /**
      * Register a app group command(by controller)
-     * @param string                     $name The controller name
+     *
+     * @param string                     $name  The controller name
      * @param string|ControllerInterface $class The controller class
      * @param null|array|string          $option
-     * string: define the description message.
-     * array:
-     *  - aliases     The command aliases
-     *  - description The description message
+     *                                          string: define the description message.
+     *                                          array:
+     *                                          - aliases     The command aliases
+     *                                          - description The description message
+     *
      * @return static
      * @throws InvalidArgumentException
      */
@@ -65,8 +71,8 @@ interface ApplicationInterface
      * @param string|CommandInterface         $name
      * @param string|Closure|CommandInterface $handler
      * @param null|array|string               $option
-     * string: define the description message.
-     * array:
+     *  string: define the description message.
+     *  array:
      *  - aliases     The command aliases
      *  - description The description message
      *

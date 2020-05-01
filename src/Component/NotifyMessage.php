@@ -14,7 +14,7 @@ use RuntimeException;
  * Class NotifyMessage - like progress, spinner ....
  *
  * @package Inhere\Console\Component
- * @link https://github.com/wp-cli/php-cli-tools/tree/master/lib/cli
+ * @link    https://github.com/wp-cli/php-cli-tools/tree/master/lib/cli
  */
 class NotifyMessage
 {

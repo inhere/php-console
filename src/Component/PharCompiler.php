@@ -59,6 +59,7 @@ use const T_WHITESPACE;
 
 /**
  * Class PharCompiler
+ *
  * @package Inhere\Console\Component
  */
 class PharCompiler
@@ -104,6 +105,7 @@ class PharCompiler
      * 'tag' => '{@package_branch_alias_version}',
      * 'releaseDate' => '{@release_date}',
      * ]
+     *
      * @var string
      */
     private $versionFile;
@@ -206,6 +208,7 @@ class PharCompiler
      * @param string            $extractTo
      * @param string|array|null $files Only fetch the listed files
      * @param bool              $overwrite
+     *
      * @return bool
      * @throws UnexpectedValueException
      * @throws BadMethodCallException
@@ -231,15 +234,15 @@ class PharCompiler
         }
 
         if (ini_get('phar.readonly')) {
-            throw new RuntimeException(
-                "The 'phar.readonly' is 'On', build phar must setting it 'Off' or exec with 'php -d phar.readonly=0'"
-            );
+            throw new RuntimeException("The 'phar.readonly' is 'On', build phar must setting it 'Off' or exec with 'php -d phar.readonly=0'");
         }
     }
 
     /**
      * PharCompiler constructor.
+     *
      * @param string $basePath
+     *
      * @throws RuntimeException
      */
     public function __construct(string $basePath)
@@ -255,6 +258,7 @@ class PharCompiler
 
     /**
      * @param string|array $suffixes
+     *
      * @return $this
      */
     public function addSuffix($suffixes): self
@@ -266,6 +270,7 @@ class PharCompiler
 
     /**
      * @param string|array $filename
+     *
      * @return $this
      */
     public function notName($filename): self
@@ -277,6 +282,7 @@ class PharCompiler
 
     /**
      * @param string|array $dirs
+     *
      * @return $this
      */
     public function addExclude($dirs): self
@@ -288,6 +294,7 @@ class PharCompiler
 
     /**
      * @param string|array $files
+     *
      * @return $this
      */
     public function addFile($files): self
@@ -299,6 +306,7 @@ class PharCompiler
 
     /**
      * @param bool $value
+     *
      * @return PharCompiler
      */
     public function stripComments($value): self
@@ -310,6 +318,7 @@ class PharCompiler
 
     /**
      * @param bool $value
+     *
      * @return PharCompiler
      */
     public function collectVersion($value): self
@@ -321,6 +330,7 @@ class PharCompiler
 
     /**
      * @param Closure $stripFilter
+     *
      * @return PharCompiler
      */
     public function setStripFilter(Closure $stripFilter): PharCompiler
@@ -332,6 +342,7 @@ class PharCompiler
 
     /**
      * @param bool|string $shebang
+     *
      * @return PharCompiler
      */
     public function setShebang($shebang): PharCompiler
@@ -343,6 +354,7 @@ class PharCompiler
 
     /**
      * @param string|array $dirs
+     *
      * @return PharCompiler
      */
     public function in($dirs): self
@@ -366,8 +378,10 @@ class PharCompiler
 
     /**
      * Compiles composer into a single phar file
-     * @param  string $pharFile The full path to the file to create
-     * @param bool    $refresh
+     *
+     * @param string $pharFile The full path to the file to create
+     * @param bool   $refresh
+     *
      * @return string
      * @throws UnexpectedValueException
      * @throws BadMethodCallException
@@ -456,6 +470,7 @@ class PharCompiler
 
     /**
      * find changed or new created files by git status.
+     *
      * @return Generator
      */
     public function findChangedByGit(): ?Generator
@@ -492,15 +507,13 @@ class PharCompiler
      */
     protected function findFiles(string $directory)
     {
-        return Helper::directoryIterator(
-            $directory,
-            $this->createIteratorFilter(),
-            FilesystemIterator::KEY_AS_PATHNAME | FilesystemIterator::CURRENT_AS_FILEINFO | FilesystemIterator::SKIP_DOTS
-        );
+        return Helper::directoryIterator($directory, $this->createIteratorFilter(),
+            FilesystemIterator::KEY_AS_PATHNAME | FilesystemIterator::CURRENT_AS_FILEINFO | FilesystemIterator::SKIP_DOTS);
     }
 
     /**
      * Add a file to the Phar.
+     *
      * @param Phar        $phar
      * @param SplFileInfo $file
      */
@@ -513,8 +526,8 @@ class PharCompiler
         }
 
         $this->counter++;
-        $path = $this->getRelativeFilePath($file);
-        $strip = $this->stripComments;
+        $path    = $this->getRelativeFilePath($file);
+        $strip   = $this->stripComments;
         $content = file_get_contents($file);
 
         // clear php file comments
@@ -553,7 +566,7 @@ class PharCompiler
     {
         if ($this->cliIndex) {
             $this->counter++;
-            $path = $this->basePath . '/' . $this->cliIndex;
+            $path    = $this->basePath . '/' . $this->cliIndex;
             $content = preg_replace('{^#!/usr/bin/env php\s*}', '', file_get_contents($path));
 
             if ($cb = $this->events['add']) {
@@ -565,7 +578,7 @@ class PharCompiler
 
         if ($this->webIndex) {
             $this->counter++;
-            $path = $this->basePath . '/' . $this->webIndex;
+            $path    = $this->basePath . '/' . $this->webIndex;
             $content = file_get_contents($path);
 
             if ($cb = $this->events['add']) {
@@ -591,9 +604,9 @@ class PharCompiler
     private function createStub(): string
     {
         // var_dump($this);die;
-        $date = date('Y-m-d H:i');
+        $date     = date('Y-m-d H:i');
         $pharName = $this->pharName;
-        $stub = <<<EOF
+        $stub     = <<<EOF
 <?php
 /**
  * @date $date
@@ -607,12 +620,12 @@ EOF;
         // add shebang
         if ($shebang = $this->shebang) {
             $shebang = is_string($shebang) ? $shebang : '#!/usr/bin/env php';
-            $stub = "$shebang\n$stub";
+            $stub    = "$shebang\n$stub";
         }
 
         if ($this->cliIndex && $this->webIndex) {
             $stub .= <<<EOF
-// for command line            
+// for command line
 if (PHP_SAPI === 'cli') {
     require 'phar://$pharName/{$this->cliIndex}';
 } else {
@@ -672,7 +685,9 @@ EOF;
 
     /**
      * Removes whitespace from a PHP source string while preserving line numbers.
-     * @param  string $source A PHP string
+     *
+     * @param string $source A PHP string
+     *
      * @return string The PHP string with the whitespace removed
      */
     private function stripWhitespace(string $source): string
@@ -694,7 +709,7 @@ EOF;
                 $whitespace = preg_replace('{(?:\r\n|\r|\n)}', "\n", $whitespace);
                 // trim leading spaces
                 $whitespace = preg_replace('{\n +}', "\n", $whitespace);
-                $output .= $whitespace;
+                $output     .= $whitespace;
             } else {
                 $output .= $token[1];
             }
@@ -705,6 +720,7 @@ EOF;
 
     /**
      * auto collect project information by git log
+     *
      * @throws RuntimeException
      * @throws Exception
      */
@@ -718,9 +734,7 @@ EOF;
         [$code, $ret,] = Sys::run('git log --pretty="%H" -n1 HEAD', $basePath);
 
         if ($code !== 0) {
-            throw new RuntimeException(
-                'Can\'t run git log. You must ensure to run compile from git repository clone and that git binary is available.'
-            );
+            throw new RuntimeException('Can\'t run git log. You must ensure to run compile from git repository clone and that git binary is available.');
         }
 
         $this->version = trim($ret);
@@ -728,9 +742,7 @@ EOF;
         [$code, $ret,] = Sys::run('git log -n1 --pretty=%ci HEAD', $basePath);
 
         if ($code !== 0) {
-            throw new RuntimeException(
-                'Can\'t run git log. You must ensure to run compile from git repository clone and that git binary is available.'
-            );
+            throw new RuntimeException('Can\'t run git log. You must ensure to run compile from git repository clone and that git binary is available.');
         }
 
         $this->versionDate = new DateTime(trim($ret));
@@ -750,15 +762,16 @@ EOF;
     }
 
     /**
-     * @param  SplFileInfo $file
+     * @param SplFileInfo $file
+     *
      * @return string
      */
     private function getRelativeFilePath($file): string
     {
-        $realPath = $file->getRealPath();
+        $realPath   = $file->getRealPath();
         $pathPrefix = $this->basePath . DIRECTORY_SEPARATOR;
 
-        $pos = strpos($realPath, $pathPrefix);
+        $pos          = strpos($realPath, $pathPrefix);
         $relativePath = $pos !== false ? substr_replace($realPath, '', $pos, strlen($pathPrefix)) : $realPath;
 
         return str_replace('\\', '/', $relativePath);
@@ -776,7 +789,8 @@ EOF;
 
     /**
      * add event handler
-     * @param string   $event
+     *
+     * @param string  $event
      * @param Closure $closure
      */
     public function on(string $event, Closure $closure): void
@@ -842,6 +856,7 @@ EOF;
 
     /**
      * @param string $cliIndex
+     *
      * @return $this
      */
     public function setCliIndex(string $cliIndex): self
@@ -861,6 +876,7 @@ EOF;
 
     /**
      * @param null|string $webIndex
+     *
      * @return PharCompiler
      */
     public function setWebIndex(string $webIndex): self
@@ -887,6 +903,7 @@ EOF;
 
     /**
      * @param string $versionFile
+     *
      * @return PharCompiler
      */
     public function setVersionFile(string $versionFile): PharCompiler
@@ -906,6 +923,7 @@ EOF;
 
     /**
      * @param null|string $version
+     *
      * @return PharCompiler
      */
     public function setVersion(string $version): PharCompiler
@@ -925,6 +943,7 @@ EOF;
 
     /**
      * @param null|string $branchAliasVersion
+     *
      * @return PharCompiler
      */
     public function setBranchAliasVersion(string $branchAliasVersion): PharCompiler

@@ -18,6 +18,7 @@ use const STDOUT;
 
 /**
  * Class Output
+ *
  * @package Inhere\Console\IO
  */
 class Output implements OutputInterface
@@ -41,12 +42,14 @@ class Output implements OutputInterface
     /**
      * 控制台窗口(字体/背景)颜色添加处理
      * window colors
+     *
      * @var Style
      */
     protected $style;
 
     /**
      * Output constructor.
+     *
      * @param null|resource $outputStream
      */
     public function __construct($outputStream = null)
@@ -81,6 +84,7 @@ class Output implements OutputInterface
     /**
      * stop buffering and flush buffer text
      * {@inheritdoc}
+     *
      * @see Console::stopBuffer()
      */
     public function stopBuffer(bool $flush = true, $nl = false, $quit = false, array $opts = []): void
@@ -103,8 +107,10 @@ class Output implements OutputInterface
 
     /**
      * Read input information
-     * @param  string $question 若不为空，则先输出文本
-     * @param  bool   $nl true 会添加换行符 false 原样输出，不添加换行符
+     *
+     * @param string $question 若不为空，则先输出文本
+     * @param bool   $nl       true 会添加换行符 false 原样输出，不添加换行符
+     *
      * @return string
      */
     public function read(string $question = '', bool $nl = false): string
@@ -114,8 +120,10 @@ class Output implements OutputInterface
 
     /**
      * Write a message to standard error output stream.
+     *
      * @param string  $text
      * @param boolean $nl True (default) to append a new line at the end of the output string.
+     *
      * @return int
      */
     public function stderr(string $text = '', $nl = true): int
@@ -159,7 +167,9 @@ class Output implements OutputInterface
 
     /**
      * setOutStream
+     *
      * @param $outStream
+     *
      * @return $this
      */
     public function setOutputStream($outStream): self
@@ -179,7 +189,9 @@ class Output implements OutputInterface
 
     /**
      * Method to set property errorStream
+     *
      * @param $errorStream
+     *
      * @return $this
      */
     public function setErrorStream($errorStream): self

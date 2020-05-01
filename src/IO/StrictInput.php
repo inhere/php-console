@@ -24,6 +24,7 @@ class StrictInput extends Input
 {
     /**
      * the prepare parsed options.
+     *
      * @see AbstractApplication::$globalOptions
      * @var array
      */
@@ -42,6 +43,7 @@ class StrictInput extends Input
 
     /**
      * FixedInput constructor.
+     *
      * @param null|array $args
      */
     public function __construct(array $args = null)

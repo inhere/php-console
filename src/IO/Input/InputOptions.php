@@ -11,6 +11,7 @@ namespace Inhere\Console\IO\Input;
 /**
  * Class InputOptions
  * - input options builder
+ *
  * @package Inhere\Console\IO\Input
  */
 class InputOptions

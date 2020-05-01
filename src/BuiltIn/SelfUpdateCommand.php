@@ -20,6 +20,7 @@ use function strlen;
 
 /**
  * Class SelfUpdateCommand
+ *
  * @package Inhere\Console\BuiltIn
  */
 class SelfUpdateCommand extends Command
@@ -42,13 +43,14 @@ class SelfUpdateCommand extends Command
 
     /**
      * Execute the command.
+     *
      * @param Input  $input
      * @param Output $output
      */
     protected function execute($input, $output)
     {
         $this->version = $this->getApp()->getVersion();
-        $parser = new VersionParser;
+        $parser        = new VersionParser;
 
         /**
          * Check for ancilliary options
@@ -192,20 +194,14 @@ class SelfUpdateCommand extends Command
 
             if ($result) {
                 $this->output->writeln('<fg=green>Humbug has been updated.</fg=green>');
-                $this->output->writeln(sprintf(
-                    '<fg=green>Current version is:</fg=green> <options=bold>%s</options=bold>.',
-                    $newVersion
-                ));
-                $this->output->writeln(sprintf(
-                    '<fg=green>Previous version was:</fg=green> <options=bold>%s</options=bold>.',
-                    $oldVersion
-                ));
+                $this->output->writeln(sprintf('<fg=green>Current version is:</fg=green> <options=bold>%s</options=bold>.',
+                    $newVersion));
+                $this->output->writeln(sprintf('<fg=green>Previous version was:</fg=green> <options=bold>%s</options=bold>.',
+                    $oldVersion));
             } else {
                 $this->output->writeln('<fg=green>Humbug is currently up to date.</fg=green>');
-                $this->output->writeln(sprintf(
-                    '<fg=green>Current version is:</fg=green> <options=bold>%s</options=bold>.',
-                    $oldVersion
-                ));
+                $this->output->writeln(sprintf('<fg=green>Current version is:</fg=green> <options=bold>%s</options=bold>.',
+                    $oldVersion));
             }
         } catch (Exception $e) {
             $this->output->writeln(sprintf('Error: <fg=yellow>%s</fg=yellow>', $e->getMessage()));
@@ -240,10 +236,8 @@ class SelfUpdateCommand extends Command
 
     protected function printCurrentLocalVersion(): void
     {
-        $this->output->writeln(sprintf(
-            'Your current local build version is: <options=bold>%s</options=bold>',
-            $this->version
-        ));
+        $this->output->writeln(sprintf('Your current local build version is: <options=bold>%s</options=bold>',
+            $this->version));
     }
 
     protected function printCurrentStableVersion(): void
@@ -266,18 +260,16 @@ class SelfUpdateCommand extends Command
         $stability = 'stable';
         if ($updater->getStrategy() instanceof ShaStrategy) {
             $stability = 'development';
-        } elseif ($updater->getStrategy() instanceof GithubStrategy
-            && $updater->getStrategy()->getStability() === GithubStrategy::UNSTABLE) {
+        } elseif ($updater->getStrategy() instanceof GithubStrategy && $updater->getStrategy()
+                                                                               ->getStability() === GithubStrategy::UNSTABLE
+        ) {
             $stability = 'pre-release';
         }
 
         try {
             if ($updater->hasUpdate()) {
-                $this->output->writeln(sprintf(
-                    'The current %s build available remotely is: <options=bold>%s</options=bold>',
-                    $stability,
-                    $updater->getNewVersion()
-                ));
+                $this->output->writeln(sprintf('The current %s build available remotely is: <options=bold>%s</options=bold>',
+                    $stability, $updater->getNewVersion()));
             } elseif (false === $updater->getNewVersion()) {
                 $this->output->writeln(sprintf('There are no %s builds available.', $stability));
             } else {
@@ -290,45 +282,19 @@ class SelfUpdateCommand extends Command
 
     protected function configure(): void
     {
-        $this
-            ->createDefinition()
+        $this->createDefinition()
             // ->setName('self-update')
             // ->setDescription(self::$description)
-            ->addOption(
-                'dev',
-                'd',
-                Input::OPT_BOOLEAN,
-                'Update to most recent <cyan>development build</cyan> of package.'
-            )
-            ->addOption(
-                'non-dev',
-                'N',
-                Input::OPT_BOOLEAN,
-                'Update to most recent non-development (alpha/beta/stable) build of package tagged on Github.'
-            )
-            ->addOption(
-                'pre',
-                'p',
-                Input::OPT_BOOLEAN,
-                'Update to most recent pre-release version of package (alpha/beta/rc) tagged on Github.'
-            )
-            ->addOption(
-                'stable',
-                's',
-                Input::OPT_BOOLEAN,
-                'Update to most recent stable version tagged on Github.'
-            )
-            ->addOption(
-                'rollback',
-                'r',
-                Input::OPT_BOOLEAN,
-                'Rollback to previous version of package if available on filesystem.'
-            )
-            ->addOption(
-                'check',
-                'c',
-                Input::OPT_BOOLEAN,
-                'Checks what updates are available across all possible stability tracks.'
-            );
+             ->addOption('dev', 'd', Input::OPT_BOOLEAN,
+                'Update to most recent <cyan>development build</cyan> of package.')
+             ->addOption('non-dev', 'N', Input::OPT_BOOLEAN,
+                 'Update to most recent non-development (alpha/beta/stable) build of package tagged on Github.')
+             ->addOption('pre', 'p', Input::OPT_BOOLEAN,
+                 'Update to most recent pre-release version of package (alpha/beta/rc) tagged on Github.')
+             ->addOption('stable', 's', Input::OPT_BOOLEAN, 'Update to most recent stable version tagged on Github.')
+             ->addOption('rollback', 'r', Input::OPT_BOOLEAN,
+                 'Rollback to previous version of package if available on filesystem.')
+             ->addOption('check', 'c', Input::OPT_BOOLEAN,
+                 'Checks what updates are available across all possible stability tracks.');
     }
 }

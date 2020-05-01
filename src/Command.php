@@ -13,6 +13,7 @@ use ReflectionException;
 
 /**
  * Class Command
+ *
  * @package Inhere\Console
  *
  * ```php
@@ -48,6 +49,7 @@ abstract class Command extends AbstractHandler implements CommandInterface
 
     /**
      * Show help information
+     *
      * @return bool
      * @throws ReflectionException
      */

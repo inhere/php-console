@@ -29,6 +29,7 @@ use const STDOUT;
 
 /**
  * Class Console
+ *
  * @package Inhere\Console
  */
 class Console
@@ -91,6 +92,7 @@ class Console
      * @param array       $config
      * @param Input|null  $input
      * @param Output|null $output
+     *
      * @return Application
      */
     public static function newApp(
@@ -115,8 +117,10 @@ class Console
 
     /**
      * Format and write message to terminal. like printf()
+     *
      * @param string $format
      * @param mixed  ...$args
+     *
      * @return int
      */
     public static function writef(string $format, ...$args): int
@@ -126,8 +130,10 @@ class Console
 
     /**
      * Format and write message to terminal. like printf()
+     *
      * @param string $format
      * @param mixed  ...$args
+     *
      * @return int
      */
     public static function printf(string $format, ...$args): int
@@ -137,10 +143,12 @@ class Console
 
     /**
      * Write raw data to stdout, will disable color render.
+     *
      * @param string|array $message
      * @param bool         $nl
      * @param bool|int     $quit
      * @param array        $opts
+     *
      * @return int
      */
     public static function writeRaw($message, $nl = true, $quit = false, array $opts = []): int
@@ -151,9 +159,11 @@ class Console
 
     /**
      * Write data to stdout with newline.
+     *
      * @param string|array $message
      * @param array        $opts
      * @param bool|int     $quit
+     *
      * @return int
      */
     public static function writeln($message, $quit = false, array $opts = []): int
@@ -166,14 +176,15 @@ class Console
      *
      * @param string|array $messages Output message
      * @param boolean      $nl       True 会添加换行符, False 原样输出，不添加换行符
-     * @param int|boolean $quit      If is int, setting it is exit code.
+     * @param int|boolean  $quit     If is int, setting it is exit code.
      *                               'True' translate as code 0 and exit, 'False' will not exit.
      * @param array        $opts     Some options for write
-     * [
-     *     'color'  => bool, // whether render color, default is: True.
-     *     'stream' => resource, // the stream resource, default is: STDOUT
-     *     'flush'  => bool, // flush the stream data, default is: True
-     * ]
+     *                               [
+     *                               'color'  => bool, // whether render color, default is: True.
+     *                               'stream' => resource, // the stream resource, default is: STDOUT
+     *                               'flush'  => bool, // flush the stream data, default is: True
+     *                               ]
+     *
      * @return int
      */
     public static function write($messages, $nl = true, $quit = false, array $opts = []): int
@@ -222,6 +233,7 @@ class Console
 
     /**
      * Logs data to stdout
+     *
      * @param string|array $text
      * @param bool         $nl
      * @param bool|int     $quit
@@ -233,6 +245,7 @@ class Console
 
     /**
      * Logs data to stderr
+     *
      * @param string|array $text
      * @param bool         $nl
      * @param bool|int     $quit
@@ -262,16 +275,17 @@ class Console
 
     /**
      * Print log message to console
+     *
      * @param string $msg
      * @param array  $data
      * @param int    $level
      * @param array  $opts
-     * [
+     *  [
      *  '_category' => 'application',
      *  'process' => 'work',
      *  'pid' => 234,
      *  'coId' => 12,
-     * ]
+     *  ]
      */
     public static function log(string $msg, array $data = [], int $level = self::VERB_DEBUG, array $opts = []): void
     {
@@ -290,14 +304,8 @@ class Console
 
         $optString = $userOpts ? ' ' . implode(' ', $userOpts) : '';
 
-        self::write(sprintf(
-            '%s [%s]%s %s %s',
-            date('Y/m/d H:i:s'),
-            $taggedName,
-            $optString,
-            trim($msg),
-            $data ? PHP_EOL . json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) : ''
-        ));
+        self::write(sprintf('%s [%s]%s %s %s', date('Y/m/d H:i:s'), $taggedName, $optString, trim($msg),
+            $data ? PHP_EOL . json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) : ''));
     }
 
     /***********************************************************************************
@@ -310,6 +318,7 @@ class Console
      * @param mixed $message
      * @param bool  $nl
      * @param array $opts
+     *
      * @return string
      */
     public static function read($message = null, bool $nl = false, array $opts = []): string
@@ -332,9 +341,10 @@ class Console
      * @param mixed $message
      * @param bool  $nl
      * @param array $opts
-     * [
+     *   [
      *   'stream' => \STDIN
-     * ]
+     *   ]
+     *
      * @return string
      */
     public static function readln($message = null, $nl = false, array $opts = []): string
@@ -353,8 +363,10 @@ class Console
 
     /**
      * Read input information
-     * @param  mixed $message 若不为空，则先输出文本
-     * @param  bool  $nl true 会添加换行符 false 原样输出，不添加换行符
+     *
+     * @param mixed $message 若不为空，则先输出文本
+     * @param bool  $nl      true 会添加换行符 false 原样输出，不添加换行符
+     *
      * @return string
      */
     public static function readRow($message = null, $nl = false): string
@@ -368,6 +380,7 @@ class Console
      * @param mixed $message
      * @param bool  $nl
      * @param array $opts
+     *
      * @return string
      */
     public static function readSafe($message = null, bool $nl = false, array $opts = []): string
@@ -377,8 +390,8 @@ class Console
         }
 
         $opts = array_merge([
-            'length' => 1024,
-            'stream' => STDIN,
+            'length'    => 1024,
+            'stream'    => STDIN,
             'allowTags' => null,
         ], $opts);
 
@@ -387,8 +400,10 @@ class Console
 
     /**
      * Gets first character from file pointer
+     *
      * @param string $message
      * @param bool   $nl
+     *
      * @return string
      */
     public static function readChar(string $message = '', bool $nl = false): string
@@ -400,8 +415,10 @@ class Console
 
     /**
      * Read input first char
+     *
      * @param string $message
      * @param bool   $nl
+     *
      * @return string
      */
     public static function readFirst(string $message = '', bool $nl = false): string
@@ -455,12 +472,14 @@ class Console
 
     /**
      * Stop buffering
-     * @see write()
+     *
      * @param bool  $flush Whether flush buffer to output stream
-     * @param bool  $nl Default is False, because the last write() have been added "\n"
+     * @param bool  $nl    Default is False, because the last write() have been added "\n"
      * @param bool  $quit
      * @param array $opts
+     *
      * @return string If flush = False, will return all buffer text.
+     * @see write()
      */
     public static function stopBuffer($flush = true, $nl = false, $quit = false, array $opts = []): string
     {
@@ -482,10 +501,12 @@ class Console
 
     /**
      * Stop buffering and flush buffer text
-     * @see write()
+     *
      * @param bool  $nl
      * @param bool  $quit
      * @param array $opts
+     *
+     * @see write()
      */
     public static function flushBuffer($nl = false, $quit = false, array $opts = []): void
     {

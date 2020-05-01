@@ -13,6 +13,7 @@ use Inhere\Console\IO\Input;
 /**
  * Class InputItem
  * - definition a input item(option|argument)
+ *
  * @package Inhere\Console\IO\Input
  */
 class InputItem
@@ -34,12 +35,14 @@ class InputItem
 
     /**
      * The argument data type. (eg: 'string', 'array', 'mixed')
+     *
      * @var string
      */
     public $type;
 
     /**
      * default value
+     *
      * @var mixed
      */
     public $default;
@@ -49,6 +52,7 @@ class InputItem
      * @param int|null $mode
      * @param string   $description
      * @param null     $default
+     *
      * @return static
      */
     public static function make(string $name, int $mode = null, string $description = '', $default = null)
@@ -58,12 +62,13 @@ class InputItem
 
     /**
      * class constructor.
+     *
      * @param string   $name
      * @param int|null $mode
      * @param string   $description
      * @param mixed    $default The default value
-     *  - for InputArgument::OPTIONAL mode only
-     *  - must be null for InputOption::OPT_BOOL
+     *                          - for InputArgument::OPTIONAL mode only
+     *                          - must be null for InputOption::OPT_BOOL
      */
     public function __construct(string $name, int $mode = null, string $description = '', $default = null)
     {

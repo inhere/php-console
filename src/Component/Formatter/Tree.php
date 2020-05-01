@@ -8,17 +8,18 @@
 
 namespace Inhere\Console\Component\Formatter;
 
-use function array_merge;
 use Inhere\Console\Component\MessageFormatter;
 use Inhere\Console\Console;
 use Inhere\Console\Util\FormatUtil;
+use Toolkit\Cli\Cli;
+use function array_merge;
 use function is_array;
 use function is_scalar;
 use function str_pad;
-use Toolkit\Cli\Cli;
 
 /**
  * Class Tree
+ *
  * @package Inhere\Console\Component\Formatter
  */
 class Tree extends MessageFormatter
@@ -33,6 +34,7 @@ class Tree extends MessageFormatter
      * Render data like tree
      * ├ ─ ─
      * └ ─
+     *
      * @param array $data
      * @param array $opts
      */

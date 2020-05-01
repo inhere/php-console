@@ -12,6 +12,7 @@ use Inhere\Console\Component\NotifyMessage;
 
 /**
  * Class Spinner
+ *
  * @package Inhere\Console\Component\Progress
  */
 class Spinner extends NotifyMessage

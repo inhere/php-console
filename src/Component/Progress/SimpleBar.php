@@ -11,6 +11,7 @@ use function ceil;
 
 /**
  * Class SimpleBar
+ *
  * @package Inhere\Console\Component\Progress
  */
 class SimpleBar extends NotifyMessage
@@ -35,8 +36,9 @@ class SimpleBar extends NotifyMessage
      *
      * @param int   $total
      * @param array $opts
-     * @internal int $current
+     *
      * @return Generator
+     * @internal int $current
      */
     public static function gen(int $total, array $opts = []): Generator
     {
@@ -80,14 +82,11 @@ class SimpleBar extends NotifyMessage
              * \r, \x0D 回车，到行首
              * \x1B ESC
              * 2K 清除本行
-             */
-            // printf("\r[%'--100s] %d%% %s",
+             */ // printf("\r[%'--100s] %d%% %s",
             // printf("\x0D\x1B[2K[%'{$waitChar}-100s] %d%% %s",
             printf("{$tplPrefix}[%'{$waitChar}-100s] %' 3d%% %s",
-                str_repeat($opts['doneChar'], $percent) . ($finished ? '' : $opts['signChar']),
-                $percent,
-                $msg
-            );// ♥ ■ ☺ ☻ = #
+                str_repeat($opts['doneChar'], $percent) . ($finished ? '' : $opts['signChar']), $percent,
+                $msg);// ♥ ■ ☺ ☻ = #
 
             if ($finished) {
                 echo "\n";

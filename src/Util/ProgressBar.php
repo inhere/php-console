@@ -12,12 +12,13 @@ use Closure;
 use Inhere\Console\IO\Output;
 use Inhere\Console\IO\OutputInterface;
 use LogicException;
-use function max;
 use RuntimeException;
 use Toolkit\StrUtil\Str;
+use function max;
 
 /**
  * Class ProgressBar
+ *
  * @package Inhere\Console\Util
  * @form \Symfony\Component\Console\Helper\ProgressBar
  *
@@ -40,6 +41,7 @@ class ProgressBar
 
     /**
      * 已完成百分比
+     *
      * @var float
      */
     private $percent = 0.0;
@@ -47,6 +49,7 @@ class ProgressBar
     /**
      * maximal steps.
      * 当前在多少步
+     *
      * @var int
      */
     private $step = 0;
@@ -54,6 +57,7 @@ class ProgressBar
     /**
      * maximal steps.
      * 设置多少步就会走完进度条,
+     *
      * @var int
      */
     private $maxSteps;
@@ -61,6 +65,7 @@ class ProgressBar
     /**
      * step Width
      * 设置步长
+     *
      * @var int
      */
     private $stepWidth;
@@ -79,16 +84,17 @@ class ProgressBar
 
     /**
      * messages
+     *
      * @var array
      */
     private $messages = [];
 
     /**
      * section parsers
+     *
      * @var Closure[]
      */
-    private static $parsers = [
-        // 'precent' => function () { ... },
+    private static $parsers = [// 'precent' => function () { ... },
     ];
 
     public const DEFAULT_FORMAT = '[{@bar}] {@percent:3s}%({@current}/{@max}) {@elapsed:6s}/{@estimated:-6s} {@memory:6s}';
@@ -96,6 +102,7 @@ class ProgressBar
     /**
      * @param OutputInterface $output
      * @param int             $maxSteps
+     *
      * @return ProgressBar
      */
     public static function create(OutputInterface $output = null, int $maxSteps = 0): ProgressBar
@@ -117,7 +124,9 @@ class ProgressBar
 
     /**
      * 开始
+     *
      * @param null $maxSteps
+     *
      * @throws LogicException
      */
     public function start($maxSteps = null): void
@@ -127,9 +136,9 @@ class ProgressBar
         }
 
         $this->startTime = time();
-        $this->step = 0;
-        $this->percent = 0.0;
-        $this->started = true;
+        $this->step      = 0;
+        $this->percent   = 0.0;
+        $this->started   = true;
 
         if (null !== $maxSteps) {
             $this->setMaxSteps($maxSteps);
@@ -140,7 +149,9 @@ class ProgressBar
 
     /**
      * 前进，按步长前进几步
+     *
      * @param int $step 前进几步
+     *
      * @throws LogicException
      */
     public function advance(int $step = 1): void
@@ -154,6 +165,7 @@ class ProgressBar
 
     /**
      * 直接前进到第几步
+     *
      * @param int $step 第几步
      */
     public function advanceTo(int $step): void
@@ -164,9 +176,9 @@ class ProgressBar
             $step = 0;
         }
 
-        $prevPeriod = (int)($this->step / $this->redrawFreq);
-        $currPeriod = (int)($step / $this->redrawFreq);
-        $this->step = $step;
+        $prevPeriod    = (int)($this->step / $this->redrawFreq);
+        $currPeriod    = (int)($step / $this->redrawFreq);
+        $this->step    = $step;
         $this->percent = $this->maxSteps ? (float)$this->step / $this->maxSteps : 0;
 
         if ($prevPeriod !== $currPeriod || $this->maxSteps === $step) {
@@ -176,6 +188,7 @@ class ProgressBar
 
     /**
      * Finishes the progress output.
+     *
      * @throws LogicException
      */
     public function finish(): void
@@ -229,7 +242,8 @@ class ProgressBar
 
     /**
      * render
-     * @param  string $text
+     *
+     * @param string $text
      */
     public function render(string $text): void
     {
@@ -274,6 +288,7 @@ class ProgressBar
 
     /**
      * set section Parser
+     *
      * @param string   $section
      * @param callable $handler
      */
@@ -284,8 +299,10 @@ class ProgressBar
 
     /**
      * get section Parser
-     * @param  string       $section
-     * @param  bool|boolean $throwException
+     *
+     * @param string       $section
+     * @param bool|boolean $throwException
+     *
      * @return mixed
      * @throws RuntimeException
      */
@@ -324,8 +341,9 @@ class ProgressBar
 
     /**
      * set a named Message
+     *
      * @param string $message The text to associate with the placeholder
-     * @param string $name The name of the placeholder
+     * @param string $name    The name of the placeholder
      */
     public function setMessage($message, string $name = 'message'): void
     {
@@ -334,6 +352,7 @@ class ProgressBar
 
     /**
      * @param string $name
+     *
      * @return string
      */
     public function getMessage(string $name = 'message'): string
@@ -373,11 +392,12 @@ class ProgressBar
 
     /**
      * Sets the progress bar maximal steps.
+     *
      * @param int $maxSteps The progress bar max steps
      */
     private function setMaxSteps(int $maxSteps): void
     {
-        $this->maxSteps = max(0, $maxSteps);
+        $this->maxSteps  = max(0, $maxSteps);
         $this->stepWidth = $this->maxSteps ? Str::len($this->maxSteps) : 2;
     }
 
@@ -431,6 +451,7 @@ class ProgressBar
 
     /**
      * Gets the complete bar character.
+     *
      * @return string A character
      */
     public function getCompleteChar(): string
@@ -522,12 +543,13 @@ class ProgressBar
     {
         return [
             'bar'       => function (self $bar) {
-                $completeBars = floor($bar->getMaxSteps() > 0 ? $bar->getPercent() * $bar->getBarWidth() : $bar->getProgress() % $bar->getBarWidth());
-                $display = str_repeat($bar->getCompleteChar(), $completeBars);
+                $completeBars = floor($bar->getMaxSteps() > 0 ? $bar->getPercent() * $bar->getBarWidth() :
+                    $bar->getProgress() % $bar->getBarWidth());
+                $display      = str_repeat($bar->getCompleteChar(), $completeBars);
 
                 if ($completeBars < $bar->getBarWidth()) {
                     $emptyBars = $bar->getBarWidth() - $completeBars;
-                    $display .= $bar->getProgressChar() . str_repeat($bar->getRemainingChar(), $emptyBars);
+                    $display   .= $bar->getProgressChar() . str_repeat($bar->getRemainingChar(), $emptyBars);
                 }
 
                 return $display;

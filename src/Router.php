@@ -29,6 +29,7 @@ use function trim;
 
 /**
  * Class Router - match input command find command handler
+ *
  * @package Inhere\Console
  */
 class Router implements RouterInterface
@@ -42,12 +43,14 @@ class Router implements RouterInterface
 
     /**
      * Command delimiter char. e.g dev:serve
+     *
      * @var string
      */
     private $delimiter = ':'; // '/' ':'
 
     /**
      * The independent commands
+     *
      * @var array
      * [
      *  'name' => [
@@ -60,6 +63,7 @@ class Router implements RouterInterface
 
     /**
      * The group commands(controller)
+     *
      * @var array
      * [
      *  'name' => [
@@ -76,12 +80,14 @@ class Router implements RouterInterface
 
     /**
      * Register a app group command(by controller)
-     * @param string                     $name The controller name
+     *
+     * @param string                     $name  The controller name
      * @param string|ControllerInterface $class The controller class
      * @param array                      $options
-     * array:
-     *  - aliases     The command aliases
-     *  - description The description message
+     *                                          array:
+     *                                          - aliases     The command aliases
+     *                                          - description The description message
+     *
      * @return Router
      * @throws InvalidArgumentException
      */
@@ -96,11 +102,8 @@ class Router implements RouterInterface
         }
 
         if (!$name || !$class) {
-            Helper::throwInvalidArgument(
-                'Group-command "name" and "controller" cannot be empty! name: %s, controller: %s',
-                $name,
-                $class
-            );
+            Helper::throwInvalidArgument('Group-command "name" and "controller" cannot be empty! name: %s, controller: %s',
+                $name, $class);
         }
 
         $this->validateName($name);
@@ -145,7 +148,7 @@ class Router implements RouterInterface
      * @param string|CommandInterface         $name
      * @param string|Closure|CommandInterface $handler
      * @param array                           $options
-     * array:
+     *  array:
      *  - aliases     The command aliases
      *  - description The description message
      *
@@ -194,10 +197,8 @@ class Router implements RouterInterface
                 $options['aliases'] = array_merge($options['aliases'], $aliases);
             }
         } elseif (!is_object($handler) || !method_exists($handler, '__invoke')) {
-            Helper::throwInvalidArgument(
-                'The console command handler must is an subclass of %s OR a Closure OR a object have method __invoke()',
-                Command::class
-            );
+            Helper::throwInvalidArgument('The console command handler must is an subclass of %s OR a Closure OR a object have method __invoke()',
+                Command::class);
         }
 
         // is an class name string
@@ -217,6 +218,7 @@ class Router implements RouterInterface
 
     /**
      * @param array $commands
+     *
      * @throws InvalidArgumentException
      */
     public function addCommands(array $commands): void
@@ -232,6 +234,7 @@ class Router implements RouterInterface
 
     /**
      * @param array $controllers
+     *
      * @throws InvalidArgumentException
      */
     public function addControllers(array $controllers): void
@@ -251,6 +254,7 @@ class Router implements RouterInterface
 
     /**
      * @param string $name The input command name
+     *
      * @return array return route info array. If not found, will return empty array.
      * [
      *  type    => 1, // 1 group 2 command
@@ -307,6 +311,7 @@ class Router implements RouterInterface
 
     /**
      * @param      $name
+     *
      * @throws InvalidArgumentException
      */
     protected function validateName(string $name): void
@@ -371,6 +376,7 @@ class Router implements RouterInterface
 
     /**
      * @param $name
+     *
      * @return bool
      */
     public function isController(string $name): bool
@@ -388,6 +394,7 @@ class Router implements RouterInterface
 
     /**
      * @param $name
+     *
      * @return bool
      */
     public function isCommand(string $name): bool
@@ -397,6 +404,7 @@ class Router implements RouterInterface
 
     /**
      * @param string $name
+     *
      * @return bool
      */
     public function isBlocked(string $name): bool

@@ -12,22 +12,25 @@ use function trim;
 
 /**
  * Class Choose
+ *
  * @package Inhere\Console\Component\Interact
  */
 class Choose extends InteractMessage
 {
     /**
      * Choose one of several options
+     *
      * @param string       $description
      * @param string|array $options Option data
-     * e.g
-     * [
-     *    // option => value
-     *    '1' => 'chengdu',
-     *    '2' => 'beijing'
-     * ]
+     *                              e.g
+     *                              [
+     *                              // option => value
+     *                              '1' => 'chengdu',
+     *                              '2' => 'beijing'
+     *                              ]
      * @param string|int   $default Default option
      * @param bool         $allowExit
+     *
      * @return string
      */
     public static function one(string $description, $options, $default = null, bool $allowExit = true): string

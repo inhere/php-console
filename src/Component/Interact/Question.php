@@ -11,20 +11,27 @@ use function ucfirst;
 
 /**
  * Class Question
+ *
  * @package Inhere\Console\Component\Interact
  */
 class Question extends InteractMessage
 {
     /**
      * Ask a question, ask for results; return the result of the input
+     *
+     * @param string       $question
+     * @param string       $default
+     * @param Closure|null $validator Validator, must return bool.
+     *
+     * @return string
      * @example This is an example
-     * ```php
-     *  $answer = Interact::ask('Please input your name?', null, function ($answer) {
-     *      if (!preg_match('/\w{2,}/', $answer)) {
+     *          ```php
+     *          $answer = Interact::ask('Please input your name?', null, function ($answer) {
+     *          if (!preg_match('/\w{2,}/', $answer)) {
      *          // output error tips.
      *          Interact::error('The name must match "/\w{2,}/"');
      *          return false;
-     *      }
+     *          }
      *
      *      return true;
      *   });
@@ -47,10 +54,6 @@ class Question extends InteractMessage
      *
      *  echo "Your input: $answer";
      * ```
-     * @param string        $question
-     * @param string        $default
-     * @param Closure|null $validator Validator, must return bool.
-     * @return string
      */
     public static function ask(string $question, string $default = '', Closure $validator = null): string
     {

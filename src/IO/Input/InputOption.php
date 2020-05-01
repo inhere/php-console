@@ -11,12 +11,14 @@ namespace Inhere\Console\IO\Input;
 /**
  * Class InputOption
  * - definition a input option
+ *
  * @package Inhere\Console\IO\Input
  */
 class InputOption extends InputItem
 {
     /**
      * alias name
+     *
      * @var string
      */
     public $alias;

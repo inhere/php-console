@@ -8,19 +8,21 @@
 
 namespace Inhere\Console\IO\Input;
 
-use function array_shift;
-use function implode;
 use Inhere\Console\IO\Input;
 use Toolkit\Cli\Flags;
+use function array_shift;
+use function implode;
 
 /**
  * Class ArrayInput
+ *
  * @package Inhere\Console\IO\Input
  */
 class ArrayInput extends Input
 {
     /**
      * Input constructor.
+     *
      * @param null|array $args
      * @param bool       $parsing
      */
@@ -28,8 +30,8 @@ class ArrayInput extends Input
     {
         parent::__construct([], false);
 
-        $this->tokens = $args;
-        $this->script = array_shift($args);
+        $this->tokens     = $args;
+        $this->script     = array_shift($args);
         $this->fullScript = implode(' ', $args);
 
         if ($parsing && $args) {

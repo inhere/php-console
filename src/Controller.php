@@ -37,6 +37,7 @@ use const PHP_EOL;
 
 /**
  * Class Controller
+ *
  * @package Inhere\Console
  */
 abstract class Controller extends AbstractHandler implements ControllerInterface
@@ -75,6 +76,7 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
 
     /**
      * define command alias map
+     *
      * @return array
      */
     protected static function commandAliases(): array
@@ -91,7 +93,7 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
         // save to property
         $this->disabledCommands = $list ? array_flip($list) : [];
         self::$commandAliases   = static::commandAliases();
-        $this->groupOptions = $this->groupOptions();
+        $this->groupOptions     = $this->groupOptions();
 
         if (!$this->actionSuffix) {
             $this->actionSuffix = 'Command';
@@ -106,24 +108,24 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
      */
     protected function groupOptions(): array
     {
-        return [
-            // '--skip-invalid' => 'Whether ignore invalid arguments and options, when use input definition',
+        return [// '--skip-invalid' => 'Whether ignore invalid arguments and options, when use input definition',
         ];
     }
 
     /**
      * define disabled command list.
+     *
      * @return array
      */
     protected function disabledCommands(): array
     {
-        return [
-            // 'command1', 'command2'
+        return [// 'command1', 'command2'
         ];
     }
 
     /**
      * @param string $command
+     *
      * @return int|mixed
      * @throws ReflectionException
      */
@@ -158,8 +160,9 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
     /**
      * Run command action in the group
      *
-     * @param  Input  $input
-     * @param  Output $output
+     * @param Input  $input
+     * @param Output $output
+     *
      * @return mixed
      * @throws ReflectionException
      */
@@ -243,9 +246,12 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
     /**
      * Show help of the controller command group or specified command action
      * @usage <info>{name}:[command] -h</info> OR <info>{command} [command]</info> OR <info>{name} [command] -h</info>
+     *
      * @options
      *  -s, --search  Search command by input keywords
      *  --format      Set the help information dump format(raw, xml, json, markdown)
+     * @return int
+     * @throws ReflectionException
      * @example
      *  {script} {name} -h
      *  {script} {name}:help
@@ -253,8 +259,6 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
      *  {script} {name}:index -h
      *  {script} {name} index
      *
-     * @return int
-     * @throws ReflectionException
      */
     final public function helpCommand(): int
     {
@@ -281,6 +285,7 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
 
     /**
      * Display all sub-commands list of the controller class
+     *
      * @throws ReflectionException
      */
     final public function showCommandList(): void
@@ -356,17 +361,15 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
             'sepChar' => '  ',
         ]);
 
-        $this->write(sprintf(
-            'More information about a command, please use: <cyan>%s %s{command} -h</cyan>',
-            $script,
-            $this->executionAlone ? '' : $name
-        ));
+        $this->write(sprintf('More information about a command, please use: <cyan>%s %s{command} -h</cyan>', $script,
+            $this->executionAlone ? '' : $name));
         $this->output->flush();
     }
 
     /**
      * @param ReflectionClass|null $ref
-     * @param bool                  $onlyName
+     * @param bool                 $onlyName
+     *
      * @return Generator
      */
     protected function getAllCommandMethods(ReflectionClass $ref = null, bool $onlyName = false): ?Generator
@@ -394,6 +397,7 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
 
     /**
      * @param string $name
+     *
      * @return mixed|string
      */
     protected function getRealCommandName(string $name)
@@ -409,6 +413,7 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
 
     /**
      * @param string $name
+     *
      * @return bool
      */
     public function isDisabled(string $name): bool
@@ -430,6 +435,7 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
 
     /**
      * @param string|null $name
+     *
      * @return array
      */
     public function getCommandAliases(string $name = ''): array
@@ -451,6 +457,7 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
 
     /**
      * @param string $action
+     *
      * @return $this
      */
     public function setAction(string $action): self

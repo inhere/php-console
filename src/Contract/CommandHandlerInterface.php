@@ -9,12 +9,11 @@
 namespace Inhere\Console\Contract;
 
 use Inhere\Console\AbstractApplication;
-use Inhere\Console\IO\Input;
 use Inhere\Console\IO\InputDefinition;
-use Inhere\Console\IO\Output;
 
 /**
  * Interface CommandHandlerInterface
+ *
  * @package Inhere\Console\Contract
  */
 interface CommandHandlerInterface
@@ -31,7 +30,9 @@ interface CommandHandlerInterface
 
     /**
      * Run command
+     *
      * @param string $command
+     *
      * @return int|mixed return int is exit code. other is command exec result.
      */
     public function run(string $command = '');

@@ -5,13 +5,14 @@ namespace Inhere\Console\Component\Formatter;
 use Inhere\Console\Component\MessageFormatter;
 use Inhere\Console\Console;
 use Toolkit\StrUtil\Str;
+use Toolkit\Sys\Sys;
 use function array_merge;
 use function ceil;
 use function str_pad;
-use Toolkit\Sys\Sys;
 
 /**
  * Class Title
+ *
  * @package Inhere\Console\Component\Formatter
  */
 class Title extends MessageFormatter

@@ -2,12 +2,7 @@
 
 namespace Inhere\Console\Util;
 
-use function array_keys;
-use function array_values;
-use function ceil;
-use function count;
 use Generator;
-use function implode;
 use Inhere\Console\Component\Formatter\HelpPanel;
 use Inhere\Console\Component\Formatter\MultiList;
 use Inhere\Console\Component\Formatter\Padding;
@@ -23,29 +18,35 @@ use Inhere\Console\Component\Progress\SimpleBar;
 use Inhere\Console\Component\Progress\SimpleTextBar;
 use Inhere\Console\Component\Style\Style;
 use Inhere\Console\Console;
+use LogicException;
+use Toolkit\Cli\Cli;
+use Toolkit\Cli\ColorTag;
+use Toolkit\StrUtil\Str;
+use Toolkit\Sys\Sys;
+use function array_keys;
+use function array_values;
+use function ceil;
+use function count;
+use function implode;
 use function is_array;
 use function is_string;
 use function json_encode;
-use const JSON_PRETTY_PRINT;
-use const JSON_UNESCAPED_SLASHES;
-use const JSON_UNESCAPED_UNICODE;
-use LogicException;
 use function microtime;
-use const PHP_EOL;
 use function sprintf;
 use function str_repeat;
 use function strlen;
 use function strpos;
 use function strtoupper;
 use function substr;
-use Toolkit\Cli\Cli;
-use Toolkit\Cli\ColorTag;
-use Toolkit\StrUtil\Str;
-use Toolkit\Sys\Sys;
 use function ucwords;
+use const JSON_PRETTY_PRINT;
+use const JSON_UNESCAPED_SLASHES;
+use const JSON_UNESCAPED_UNICODE;
+use const PHP_EOL;
 
 /**
  * Class Show - render and display formatted message text
+ *
  * @package Inhere\Console\Util
  * @method static int info($messages, $quit = false)
  * @method static int note($messages, $quit = false)
@@ -93,6 +94,7 @@ class Show
      * @param string      $type
      * @param string      $style
      * @param int|boolean $quit If is int, setting it is exit code.
+     *
      * @return int
      */
     public static function block($messages, string $type = 'MESSAGE', string $style = Style::NORMAL, $quit = false): int
@@ -119,6 +121,7 @@ class Show
      * @param string      $type
      * @param string      $style
      * @param int|boolean $quit If is int, setting it is exit code.
+     *
      * @return int
      */
     public static function liteBlock(
@@ -175,6 +178,7 @@ class Show
     /**
      * @param string $method
      * @param array  $args
+     *
      * @return int
      * @throws LogicException
      */
@@ -203,8 +207,10 @@ class Show
 
     /**
      * Print JSON
+     *
      * @param mixed $data
      * @param int   $flags
+     *
      * @return int
      */
     public static function prettyJSON(
@@ -220,6 +226,7 @@ class Show
      * @param string $title
      * @param string $char
      * @param int    $width
+     *
      * @return int
      */
     public static function splitLine(string $title, string $char = '-', int $width = 0): int
@@ -266,6 +273,7 @@ class Show
      *  'Bacon' => '$2.99',
      * ];
      * ```
+     *
      * @param array  $data
      * @param string $title
      * @param array  $opts
@@ -289,6 +297,7 @@ class Show
      * @param array  $data
      * @param string $title
      * @param array  $opts More {@see FormatUtil::spliceKeyValue()}
+     *
      * @return int|string
      */
     public static function aList($data, string $title = '', array $opts = [])
@@ -321,6 +330,7 @@ class Show
      *   ... ...
      * ]
      * ```
+     *
      * @param array $data
      * @param array $opts
      */
@@ -331,6 +341,7 @@ class Show
 
     /**
      * alias of the `mList()`
+     *
      * @param array $data
      * @param array $opts
      */
@@ -342,7 +353,9 @@ class Show
 
     /**
      * Render console help message
-     * @param  array $config The config data
+     *
+     * @param array $config The config data
+     *
      * @see HelpPanel::show()
      */
     public static function helpPanel(array $config): void
@@ -352,9 +365,11 @@ class Show
 
     /**
      * Show information data panel
-     * @param  mixed  $data
-     * @param  string $title
-     * @param  array  $opts
+     *
+     * @param mixed  $data
+     * @param string $title
+     * @param array  $opts
+     *
      * @return int
      */
     public static function panel($data, string $title = 'Information Panel', array $opts = []): int
@@ -366,6 +381,7 @@ class Show
      * Render data like tree
      * ├ ─ ─
      * └ ─
+     *
      * @param array $data
      * @param array $opts
      */
@@ -377,9 +393,10 @@ class Show
     /**
      * Tabular data display
      *
-     * @param  array  $data
-     * @param  string $title
-     * @param  array  $opts
+     * @param array  $data
+     * @param string $title
+     * @param array  $opts
+     *
      * @return int
      * @see Table::show()
      */
@@ -402,6 +419,7 @@ class Show
      *  }
      *  Show::spinner('Done', true);
      * ```
+     *
      * @param string $msg
      * @param bool   $ended
      */
@@ -434,6 +452,7 @@ class Show
 
     /**
      * alias of the pending()
+     *
      * @param string $msg
      * @param bool   $ended
      */
@@ -452,6 +471,7 @@ class Show
      *  }
      *  Show::pending('Done', true);
      * ```
+     *
      * @param string $msg
      * @param bool   $ended
      */
@@ -491,8 +511,10 @@ class Show
      *  }
      *  Show::pointing('Total', true);
      * ```
+     *
      * @param string $msg
      * @param bool   $ended
+     *
      * @return int|mixed
      */
     public static function pointing(string $msg = 'handling ', $ended = false)
@@ -517,6 +539,7 @@ class Show
      *
      * @param string      $msg
      * @param string|null $doneMsg
+     *
      * @return Generator
      */
     public static function counterTxt(string $msg, $doneMsg = ''): Generator
@@ -527,6 +550,7 @@ class Show
     /**
      * @param string      $doneMsg
      * @param string|null $fixMsg
+     *
      * @return Generator
      */
     public static function dynamicTxt(string $doneMsg, string $fixMsg = null): Generator
@@ -537,6 +561,7 @@ class Show
     /**
      * @param string      $doneMsg
      * @param string|null $fixedMsg
+     *
      * @return Generator
      */
     public static function dynamicText(string $doneMsg, string $fixedMsg = null): Generator
@@ -546,9 +571,11 @@ class Show
 
     /**
      * Render a simple text progress bar by 'yield'
+     *
      * @param int    $total
      * @param string $msg
      * @param string $doneMsg
+     *
      * @return Generator
      */
     public static function progressTxt(int $total, string $msg, string $doneMsg = ''): Generator
@@ -558,10 +585,12 @@ class Show
 
     /**
      * Render a simple progress bar by 'yield'
+     *
      * @param int   $total
      * @param array $opts
-     * @internal int $current
+     *
      * @return Generator
+     * @internal int $current
      */
     public static function progressBar(int $total, array $opts = []): ?Generator
     {
@@ -580,8 +609,10 @@ class Show
      * }
      * $bar->finish();
      * ```
+     *
      * @param int  $max
      * @param bool $start
+     *
      * @return ProgressBar
      * @throws LogicException
      */
@@ -620,6 +651,7 @@ class Show
 
     /**
      * @param string $buffer
+     *
      * @deprecated Please use \Inhere\Console\Console method instead it.
      */
     public static function setBuffer(string $buffer): void
@@ -629,6 +661,7 @@ class Show
 
     /**
      * start buffering
+     *
      * @deprecated Please use \Inhere\Console\Console method instead it.
      */
     public static function startBuffer(): void
@@ -638,6 +671,7 @@ class Show
 
     /**
      * start buffering
+     *
      * @deprecated Please use \Inhere\Console\Console method instead it.
      */
     public static function clearBuffer(): void
@@ -647,12 +681,14 @@ class Show
 
     /**
      * stop buffering
-     * @see        Show::write()
+     *
      * @param bool  $flush Whether flush buffer to output stream
      * @param bool  $nl    Default is False, because the last write() have been added "\n"
      * @param bool  $quit
      * @param array $opts
+     *
      * @return null|string If flush = False, will return all buffer text.
+     * @see        Show::write()
      * @deprecated Please use \Inhere\Console\Console method instead it.
      */
     public static function stopBuffer($flush = true, $nl = false, $quit = false, array $opts = []): ?string
@@ -675,10 +711,12 @@ class Show
 
     /**
      * stop buffering and flush buffer text
-     * @see        Show::write()
+     *
      * @param bool  $nl
      * @param bool  $quit
      * @param array $opts
+     *
+     * @see        Show::write()
      * @deprecated Please use \Inhere\Console\Console method instead it.
      */
     public static function flushBuffer($nl = false, $quit = false, array $opts = []): void
@@ -692,8 +730,10 @@ class Show
 
     /**
      * Format and write message to terminal
+     *
      * @param string $format
      * @param mixed  ...$args
+     *
      * @return int
      */
     public static function writef(string $format, ...$args): int
@@ -703,16 +743,18 @@ class Show
 
     /**
      * Write a message to standard output stream.
+     *
      * @param string|array $messages Output message
      * @param boolean      $nl       True 会添加换行符, False 原样输出，不添加换行符
      * @param int|boolean  $quit     If is int, setting it is exit code. 'True' translate as code 0 and exit, 'False' will not exit.
      * @param array        $opts     Some options for write
-     * refer:
-     * [
-     *     'color'  => bool, // whether render color, default is: True.
-     *     'stream' => resource, // the stream resource, default is: STDOUT
-     *     'flush'  => bool, // flush the stream data, default is: True
-     * ]
+     *                               refer:
+     *                               [
+     *                               'color'  => bool, // whether render color, default is: True.
+     *                               'stream' => resource, // the stream resource, default is: STDOUT
+     *                               'flush'  => bool, // flush the stream data, default is: True
+     *                               ]
+     *
      * @return int
      */
     public static function write($messages, $nl = true, $quit = false, array $opts = []): int
@@ -722,10 +764,12 @@ class Show
 
     /**
      * Write raw data to stdout, will disable color render.
+     *
      * @param string|array $message
      * @param bool         $nl
      * @param bool|int     $quit
      * @param array        $opts
+     *
      * @return int
      */
     public static function writeRaw($message, bool $nl = true, $quit = false, array $opts = []): int
@@ -736,9 +780,11 @@ class Show
 
     /**
      * Write data to stdout with newline.
+     *
      * @param string|array $message
      * @param array        $opts
      * @param bool|int     $quit
+     *
      * @return int
      */
     public static function writeln($message, $quit = false, array $opts = []): int
@@ -751,6 +797,7 @@ class Show
      * @param string       $style
      * @param bool         $nl
      * @param array        $opts
+     *
      * @return int
      */
     public static function colored($message, string $style = 'info', $nl = true, array $opts = []): int
@@ -766,6 +813,7 @@ class Show
 
     /**
      * @param bool $onlyKey
+     *
      * @return array
      */
     public static function getBlockMethods($onlyKey = true): array

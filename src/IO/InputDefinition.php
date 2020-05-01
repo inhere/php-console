@@ -8,15 +8,15 @@
 
 namespace Inhere\Console\IO;
 
+use InvalidArgumentException;
+use LogicException;
 use function array_filter;
 use function array_merge;
 use function array_values;
 use function count;
 use function implode;
-use InvalidArgumentException;
 use function is_array;
 use function is_int;
-use LogicException;
 use function preg_split;
 use function sprintf;
 use function strpos;
@@ -59,6 +59,7 @@ class InputDefinition
     /**
      * @param array $arguments
      * @param array $options
+     *
      * @return InputDefinition
      */
     public static function make(array $arguments = [], array $options = []): InputDefinition
@@ -71,6 +72,7 @@ class InputDefinition
      *
      * @param array $arguments
      * @param array $options
+     *
      * @throws LogicException
      * @throws InvalidArgumentException
      */
@@ -86,6 +88,7 @@ class InputDefinition
 
     /**
      * @param array $arguments
+     *
      * @return InputDefinition
      * @throws LogicException
      */
@@ -98,6 +101,7 @@ class InputDefinition
 
     /**
      * @param array $arguments
+     *
      * @return $this
      * @throws LogicException
      */
@@ -113,10 +117,12 @@ class InputDefinition
 
     /**
      * alias of the addArgument
+     *
      * @param string   $name
      * @param int|null $mode
      * @param string   $description
      * @param null     $default
+     *
      * @return InputDefinition
      */
     public function addArg(string $name, int $mode = null, string $description = '', $default = null): self
@@ -127,10 +133,11 @@ class InputDefinition
     /**
      * Adds an argument.
      *
-     * @param string $name The argument name
-     * @param int    $mode The argument mode: InputArgument::REQUIRED or InputArgument::OPTIONAL
+     * @param string $name        The argument name
+     * @param int    $mode        The argument mode: InputArgument::REQUIRED or InputArgument::OPTIONAL
      * @param string $description A description text
-     * @param mixed  $default The default value (for InputArgument::OPTIONAL mode only)
+     * @param mixed  $default     The default value (for InputArgument::OPTIONAL mode only)
+     *
      * @return $this
      * @throws LogicException
      */
@@ -192,6 +199,7 @@ class InputDefinition
     /**
      * @param int|string $name
      * @param null       $default
+     *
      * @return string|int|null
      */
     public function getArgument($name, $default = null)
@@ -208,6 +216,7 @@ class InputDefinition
 
     /**
      * @param string|int $name The argument name or position
+     *
      * @return bool true if the InputArgument object exists, false otherwise
      */
     public function hasArgument($name): bool
@@ -227,6 +236,7 @@ class InputDefinition
 
     /**
      * Returns the number of arguments.
+     *
      * @return int
      */
     public function getArgumentCount(): int
@@ -236,6 +246,7 @@ class InputDefinition
 
     /**
      * get count of required arguments
+     *
      * @return int
      */
     public function getArgumentRequiredCount(): int
@@ -251,6 +262,7 @@ class InputDefinition
      * Sets the options
      *
      * @param array[] $options An array of InputOption objects
+     *
      * @throws LogicException
      * @throws InvalidArgumentException
      */
@@ -264,6 +276,7 @@ class InputDefinition
      * Adds an array of option
      *
      * @param array
+     *
      * @throws LogicException
      * @throws InvalidArgumentException
      */
@@ -278,6 +291,7 @@ class InputDefinition
     /**
      * alias of the addOption
      * {@inheritdoc}
+     *
      * @return InputDefinition
      */
     public function addOpt(
@@ -293,11 +307,11 @@ class InputDefinition
     /**
      * Adds an option.
      *
-     * @param string|bool       $name The option name, must is a string
-     * @param string|array|null $shortcut The shortcut (can be null)
-     * @param int               $mode The option mode: One of the Input::OPT_* constants
+     * @param string|bool       $name        The option name, must is a string
+     * @param string|array|null $shortcut    The shortcut (can be null)
+     * @param int               $mode        The option mode: One of the Input::OPT_* constants
      * @param string            $description A description text
-     * @param mixed             $default The default value (must be null for InputOption::OPT_BOOL)
+     * @param mixed             $default     The default value (must be null for InputOption::OPT_BOOL)
      *
      * @return $this
      * @throws InvalidArgumentException
@@ -360,7 +374,7 @@ class InputDefinition
 
             $shortcuts = preg_split('{(\|)-?}', ltrim($shortcut, '-'));
             $shortcuts = array_filter($shortcuts);
-            $shortcut = implode('|', $shortcuts);
+            $shortcut  = implode('|', $shortcuts);
 
             foreach ($shortcuts as $srt) {
                 if (isset($this->shortcuts[$srt])) {
@@ -385,6 +399,7 @@ class InputDefinition
 
     /**
      * @param string $name
+     *
      * @return array
      * @throws InvalidArgumentException
      */
@@ -399,6 +414,7 @@ class InputDefinition
 
     /**
      * @param string $name
+     *
      * @return bool
      */
     public function hasOption(string $name): bool
@@ -418,6 +434,7 @@ class InputDefinition
 
     /**
      * @param string $name The InputOption shortcut
+     *
      * @return bool
      */
     public function hasShortcut(string $name): bool
@@ -427,7 +444,9 @@ class InputDefinition
 
     /**
      * Gets an option info array
+     *
      * @param string $shortcut the Shortcut name
+     *
      * @return array
      * @throws InvalidArgumentException
      */
@@ -438,6 +457,7 @@ class InputDefinition
 
     /**
      * @param string $shortcut
+     *
      * @return mixed
      * @throws InvalidArgumentException
      */
@@ -452,6 +472,7 @@ class InputDefinition
 
     /**
      * @param array $map
+     *
      * @return array
      */
     private function mergeArgOptConfig(array $map): array
@@ -461,7 +482,9 @@ class InputDefinition
 
     /**
      * Gets the synopsis.
+     *
      * @param bool $short 简化版显示
+     *
      * @return array
      */
     public function getSynopsis(bool $short = false): array
@@ -475,18 +498,14 @@ class InputDefinition
                 $value = '';
 
                 if ($this->optionIsAcceptValue($option['mode'])) {
-                    $value = sprintf(
-                        ' %s%s%s',
-                        $option['optional'] ? '[' : '',
-                        strtoupper($name),
-                        $option['optional'] ? ']' : ''
-                    );
+                    $value = sprintf(' %s%s%s', $option['optional'] ? '[' : '', strtoupper($name),
+                        $option['optional'] ? ']' : '');
                 }
 
-                $shortcut = $option['shortcut'] ? sprintf('-%s, ', $option['shortcut']) : '    ';
+                $shortcut   = $option['shortcut'] ? sprintf('-%s, ', $option['shortcut']) : '    ';
                 $elements[] = sprintf('[%s--%s%s]', $shortcut, $name, $value);
 
-                $key = "{$shortcut}--{$name}";
+                $key        = "{$shortcut}--{$name}";
                 $opts[$key] = ($option['required'] ? '<red>*</red>' : '') . $option['description'];
             }
         }
@@ -509,7 +528,7 @@ class InputDefinition
                 $element .= '...';
             }
 
-            $elements[] = $element;
+            $elements[]  = $element;
             $args[$name] = $des;
         }
 
@@ -525,6 +544,7 @@ class InputDefinition
 
     /**
      * @param string $name
+     *
      * @return bool
      */
     public function argumentIsRequired($name): bool
@@ -538,6 +558,7 @@ class InputDefinition
 
     /**
      * @param int $mode
+     *
      * @return bool
      */
     protected function argumentIsAcceptValue(int $mode): bool
@@ -547,6 +568,7 @@ class InputDefinition
 
     /**
      * @param int $mode
+     *
      * @return bool
      */
     protected function optionIsAcceptValue(int $mode): bool
@@ -564,6 +586,7 @@ class InputDefinition
 
     /**
      * @param string|array $example
+     *
      * @return $this
      */
     public function setExample($example): self
@@ -582,6 +605,7 @@ class InputDefinition
 
     /**
      * @param string $description
+     *
      * @return $this
      */
     public function setDescription(string $description): self

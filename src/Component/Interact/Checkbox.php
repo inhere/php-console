@@ -14,6 +14,7 @@ use function trim;
 
 /**
  * Class Checkbox
+ *
  * @package Inhere\Console\Component\Interact
  */
 class Checkbox extends InteractMessage
@@ -26,6 +27,7 @@ class Checkbox extends InteractMessage
      * @param string|array $options
      * @param null|mixed   $default
      * @param bool         $allowExit
+     *
      * @return array
      */
     public static function select(string $description, $options, $default = null, $allowExit = true): array

@@ -8,22 +8,23 @@
 
 namespace Inhere\Console\Component\Formatter;
 
+use Inhere\Console\Component\MessageFormatter;
+use Inhere\Console\Console;
+use Toolkit\Cli\ColorTag;
+use Toolkit\StrUtil\StrBuffer;
 use function array_keys;
 use function array_merge;
 use function array_sum;
 use function ceil;
 use function count;
-use Inhere\Console\Component\MessageFormatter;
-use Inhere\Console\Console;
 use function is_string;
 use function mb_strlen;
 use function str_pad;
-use Toolkit\Cli\ColorTag;
-use Toolkit\StrUtil\StrBuffer;
 use function ucwords;
 
 /**
  * Class Table - Tabular data display
+ *
  * @package Inhere\Console\Component\Formatter
  */
 class Table extends MessageFormatter
@@ -52,9 +53,11 @@ class Table extends MessageFormatter
     /**
      * Tabular data display
      *
-     * @param  array  $data
-     * @param  string $title
-     * @param  array  $opts
+     * @param array  $data
+     * @param string $title
+     * @param array  $opts
+     *
+     * @return int
      * @example
      *
      * ```php
@@ -78,7 +81,6 @@ class Table extends MessageFormatter
      * ];
      * Show::table($data, 'a table', $opts);
      * ```
-     * @return int
      */
     public static function show(array $data, string $title = 'Data Table', array $opts = []): int
     {

@@ -11,6 +11,7 @@ namespace Inhere\Console\IO\Input;
 /**
  * Class InputArgument
  * - definition a input argument
+ *
  * @package Inhere\Console\IO\Input
  */
 class InputArgument extends InputItem

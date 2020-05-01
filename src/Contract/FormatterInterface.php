@@ -10,6 +10,7 @@ namespace Inhere\Console\Contract;
 
 /**
  * Interface FormatterInterface
+ *
  * @package Inhere\Console\Contract
  */
 interface FormatterInterface

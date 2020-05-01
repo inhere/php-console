@@ -11,6 +11,7 @@ namespace Inhere\Console\IO\Input;
 /**
  * Class InputArguments
  * - input arguments builder
+ *
  * @package Inhere\Console\IO\Input
  */
 class InputArguments

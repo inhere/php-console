@@ -54,7 +54,7 @@ class Application extends AbstractApplication
     /**
      * Add group/controller
      *
-     * @param string $name
+     * @param string                     $name
      * @param string|ControllerInterface $class The controller class
      * @param null|array|string          $option
      *
@@ -67,7 +67,7 @@ class Application extends AbstractApplication
     }
 
     /**
-     * @param string $name
+     * @param string                     $name
      * @param string|ControllerInterface $class The controller class
      * @param null|array|string          $option
      *

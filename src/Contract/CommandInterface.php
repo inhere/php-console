@@ -10,6 +10,7 @@ namespace Inhere\Console\Contract;
 
 /**
  * Interface CommandInterface
+ *
  * @package Inhere\Console\Contract
  */
 interface CommandInterface extends CommandHandlerInterface

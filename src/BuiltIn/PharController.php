@@ -9,25 +9,26 @@
 namespace Inhere\Console\BuiltIn;
 
 use BadMethodCallException;
-use function basename;
 use Closure;
 use Exception;
-use function file_exists;
 use Inhere\Console\Component\PharCompiler;
 use Inhere\Console\Controller;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
 use Inhere\Console\Util\Helper;
 use Inhere\Console\Util\Show;
+use RuntimeException;
+use UnexpectedValueException;
+use function basename;
+use function file_exists;
 use function is_dir;
 use function is_file;
 use function microtime;
 use function realpath;
-use RuntimeException;
-use UnexpectedValueException;
 
 /**
  * Class PharController
+ *
  * @package Inhere\Console\BuiltIn
  */
 class PharController extends Controller
@@ -50,6 +51,7 @@ class PharController extends Controller
     /**
      * pack project to a phar package
      * @usage {fullCommand} [--dir DIR] [--output FILE] [...]
+     *
      * @options
      *  -d, --dir STRING        Setting the project directory for packing.
      *                          default is current work-dir.(<cyan>{workDir}</cyan>)
@@ -57,8 +59,10 @@ class PharController extends Controller
      *  -o, --output STRING     Setting the output file name(<cyan>{defaultPkgName}.phar</cyan>)
      *  --fast BOOL             Fast build. only add modified files by <cyan>git status -s</cyan>
      *  --refresh BOOL          Whether build vendor folder files on phar file exists(<cyan>False</cyan>)
-     * @param  Input  $in
-     * @param  Output $out
+     *
+     * @param Input  $in
+     * @param Output $out
+     *
      * @return int
      * @throws UnexpectedValueException
      * @throws RuntimeException
@@ -67,14 +71,14 @@ class PharController extends Controller
      */
     public function packCommand($in, $out): int
     {
-        $time = microtime(1);
+        $time    = microtime(1);
         $workDir = $in->getPwd();
 
         $dir = $in->getOpt('dir') ?: $workDir;
         $cpr = $this->configCompiler($dir);
 
-        $counter = null;
-        $refresh = $in->boolOpt('refresh');
+        $counter  = null;
+        $refresh  = $in->boolOpt('refresh');
         $pharFile = $workDir . '/' . $in->sameOpt(['o', 'output'], basename($workDir) . '.phar');
 
         // use fast build
@@ -83,10 +87,7 @@ class PharController extends Controller
             $this->output->liteNote('Use fast build, will only pack changed or new files(from git status)');
         }
 
-        $out->liteInfo(
-            "Now, will begin building phar package.\n from path: <comment>$workDir</comment>\n" .
-            " phar file: <info>$pharFile</info>"
-        );
+        $out->liteInfo("Now, will begin building phar package.\n from path: <comment>$workDir</comment>\n" . " phar file: <info>$pharFile</info>");
 
         $out->info('Pack file to Phar: ');
         $cpr->onError(function ($error) {
@@ -126,6 +127,7 @@ class PharController extends Controller
 
     /**
      * @param string $dir
+     *
      * @return PharCompiler
      */
     protected function configCompiler(string $dir): PharCompiler
@@ -163,15 +165,18 @@ class PharController extends Controller
     /**
      * unpack a phar package to a directory
      * @usage {fullCommand} -f FILE [-d DIR]
+     *
      * @options
      *  -f, --file STRING   The packed phar file path
      *  -d, --dir STRING    The output dir on extract phar package.
      *  -y, --yes BOOL      Whether display goon tips message.
      *  --overwrite BOOL    Whether overwrite exists files on extract phar
-     * @example {fullCommand} -f myapp.phar -d var/www/app
-     * @param  Input  $in
-     * @param  Output $out
+     *
+     * @param Input  $in
+     * @param Output $out
+     *
      * @return int
+     * @example {fullCommand} -f myapp.phar -d var/www/app
      */
     public function unpackCommand($in, $out): int
     {
@@ -180,13 +185,13 @@ class PharController extends Controller
         }
 
         $basePath = $in->getPwd();
-        $file = realpath($basePath . '/' . $path);
+        $file     = realpath($basePath . '/' . $path);
 
         if (!file_exists($file)) {
             return $out->error("The phar file not exists. File: $file");
         }
 
-        $dir = $in->getSameOpt(['d', 'dir']) ?: $basePath;
+        $dir       = $in->getSameOpt(['d', 'dir']) ?: $basePath;
         $overwrite = $in->getBoolOpt('overwrite');
 
         if (!is_dir($dir)) {
