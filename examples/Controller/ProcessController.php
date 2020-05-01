@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Created by PhpStorm.
  * User: inhere
@@ -9,8 +9,10 @@
 namespace Inhere\Console\Examples\Controller;
 
 use Inhere\Console\Controller;
+use RuntimeException;
 use Toolkit\Sys\ProcessUtil;
 use Toolkit\Sys\Sys;
+use function is_resource;
 
 /**
  * Class ProcessController
@@ -53,7 +55,7 @@ class ProcessController extends Controller
 
         $process = proc_open('php', $descriptorSpec, $pipes);
 
-        if (\is_resource($process)) {
+        if (is_resource($process)) {
             // $pipes 现在看起来是这样的：
             // 0 => 可以向子进程标准输入写入的句柄
             // 1 => 可以从子进程标准输出读取的句柄
@@ -73,7 +75,6 @@ class ProcessController extends Controller
 
             echo "command returned $retVal\n";
         }
-
     }
 
     /**
@@ -94,11 +95,11 @@ class ProcessController extends Controller
 
     /**
      * simple process example for daemon run
-     * @throws \RuntimeException
+     * @throws RuntimeException
      */
     public function daemonRunCommand(): void
     {
-        $ret = ProcessUtil::daemonRun(function ($pid){
+        $ret = ProcessUtil::daemonRun(function ($pid) {
             $this->output->info("will running background by new process: $pid");
         });
 
@@ -127,6 +128,5 @@ class ProcessController extends Controller
      */
     public function multiProcessCommand(): void
     {
-
     }
 }

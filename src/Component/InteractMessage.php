@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Inhere\Console\Component;
 
@@ -9,5 +9,4 @@ namespace Inhere\Console\Component;
  */
 class InteractMessage
 {
-
 }

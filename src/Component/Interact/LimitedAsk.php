@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Inhere\Console\Component\Interact;
 
@@ -17,7 +17,6 @@ use function ucfirst;
  */
 class LimitedAsk extends InteractMessage
 {
-
     /**
      * Ask a question, ask for a limited number of times
      *   若输入了值且验证成功则返回 输入的结果

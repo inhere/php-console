@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Created by PhpStorm.
  * User: inhere
@@ -23,6 +23,7 @@ use function is_file;
 class ArtFont
 {
     public const DEFAULT_GROUP  = '_default';
+
     public const INTERNAL_GROUP = '_internal';
 
     /** @var self */

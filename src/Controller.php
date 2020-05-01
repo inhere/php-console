@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Created by PhpStorm.
  * User: inhere
@@ -361,8 +361,11 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
             'sepChar' => '  ',
         ]);
 
-        $this->write(sprintf('More information about a command, please use: <cyan>%s %s{command} -h</cyan>', $script,
-            $this->executionAlone ? '' : $name));
+        $this->write(sprintf(
+            'More information about a command, please use: <cyan>%s %s{command} -h</cyan>',
+            $script,
+            $this->executionAlone ? '' : $name
+        ));
         $this->output->flush();
     }
 

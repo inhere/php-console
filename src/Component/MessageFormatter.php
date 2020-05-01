@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Created by PhpStorm.
  * User: Inhere
@@ -22,7 +22,9 @@ abstract class MessageFormatter implements FormatterInterface
 {
     // content align
     public const ALIGN_LEFT   = 'left';
+
     public const ALIGN_CENTER = 'center';
+
     public const ALIGN_RIGHT  = 'right';
 
     /**

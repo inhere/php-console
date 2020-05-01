@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Created by PhpStorm.
  * User: inhere
@@ -272,7 +272,7 @@ trait FormatOutputAwareTrait
     }
 
     /**
-     * @param array ...$vars
+     * @param mixed ...$vars
      */
     public function dump(...$vars): void
     {
@@ -280,7 +280,7 @@ trait FormatOutputAwareTrait
     }
 
     /**
-     * @param array ...$vars
+     * @param mixed ...$vars
      */
     public function prints(...$vars): void
     {

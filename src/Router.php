@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Inhere\Console;
 
@@ -102,8 +102,11 @@ class Router implements RouterInterface
         }
 
         if (!$name || !$class) {
-            Helper::throwInvalidArgument('Group-command "name" and "controller" cannot be empty! name: %s, controller: %s',
-                $name, $class);
+            Helper::throwInvalidArgument(
+                'Group-command "name" and "controller" cannot be empty! name: %s, controller: %s',
+                $name,
+                $class
+            );
         }
 
         $this->validateName($name);
@@ -197,8 +200,10 @@ class Router implements RouterInterface
                 $options['aliases'] = array_merge($options['aliases'], $aliases);
             }
         } elseif (!is_object($handler) || !method_exists($handler, '__invoke')) {
-            Helper::throwInvalidArgument('The console command handler must is an subclass of %s OR a Closure OR a object have method __invoke()',
-                Command::class);
+            Helper::throwInvalidArgument(
+                'The console command handler must is an subclass of %s OR a Closure OR a object have method __invoke()',
+                Command::class
+            );
         }
 
         // is an class name string

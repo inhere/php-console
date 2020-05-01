@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Created by PhpStorm.
  * User: inhere
@@ -46,8 +46,11 @@ class InputDefinition
 
     /** @var array[] */
     private $arguments;
+
     private $requiredCount = 0;
+
     private $hasOptional = false;
+
     private $hasAnArrayArgument = false;
 
     /** @var array[] */
@@ -290,7 +293,12 @@ class InputDefinition
 
     /**
      * alias of the addOption
-     * {@inheritdoc}
+     *
+     * @param string      $name
+     * @param string|null $shortcut
+     * @param int|null    $mode
+     * @param string      $description
+     * @param null|mixed  $default
      *
      * @return InputDefinition
      */
@@ -498,8 +506,12 @@ class InputDefinition
                 $value = '';
 
                 if ($this->optionIsAcceptValue($option['mode'])) {
-                    $value = sprintf(' %s%s%s', $option['optional'] ? '[' : '', strtoupper($name),
-                        $option['optional'] ? ']' : '');
+                    $value = sprintf(
+                        ' %s%s%s',
+                        $option['optional'] ? '[' : '',
+                        strtoupper($name),
+                        $option['optional'] ? ']' : ''
+                    );
                 }
 
                 $shortcut   = $option['shortcut'] ? sprintf('-%s, ', $option['shortcut']) : '    ';
@@ -521,7 +533,7 @@ class InputDefinition
             if (!$argument['required']) {
                 $element = '[' . $element . ']';
             } elseif ($argument['isArray']) {
-                $element = $element . ' (' . $element . ')';
+                $element .= ' (' . $element . ')';
             }
 
             if ($argument['isArray']) {

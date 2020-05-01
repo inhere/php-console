@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Created by PhpStorm.
  * User: inhere
@@ -350,7 +350,7 @@ abstract class AbstractApplication implements ApplicationInterface
             // default run list command
             // $command = $this->defaultCommand ? 'list';
             $command = 'list';
-            // is user command
+        // is user command
         } elseif (!$this->isInternalCommand($command)) {
             return false;
         }

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Created by PhpStorm.
  * User: inhere
@@ -19,9 +19,11 @@ use InvalidArgumentException;
 interface RouterInterface
 {
     public const FOUND     = 1;
+
     public const NOT_FOUND = 2;
 
     public const TYPE_GROUP  = 1;
+
     public const TYPE_SINGLE = 2;
 
     /**

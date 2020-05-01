@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Created by PhpStorm.
  * User: inhere
@@ -389,8 +389,10 @@ abstract class AbstractHandler implements CommandHandlerInterface
             $names = array_keys($unknown);
             $first = array_shift($names);
 
-            throw new InvalidArgumentException(sprintf('Input option is not exists (unknown: "%s").',
-                (isset($first[1]) ? '--' : '-') . $first));
+            throw new InvalidArgumentException(sprintf(
+                'Input option is not exists (unknown: "%s").',
+                (isset($first[1]) ? '--' : '-') . $first
+            ));
         }
 
         foreach ($defOpts as $name => $conf) {
@@ -537,8 +539,13 @@ abstract class AbstractHandler implements CommandHandlerInterface
         $ref  = new ReflectionClass($this);
         $name = $this->input->getCommand();
 
-        $this->logf(Console::VERB_CRAZY, 'display help info for the method=%s, action=%s, class=%s', $method, $action,
-            static::class);
+        $this->logf(
+            Console::VERB_CRAZY,
+            'display help info for the method=%s, action=%s, class=%s',
+            $method,
+            $action,
+            static::class
+        );
 
         if (!$ref->hasMethod($method)) {
             $this->write("The command [<info>$name</info>] don't exist in the group: " . static::getName());

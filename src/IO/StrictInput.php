@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Created by PhpStorm.
  * User: Inhere
@@ -111,5 +111,4 @@ class StrictInput extends Input
     {
         return $this->cleanedTokens;
     }
-
 }

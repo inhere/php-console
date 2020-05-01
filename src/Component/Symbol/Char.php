@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Created by PhpStorm.
  * User: inhere
@@ -20,27 +20,39 @@ use ReflectionException;
 final class Char
 {
     public const OK  = '✔';
+
     public const NO  = '✘';
+
     public const PEN = '✎';
 
     public const HEART = '❤';
+
     public const SMILE = '☺';
 
     public const FLOWER = '✿';
+
     public const MUSIC  = '♬';
 
     public const UP     = '';
+
     public const DOWN   = '';
+
     public const LEFT   = '';
+
     public const RIGHT  = '';
+
     public const SEARCH = '';
 
     public const MALE   = '♂';
+
     public const FEMALE = '♀';
 
     public const SUN   = '☀';
+
     public const STAR  = '★';
+
     public const SNOW  = '❈';
+
     public const CLOUD = '☁';
 
     /**

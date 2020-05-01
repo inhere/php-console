@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Created by PhpStorm.
  * User: Inhere
@@ -193,8 +193,11 @@ class Table extends MessageFormatter
 
             // head border: split head and body
             if ($headBorderChar = $opts['headBorderChar']) {
-                $headBorder = $leftIndent . str_pad($headBorderChar, $tableWidth + ($columnCount * 3) + 2,
-                        $headBorderChar);
+                $headBorder = $leftIndent . str_pad(
+                    $headBorderChar,
+                    $tableWidth + ($columnCount * 3) + 2,
+                    $headBorderChar
+                );
                 $buf->write($headBorder . "\n");
             }
         }

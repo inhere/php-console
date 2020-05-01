@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Created by PhpStorm.
  * User: inhere
@@ -47,7 +47,7 @@ class Status
      */
     public static function hide($hidden = true)
     {
-        system( 'stty ' . ( $hidden? '-echo' : 'echo' ) );
+        system('stty ' . ($hidden? '-echo' : 'echo'));
     }
 
     /**
@@ -65,7 +65,7 @@ class Status
             `stty -echo`; // disable shell echo
         }
         $buffer = '';
-        $char = "";
+        $char = '';
         $f = fopen('php://stdin', 'r');
         while (strlen($buffer) < $limit) {
             $char = fread($f, 1);

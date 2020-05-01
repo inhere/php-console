@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Created by PhpStorm.
  * User: Inhere
@@ -42,17 +42,29 @@ class Style
      * there are some default style tags
      */
     public const NORMAL   = 'normal';
+
     public const FAINTLY  = 'faintly';
+
     public const BOLD     = 'bold';
+
     public const NOTICE   = 'notice';
+
     public const PRIMARY  = 'primary';
+
     public const SUCCESS  = 'success';
+
     public const INFO     = 'info';
+
     public const NOTE     = 'note';
+
     public const WARNING  = 'warning';
+
     public const COMMENT  = 'comment';
+
     public const QUESTION = 'question';
+
     public const DANGER   = 'danger';
+
     public const ERROR    = 'error';
 
     /**
@@ -213,7 +225,7 @@ class Style
             if (array_key_exists($key, $this->styles)) {
                 $text = $this->replaceColor($text, $key, $matches[2][$i], (string)$this->styles[$key]);
 
-                /** Custom style format @see Color::makeByString() */
+            /** Custom style format @see Color::makeByString() */
             } elseif (strpos($key, '=')) {
                 $text = $this->replaceColor($text, $key, $matches[2][$i], (string)Color::makeByString($key));
             }

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Created by PhpStorm.
  * User: inhere
@@ -305,8 +305,8 @@ abstract class AbstractInput implements InputInterface
      */
     public function getOpt(string $name, $default = null)
     {
-        // is long-opt
-        if (isset($name{1})) {
+        // It's long-opt
+        if (isset($name[1])) {
             return $this->lOpt($name, $default);
         }
 
@@ -357,6 +357,14 @@ abstract class AbstractInput implements InputInterface
         return (bool)$this->getOpt($name, $default);
     }
 
+    /**
+     * Alias of the getBoolOpt()
+     *
+     * @param string $name
+     * @param bool   $default
+     *
+     * @return bool
+     */
     public function boolOpt(string $name, bool $default = false): bool
     {
         return (bool)$this->getOpt($name, $default);
@@ -375,7 +383,7 @@ abstract class AbstractInput implements InputInterface
     }
 
     /**
-     * get same opts value
+     * Get same opts value
      * eg: -h --help
      *
      * ```php
@@ -392,6 +400,14 @@ abstract class AbstractInput implements InputInterface
         return $this->sameOpt($names, $default);
     }
 
+    /**
+     * Alias of the getSameOpt()
+     *
+     * @param array $names
+     * @param null  $default
+     *
+     * @return bool|mixed|null
+     */
     public function sameOpt(array $names, $default = null)
     {
         foreach ($names as $name) {
@@ -430,7 +446,7 @@ abstract class AbstractInput implements InputInterface
     /************************** short-opts **********************/
 
     /**
-     * get short-opt value
+     * Get short-opt value
      *
      * @param string $name
      * @param null   $default
@@ -442,6 +458,27 @@ abstract class AbstractInput implements InputInterface
         return $this->sOpts[$name] ?? $default;
     }
 
+    /**
+     * Alias of the sOpt()
+     *
+     * @param string $name
+     * @param null   $default
+     *
+     * @return mixed|null
+     */
+    public function shortOpt(string $name, $default = null)
+    {
+        return $this->sOpts[$name] ?? $default;
+    }
+
+    /**
+     * Alias of the sOpt()
+     *
+     * @param string $name
+     * @param null   $default
+     *
+     * @return mixed|null
+     */
     public function getShortOpt(string $name, $default = null)
     {
         return $this->sOpts[$name] ?? $default;
@@ -484,7 +521,7 @@ abstract class AbstractInput implements InputInterface
 
     /**
      * @param string $name
-     * @param        $value
+     * @param mixed  $value
      */
     public function setSOpt(string $name, $value): void
     {
@@ -519,7 +556,7 @@ abstract class AbstractInput implements InputInterface
     /************************** long-opts **********************/
 
     /**
-     * get long-opt value
+     * Alias of the getLongOpt()
      *
      * @param string $name
      * @param null   $default
@@ -532,6 +569,21 @@ abstract class AbstractInput implements InputInterface
     }
 
     /**
+     * Alias of the getLongOpt()
+     *
+     * @param string $name
+     * @param null   $default
+     *
+     * @return mixed|null
+     */
+    public function longOpt(string $name, $default = null)
+    {
+        return $this->lOpts[$name] ?? $default;
+    }
+
+    /**
+     * Get long-opt value
+     *
      * @param string $name
      * @param null   $default
      *
@@ -545,7 +597,7 @@ abstract class AbstractInput implements InputInterface
     /**
      * check long-opt exists
      *
-     * @param $name
+     * @param string $name
      *
      * @return bool
      */

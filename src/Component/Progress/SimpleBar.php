@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Inhere\Console\Component\Progress;
 
@@ -84,9 +84,12 @@ class SimpleBar extends NotifyMessage
              * 2K 清除本行
              */ // printf("\r[%'--100s] %d%% %s",
             // printf("\x0D\x1B[2K[%'{$waitChar}-100s] %d%% %s",
-            printf("{$tplPrefix}[%'{$waitChar}-100s] %' 3d%% %s",
-                str_repeat($opts['doneChar'], $percent) . ($finished ? '' : $opts['signChar']), $percent,
-                $msg);// ♥ ■ ☺ ☻ = #
+            printf(
+                "{$tplPrefix}[%'{$waitChar}-100s] %' 3d%% %s",
+                str_repeat($opts['doneChar'], $percent) . ($finished ? '' : $opts['signChar']),
+                $percent,
+                $msg
+            );// ♥ ■ ☺ ☻ = #
 
             if ($finished) {
                 echo "\n";
@@ -96,5 +99,4 @@ class SimpleBar extends NotifyMessage
 
         yield false;
     }
-
 }

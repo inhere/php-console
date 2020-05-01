@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Created by PhpStorm.
  * User: inhere
@@ -20,7 +20,9 @@ use Inhere\Console\Util\Helper;
 class CorCommand extends Command
 {
     protected static $name = 'cor';
+
     protected static $description = 'a coroutine test command';
+
     protected static $coroutine = true;
 
     /**

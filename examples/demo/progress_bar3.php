@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /*
 \r 回到行首
@@ -11,7 +11,8 @@ chr 转换为 ASCI 码
  * @param string $char
  * @return Generator
  */
-function progress_bar($total, $msg, $char = '=') {
+function progress_bar($total, $msg, $char = '=')
+{
     $finished = false;
 
     while (true) {
@@ -27,7 +28,8 @@ function progress_bar($total, $msg, $char = '=') {
             $finished = true;
         }
 
-        printf("\r[%-100s] %d%% %s",
+        printf(
+            "\r[%-100s] %d%% %s",
             str_repeat($char, $progress) . ($finished ? '' : '>'),
             $progress,
             $msg

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Created by PhpStorm.
  * User: inhere
@@ -34,6 +34,7 @@ use function realpath;
 class PharController extends Controller
 {
     protected static $name = 'phar';
+
     protected static $description = 'Pack a project directory to phar or unpack phar to directory';
 
     /**

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Created by PhpStorm.
  * User: inhere
@@ -17,5 +17,4 @@ use Inhere\Console\Component\MessageFormatter;
  */
 class Block extends MessageFormatter
 {
-
 }

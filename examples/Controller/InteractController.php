@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Created by PhpStorm.
  * User: inhere
@@ -12,6 +12,7 @@ use Inhere\Console\Controller;
 use Inhere\Console\Util\Interact;
 use Inhere\Console\Util\Show;
 use Toolkit\Cli\Terminal;
+use function preg_match;
 
 /**
  * Class InteractController
@@ -20,6 +21,7 @@ use Toolkit\Cli\Terminal;
 class InteractController extends Controller
 {
     protected static $name = 'interact';
+
     protected static $description = 'there are some demo commands for use interactive method';
 
     public static function aliases(): array
@@ -81,7 +83,7 @@ class InteractController extends Controller
      */
     public function askCommand(): void
     {
-        $a = Interact::ask('you name is: ', '', function ($val, &$err) {
+        $a = Interact::ask('you name is: ', '', static function ($val, &$err) {
             if (!preg_match('/^\w{2,}$/', $val)) {
                 $err = 'Your input must match /^\w{2,}$/';
                 return false;
@@ -106,8 +108,8 @@ class InteractController extends Controller
         if ($this->input->getBoolOpt('nv')) {
             $a = Interact::limitedAsk('you name is: ', '', null, $times);
         } else {
-            $a = Interact::limitedAsk('you name is: ', '', function ($val) {
-                if (!\preg_match('/^\w{2,}$/', $val)) {
+            $a = Interact::limitedAsk('you name is: ', '', static function ($val) {
+                if (!preg_match('/^\w{2,}$/', $val)) {
                     Show::error('Your input must match /^\w{2,}$/');
                     return false;
                 }

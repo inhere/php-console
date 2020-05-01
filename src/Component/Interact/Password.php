@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Inhere\Console\Component\Interact;
 
@@ -64,5 +64,4 @@ class Password extends InteractMessage
 
         throw new RuntimeException('Can not invoke bash shell env');
     }
-
 }

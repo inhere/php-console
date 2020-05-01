@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Created by PhpStorm.
  * User: inhere
@@ -342,8 +342,11 @@ class Application extends AbstractApplication
         }
 
         if (!($handler instanceof Controller)) {
-            Helper::throwInvalidArgument('The console controller class [%s] must instanceof the %s', $handler,
-                Controller::class);
+            Helper::throwInvalidArgument(
+                'The console controller class [%s] must instanceof the %s',
+                $handler,
+                Controller::class
+            );
         }
 
         $handler::setName($group);

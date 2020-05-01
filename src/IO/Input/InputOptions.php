@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Created by PhpStorm.
  * User: inhere
@@ -16,5 +16,4 @@ namespace Inhere\Console\IO\Input;
  */
 class InputOptions
 {
-
 }

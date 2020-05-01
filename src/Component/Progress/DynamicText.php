@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Inhere\Console\Component\Progress;
 
@@ -61,6 +61,5 @@ class DynamicText extends NotifyMessage
 
     public function display(): void
     {
-
     }
 }

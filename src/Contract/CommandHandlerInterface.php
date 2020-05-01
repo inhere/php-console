@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Created by PhpStorm.
  * User: inhere
@@ -19,6 +19,7 @@ use Inhere\Console\IO\InputDefinition;
 interface CommandHandlerInterface
 {
     public const OK  = 0;
+
     public const ERR = 2;
 
     // name -> {name}
@@ -26,6 +27,7 @@ interface CommandHandlerInterface
 
     // {$%s} name -> {name}
     public const HELP_VAR_LEFT  = '{';
+
     public const HELP_VAR_RIGHT = '}';
 
     /**

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Created by PhpStorm.
  */
@@ -37,22 +37,36 @@ class Color
 
     // color
     public const BLACK   = 'black';
+
     public const RED     = 'red';
+
     public const GREEN   = 'green';
+
     public const YELLOW  = 'yellow'; // BROWN
+
     public const BLUE    = 'blue';
+
     public const MAGENTA = 'magenta';
+
     public const CYAN    = 'cyan';
+
     public const WHITE   = 'white';
+
     public const NORMAL  = 'normal';
 
     // color option
     public const BOLD       = 'bold';       // 加粗
+
     public const FUZZY      = 'fuzzy';      // 模糊(不是所有的终端仿真器都支持)
+
     public const ITALIC     = 'italic';     // 斜体(不是所有的终端仿真器都支持)
+
     public const UNDERSCORE = 'underscore'; // 下划线
+
     public const BLINK      = 'blink';      // 闪烁
+
     public const REVERSE    = 'reverse';    // 颠倒的 交换背景色与前景色
+
     public const CONCEALED  = 'concealed';  // 隐匿的
 
     /** @var array Known color list */
@@ -161,8 +175,11 @@ class Color
     {
         if ($fg) {
             if (false === array_key_exists($fg, static::$knownColors)) {
-                throw new InvalidArgumentException(sprintf('Invalid foreground color "%1$s" [%2$s]', $fg,
-                        implode(', ', $this->getKnownColors())));
+                throw new InvalidArgumentException(sprintf(
+                    'Invalid foreground color "%1$s" [%2$s]',
+                    $fg,
+                    implode(', ', $this->getKnownColors())
+                ));
             }
 
             $this->fgColor = ($extra ? self::FG_EXTRA : self::FG_BASE) + static::$knownColors[$fg];
@@ -170,8 +187,11 @@ class Color
 
         if ($bg) {
             if (false === array_key_exists($bg, static::$knownColors)) {
-                throw new InvalidArgumentException(sprintf('Invalid background color "%1$s" [%2$s]', $bg,
-                        implode(', ', $this->getKnownColors())));
+                throw new InvalidArgumentException(sprintf(
+                    'Invalid background color "%1$s" [%2$s]',
+                    $bg,
+                    implode(', ', $this->getKnownColors())
+                ));
             }
 
             $this->bgColor = ($extra ? self::BG_EXTRA : self::BG_BASE) + static::$knownColors[$bg];
@@ -179,8 +199,11 @@ class Color
 
         foreach ($options as $option) {
             if (false === array_key_exists($option, static::$knownOptions)) {
-                throw new InvalidArgumentException(sprintf('Invalid option "%1$s" [%2$s]', $option,
-                        implode(', ', $this->getKnownOptions())));
+                throw new InvalidArgumentException(sprintf(
+                    'Invalid option "%1$s" [%2$s]',
+                    $option,
+                    implode(', ', $this->getKnownOptions())
+                ));
             }
 
             $this->options[] = $option;

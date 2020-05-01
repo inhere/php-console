@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Created by PhpStorm.
  * User: inhere
@@ -6,13 +6,13 @@
  * Time: 下午5:15
  */
 
-class Spinner {
+class Spinner
+{
     /** @var int $speed ms */
     public $speed = 100;
 
     public static function create($speed)
     {
-
     }
 }
 

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Created by PhpStorm.
  * User: inhere
@@ -18,6 +18,7 @@ use Inhere\Console\Controller;
 class TestController extends Controller
 {
     protected static $name = 'test';
+
     protected static $description = 'controller description message';
 
     /**

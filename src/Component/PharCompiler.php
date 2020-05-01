@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Created by PhpStorm.
  * User: Inhere
@@ -493,7 +493,7 @@ class PharCompiler
             if (strpos($file, 'M ') === 0) {
                 yield substr($file, 2);
 
-                // new files
+            // new files
             } elseif (strpos($file, '?? ') === 0) {
                 yield substr($file, 3);
             }
@@ -507,8 +507,11 @@ class PharCompiler
      */
     protected function findFiles(string $directory)
     {
-        return Helper::directoryIterator($directory, $this->createIteratorFilter(),
-            FilesystemIterator::KEY_AS_PATHNAME | FilesystemIterator::CURRENT_AS_FILEINFO | FilesystemIterator::SKIP_DOTS);
+        return Helper::directoryIterator(
+            $directory,
+            $this->createIteratorFilter(),
+            FilesystemIterator::KEY_AS_PATHNAME | FilesystemIterator::CURRENT_AS_FILEINFO | FilesystemIterator::SKIP_DOTS
+        );
     }
 
     /**

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Created by PhpStorm.
  * User: inhere
@@ -25,7 +25,6 @@ class Alert
 
     public static function create(string $message, string $style = 'info', array $opts = []): void
     {
-
     }
 
     public static function block(string $message, string $style = 'info', array $opts = []): void
@@ -38,11 +37,9 @@ class Alert
             'theme'    => 'default',
             'template' => ''
         ], $opts);
-
     }
 
     public static function lite(string $message, string $style = 'info'): void
     {
-
     }
 }

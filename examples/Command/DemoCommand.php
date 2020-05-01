@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Created by PhpStorm.
  * User: inhere
@@ -19,6 +19,7 @@ use Inhere\Console\IO\Output;
 class DemoCommand extends Command
 {
     protected static $name = 'demo';
+
     protected static $description = 'this is a demo alone command. but config use configure(), like symfony console: argument define by position';
 
     /**
@@ -49,7 +50,8 @@ class DemoCommand extends Command
         $output->write('hello, this in ' . __METHOD__);
         // $name = $input->getArg('name');
 
-        $output->write(<<<EOF
+        $output->write(
+            <<<EOF
 this is argument and option example:
                                         the opt1's value
                                 option: opt1 |
@@ -61,6 +63,6 @@ php examples/app demo john male 43 --opt1 value1 -y
                  argument: name  |   argument: age
                             argument: sex
 EOF
-);
+        );
     }
 }

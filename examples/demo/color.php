@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 // $text = 'test message';
 // $setCodes = [32];
@@ -26,8 +26,3 @@ system('echo %ESC%[1;33;40m Yellow on black %ESC%[0m');
 fwrite(STDOUT, "\033[32;40;1;4mfoo\033[39;49;22;24m");
 fwrite(STDOUT, "\x1b[32;40;1;4mfoo\x1b[39;49;22;24m");
 // fflush(STDOUT);
-
-
-
-
-

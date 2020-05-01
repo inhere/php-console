@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Created by PhpStorm.
  * User: inhere
@@ -20,6 +20,7 @@ use Inhere\Console\IO\Output;
 class TestCommand extends Command
 {
     protected static $name = 'test1';
+
     protected static $description = 'command description message';
 
     /**

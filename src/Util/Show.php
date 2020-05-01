@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Inhere\Console\Util;
 
@@ -349,7 +349,6 @@ class Show
     {
         MultiList::show($data, $opts);
     }
-
 
     /**
      * Render console help message

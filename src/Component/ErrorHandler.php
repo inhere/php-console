@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Created by PhpStorm.
  * User: inhere
@@ -44,9 +44,13 @@ ERR;
             $line    = $e->getLine();
             $file    = $e->getFile();
             $snippet = Highlighter::create()->highlightSnippet(file_get_contents($file), $line, 3, 3);
-            $message = sprintf($tpl, // $e->getCode(),
-                $e->getMessage(), $file, $line, // __METHOD__,
-                $snippet, $e->getTraceAsString()// \str_replace('):', '): -', $e->getTraceAsString())
+            $message = sprintf(
+                $tpl, // $e->getCode(),
+                $e->getMessage(),
+                $file,
+                $line, // __METHOD__,
+                $snippet,
+                $e->getTraceAsString()// \str_replace('):', '): -', $e->getTraceAsString())
             );
 
             if ($app->getParam('hideRootPath') && ($rootPath = $app->getParam('rootPath'))) {

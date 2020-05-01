@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Created by PhpStorm.
  * User: Inhere
@@ -15,5 +15,4 @@ namespace Inhere\Console\Component\Animation;
  */
 class Animation
 {
-
 }

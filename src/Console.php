@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Inhere\Console;
 
@@ -36,10 +36,15 @@ class Console
 {
     // constants for error level 0 - 4. you can setting by '--debug LEVEL'
     public const VERB_QUIET = 0;
+
     public const VERB_ERROR = 1; // default reporting on error
+
     public const VERB_WARN  = 2;
+
     public const VERB_INFO  = 3;
+
     public const VERB_DEBUG = 4;
+
     public const VERB_CRAZY = 5;
 
     // level => name
@@ -304,8 +309,14 @@ class Console
 
         $optString = $userOpts ? ' ' . implode(' ', $userOpts) : '';
 
-        self::write(sprintf('%s [%s]%s %s %s', date('Y/m/d H:i:s'), $taggedName, $optString, trim($msg),
-            $data ? PHP_EOL . json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) : ''));
+        self::write(sprintf(
+            '%s [%s]%s %s %s',
+            date('Y/m/d H:i:s'),
+            $taggedName,
+            $optString,
+            trim($msg),
+            $data ? PHP_EOL . json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) : ''
+        ));
     }
 
     /***********************************************************************************

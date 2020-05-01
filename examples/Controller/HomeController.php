@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Inhere\Console\Examples\Controller;
 
@@ -8,9 +8,13 @@ use Inhere\Console\IO\Input;
 use Inhere\Console\Util\Interact;
 use Inhere\Console\Util\ProgressBar;
 use Inhere\Console\Util\Show;
+use LogicException;
+use RuntimeException;
 use Toolkit\Cli\Cli;
 use Toolkit\Cli\Download;
 use Toolkit\PhpUtil\Php;
+use function sleep;
+use function trigger_error;
 
 /**
  * default command controller. there are some command usage examples(1)
@@ -20,6 +24,7 @@ use Toolkit\PhpUtil\Php;
 class HomeController extends Controller
 {
     protected static $name = 'home';
+
     protected static $description = 'This is a demo command controller. there are some command usage examples(2)';
 
     /**
@@ -97,7 +102,7 @@ class HomeController extends Controller
 
     /**
      * command `defArgCommand` config
-     * @throws \LogicException
+     * @throws LogicException
      */
     protected function defArgConfigure(): void
     {
@@ -118,11 +123,11 @@ class HomeController extends Controller
 
     /**
      * a command for test throw exception
-     * @throws \RuntimeException
+     * @throws RuntimeException
      */
     public function exCommand(): void
     {
-        throw new \RuntimeException('oo, this is a runtime exception!');
+        throw new RuntimeException('oo, this is a runtime exception!');
     }
 
     /**
@@ -130,7 +135,7 @@ class HomeController extends Controller
      */
     public function errorCommand(): void
     {
-        \trigger_error('oo, this is a runtime error!', E_USER_ERROR);
+        trigger_error('oo, this is a runtime error!', E_USER_ERROR);
     }
 
     /**
@@ -274,11 +279,11 @@ class HomeController extends Controller
         $dt->send('Start');
 
         foreach (['Request', 'Downloading', 'Save'] as $txt) {
-            \sleep(2);
+            sleep(2);
             $dt->send($txt);
         }
 
-        \sleep(2);
+        sleep(2);
         $dt->send(false);
     }
 
@@ -324,7 +329,7 @@ class HomeController extends Controller
 
     /**
      * a progress bar example show, by class ProgressBar
-     * @throws \LogicException
+     * @throws LogicException
      */
     public function progressBarCommand(): void
     {

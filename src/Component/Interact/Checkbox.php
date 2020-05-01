@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Inhere\Console\Component\Interact;
 
@@ -19,7 +19,6 @@ use function trim;
  */
 class Checkbox extends InteractMessage
 {
-
     /**
      * List multiple options and allow multiple selections
      *
@@ -82,5 +81,4 @@ class Checkbox extends InteractMessage
 
         return $rs;
     }
-
 }

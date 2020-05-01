@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Created by PhpStorm.
  * User: Inhere
@@ -111,7 +111,6 @@ class Helper
      */
     public static function commandSearch(string $command, array $map): void
     {
-
     }
 
     /**
@@ -184,6 +183,5 @@ class Helper
      */
     public static function formatOptions(string $optsStr): void
     {
-
     }
 }

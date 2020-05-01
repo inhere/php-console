@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Created by PhpStorm.
  * User: Inhere
@@ -23,6 +23,7 @@ use const PHP_VERSION;
 class DevServerCommand extends Command
 {
     protected static $name = 'dev:server';
+
     protected static $description = 'Start a php built-in http server for development';
 
     public static function aliases(): array

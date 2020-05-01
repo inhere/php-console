@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Created by PhpStorm.
  * User: inhere
@@ -15,8 +15,10 @@ use Inhere\Console\Component\Symbol\Emoji;
 use Inhere\Console\Controller;
 use Inhere\Console\IO\Input;
 use Inhere\Console\Util\Show;
+use ReflectionException;
 use Toolkit\Cli\Color;
 use Toolkit\Cli\Highlighter;
+use function file_get_contents;
 
 /**
  * Class ShowController
@@ -25,6 +27,7 @@ use Toolkit\Cli\Highlighter;
 class ShowController extends Controller
 {
     protected static $name = 'show';
+
     protected static $description = 'there are some demo commands for show format data';
 
     public static function commandAliases(): array
@@ -183,7 +186,7 @@ class ShowController extends Controller
     /**
      * display some special chars
      * @return int
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
     public function charCommand(): int
     {
@@ -197,7 +200,7 @@ class ShowController extends Controller
     /**
      * display some special emoji chars
      * @return int
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
     public function emojiCommand(): int
     {
@@ -218,7 +221,7 @@ class ShowController extends Controller
     {
         // $file = $this->app->getRootPath() . '/examples/routes.php';
         $file = $this->app->getRootPath() . '/src/Utils/Show.php';
-        $src  = \file_get_contents($file);
+        $src  = file_get_contents($file);
 
         $code = Highlighter::create()->highlight($src, $in->getBoolOpt('ln'));
 
@@ -309,5 +312,4 @@ class ShowController extends Controller
         $this->output->write('use json:');
         $this->output->json($data);
     }
-
 }

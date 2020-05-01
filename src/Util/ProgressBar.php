@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Created by PhpStorm.
  * User: Inhere
@@ -34,9 +34,13 @@ class ProgressBar
     private $barWidth = 30;
 
     private $completeChar = '=';  // 已完成的显示字符
+
     private $progressChar = '>';  // 当前进度的显示字符
+
     private $remainingChar = '-'; // 剩下的的显示字符
+
     private $redrawFreq = 1;
+
     private $format;
 
     /**
@@ -71,10 +75,13 @@ class ProgressBar
     private $stepWidth;
 
     private $startTime;
+
     private $finishTime;
 
     private $overwrite = true;
+
     private $started = false;
+
     private $firstRun = true;
 
     /**

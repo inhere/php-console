@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Created by PhpStorm.
  * User: inhere
@@ -265,8 +265,11 @@ trait ApplicationHelpTrait
 
         if ($shellEnv === 'bash') {
             $tplFile = $tplDir . '/bash-completion.tpl';
-            $list    = array_merge($router->getCommandNames(), $router->getControllerNames(),
-                $this->getInternalCommands());
+            $list    = array_merge(
+                $router->getCommandNames(),
+                $router->getControllerNames(),
+                $this->getInternalCommands()
+            );
         } else {
             $glue    = PHP_EOL;
             $list    = [];

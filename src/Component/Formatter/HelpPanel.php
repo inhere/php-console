@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Created by PhpStorm.
  * User: Inhere
@@ -31,11 +31,17 @@ class HelpPanel extends MessageFormatter
      * help panel keys
      */
     public const DESC      = 'description';
+
     public const USAGE     = 'usage';
+
     public const COMMANDS  = 'commands';
+
     public const ARGUMENTS = 'arguments';
+
     public const OPTIONS   = 'options';
+
     public const EXAMPLES  = 'examples';
+
     public const EXTRAS    = 'extras';
 
     /**
@@ -116,7 +122,7 @@ class HelpPanel extends MessageFormatter
                 if (isset($value[0])) {
                     $value = implode(PHP_EOL . '  ', $value);
 
-                    // is key-value [ 'key1' => 'text1', 'key2' => 'text2']
+                // is key-value [ 'key1' => 'text1', 'key2' => 'text2']
                 } else {
                     $value = FormatUtil::spliceKeyValue($value, [
                         'leftChar' => '  ',

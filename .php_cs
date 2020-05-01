@@ -2,7 +2,7 @@
 
 $header = <<<'EOF'
 
-@license  https://github.com/inhere/php-validate/blob/master/LICENSE
+@license  https://github.com/inhere/php-/blob/master/LICENSE
 EOF;
 
 return PhpCsFixer\Config::create()->setRiskyAllowed(true)->setRules([

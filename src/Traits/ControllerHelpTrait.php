@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Inhere\Console\Traits;
 
@@ -9,5 +9,4 @@ namespace Inhere\Console\Traits;
  */
 trait ControllerHelpTrait
 {
-
 }
