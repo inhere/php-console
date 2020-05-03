@@ -133,7 +133,7 @@ abstract class AbstractApplication implements ApplicationInterface
     protected function init(): void
     {
         $this->stats = [
-            'startTime'   => microtime(1),
+            'startTime'   => microtime(true),
             'endTime'     => 0,
             'startMemory' => memory_get_usage(),
             'endMemory'   => 0,
@@ -214,7 +214,7 @@ abstract class AbstractApplication implements ApplicationInterface
             $this->handleException($e);
         }
 
-        $this->stats['endTime'] = microtime(1);
+        $this->stats['endTime'] = microtime(true);
 
         // call 'onAfterRun' service, if it is registered.
         $this->fire(self::ON_AFTER_RUN, $this);

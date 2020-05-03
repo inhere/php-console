@@ -673,7 +673,7 @@ abstract class AbstractInput implements InputInterface
     public function getPwd(): string
     {
         if (!$this->pwd) {
-            $this->pwd = getcwd();
+            $this->pwd = (string)getcwd();
         }
 
         return $this->pwd;

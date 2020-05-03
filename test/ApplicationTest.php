@@ -9,9 +9,17 @@ use Inhere\Console\IO\InputInterface;
 use Inhere\Console\Router;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
+use Throwable;
+use function get_class;
+use function strpos;
 
 class ApplicationTest extends TestCase
 {
+    protected function assertStringContains(string $string, string $contains): void
+    {
+        $this->assertNotSame(false, strpos($string, $contains), "string \"$string\" not contains: $contains");
+    }
+
     private function newApp(array $args = null): Application
     {
         $input = new Input($args);
@@ -55,14 +63,18 @@ class ApplicationTest extends TestCase
     public function testAddCommandError(): void
     {
         $app = $this->newApp();
+        try {
+            $app->addCommand('');
+        } catch (Throwable $e) {
+            $this->assertSame(get_class($e), InvalidArgumentException::class);
+        }
 
-        $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessageRegExp("/'name' and 'handler' cannot be empty/");
-        $app->addCommand('');
-
-        $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessageRegExp('/"name" and "controller" cannot be empty/');
-        $app->addCommand('test', 'invalid');
+        try {
+            $app->addCommand('test', 'invalid');
+        } catch (Throwable $e) {
+            $this->assertSame(get_class($e), InvalidArgumentException::class);
+            $this->assertSame($e->getMessage(), 'The console command class [invalid] not exists!');
+        }
     }
 
     public function testRunCommand(): void
@@ -101,13 +113,19 @@ class ApplicationTest extends TestCase
     {
         $app = $this->newApp();
 
-        $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessageRegExp('/"name" and "controller" cannot be empty/');
-        $app->addController('');
+        try {
+            $app->addController('');
+        } catch (Throwable $e) {
+            $this->assertSame(get_class($e), InvalidArgumentException::class);
+            $this->assertStringContains($e->getMessage(), '"name" and "controller" cannot be empty');
+        }
 
-        $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessageRegExp('/"name" and "controller" cannot be empty/');
-        $app->controller('test', 'invalid');
+        try {
+            $app->controller('test', 'invalid');
+        } catch (Throwable $e) {
+            $this->assertSame(get_class($e), InvalidArgumentException::class);
+            $this->assertSame($e->getMessage(), 'The console controller class [invalid] not exists!');
+        }
     }
 
     public function testRunController(): void
