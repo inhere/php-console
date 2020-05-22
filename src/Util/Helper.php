@@ -161,7 +161,8 @@ class Helper
         foreach ($data as $key => $value) {
             // key is not a integer
             if (!$expectInt || !is_numeric($key)) {
-                $width       = mb_strlen($key, 'UTF-8');
+                $width = mb_strlen((string)$key, 'UTF-8');
+
                 $keyMaxWidth = $width > $keyMaxWidth ? $width : $keyMaxWidth;
             }
         }

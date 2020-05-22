@@ -50,7 +50,7 @@ class MultiList extends MessageFormatter
                 continue;
             }
 
-            $stringList[] = SingleList::show($list, $title, $opts);
+            $stringList[] = SingleList::show($list, (string)$title, $opts);
         }
 
         Console::write(implode("\n", $stringList), $lastNewline);

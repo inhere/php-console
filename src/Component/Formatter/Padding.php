@@ -50,7 +50,7 @@ class Padding extends MessageFormatter
 
         foreach ($data as $label => $value) {
             $value  = ColorTag::wrap((string)$value, $opts['valueStyle']);
-            $string .= $opts['indent'] . str_pad($label, $paddingLen, $opts['char']) . " $value\n";
+            $string .= $opts['indent'] . str_pad((string)$label, $paddingLen, $opts['char']) . " $value\n";
         }
 
         Console::write(trim($string));
