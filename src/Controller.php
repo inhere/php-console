@@ -227,7 +227,7 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
             return true;
         }
 
-        return $this->helpCommand();
+        return $this->helpCommand() === 0;
     }
 
     protected function beforeRenderCommandHelp(array &$help): void
