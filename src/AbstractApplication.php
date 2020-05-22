@@ -194,19 +194,19 @@ abstract class AbstractApplication implements ApplicationInterface
     {
         $command = trim($this->input->getCommand(), $this->delimiter);
 
-        $this->prepareRun();
-
-        // like: help, version, list
-        if ($this->filterSpecialCommand($command)) {
-            return 0;
-        }
-
-        // call 'onBeforeRun' service, if it is registered.
-        $this->fire(self::ON_BEFORE_RUN, $this);
-        $this->beforeRun();
-
-        // do run ...
         try {
+            $this->prepareRun();
+
+            // like: help, version, list
+            if ($this->filterSpecialCommand($command)) {
+                return 0;
+            }
+
+            // call 'onBeforeRun' service, if it is registered.
+            $this->fire(self::ON_BEFORE_RUN, $this);
+            $this->beforeRun();
+
+            // do run ...
             $result = $this->dispatch($command);
         } catch (Throwable $e) {
             $this->fire(self::ON_RUN_ERROR, $e, $this);

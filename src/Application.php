@@ -180,7 +180,7 @@ class Application extends AbstractApplication
         $iterator = Helper::directoryIterator($basePath, $this->getFileFilter());
 
         foreach ($iterator as $file) {
-            $class = $namespace . '\\' . substr($file, $length, -4);
+            $class = $namespace . '\\' . substr($file->getPathName(), $length, -4);
             $this->addCommand($class);
         }
 
@@ -202,7 +202,7 @@ class Application extends AbstractApplication
         $iterator = Helper::directoryIterator($basePath, $this->getFileFilter());
 
         foreach ($iterator as $file) {
-            $class = $namespace . '\\' . substr($file, $length, -4);
+            $class = $namespace . '\\' . substr($file->getPathName(), $length, -4);
             $this->addController($class);
         }
 
@@ -214,7 +214,7 @@ class Application extends AbstractApplication
      */
     protected function getFileFilter(): callable
     {
-        return function (SplFileInfo $f) {
+        return static function (SplFileInfo $f) {
             $name = $f->getFilename();
 
             // Skip hidden files and directories.
