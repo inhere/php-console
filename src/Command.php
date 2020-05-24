@@ -60,6 +60,9 @@ abstract class Command extends AbstractHandler implements CommandInterface
             return true;
         }
 
-        return $this->showHelpByMethodAnnotations('execute', '', static::aliases());
+        $execMethod = 'execute';
+        $cmdAliases = static::aliases();
+
+        return $this->showHelpByMethodAnnotations($execMethod, '', $cmdAliases) !== 0;
     }
 }
