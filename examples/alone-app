@@ -4,7 +4,9 @@
  * only run a controller.
  */
 
+use Inhere\Console\Application;
 use Inhere\Console\Examples\Controller\HomeController;
+use Inhere\Console\IO\Input;
 use Toolkit\Cli\Color;
 
 define('BASE_PATH', dirname(__DIR__));
@@ -12,8 +14,8 @@ define('BASE_PATH', dirname(__DIR__));
 require dirname(__DIR__) . '/test/boot.php';
 
 try {
-    $input = new \Inhere\Console\IO\Input();
-    $app   = new \Inhere\Console\Application([
+    $input = new Input();
+    $app   = new Application([
         'debug'    => true,
         'rootPath' => BASE_PATH,
     ], $input);

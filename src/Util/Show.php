@@ -306,8 +306,11 @@ class Show
     }
 
     /**
-     * @see Show::aList()
-     * {@inheritdoc}
+     * @param mixed  $data
+     * @param string $title
+     * @param array  $opts
+     *
+     * @return int|string
      */
     public static function sList($data, string $title = '', array $opts = [])
     {

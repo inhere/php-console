@@ -10,6 +10,13 @@ namespace Inhere\Console\Traits;
 
 use Closure;
 use Generator;
+use Inhere\Console\Component\Formatter\HelpPanel;
+use Inhere\Console\Component\Formatter\MultiList;
+use Inhere\Console\Component\Formatter\Panel;
+use Inhere\Console\Component\Formatter\Section;
+use Inhere\Console\Component\Formatter\SingleList;
+use Inhere\Console\Component\Formatter\Table;
+use Inhere\Console\Component\Formatter\Title;
 use Inhere\Console\Component\Style\Style;
 use Inhere\Console\Console;
 use Inhere\Console\Util\Interact;
@@ -77,8 +84,11 @@ trait FormatOutputAwareTrait
     }
 
     /**
-     * @inheritdoc
-     * @see Console::writeln()
+     * @param string|mixed $text
+     * @param bool         $quit
+     * @param array        $opts
+     *
+     * @return int
      */
     public function writeln($text, $quit = false, array $opts = []): int
     {
@@ -86,8 +96,24 @@ trait FormatOutputAwareTrait
     }
 
     /**
-     * @inheritdoc
-     * @see Console::writeRaw()
+     * @param string|mixed $text
+     * @param bool         $quit
+     * @param array        $opts
+     *
+     * @return int
+     */
+    public function println($text, $quit = false, array $opts = []): int
+    {
+        return Console::writeln($text, $quit, $opts);
+    }
+
+    /**
+     * @param string|mixed $text
+     * @param bool         $nl
+     * @param bool         $quit
+     * @param array        $opts
+     *
+     * @return int
      */
     public function writeRaw($text, bool $nl = true, $quit = false, array $opts = []): int
     {
@@ -106,102 +132,114 @@ trait FormatOutputAwareTrait
     }
 
     /**
-     * @inheritdoc
-     * @see Show::block()
+     * @param array|mixed $messages
+     * @param string      $type
+     * @param string      $style
+     * @param bool        $quit
+     *
+     * @return int
      */
-    public function block($messages, $type = 'MESSAGE', $style = Style::NORMAL, $quit = false): int
+    public function block($messages, string $type = 'MESSAGE', string $style = Style::NORMAL, $quit = false): int
     {
         return Show::block($messages, $type, $style, $quit);
     }
 
     /**
-     * @inheritdoc
-     * @see Show::liteBlock()
+     * @param array|mixed $messages
+     * @param string      $type
+     * @param string      $style
+     * @param bool        $quit
+     *
+     * @return int
      */
-    public function liteBlock($messages, $type = 'MESSAGE', $style = Style::NORMAL, $quit = false): int
+    public function liteBlock($messages, string $type = 'MESSAGE', string $style = Style::NORMAL, $quit = false): int
     {
         return Show::liteBlock($messages, $type, $style, $quit);
     }
 
     /**
-     * @inheritdoc
-     * @see Show::title()
+     * @param string $title
+     * @param array  $opts
      */
-    public function title($title, array $opts = []): void
+    public function title(string $title, array $opts = []): void
     {
-        Show::title($title, $opts);
+        Title::show($title, $opts);
     }
 
     /**
-     * @inheritdoc
-     * @see Show::section()
+     * @param string       $title
+     * @param string|array $body The section body message
+     * @param array        $opts
      */
-    public function section($title, $body, array $opts = []): void
+    public function section(string $title, $body, array $opts = []): void
     {
-        Show::section($title, $body, $opts);
+        Section::show($title, $body, $opts);
     }
 
     /**
-     * @inheritdoc
-     * @see Show::aList()
+     * @param array|mixed $data
+     * @param string      $title
+     * @param array       $opts
      */
-    public function aList($data, $title = null, array $opts = []): void
+    public function aList($data, string $title = '', array $opts = []): void
     {
-        Show::aList($data, $title, $opts);
+        SingleList::show($data, $title, $opts);
     }
 
     /**
-     * @inheritdoc
-     * @see Show::mList()
+     * @param array $data
+     * @param array $opts
      */
     public function multiList(array $data, array $opts = []): void
     {
-        Show::mList($data, $opts);
+        MultiList::show($data, $opts);
     }
 
     /**
-     * @inheritdoc
-     * @see Show::mList()
+     * @param array $data
+     * @param array $opts
      */
     public function mList(array $data, array $opts = []): void
     {
-        Show::mList($data, $opts);
+        MultiList::show($data, $opts);
     }
 
     /**
-     * helpPanel
-     *
-     * @inheritdoc
-     * @see Show::helpPanel()
+     * @param array $config
      */
     public function helpPanel(array $config): void
     {
-        Show::helpPanel($config);
+        HelpPanel::show($config);
     }
 
     /**
-     * @inheritdoc
-     * @see Show::panel()
+     * @param array  $data
+     * @param string $title
+     * @param array  $opts
      */
-    public function panel(array $data, $title = 'Information panel', array $opts = []): void
+    public function panel(array $data, string $title = 'Information panel', array $opts = []): void
     {
-        Show::panel($data, $title, $opts);
+        Panel::show($data, $title, $opts);
     }
 
     /**
-     * @inheritdoc
-     * @see Show::table()
+     * @param array  $data
+     * @param string $title
+     * @param array  $opts
      */
-    public function table(array $data, $title = 'Data Table', array $opts = []): void
+    public function table(array $data, string $title = 'Data Table', array $opts = []): void
     {
-        Show::table($data, $title, $opts);
+        Table::show($data, $title, $opts);
     }
 
     /**
-     * @inheritdoc
-     * @see Show::progressBar()
+     * @param int    $total
+     * @param string $msg
+     * @param string $doneMsg
+     *
+     * @return Generator
      */
-    public function progressTxt($total, $msg, $doneMsg = ''): Generator
+    public function progressTxt(int $total, string $msg, string $doneMsg = ''): Generator
     {
         return Show::progressTxt($total, $msg, $doneMsg);
     }

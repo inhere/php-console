@@ -55,11 +55,12 @@ abstract class AbstractApplication implements ApplicationInterface
 
     /** @var array */
     protected static $globalOptions = [
-        '--debug'       => 'Setting the application runtime debug level(0 - 4)',
-        '--profile'     => 'Display timing and memory usage information',
-        '--no-color'    => 'Disable color/ANSI for message output',
-        '-h, --help'    => 'Display this help message',
-        '-V, --version' => 'Show application version information',
+        '--debug'          => 'Setting the application runtime debug level(0 - 4)',
+        '--profile'        => 'Display timing and memory usage information',
+        '--no-color'       => 'Disable color/ANSI for message output',
+        '-h, --help'       => 'Display this help message',
+        '-V, --version'    => 'Show application version information',
+        '--no-interactive' => 'Run commands in a non-interactive environment',
     ];
 
     /** @var array Application runtime stats */
@@ -350,7 +351,7 @@ abstract class AbstractApplication implements ApplicationInterface
             // default run list command
             // $command = $this->defaultCommand ? 'list';
             $command = 'list';
-        // is user command
+            // is user command
         } elseif (!$this->isInternalCommand($command)) {
             return false;
         }
@@ -547,7 +548,19 @@ abstract class AbstractApplication implements ApplicationInterface
      */
     public function isProfile(): bool
     {
-        return (bool)$this->input->getOpt('profile', $this->getParam('profile'));
+        return (bool)$this->input->getOpt('profile', $this->getParam('profile', false));
+    }
+
+    /**
+     * is interactive env
+     *
+     * @return bool
+     */
+    public function isInteractive(): bool
+    {
+        $key = 'no-interactive';
+
+        return (bool)$this->input->getOpt($key, $this->getParam($key, true));
     }
 
     /**

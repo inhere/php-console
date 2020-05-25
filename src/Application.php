@@ -10,6 +10,8 @@ namespace Inhere\Console;
 
 use Closure;
 use Inhere\Console\Contract\ControllerInterface;
+use Inhere\Console\IO\Input;
+use Inhere\Console\IO\Output;
 use Inhere\Console\Util\Helper;
 use InvalidArgumentException;
 use ReflectionException;
@@ -31,6 +33,20 @@ use function substr;
  */
 class Application extends AbstractApplication
 {
+    /**
+     * Class constructor.
+     *
+     * @param array       $config
+     * @param Input|null  $input
+     * @param Output|null $output
+     */
+    public function __construct(array $config = [], Input $input = null, Output $output = null)
+    {
+        Console::setApp($this);
+
+        parent::__construct($config, $input, $output);
+    }
+
     /****************************************************************************
      * register console controller/command
      ****************************************************************************/

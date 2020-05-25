@@ -83,7 +83,11 @@ class Output implements OutputInterface
 
     /**
      * stop buffering and flush buffer text
-     * {@inheritdoc}
+     *
+     * @param bool  $flush
+     * @param bool  $nl
+     * @param bool  $quit
+     * @param array $opts
      *
      * @see Console::stopBuffer()
      */
@@ -94,7 +98,10 @@ class Output implements OutputInterface
 
     /**
      * stop buffering and flush buffer text
-     * {@inheritdoc}
+     *
+     * @param bool  $nl
+     * @param bool  $quit
+     * @param array $opts
      */
     public function flush(bool $nl = false, $quit = false, array $opts = []): void
     {

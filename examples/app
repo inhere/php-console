@@ -6,12 +6,14 @@
  * @release-date {@release_date}
  */
 
+use Inhere\Console\Application;
+
 define('BASE_PATH', dirname(__DIR__));
 
 require dirname(__DIR__) . '/test/boot.php';
 
 // create app instance
-$app = new \Inhere\Console\Application([
+$app = new Application([
     'debug' => true,
     'rootPath' => dirname(__DIR__),
 ]);

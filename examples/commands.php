@@ -13,7 +13,9 @@ use Inhere\Console\Examples\Command\CorCommand;
 use Inhere\Console\Examples\Command\DemoCommand;
 use Inhere\Console\Examples\Command\TestCommand;
 use Inhere\Console\Examples\Controller\HomeController;
+use Inhere\Console\Examples\Controller\InteractController;
 use Inhere\Console\Examples\Controller\ProcessController;
+use Inhere\Console\Examples\Controller\ShowController;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
 
@@ -42,8 +44,8 @@ $app->controller(ProcessController::class, null, [
     'aliases' => 'prc'
 ]);
 $app->controller(PharController::class);
-$app->controller(\Inhere\Console\Examples\Controller\ShowController::class);
-$app->controller(\Inhere\Console\Examples\Controller\InteractController::class);
+$app->controller(ShowController::class);
+$app->controller(InteractController::class);
 
 // add alias for a group command.
 $app->addAliases('home:test', 'h-test');

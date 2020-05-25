@@ -11,6 +11,7 @@ namespace Inhere\Console\Examples\Command;
 use Inhere\Console\Command;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
+use LogicException;
 
 /**
  * Class DemoCommand
@@ -24,7 +25,7 @@ class DemoCommand extends Command
 
     /**
      * {@inheritDoc}
-     * @throws \LogicException
+     * @throws LogicException
      */
     protected function configure(): void
     {

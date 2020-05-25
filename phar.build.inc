@@ -29,7 +29,7 @@ $compiler
 ;
 
 // Console 下的 Command Controller 命令类不去除注释，注释上是命令帮助信息
-$compiler->setStripFilter(function ($file) {
+$compiler->setStripFilter(static function ($file) {
   /** @var \SplFileInfo $file */
   $name = $file->getFilename();
 

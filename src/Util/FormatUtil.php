@@ -252,7 +252,7 @@ final class FormatUtil
             'valStyle'    => '',   // e.g 'info','comment'
             'keyMinWidth' => 8,
             'keyMaxWidth' => null, // if not set, will automatic calculation
-            'ucFirst'     => true,  // upper first char
+            'ucFirst'     => true,  // upper first char for value
         ], $opts);
 
         if (!is_numeric($opts['keyMaxWidth'])) {
@@ -271,13 +271,13 @@ final class FormatUtil
             $text   .= $opts['leftChar'];
 
             if ($hasKey && $opts['keyMaxWidth']) {
-                $key  = str_pad($key, $opts['keyMaxWidth'], ' ');
+                $key  = str_pad((string)$key, $opts['keyMaxWidth'], ' ');
                 $text .= ColorTag::wrap($key, $keyStyle) . $opts['sepChar'];
             }
 
             // if value is array, translate array to string
             if (is_array($value)) {
-                $temp = '';
+                $temp = '[';
 
                 /** @var array $value */
                 foreach ($value as $k => $val) {
@@ -290,7 +290,7 @@ final class FormatUtil
                     $temp .= (!is_numeric($k) ? "$k: " : '') . "$val, ";
                 }
 
-                $value = rtrim($temp, ' ,');
+                $value = rtrim($temp, ' ,') . ']';
             } elseif (is_bool($value)) {
                 $value = $value ? '(True)' : '(False)';
             } else {

@@ -5,19 +5,22 @@
  */
 
 use Inhere\Console\Examples\Controller\HomeController;
+use Inhere\Console\IO\Input;
+use Inhere\Console\IO\Output;
+use Toolkit\Cli\Color;
 
 define('BASE_PATH', dirname(__DIR__));
 
 require dirname(__DIR__) . '/test/boot.php';
 
-$input = new \Inhere\Console\IO\Input();
-$ctrl  = new HomeController($input, new \Inhere\Console\IO\Output());
+$input = new Input();
+$ctrl  = new HomeController($input, new Output());
 $ctrl->setExecutionAlone();
 
 try {
     exit($ctrl->run($input->getCommand()));
 } catch (\Exception $e) {
-    $message = \Toolkit\Cli\Color::apply('error', $e->getMessage());
+    $message = Color::apply('error', $e->getMessage());
 
     echo \sprintf("%s\nFile %s:%d\nTrace:\n%s\n",
         $message, $e->getFile(), $e->getLine(), $e->getTraceAsString()

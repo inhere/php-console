@@ -177,6 +177,34 @@ class Console
     }
 
     /**
+     * Write data to stdout with newline.
+     *
+     * @param string|array $message
+     * @param array        $opts
+     * @param bool|int     $quit
+     *
+     * @return int
+     */
+    public static function println($message, $quit = false, array $opts = []): int
+    {
+        return self::write($message, true, $quit, $opts);
+    }
+
+    /**
+     * Write message to stdout.
+     *
+     * @param string|array $message
+     * @param array        $opts
+     * @param bool|int     $quit
+     *
+     * @return int
+     */
+    public static function print($message, $quit = false, array $opts = []): int
+    {
+        return self::write($message, false, $quit, $opts);
+    }
+
+    /**
      * Write a message to standard output stream.
      *
      * @param string|array $messages Output message

@@ -13,7 +13,6 @@ use Inhere\Console\IO\Input;
 use Inhere\Console\IO\InputInterface;
 use Inhere\Console\IO\Output;
 use Inhere\Console\IO\OutputInterface;
-use InvalidArgumentException;
 
 /**
  * Class InputOutputAwareTrait
@@ -22,10 +21,14 @@ use InvalidArgumentException;
  */
 trait InputOutputAwareTrait
 {
-    /** @var Input|InputInterface */
+    /**
+     * @var Input|InputInterface
+     */
     protected $input;
 
-    /** @var Output|OutputInterface */
+    /**
+     * @var Output|OutputInterface
+     */
     protected $output;
 
     /**
@@ -45,8 +48,11 @@ trait InputOutputAwareTrait
     }
 
     /**
+     * @param int|string  $name
+     * @param mixed $default
+     *
+     * @return mixed|null
      * @see Input::getArg()
-     * {@inheritdoc}
      */
     public function getArg($name, $default = null)
     {
@@ -54,8 +60,10 @@ trait InputOutputAwareTrait
     }
 
     /**
+     * @param string $default
+     *
+     * @return string
      * @see Input::getFirstArg()
-     * {@inheritdoc}
      */
     public function getFirstArg(string $default = ''): string
     {
@@ -63,8 +71,9 @@ trait InputOutputAwareTrait
     }
 
     /**
-     * {@inheritdoc}
-     * @throws InvalidArgumentException
+     * @param int|string $name
+     *
+     * @return mixed
      * @see Input::getRequiredArg()
      */
     public function getRequiredArg($name)
@@ -73,7 +82,10 @@ trait InputOutputAwareTrait
     }
 
     /**
-     * {@inheritdoc}
+     * @param array $names
+     * @param mixed  $default
+     *
+     * @return bool|mixed|null
      * @see Input::getSameArg()
      */
     public function getSameArg(array $names, $default = null)
@@ -101,7 +113,6 @@ trait InputOutputAwareTrait
 
     /**
      * {@inheritdoc}
-     * @throws InvalidArgumentException
      * @see Input::getRequiredOpt()
      */
     public function getRequiredOpt(string $name)
