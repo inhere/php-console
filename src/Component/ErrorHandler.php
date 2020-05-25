@@ -61,7 +61,7 @@ ERR;
         } else {
             // simple output
             $app->getOutput()->error('An error occurred! MESSAGE: ' . $e->getMessage());
-            $app->write("\nYou can use '--debug' to see error details.");
+            $app->write("\nYou can use '--debug 4' to see error details.");
         }
     }
 }

@@ -9,13 +9,9 @@ use Inhere\Console\Contract\RouterInterface;
 use Inhere\Console\Traits\NameAliasTrait;
 use Inhere\Console\Util\Helper;
 use InvalidArgumentException;
-use function array_filter;
 use function array_keys;
 use function array_merge;
-use function array_splice;
-use function array_values;
 use function class_exists;
-use function count;
 use function explode;
 use function in_array;
 use function is_int;
@@ -290,9 +286,9 @@ class Router implements RouterInterface
 
         // like 'home:index'
         if (strpos($realName, $sep) > 0) {
-            $input = array_values(array_filter(explode($sep, $realName)));
+            [$group, $action] = explode($sep, $realName, 2);
 
-            [$group, $action] = count($input) > 2 ? array_splice($input, 2) : $input;
+            $action = trim($action, ': ');
             // resolve alias
             $group = $this->resolveAlias($group);
         }
