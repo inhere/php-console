@@ -11,6 +11,7 @@ namespace Inhere\Console\IO;
 use InvalidArgumentException;
 use LogicException;
 use function array_filter;
+use function array_keys;
 use function array_merge;
 use function array_values;
 use function count;
@@ -317,6 +318,8 @@ class InputDefinition
      *
      * @param string|bool       $name        The option name, must is a string
      * @param string|array|null $shortcut    The shortcut (can be null)
+     *                                       - array: [a, b]
+     *                                       - string: 'a|b'
      * @param int               $mode        The option mode: One of the Input::OPT_* constants
      * @param string            $description A description text
      * @param mixed             $default     The default value (must be null for InputOption::OPT_BOOL)
@@ -327,8 +330,8 @@ class InputDefinition
      */
     public function addOption(
         string $name,
-        string $shortcut = null,
-        int $mode = null,
+        $shortcut = '',
+        int $mode = 0,
         string $description = '',
         $default = null
     ): self {
@@ -340,18 +343,13 @@ class InputDefinition
             throw new InvalidArgumentException('An option name cannot be empty.');
         }
 
-        if (empty($shortcut)) {
-            $shortcut = null;
-        }
-
-        if (null === $mode) {
+        if ($mode <= 0) {
             $mode = Input::OPT_BOOLEAN;
         } elseif (!is_int($mode) || $mode > 15 || $mode < 1) {
             throw new InvalidArgumentException(sprintf('Option mode "%s" is not valid.', $mode));
         }
 
         $isArray = $mode === Input::OPT_IS_ARRAY;
-
         if ($isArray && !$this->optionIsAcceptValue($mode)) {
             throw new InvalidArgumentException('Impossible to have an option mode VALUE_IS_ARRAY if the option does not accept a value.');
         }
@@ -438,6 +436,23 @@ class InputDefinition
     public function getOptions(): array
     {
         return $this->options;
+    }
+
+    /**
+     * Gets the name of options, contains short-name
+     *
+     * @return array[] key is name
+     */
+    public function getAllOptionNames(): array
+    {
+        $allNames = $this->shortcuts;
+        $longNames = array_keys($this->options);
+
+        foreach ($longNames as $name) {
+            $allNames[$name] = 1;
+        }
+
+        return $allNames;
     }
 
     /**

@@ -385,21 +385,24 @@ abstract class AbstractHandler implements CommandHandlerInterface
         $in->setArgs($args);
 
         // check options
-        $opts      = $missingOpts = [];
+        $opts = $missingOpts = [];
+
         $givenOpts = $in->getOptions();
-        $defOpts   = $def->getOptions();
+        $allDefOpts = $def->getAllOptionNames();
 
         // check unknown options
-        if ($unknown = array_diff_key($givenOpts, $defOpts)) {
+        if ($unknown = array_diff_key($givenOpts, $allDefOpts)) {
             $names = array_keys($unknown);
             $first = array_shift($names);
 
-            throw new InvalidArgumentException(sprintf('Input option is not exists (unknown: "%s").',
-                (isset($first[1]) ? '--' : '-') . $first));
+            $errMsg = sprintf('Input option is not exists (unknown: "%s").', (isset($first[1]) ? '--' : '-') . $first);
+            throw new InvalidArgumentException($errMsg);
         }
 
+        $defOpts = $def->getOptions();
         foreach ($defOpts as $name => $conf) {
             if (!$in->hasLOpt($name)) {
+                // TODO multi short: 'a|b|c'
                 if (($srt = $conf['shortcut']) && $in->hasSOpt($srt)) {
                     $opts[$name] = $in->sOpt($srt);
                 } elseif ($conf['required']) {
