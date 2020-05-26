@@ -53,6 +53,20 @@ abstract class AbstractApplication implements ApplicationInterface
         'list'    => 'List all group and alone commands',
     ];
 
+    /**
+     * @var int[]
+     */
+    protected static $globalOptionNames = [
+        'debug'          => 1,
+        'profile'        => 1,
+        'no-color'       => 1,
+        'h'              => 1,
+        'help'           => 1,
+        'V'              => 1,
+        'version'        => 1,
+        'no-interactive' => 1,
+    ];
+
     /** @var array */
     protected static $globalOptions = [
         '--debug'          => 'Setting the application runtime debug level(0 - 4)',
@@ -145,6 +159,16 @@ abstract class AbstractApplication implements ApplicationInterface
         }
 
         $this->registerErrorHandle();
+    }
+
+    /**
+     * @param string $name
+     *
+     * @return bool
+     */
+    public static function isGlobalOption(string $name): bool
+    {
+        return isset(self::$globalOptionNames[$name]);
     }
 
     /**

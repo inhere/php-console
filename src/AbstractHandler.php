@@ -384,20 +384,10 @@ abstract class AbstractHandler implements CommandHandlerInterface
 
         $in->setArgs($args);
 
+        $this->checkNotExistsOptions($def);
+
         // check options
         $opts = $missingOpts = [];
-
-        $givenOpts = $in->getOptions();
-        $allDefOpts = $def->getAllOptionNames();
-
-        // check unknown options
-        if ($unknown = array_diff_key($givenOpts, $allDefOpts)) {
-            $names = array_keys($unknown);
-            $first = array_shift($names);
-
-            $errMsg = sprintf('Input option is not exists (unknown: "%s").', (isset($first[1]) ? '--' : '-') . $first);
-            throw new InvalidArgumentException($errMsg);
-        }
 
         $defOpts = $def->getOptions();
         foreach ($defOpts as $name => $conf) {
@@ -421,6 +411,34 @@ abstract class AbstractHandler implements CommandHandlerInterface
         }
 
         return true;
+    }
+
+    private function checkNotExistsOptions(InputDefinition $def): void
+    {
+        $givenOpts = $this->input->getOptions();
+        $allDefOpts = $def->getAllOptionNames();
+
+        // check unknown options
+        if ($unknown = array_diff_key($givenOpts, $allDefOpts)) {
+            $names = array_keys($unknown);
+
+            // $first = array_shift($names);
+            $first = '';
+            foreach ($names as $name) {
+                if (!Application::isGlobalOption($name)) {
+                    $first = $name;
+                    break;
+                }
+            }
+
+            if (!$first) {
+                return;
+            }
+
+            $errMsg = sprintf('Input option is not exists (unknown: "%s").', (isset($first[1]) ? '--' : '-') . $first);
+            throw new InvalidArgumentException($errMsg);
+        }
+
     }
 
     /**************************************************************************
