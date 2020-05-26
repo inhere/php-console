@@ -21,58 +21,62 @@ class InputItem
     /**
      * @var string
      */
-    public $name;
+    private $name;
 
     /**
      * @var string
      */
-    public $description;
+    private $description;
 
     /**
      * @var int
      */
-    public $mode;
+    private $mode;
 
     /**
      * The argument data type. (eg: 'string', 'array', 'mixed')
      *
      * @var string
      */
-    public $type;
+    private $type;
 
     /**
-     * default value
+     * The default value
      *
      * @var mixed
      */
-    public $default;
+    private $default;
 
     /**
-     * @param string   $name
-     * @param int|null $mode
-     * @param string   $description
-     * @param null     $default
+     * @param string $name
+     * @param int    $mode see Input::ARG_* or Input::OPT_*
+     * @param string $description
+     * @param null   $default
      *
      * @return static
      */
-    public static function make(string $name, int $mode = null, string $description = '', $default = null)
+    public static function make(string $name, int $mode = 0, string $description = '', $default = null)
     {
         return new static($name, $mode, $description, $default);
     }
 
     /**
-     * class constructor.
+     * Class constructor.
      *
-     * @param string   $name
-     * @param int|null $mode
-     * @param string   $description
-     * @param mixed    $default The default value
-     *                          - for InputArgument::OPTIONAL mode only
+     * @param string $name
+     * @param int    $mode      see Input::ARG_* or Input::OPT_*
+     * @param string $description
+     * @param mixed  $default   The default value
+     *                          - for Input::ARG_OPTIONAL mode only
      *                          - must be null for InputOption::OPT_BOOL
      */
-    public function __construct(string $name, int $mode = null, string $description = '', $default = null)
+    public function __construct(string $name, int $mode = 0, string $description = '', $default = null)
     {
-        $this->mode = Input::ARG_IS_ARRAY;
+        $this->name = $name;
+        $this->mode = $mode;
+
+        $this->default = $default;
+        $this->setDescription($description);
     }
 
     /**
@@ -81,5 +85,85 @@ class InputItem
     public function isArray(): bool
     {
         return $this->mode === Input::ARG_IS_ARRAY;
+    }
+
+    /**
+     * @return string
+     */
+    public function getType(): string
+    {
+        return $this->type;
+    }
+
+    /**
+     * @param string $type
+     */
+    public function setType(string $type): void
+    {
+        $this->type = $type;
+    }
+
+    /**
+     * @return int
+     */
+    public function getMode(): int
+    {
+        return $this->mode;
+    }
+
+    /**
+     * @param int $mode
+     */
+    public function setMode(int $mode): void
+    {
+        $this->mode = $mode;
+    }
+
+    /**
+     * @return string
+     */
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    /**
+     * @param string $name
+     */
+    public function setName(string $name): void
+    {
+        $this->name = $name;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getDefault()
+    {
+        return $this->default;
+    }
+
+    /**
+     * @param mixed $default
+     */
+    public function setDefault($default): void
+    {
+        $this->default = $default;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDescription(): string
+    {
+        return $this->description;
+    }
+
+    /**
+     * @param string $description
+     */
+    public function setDescription(string $description): void
+    {
+        $this->description = $description;
     }
 }

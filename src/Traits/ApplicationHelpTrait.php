@@ -132,7 +132,7 @@ trait ApplicationHelpTrait
         }
 
         /** @var Output $output */
-        $output = $this->output;
+        // $output = $this->output;
         /** @var Router $router */
         $router = $this->getRouter();
         $script = $this->getScriptName();

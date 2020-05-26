@@ -192,15 +192,20 @@ abstract class AbstractHandler implements CommandHandlerInterface
      */
     protected function annotationVars(): array
     {
+        $fullCmd = $this->input->getFullCommand();
+        $binName = $this->input->getScriptName();
+
         // e.g: `more info see {name}:index`
         return [
             'name'        => self::getName(),
             'group'       => self::getName(),
             'workDir'     => $this->input->getPwd(),
             'script'      => $this->input->getScript(), // bin/app
-            'binName'     => $this->input->getScript(), // bin/app
+            'binName'     => $binName, // app
+            'scriptName'  => $binName, // app
             'command'     => $this->input->getCommand(), // demo OR home:test
-            'fullCommand' => $this->input->getFullCommand(),
+            'fullCmd'     => $fullCmd,
+            'fullCommand' => $fullCmd,
         ];
     }
 
@@ -342,10 +347,10 @@ abstract class AbstractHandler implements CommandHandlerInterface
             return true;
         }
 
-        $in        = $this->input;
-        $out       = $this->output;
-        $givenArgs = $errArgs = [];
+        $in  = $this->input;
+        $out = $this->output;
 
+        $givenArgs = $errArgs = [];
         foreach ($in->getArgs() as $key => $value) {
             if (is_int($key)) {
                 $givenArgs[$key] = $value;
@@ -360,7 +365,7 @@ abstract class AbstractHandler implements CommandHandlerInterface
         }
 
         $defArgs     = $def->getArguments();
-        $missingArgs = array_filter(array_keys($defArgs), function ($name, $key) use ($def, $givenArgs) {
+        $missingArgs = array_filter(array_keys($defArgs), static function ($name, $key) use ($def, $givenArgs) {
             return !array_key_exists($key, $givenArgs) && $def->argumentIsRequired($name);
         }, ARRAY_FILTER_USE_BOTH);
 
@@ -389,10 +394,8 @@ abstract class AbstractHandler implements CommandHandlerInterface
             $names = array_keys($unknown);
             $first = array_shift($names);
 
-            throw new InvalidArgumentException(sprintf(
-                'Input option is not exists (unknown: "%s").',
-                (isset($first[1]) ? '--' : '-') . $first
-            ));
+            throw new InvalidArgumentException(sprintf('Input option is not exists (unknown: "%s").',
+                (isset($first[1]) ? '--' : '-') . $first));
         }
 
         foreach ($defOpts as $name => $conf) {
@@ -539,13 +542,8 @@ abstract class AbstractHandler implements CommandHandlerInterface
         $ref  = new ReflectionClass($this);
         $name = $this->input->getCommand();
 
-        $this->logf(
-            Console::VERB_CRAZY,
-            'display help info for the method=%s, action=%s, class=%s',
-            $method,
-            $action,
-            static::class
-        );
+        $this->logf(Console::VERB_CRAZY, 'display help info for the method=%s, action=%s, class=%s', $method, $action,
+            static::class);
 
         if (!$ref->hasMethod($method)) {
             $this->write("The command [<info>$name</info>] don't exist in the group: " . static::getName());

@@ -28,12 +28,20 @@ abstract class AbstractInput implements InputInterface
     protected $pwd;
 
     /**
-     * the script name
+     * The script path
      * e.g `./bin/app` OR `bin/cli.php`
      *
      * @var string
      */
     protected $script;
+
+    /**
+     * The script name
+     * e.g `app` OR `cli.php`
+     *
+     * @var string
+     */
+    protected $scriptName;
 
     /**
      * the command name(Is first argument)
@@ -51,11 +59,18 @@ abstract class AbstractInput implements InputInterface
     protected $fullScript;
 
     /**
-     * raw argv data.
+     * Raw argv data.
      *
      * @var array
      */
     protected $tokens;
+
+    /**
+     * Same the $tokens but no $script
+     *
+     * @var array
+     */
+    protected $flags = [];
 
     /**
      * Input args data
@@ -680,6 +695,14 @@ abstract class AbstractInput implements InputInterface
     }
 
     /**
+     * @return string
+     */
+    public function getWorkDir(): string
+    {
+        return $this->getPwd();
+    }
+
+    /**
      * @param string $pwd
      */
     public function setPwd(string $pwd): void
@@ -701,6 +724,22 @@ abstract class AbstractInput implements InputInterface
     public function setScript(string $script): void
     {
         $this->script = $script;
+    }
+
+    /**
+     * @return string
+     */
+    public function getScriptName(): string
+    {
+        return $this->scriptName;
+    }
+
+    /**
+     * @return string
+     */
+    public function getBinName(): string
+    {
+        return $this->scriptName;
     }
 
     /**

@@ -137,9 +137,9 @@ class InputDefinition
      * Adds an argument.
      *
      * @param string $name        The argument name
-     * @param int    $mode        The argument mode: InputArgument::REQUIRED or InputArgument::OPTIONAL
+     * @param int    $mode        The argument mode: Input::ARG_REQUIRED or Input::ARG_OPTIONAL
      * @param string $description A description text
-     * @param mixed  $default     The default value (for InputArgument::OPTIONAL mode only)
+     * @param mixed  $default     The default value (for Input::ARG_OPTIONAL mode only)
      *
      * @return $this
      * @throws LogicException

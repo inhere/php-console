@@ -30,15 +30,23 @@ class ArrayInput extends Input
     {
         parent::__construct([], false);
 
-        $this->tokens     = $args;
-        $this->script     = array_shift($args);
-        $this->fullScript = implode(' ', $args);
-
         if ($parsing && $args) {
-            [$this->args, $this->sOpts, $this->lOpts] = Flags::parseArray($args);
-
-            // find command name
-            $this->findCommand();
+           $this->doParse($this->flags);
         }
+    }
+
+    /**
+     * @param array $args
+     */
+    protected function doParse(array $args): void
+    {
+        [
+            $this->args,
+            $this->sOpts,
+            $this->lOpts
+        ] = Flags::parseArray($args);
+
+        // find command name
+        $this->findCommand();
     }
 }

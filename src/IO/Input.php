@@ -11,6 +11,7 @@ namespace Inhere\Console\IO;
 use Toolkit\Cli\Flags;
 use function array_map;
 use function array_shift;
+use function basename;
 use function fgets;
 use function fwrite;
 use function implode;
@@ -48,21 +49,46 @@ class Input extends AbstractInput
     public function __construct(array $args = null, bool $parsing = true)
     {
         if (null === $args) {
-            $args = (array)$_SERVER['argv'];
+            $args = $_SERVER['argv'];
         }
 
-        $this->pwd        = $this->getPwd();
-        $this->tokens     = $args;
-        $this->script     = array_shift($args);
-        $this->fullScript = implode(' ', $args);
+        $this->collectInfo($args);
 
         if ($parsing) {
-            // list($this->args, $this->sOpts, $this->lOpts) = InputParser::fromArgv($args);
-            [$this->args, $this->sOpts, $this->lOpts] = Flags::parseArgv($args);
-
-            // find command name
-            $this->findCommand();
+            $this->doParse($this->flags);
         }
+    }
+
+    /**
+     * @param array $args
+     */
+    protected function collectInfo(array $args): void
+    {
+        $this->getPwd();
+
+        $this->tokens = $args;
+        $this->script = array_shift($args);
+        $this->flags  = $args; // no script
+        // bin name
+        $this->scriptName = basename($this->script);
+        // full script
+        $this->fullScript = implode(' ', $args);
+
+    }
+
+    /**
+     * @param array $args
+     */
+    protected function doParse(array $args): void
+    {
+        [
+            $this->args,
+            $this->sOpts,
+            $this->lOpts
+        ] = Flags::parseArgv($args);
+
+        // find command name
+        $this->findCommand();
     }
 
     /**
@@ -120,22 +146,6 @@ class Input extends AbstractInput
     public function getFullCommand(): string
     {
         return $this->script . ' ' . $this->command;
-    }
-
-    /**
-     * @return string
-     */
-    public function getScriptName(): string
-    {
-        return $this->script;
-    }
-
-    /**
-     * @return string
-     */
-    public function getBinName(): string
-    {
-        return $this->script;
     }
 
     /**

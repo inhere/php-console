@@ -17,6 +17,8 @@ namespace Inhere\Console\IO\Input;
 class InputArgument extends InputItem
 {
     /**
+     * The argument position
+     *
      * @var int
      */
     private $index = 0;

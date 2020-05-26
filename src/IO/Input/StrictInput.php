@@ -6,8 +6,9 @@
  * Time: 18:39
  */
 
-namespace Inhere\Console\IO;
+namespace Inhere\Console\IO\Input;
 
+use Inhere\Console\IO\Input;
 use function array_shift;
 use function strpos;
 
