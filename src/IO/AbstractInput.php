@@ -11,6 +11,7 @@ namespace Inhere\Console\IO;
 use InvalidArgumentException;
 use function array_merge;
 use function getcwd;
+use function is_array;
 use function is_bool;
 use function is_int;
 use function trim;
@@ -250,16 +251,63 @@ abstract class AbstractInput implements InputInterface
     }
 
     /**
+     * Get an string argument value
+     *
+     * @param string|int $key
+     * @param string $default
+     *
+     * @return string
+     */
+    public function getStringArg($key, string $default = ''): string
+    {
+        return (string)$this->get($key, $default);
+    }
+
+    /**
+     * Get an int argument value
+     *
      * @param string|int $key
      * @param int        $default
      *
      * @return int
      */
-    public function getInt($key, $default = 0): int
+    public function getInt($key, int $default = 0): int
+    {
+        return $this->getIntArg($key, $default);
+    }
+
+    /**
+     * Get an int argument value
+     *
+     * @param string|int $key
+     * @param int        $default
+     *
+     * @return int
+     */
+    public function getIntArg($key, int $default = 0): int
     {
         $value = $this->get($key);
 
-        return $value === null ? (int)$default : (int)$value;
+        return $value === null ? $default : (int)$value;
+    }
+
+    /**
+     * Get an array argument value
+     *
+     * @param string|int $key
+     * @param array $default
+     *
+     * @return array
+     */
+    public function getArrayArg($key, array $default = []): array
+    {
+        $value = $this->get($key);
+
+        if (is_array($value)) {
+            return $value;
+        }
+
+        return $value ? [$value] : $default;
     }
 
     /**
@@ -500,15 +548,33 @@ abstract class AbstractInput implements InputInterface
     }
 
     /**
-     * check short-opt exists
+     * Check short-opt exists
      *
-     * @param $name
+     * @param string $name
      *
      * @return bool
      */
     public function hasSOpt(string $name): bool
     {
         return isset($this->sOpts[$name]);
+    }
+
+    /**
+     * Check multi short-opt exists
+     *
+     * @param string[] $names
+     *
+     * @return string
+     */
+    public function findOneShortOpts(array $names): string
+    {
+        foreach ($names as $name) {
+            if (isset($this->sOpts[$name])) {
+                return $name;
+            }
+        }
+
+        return '';
     }
 
     /**

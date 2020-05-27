@@ -34,6 +34,7 @@ use function array_shift;
 use function cli_set_process_title;
 use function count;
 use function error_get_last;
+use function explode;
 use function function_exists;
 use function implode;
 use function is_array;
@@ -392,8 +393,9 @@ abstract class AbstractHandler implements CommandHandlerInterface
         $defOpts = $def->getOptions();
         foreach ($defOpts as $name => $conf) {
             if (!$in->hasLOpt($name)) {
-                // TODO multi short: 'a|b|c'
-                if (($srt = $conf['shortcut']) && $in->hasSOpt($srt)) {
+                // support multi short: 'a|b|c'
+                $shortNames = $conf['shortcut'] ? explode('|', $conf['shortcut']) : [];
+                if ($srt = $in->findOneShortOpts($shortNames)) {
                     $opts[$name] = $in->sOpt($srt);
                 } elseif ($conf['required']) {
                     $missingOpts[] = "--{$name}" . ($srt ? "|-{$srt}" : '');

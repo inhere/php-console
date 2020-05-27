@@ -20,7 +20,6 @@ use function is_array;
 use function is_int;
 use function preg_split;
 use function sprintf;
-use function strpos;
 use function strtoupper;
 use function trim;
 
@@ -39,25 +38,44 @@ class InputDefinition
         'description' => '',
     ];
 
-    /** @var string|array */
+    /**
+     * @var string|array
+     */
     private $example;
 
-    /** @var string */
+    /**
+     * @var string
+     */
     private $description;
 
-    /** @var array[] */
+    /**
+     * @var array[]
+     */
     private $arguments;
 
+    /**
+     * @var int
+     */
     private $requiredCount = 0;
 
-    private $hasOptional = false;
+    /**
+     * @var bool
+     */
+    private $hasOptionalArgument = false;
 
+    /**
+     * @var bool
+     */
     private $hasAnArrayArgument = false;
 
-    /** @var array[] */
+    /**
+     * @var array[]
+     */
     private $options;
 
-    /** @var array */
+    /**
+     * @var array
+     */
     private $shortcuts;
 
     /**
@@ -138,16 +156,17 @@ class InputDefinition
      * Adds an argument.
      *
      * @param string $name        The argument name
-     * @param int    $mode        The argument mode: Input::ARG_REQUIRED or Input::ARG_OPTIONAL
+     * @param int    $mode        The argument mode flags. eg: Input::ARG_REQUIRED, Input::ARG_OPTIONAL
+     *                            allow more flags, eg: Input::ARG_REQUIRED|Input::ARG_IS_ARRAY
      * @param string $description A description text
      * @param mixed  $default     The default value (for Input::ARG_OPTIONAL mode only)
      *
      * @return $this
      * @throws LogicException
      */
-    public function addArgument(string $name, int $mode = null, string $description = '', $default = null): self
+    public function addArgument(string $name, int $mode = 0, string $description = '', $default = null): self
     {
-        if (null === $mode) {
+        if (0 === $mode) {
             $mode = Input::ARG_OPTIONAL;
         } elseif (!is_int($mode) || $mode > 7 || $mode < 1) {
             throw new InvalidArgumentException(sprintf('Argument mode "%s" is not valid.', $mode));
@@ -161,14 +180,16 @@ class InputDefinition
             throw new LogicException('Cannot add an argument after an array argument.');
         }
 
-        if (($required = $mode === Input::ARG_REQUIRED) && $this->hasOptional) {
+        $required = ($mode & Input::ARG_REQUIRED) > 0;
+        if ($required && $this->hasOptionalArgument) {
             throw new LogicException('Cannot add a required argument after an optional one.');
         }
 
-        if ($isArray = ($mode === Input::ARG_IS_ARRAY)) {
-            if (!$this->argumentIsAcceptValue($mode)) {
-                throw new InvalidArgumentException('Impossible to have an option mode ARG_IS_ARRAY if the option does not accept a value.');
-            }
+        $isArray = ($mode & Input::ARG_IS_ARRAY) > 0;
+        if ($isArray) {
+            // if (false === $this->argumentIsAcceptValue($mode)) {
+            //     throw new InvalidArgumentException('Impossible to have an option mode ARG_IS_ARRAY if the option does not accept a value.');
+            // }
 
             $this->hasAnArrayArgument = true;
 
@@ -186,7 +207,7 @@ class InputDefinition
 
             ++$this->requiredCount;
         } else {
-            $this->hasOptional = true;
+            $this->hasOptionalArgument = true;
         }
 
         $this->arguments[$name] = [
@@ -335,10 +356,7 @@ class InputDefinition
         string $description = '',
         $default = null
     ): self {
-        if (0 === strpos($name, '-')) {
-            $name = trim($name, '-');
-        }
-
+        $name = trim($name, '-');
         if (empty($name)) {
             throw new InvalidArgumentException('An option name cannot be empty.');
         }
@@ -351,7 +369,7 @@ class InputDefinition
 
         $isArray = $mode === Input::OPT_IS_ARRAY;
         if ($isArray && !$this->optionIsAcceptValue($mode)) {
-            throw new InvalidArgumentException('Impossible to have an option mode VALUE_IS_ARRAY if the option does not accept a value.');
+            throw new InvalidArgumentException('Impossible to have an option mode OPT_IS_ARRAY if the option does not accept a value.');
         }
 
         if (isset($this->options[$name])) {
@@ -445,7 +463,7 @@ class InputDefinition
      */
     public function getAllOptionNames(): array
     {
-        $allNames = $this->shortcuts;
+        $allNames  = $this->shortcuts;
         $longNames = array_keys($this->options);
 
         foreach ($longNames as $name) {
@@ -521,12 +539,8 @@ class InputDefinition
                 $value = '';
 
                 if ($this->optionIsAcceptValue($option['mode'])) {
-                    $value = sprintf(
-                        ' %s%s%s',
-                        $option['optional'] ? '[' : '',
-                        strtoupper($name),
-                        $option['optional'] ? ']' : ''
-                    );
+                    $value = sprintf(' %s%s%s', $option['optional'] ? '[' : '', strtoupper($name),
+                        $option['optional'] ? ']' : '');
                 }
 
                 $shortcut   = $option['shortcut'] ? sprintf('-%s, ', $option['shortcut']) : '    ';

@@ -108,8 +108,8 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
      */
     protected function groupOptions(): array
     {
-        return [// '--skip-invalid' => 'Whether ignore invalid arguments and options, when use input definition',
-        ];
+        // ['--skip-invalid' => 'Whether ignore invalid arguments and options, when use input definition',]
+        return [];
     }
 
     /**
