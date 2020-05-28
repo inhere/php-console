@@ -30,7 +30,6 @@ use function array_filter;
 use function array_key_exists;
 use function array_keys;
 use function array_merge;
-use function array_shift;
 use function cli_set_process_title;
 use function count;
 use function error_get_last;
@@ -208,7 +207,7 @@ abstract class AbstractHandler implements CommandHandlerInterface
             'command'     => $command, // demo OR home:test
             'fullCmd'     => $fullCmd, // bin/app demo OR bin/app home:test
             'fullCommand' => $fullCmd,
-            'binWithCmd' => $binName . ' ' . $command,
+            'binWithCmd'  => $binName . ' ' . $command,
         ];
     }
 
@@ -419,7 +418,7 @@ abstract class AbstractHandler implements CommandHandlerInterface
 
     private function checkNotExistsOptions(InputDefinition $def): void
     {
-        $givenOpts = $this->input->getOptions();
+        $givenOpts  = $this->input->getOptions();
         $allDefOpts = $def->getAllOptionNames();
 
         // check unknown options
@@ -596,43 +595,45 @@ abstract class AbstractHandler implements CommandHandlerInterface
             return 0;
         }
 
-        $doc     = $ref->getMethod($method)->getDocComment();
-        $tags    = PhpDoc::getTags($this->parseCommentsVars($doc));
-        $isAlone = $ref->isSubclassOf(CommandInterface::class);
-        $help    = [];
+        $help = [];
+        $doc  = $ref->getMethod($method)->getDocComment();
+        $tags = PhpDoc::getTags($this->parseCommentsVars($doc));
 
         if ($aliases) {
-            $realName         = $action ?: self::getName();
+            $realName = $action ?: static::getName();
+            // command name
             $help['Command:'] = sprintf('%s(alias: <info>%s</info>)', $realName, implode(',', $aliases));
         }
 
+        // is an command object
+        $isCommand = $ref->isSubclassOf(CommandInterface::class);
         foreach (array_keys(self::$annotationTags) as $tag) {
             if (empty($tags[$tag]) || !is_string($tags[$tag])) {
                 // for alone command
-                if ($tag === 'description' && $isAlone) {
-                    $help['Description:'] = self::getDescription();
+                if ($tag === 'description' && $isCommand) {
+                    $help['Description:'] = static::getDescription();
                     continue;
                 }
 
                 if ($tag === 'usage') {
-                    $help['Usage:'] = $this->commentsVars['fullCommand'] . ' [--options ...] [arguments ...]';
+                    $help['Usage:'] = $this->commentsVars['binWithCmd'] . ' [--options ...] [arguments ...]';
                 }
 
                 continue;
             }
 
             // $msg = trim($tags[$tag]);
-            $msg = $tags[$tag];
-            $tag = ucfirst($tag);
+            $message   = $tags[$tag];
+            $labelName = ucfirst($tag) . ':';
 
             // for alone command
-            if (!$msg && $tag === 'description' && $isAlone) {
-                $msg = self::getDescription();
+            if ($tag === 'description' && $isCommand) {
+                $message = static::getDescription();
             } else {
-                $msg = preg_replace('#(\n)#', '$1 ', $msg);
+                $message = preg_replace('#(\n)#', '$1 ', $message);
             }
 
-            $help[$tag . ':'] = $msg;
+            $help[$labelName] = $message;
         }
 
         if (isset($help['Description:'])) {
