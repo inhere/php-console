@@ -195,6 +195,7 @@ abstract class AbstractHandler implements CommandHandlerInterface
     {
         $fullCmd = $this->input->getFullCommand();
         $binName = $this->input->getScriptName();
+        $command = $this->input->getCommand();
 
         // e.g: `more info see {name}:index`
         return [
@@ -204,9 +205,10 @@ abstract class AbstractHandler implements CommandHandlerInterface
             'script'      => $this->input->getScript(), // bin/app
             'binName'     => $binName, // app
             'scriptName'  => $binName, // app
-            'command'     => $this->input->getCommand(), // demo OR home:test
-            'fullCmd'     => $fullCmd,
+            'command'     => $command, // demo OR home:test
+            'fullCmd'     => $fullCmd, // bin/app demo OR bin/app home:test
             'fullCommand' => $fullCmd,
+            'binWithCmd' => $binName . ' ' . $command,
         ];
     }
 
@@ -529,6 +531,21 @@ abstract class AbstractHandler implements CommandHandlerInterface
 
         // if has InputDefinition object. (The comment of the command will not be parsed and used at this time.)
         $help = $definition->getSynopsis();
+        // parse example
+        $example = $help['example:'];
+        if (!empty($example)) {
+            if (is_string($example)) {
+                $help['example:'] = $this->parseCommentsVars($example);
+            } elseif (is_array($example)) {
+                foreach ($example as &$item) {
+                    $item = $this->parseCommentsVars($item);
+                }
+                unset($item);
+            } else {
+                $help['example:'] = '';
+            }
+        }
+
         // build usage
         $help['usage:'] = sprintf('%s %s %s', $this->getScriptName(), $this->getCommandName(), $help['usage:']);
         // align global options

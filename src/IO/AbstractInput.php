@@ -407,7 +407,33 @@ abstract class AbstractInput implements InputInterface
     }
 
     /**
-     * get (long/short)opt value(bool)
+     * Get an string option(long/short) value
+     *
+     * @param string $name
+     * @param string $default
+     *
+     * @return string
+     */
+    public function getStringOpt(string $name, string $default = ''): string
+    {
+        return (string)$this->getOpt($name, $default);
+    }
+
+    /**
+     * Get an int option(long/short) value
+     *
+     * @param string $name
+     * @param int    $default
+     *
+     * @return int
+     */
+    public function getIntOpt(string $name, int $default = 0): int
+    {
+        return (int)$this->getOpt($name, $default);
+    }
+
+    /**
+     * Get (long/short)option value(bool)
      * eg: -h --help
      *
      * @param string $name

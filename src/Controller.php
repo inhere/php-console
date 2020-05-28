@@ -50,7 +50,11 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
         '--show-disabled' => 'Whether display disabled commands',
     ];
 
-    /** @var string Action name, no suffix. */
+    /**
+     * Action name, no suffix.
+     *
+     * @var string
+     */
     private $action;
 
     /** @var string */

@@ -573,12 +573,17 @@ class InputDefinition
             $args[$name] = $des;
         }
 
+        $example = $this->example;
+        if ($this->example) {
+
+        }
+
         return [
             $this->description,
             'usage:'          => implode(' ', $elements),
             'options:'        => $opts,
             'arguments:'      => $args,
-            'example:'        => $this->example,
+            'example:'        => $example,
             'global options:' => '',
         ];
     }
