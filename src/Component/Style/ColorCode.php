@@ -21,7 +21,7 @@ use function str_replace;
  *
  * @package Inhere\Console\Component\Style
  */
-class Color
+class ColorCode
 {
     /** Foreground base value */
     public const FG_BASE = 30;
@@ -108,10 +108,10 @@ class Color
      * @param array  $options
      * @param bool   $extra
      *
-     * @return Color
+     * @return ColorCode
      * @throws InvalidArgumentException
      */
-    public static function make($fg = '', $bg = '', array $options = [], bool $extra = false): Color
+    public static function make($fg = '', $bg = '', array $options = [], bool $extra = false): ColorCode
     {
         return new self($fg, $bg, $options, $extra);
     }

@@ -12,6 +12,7 @@ namespace Inhere\Console\Component\Style;
 
 use InvalidArgumentException;
 use Toolkit\Cli\Cli;
+use Toolkit\Cli\Color;
 use Toolkit\Cli\ColorTag;
 use function array_key_exists;
 use function array_keys;
@@ -20,7 +21,6 @@ use function array_values;
 use function is_array;
 use function is_object;
 use function sprintf;
-use function str_replace;
 use function strpos;
 
 /**
@@ -41,31 +41,31 @@ class Style
     /**
      * there are some default style tags
      */
-    public const NORMAL   = 'normal';
+    public const NORMAL = 'normal';
 
-    public const FAINTLY  = 'faintly';
+    public const FAINTLY = 'faintly';
 
-    public const BOLD     = 'bold';
+    public const BOLD = 'bold';
 
-    public const NOTICE   = 'notice';
+    public const NOTICE = 'notice';
 
-    public const PRIMARY  = 'primary';
+    public const PRIMARY = 'primary';
 
-    public const SUCCESS  = 'success';
+    public const SUCCESS = 'success';
 
-    public const INFO     = 'info';
+    public const INFO = 'info';
 
-    public const NOTE     = 'note';
+    public const NOTE = 'note';
 
-    public const WARNING  = 'warning';
+    public const WARNING = 'warning';
 
-    public const COMMENT  = 'comment';
+    public const COMMENT = 'comment';
 
     public const QUESTION = 'question';
 
-    public const DANGER   = 'danger';
+    public const DANGER = 'danger';
 
-    public const ERROR    = 'error';
+    public const ERROR = 'error';
 
     /**
      * Regex to match tags
@@ -89,7 +89,7 @@ class Style
     /**
      * Array of Color objects
      *
-     * @var Color[]
+     * @var ColorCode[]
      */
     private $styles = [];
 
@@ -223,33 +223,16 @@ class Style
             $key = $matches[1][$i];
 
             if (array_key_exists($key, $this->styles)) {
-                $text = $this->replaceColor($text, $key, $matches[2][$i], (string)$this->styles[$key]);
-
-            /** Custom style format @see Color::makeByString() */
+                $text = ColorTag::replaceColor($text, $key, $matches[2][$i], (string)$this->styles[$key]);
+            } elseif (isset(Color::STYLES[$key])) {
+                $text = ColorTag::replaceColor($text, $key, $matches[2][$i], Color::STYLES[$key]);
+                /** Custom style format @see ColorCode::fromString() */
             } elseif (strpos($key, '=')) {
-                $text = $this->replaceColor($text, $key, $matches[2][$i], (string)Color::makeByString($key));
+                $text = ColorTag::replaceColor($text, $key, $matches[2][$i], (string)ColorCode::makeByString($key));
             }
         }
 
         return $text;
-    }
-
-    /**
-     * Replace color tags in a string.
-     *
-     * @param string $text
-     * @param string $tag   The matched tag.
-     * @param string $match The match.
-     * @param string $style The color style to apply.
-     *
-     * @return  string
-     */
-    protected function replaceColor($text, $tag, $match, $style): string
-    {
-        $replace = self::$noColor ? $match : sprintf("\033[%sm%s\033[0m", $style, $match);
-
-        return str_replace("<$tag>$match</$tag>", $replace, $text);
-        // return sprintf("\033[%sm%s\033[%sm", implode(';', $setCodes), $text, implode(';', $unsetCodes));
     }
 
     /**
@@ -271,12 +254,12 @@ class Style
     /**
      * Add a style.
      *
-     * @param string             $name
-     * @param string|Color|array $fg      前景色|Color对象|也可以是style配置数组(@see self::addByArray())
-     *                                    当它为Color对象或配置数组时，后面两个参数无效
-     * @param string             $bg      背景色
-     * @param array              $options 其它选项
-     * @param bool               $extra
+     * @param string                 $name
+     * @param string|ColorCode|array $fg      前景色|Color对象|也可以是style配置数组(@see self::addByArray())
+     *                                        当它为Color对象或配置数组时，后面两个参数无效
+     * @param string                 $bg      背景色
+     * @param array                  $options 其它选项
+     * @param bool                   $extra
      *
      * @return $this
      */
@@ -286,10 +269,10 @@ class Style
             return $this->addByArray($name, $fg);
         }
 
-        if (is_object($fg) && $fg instanceof Color) {
+        if (is_object($fg) && $fg instanceof ColorCode) {
             $this->styles[$name] = $fg;
         } else {
-            $this->styles[$name] = Color::make($fg, $bg, $options, $extra);
+            $this->styles[$name] = ColorCode::make($fg, $bg, $options, $extra);
         }
 
         return $this;
@@ -320,9 +303,10 @@ class Style
         ];
 
         $config = array_merge($style, $styleConfig);
+        // expand
         [$fg, $bg, $extra, $options] = array_values($config);
 
-        $this->styles[$name] = Color::make($fg, $bg, $options, (bool)$extra);
+        $this->styles[$name] = ColorCode::make($fg, $bg, $options, (bool)$extra);
 
         return $this;
     }
@@ -354,9 +338,9 @@ class Style
     /**
      * @param $name
      *
-     * @return Color|null
+     * @return ColorCode|null
      */
-    public function getStyle($name): ?Color
+    public function getStyle($name): ?ColorCode
     {
         if (!isset($this->styles[$name])) {
             return null;
@@ -397,7 +381,7 @@ class Style
      */
     public static function isNoColor(): bool
     {
-        return (bool)self::$noColor;
+        return Color::isNoColor();
     }
 
     /**
@@ -407,6 +391,6 @@ class Style
      */
     public static function setNoColor($noColor = true): void
     {
-        self::$noColor = (bool)$noColor;
+        Color::setNoColor($noColor);
     }
 }

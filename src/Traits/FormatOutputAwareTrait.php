@@ -96,6 +96,15 @@ trait FormatOutputAwareTrait
     }
 
     /**
+     * @param string $format
+     * @param mixed  ...$args
+     */
+    public function printf(string $format, ...$args): void
+    {
+        Console::printf($format, ...$args);
+    }
+
+    /**
      * @param string|mixed $text
      * @param bool         $quit
      * @param array        $opts
