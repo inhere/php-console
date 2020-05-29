@@ -34,9 +34,17 @@ trait InputOutputAwareTrait
     /**
      * @return string
      */
-    public function getScriptName(): string
+    public function getScript(): string
     {
         return $this->input->getScript();
+    }
+
+    /**
+     * @return string
+     */
+    public function getScriptName(): string
+    {
+        return $this->input->getScriptName();
     }
 
     /**

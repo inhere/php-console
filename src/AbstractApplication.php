@@ -96,6 +96,7 @@ abstract class AbstractApplication implements ApplicationInterface
         'updateAt'     => '2019.01.01',
         'rootPath'     => '',
         'strictMode'   => false,
+        'interactive'  => true,
         'hideRootPath' => true,
 
         // 'timeZone' => 'Asia/Shanghai',

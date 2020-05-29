@@ -96,19 +96,19 @@ trait ApplicationHelpTrait
             return;
         }
 
-        $sep    = $this->delimiter;
-        $script = $in->getScript();
+        $delimiter = $this->delimiter;
+        $binName   = $in->getScriptName();
 
         /** @var Output $out */
         $out = $this->output;
         $out->helpPanel([
-            'usage'   => "$script <info>{command}</info> [--opt -v -h ...] [arg0 arg1 arg2=value2 ...]",
+            'usage'   => "$binName <info>{command}</info> [--opt -v -h ...] [arg0 arg1 arg2=value2 ...]",
             'example' => [
-                "$script test (run a independent command)",
-                "$script home{$sep}index (run a command of the group)",
-                "$script help {command} (see a command help information)",
-                "$script home{$sep}index -h (see a command help of the group)",
-                "$script --auto-completion --shell-env [zsh|bash] [--gen-file stdout]",
+                "$binName test (run a independent command)",
+                "$binName home{$delimiter}index (run a command of the group)",
+                "$binName help {command} (see a command help information)",
+                "$binName home{$delimiter}index -h (see a command help of the group)",
+                "$binName --auto-completion --shell-env [zsh|bash] [--gen-file stdout]",
             ]
         ]);
     }
@@ -131,11 +131,9 @@ trait ApplicationHelpTrait
             return;
         }
 
-        /** @var Output $output */
-        // $output = $this->output;
+        /** @var Output $output */ // $output = $this->output;
         /** @var Router $router */
         $router = $this->getRouter();
-        $script = $this->getScriptName();
 
         $hasGroup    = $hasCommand = false;
         $groupArr    = $commandArr = [];
@@ -218,11 +216,13 @@ trait ApplicationHelpTrait
             Console::writeln(sprintf('%s%s' . PHP_EOL, $appDesc, $appVer ? " (Version: <info>$appVer</info>)" : ''));
         }
 
+        $scriptName = $this->getScriptName();
+
         // built in options
         $internalOptions = FormatUtil::alignOptions(self::$globalOptions);
 
         Show::mList([
-            'Usage:'              => "$script <info>{command}</info> [--opt -v -h ...] [arg0 arg1 arg2=value2 ...]",
+            'Usage:'              => "$scriptName <info>{COMMAND}</info> [--opt -v -h ...] [arg0 arg1 arg2=value2 ...]",
             'Options:'            => $internalOptions,
             'Internal Commands:'  => $internalCommands,
             'Available Commands:' => array_merge($groupArr, $commandArr),
@@ -231,7 +231,7 @@ trait ApplicationHelpTrait
         ]);
 
         unset($groupArr, $commandArr, $internalCommands);
-        Console::write("More command information, please use: <cyan>$script {command} -h</cyan>");
+        Console::write("More command information, please use: <cyan>$scriptName {command} -h</cyan>");
         Console::flushBuffer();
     }
 
@@ -265,11 +265,8 @@ trait ApplicationHelpTrait
 
         if ($shellEnv === 'bash') {
             $tplFile = $tplDir . '/bash-completion.tpl';
-            $list    = array_merge(
-                $router->getCommandNames(),
-                $router->getControllerNames(),
-                $this->getInternalCommands()
-            );
+            $list    = array_merge($router->getCommandNames(), $router->getControllerNames(),
+                $this->getInternalCommands());
         } else {
             $glue    = PHP_EOL;
             $list    = [];

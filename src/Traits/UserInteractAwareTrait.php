@@ -32,7 +32,12 @@ use function method_exists;
 trait UserInteractAwareTrait
 {
     /**
-     * @inheritdoc
+     * @param string       $description
+     * @param string|array $options Option data
+     * @param string|int   $default Default option
+     * @param bool         $allowExit
+     *
+     * @return string
      * @see Interact::choice()
      */
     public function select(string $description, $options, $default = null, $allowExit = true): string
@@ -41,7 +46,12 @@ trait UserInteractAwareTrait
     }
 
     /**
-     * @inheritdoc
+     * @param string       $description
+     * @param string|array $options Option data
+     * @param string|int   $default Default option
+     * @param bool         $allowExit
+     *
+     * @return string
      * @see Interact::choice()
      */
     public function choice(string $description, $options, $default = null, $allowExit = true): string
@@ -50,7 +60,10 @@ trait UserInteractAwareTrait
     }
 
     /**
-     * @inheritdoc
+     * @param string $question
+     * @param bool   $default
+     *
+     * @return bool
      * @see Interact::confirm()
      */
     public function confirm(string $question, bool $default = true): bool
@@ -59,7 +72,11 @@ trait UserInteractAwareTrait
     }
 
     /**
-     * @inheritdoc
+     * @param string       $question
+     * @param string       $default
+     * @param Closure|null $validator
+     *
+     * @return string|null
      * @see Interact::question()
      */
     public function ask(string $question, string $default = '', Closure $validator = null): ?string
@@ -67,13 +84,25 @@ trait UserInteractAwareTrait
         return $this->question($question, $default, $validator);
     }
 
+    /**
+     * @param string       $question
+     * @param string       $default
+     * @param Closure|null $validator
+     *
+     * @return string|null
+     */
     public function question(string $question, string $default = '', Closure $validator = null): ?string
     {
         return Interact::question($question, $default, $validator);
     }
 
     /**
-     * @inheritdoc
+     * @param string       $question
+     * @param string       $default
+     * @param Closure|null $validator
+     * @param int          $times
+     *
+     * @return string|null
      * @see Interact::limitedAsk()
      */
     public function limitedAsk(string $question, string $default = '', Closure $validator = null, $times = 3): ?string
