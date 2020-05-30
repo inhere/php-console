@@ -163,7 +163,7 @@ trait InputOutputAwareTrait
     }
 
     /**
-     * @return Output|InputInterface
+     * @return Input|InputInterface
      */
     public function getInput(): InputInterface
     {

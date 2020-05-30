@@ -90,9 +90,12 @@ trait SimpleEventTrait
         }
 
         // call event handlers of the event.
+        /** @var mixed $return */
+        $return = true;
         foreach ((array)self::$eventHandlers[$event] as $cb) {
+            $return = $cb(...$args);
             // return FALSE to stop go on handle.
-            if (false === $cb(...$args)) {
+            if (false === $return) {
                 break;
             }
         }
@@ -102,7 +105,7 @@ trait SimpleEventTrait
             return $this->off($event);
         }
 
-        return true;
+        return (bool)$return;
     }
 
     /**

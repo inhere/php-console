@@ -259,20 +259,25 @@ class Application extends AbstractApplication
      */
     public function dispatch(string $name, bool $standAlone = false)
     {
-        $this->logf(Console::VERB_DEBUG, 'begin dispatch command - %s', $name);
+        $this->logf(Console::VERB_DEBUG, 'begin dispatch command: %s', $name);
 
         // match handler by input name
         $info = $this->getRouter()->match($name);
 
         // command not found
-        if (!$info && true !== $this->fire(self::ON_NOT_FOUND, $this)) {
-            $this->output->liteError("The command '{$name}' is not exists in the console application!");
+        if (!$info) {
+            if (true === $this->fire(self::ON_NOT_FOUND, $name, $this)) {
+                $this->logf(Console::VERB_DEBUG, 'not found handle by user, command: %s', $name);
+                return 0;
+            }
+
+            $this->output->error("The command '{$name}' is not exists!");
 
             $commands = $this->getRouter()->getAllNames();
 
             // find similar command names by similar_text()
             if ($similar = Helper::findSimilar($name, $commands)) {
-                $this->write(sprintf("\nMaybe what you mean is:\n    <info>%s</info>", implode(', ', $similar)));
+                $this->output->printf("\nMaybe what you mean is:\n    <info>%s</info>", implode(', ', $similar));
             } else {
                 $this->showCommandList();
             }

@@ -84,15 +84,12 @@ trait FormatOutputAwareTrait
     }
 
     /**
-     * @param string|mixed $text
-     * @param bool         $quit
-     * @param array        $opts
-     *
-     * @return int
+     * @param string $format
+     * @param mixed  ...$args
      */
-    public function writeln($text, $quit = false, array $opts = []): int
+    public function writef(string $format, ...$args): void
     {
-        return Console::writeln($text, $quit, $opts);
+        Console::printf($format, ...$args);
     }
 
     /**
@@ -102,6 +99,18 @@ trait FormatOutputAwareTrait
     public function printf(string $format, ...$args): void
     {
         Console::printf($format, ...$args);
+    }
+
+    /**
+     * @param string|mixed $text
+     * @param bool         $quit
+     * @param array        $opts
+     *
+     * @return int
+     */
+    public function writeln($text, $quit = false, array $opts = []): int
+    {
+        return Console::writeln($text, $quit, $opts);
     }
 
     /**
