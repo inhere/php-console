@@ -739,7 +739,21 @@ abstract class AbstractHandler implements CommandHandlerInterface
     }
 
     /**
-     * get current debug level value
+     * @return bool
+     */
+    public function isInteractive(): bool
+    {
+        if ($this->app) {
+            return $this->app->isInteractive();
+        }
+
+        $value = (bool)$this->input->getLongOpt('no-interactive', false);
+
+        return $value === false;
+    }
+
+    /**
+     * Get current debug level value
      *
      * @return int
      */

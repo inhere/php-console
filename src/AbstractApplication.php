@@ -584,8 +584,9 @@ abstract class AbstractApplication implements ApplicationInterface
     public function isInteractive(): bool
     {
         $key = 'no-interactive';
+        $val = (bool)$this->input->getOpt($key, $this->getParam($key, true));
 
-        return (bool)$this->input->getOpt($key, $this->getParam($key, true));
+        return $val === false;
     }
 
     /**
