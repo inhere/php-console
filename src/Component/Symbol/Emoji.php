@@ -9,7 +9,6 @@
 namespace Inhere\Console\Component\Symbol;
 
 use ReflectionClass;
-use ReflectionException;
 
 /**
  * Class Emoji

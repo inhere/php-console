@@ -279,7 +279,9 @@ class Application extends AbstractApplication
             if ($similar = Helper::findSimilar($name, $commands)) {
                 $this->output->printf("\nMaybe what you mean is:\n    <info>%s</info>", implode(', ', $similar));
             } else {
-                $this->showCommandList();
+                // $this->showCommandList();
+                $scriptName = $this->getScriptName();
+                $this->output->colored("\nPlease use '$scriptName --help' for see all available commands");
             }
 
             return 2;
