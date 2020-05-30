@@ -10,6 +10,7 @@ namespace Inhere\Console\Component;
 
 use Inhere\Console\AbstractApplication;
 use Inhere\Console\Contract\ErrorHandlerInterface;
+use Inhere\Console\Exception\PromptException;
 use Throwable;
 use Toolkit\Cli\Highlighter;
 use function file_get_contents;
@@ -29,11 +30,16 @@ class ErrorHandler implements ErrorHandlerInterface
      */
     public function handle(Throwable $e, AbstractApplication $app): void
     {
+        if ($e instanceof PromptException) {
+            $app->getOutput()->error($e->getMessage());
+            return;
+        }
+
         $class = get_class($e);
 
         // open debug, throw exception
         if ($app->isDebug()) {
-            $tpl     = <<<ERR
+            $tpl  = <<<ERR
 \n<error> Error </error> <mga>%s</mga>
 
 At File <cyan>%s</cyan> line <bold>%d</bold>
@@ -41,8 +47,9 @@ Exception class is <magenta>$class</magenta>
 <comment>Code View:</comment>\n\n%s
 <comment>Code Trace:</comment>\n\n%s\n
 ERR;
-            $line    = $e->getLine();
-            $file    = $e->getFile();
+            $line = $e->getLine();
+            $file = $e->getFile();
+
             $snippet = Highlighter::create()->highlightSnippet(file_get_contents($file), $line, 3, 3);
             $message = sprintf(
                 $tpl, // $e->getCode(),
@@ -58,10 +65,11 @@ ERR;
             }
 
             $app->write($message, false);
-        } else {
-            // simple output
-            $app->getOutput()->error('An error occurred! MESSAGE: ' . $e->getMessage());
-            $app->write("\nYou can use '--debug 4' to see error details.");
+            return;
         }
+
+        // simple output
+        $app->getOutput()->error('An error occurred! MESSAGE: ' . $e->getMessage());
+        $app->write("\nYou can use '--debug 4' to see error details.");
     }
 }
