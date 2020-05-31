@@ -9,6 +9,14 @@ namespace Inhere\Console;
  */
 final class ConsoleEvent
 {
-    public const STOP = 1;
-    public const GOON = 1;
+    // event name list
+    public const ON_BEFORE_RUN = 'app.beforeRun';
+
+    public const ON_AFTER_RUN  = 'app.afterRun';
+
+    public const ON_RUN_ERROR  = 'app.runError';
+
+    public const ON_STOP_RUN   = 'app.stopRun';
+
+    public const ON_NOT_FOUND  = 'app.notFound';
 }
