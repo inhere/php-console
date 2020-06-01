@@ -166,6 +166,19 @@ class Interact extends Show
     }
 
     /**
+     * Send a message request confirmation
+     *
+     * @param string $question The question message
+     * @param bool   $default  Default value
+     *
+     * @return bool
+     */
+    public static function unConfirm(string $question, bool $default = true): bool
+    {
+        return false === Confirm::ask($question, $default);
+    }
+
+    /**
      * Usage:
      *
      * ```php

@@ -53,20 +53,6 @@ abstract class AbstractApplication implements ApplicationInterface
         'list'    => 'List all group and alone commands',
     ];
 
-    /**
-     * @var int[]
-     */
-    protected static $globalOptionNames = [
-        'debug'          => 1,
-        'profile'        => 1,
-        'no-color'       => 1,
-        'h'              => 1,
-        'help'           => 1,
-        'V'              => 1,
-        'version'        => 1,
-        'no-interactive' => 1,
-    ];
-
     /** @var array */
     protected static $globalOptions = [
         '--debug'          => 'Setting the application runtime debug level(0 - 4)',
@@ -96,8 +82,9 @@ abstract class AbstractApplication implements ApplicationInterface
         'updateAt'     => '2019.01.01',
         'rootPath'     => '',
         'strictMode'   => false,
-        'interactive'  => true,
         'hideRootPath' => true,
+        // global options
+        'no-interactive'  => true,
 
         // 'timeZone' => 'Asia/Shanghai',
         // 'env' => 'prod', // dev test prod
@@ -169,7 +156,7 @@ abstract class AbstractApplication implements ApplicationInterface
      */
     public static function isGlobalOption(string $name): bool
     {
-        return isset(self::$globalOptionNames[$name]);
+        return isset(GlobalOption::KEY_MAP[$name]);
     }
 
     /**
@@ -563,7 +550,9 @@ abstract class AbstractApplication implements ApplicationInterface
      */
     public function getVerbLevel(): int
     {
-        return (int)$this->input->getLongOpt('debug', (int)$this->config['debug']);
+        $key = GlobalOption::DEBUG;
+
+        return (int)$this->input->getLongOpt($key, (int)$this->config[$key]);
     }
 
     /**
@@ -573,7 +562,10 @@ abstract class AbstractApplication implements ApplicationInterface
      */
     public function isProfile(): bool
     {
-        return (bool)$this->input->getOpt('profile', $this->getParam('profile', false));
+        $key = GlobalOption::PROFILE;
+        $def = (bool)$this->getParam($key, false);
+
+        return $this->input->getBoolOpt($key, $def);
     }
 
     /**
@@ -583,8 +575,9 @@ abstract class AbstractApplication implements ApplicationInterface
      */
     public function isInteractive(): bool
     {
-        $key = 'no-interactive';
-        $val = (bool)$this->input->getOpt($key, $this->getParam($key, true));
+        $key = GlobalOption::NO_INTERACTIVE;
+        $def = (bool)$this->getParam($key, true);
+        $val = $this->input->getBoolOpt($key, $def);
 
         return $val === false;
     }

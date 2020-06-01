@@ -63,7 +63,8 @@ use function substr;
  *
  * @method Generator counterTxt($msg = 'Pending ', $ended = false)
  *
- * @method confirm(string $question, bool $default = true, bool $nl = true): bool
+ * @method confirm(string $question, bool $default = true): bool
+ * @method unConfirm(string $question, bool $default = true): bool
  * @method select(string $description, $options, $default = null, bool $allowExit = true): string
  * @method checkbox(string $description, $options, $default = null, bool $allowExit = true): array
  * @method ask(string $question, string $default = '', Closure $validator = null): string
@@ -299,6 +300,7 @@ trait FormatOutputAwareTrait
             return Show::$method(...$args);
         }
 
+        // interact methods
         if (method_exists(Interact::class, $method)) {
             return Interact::$method(...$args);
         }

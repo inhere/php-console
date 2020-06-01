@@ -25,6 +25,8 @@ use function method_exists;
  * @method array checkbox(string $description, $options, $default = null, $allowExit = true)
  * @method array multiSelect(string $description, $options, $default = null, $allowExit = true)
  *
+ * @method unConfirm(string $question, bool $default = true): bool
+ *
  * @method string askHiddenInput(string $prompt = 'Enter Password:')
  * @method string promptSilent(string $prompt = 'Enter Password:')
  * @method string askPassword(string $prompt = 'Enter Password:')
@@ -52,7 +54,6 @@ trait UserInteractAwareTrait
      * @param bool         $allowExit
      *
      * @return string
-     * @see Interact::choice()
      */
     public function choice(string $description, $options, $default = null, $allowExit = true): string
     {
@@ -64,7 +65,6 @@ trait UserInteractAwareTrait
      * @param bool   $default
      *
      * @return bool
-     * @see Interact::confirm()
      */
     public function confirm(string $question, bool $default = true): bool
     {
@@ -77,7 +77,6 @@ trait UserInteractAwareTrait
      * @param Closure|null $validator
      *
      * @return string|null
-     * @see Interact::question()
      */
     public function ask(string $question, string $default = '', Closure $validator = null): ?string
     {
