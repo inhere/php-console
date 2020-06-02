@@ -747,7 +747,7 @@ abstract class AbstractHandler implements CommandHandlerInterface
             return $this->app->isInteractive();
         }
 
-        $value = (bool)$this->input->getLongOpt('no-interactive', false);
+        $value = $this->input->getBoolOpt(GlobalOption::NO_INTERACTIVE);
 
         return $value === false;
     }
