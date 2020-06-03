@@ -93,17 +93,32 @@ abstract class AbstractHandler implements CommandHandlerInterface
         'help'        => true,
     ];
 
-    /** @var Application */
+    /**
+     * @var Application
+     */
     protected $app;
 
-    /** @var InputDefinition|null */
+    /**
+     * @var InputDefinition|null
+     */
     private $definition;
 
-    /** @var string */
+    /**
+     * @var string
+     */
     private $processTitle = '';
 
-    /** @var array */
+    /**
+     * @var array
+     */
     private $commentsVars;
+
+    /**
+     * Mark the command/controller is attached in application.
+     *
+     * @var bool
+     */
+    private $attached = true;
 
     /**
      * Whether enabled
@@ -545,8 +560,15 @@ abstract class AbstractHandler implements CommandHandlerInterface
             }
         }
 
+        $binName = $this->getScriptName();
+
         // build usage
-        $help['usage:'] = sprintf('%s %s %s', $this->getScriptName(), $this->getCommandName(), $help['usage:']);
+        if ($this->attached) {
+            $help['usage:'] = sprintf('%s %s %s', $binName, $this->getCommandName(), $help['usage:']);
+        } else {
+            $help['usage:'] = $binName . ' ' . $help['usage:'];
+        }
+
         // align global options
         $help['global options:'] = FormatUtil::alignOptions(Application::getGlobalOptions());
 
@@ -818,6 +840,22 @@ abstract class AbstractHandler implements CommandHandlerInterface
     public function setApp(AbstractApplication $app): void
     {
         $this->app = $app;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isAttached(): bool
+    {
+        return $this->attached;
+    }
+
+    /**
+     * @param bool $attached
+     */
+    public function setAttached(bool $attached): void
+    {
+        $this->attached = $attached;
     }
 
     /**
