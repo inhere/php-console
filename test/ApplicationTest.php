@@ -5,7 +5,7 @@ namespace Inhere\ConsoleTest;
 use Inhere\Console\Application;
 use Inhere\Console\Console;
 use Inhere\Console\IO\Input;
-use Inhere\Console\IO\InputInterface;
+use Inhere\Console\Contract\InputInterface;
 use Inhere\Console\Router;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;

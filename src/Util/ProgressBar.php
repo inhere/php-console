@@ -10,7 +10,7 @@ namespace Inhere\Console\Util;
 
 use Closure;
 use Inhere\Console\IO\Output;
-use Inhere\Console\IO\OutputInterface;
+use Inhere\Console\Contract\OutputInterface;
 use LogicException;
 use RuntimeException;
 use Toolkit\StrUtil\Str;

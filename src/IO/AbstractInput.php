@@ -21,7 +21,7 @@ use function trim;
  *
  * @package Inhere\Console\IO
  */
-abstract class AbstractInput implements InputInterface
+abstract class AbstractInput implements \Inhere\Console\Contract\InputInterface
 {
     /**
      * @var string
@@ -129,6 +129,11 @@ abstract class AbstractInput implements InputInterface
         }
 
         $this->args = $newArgs;
+    }
+
+    public function hasMode(): bool
+    {
+
     }
 
     /***********************************************************************************

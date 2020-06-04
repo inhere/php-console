@@ -1,25 +1,39 @@
 <?php
 
 $header = <<<'EOF'
+The file is part of inhere/console
 
+@author   https://github.com/inhere
+@homepage https://github.com/inhere/php-console
 @license  https://github.com/inhere/php-console/blob/master/LICENSE
 EOF;
 
-return PhpCsFixer\Config::create()->setRiskyAllowed(true)->setRules([
+$rules = [
     '@PSR2'                       => true,
-    // 'header_comment' => [
-    //     'comment_type' => 'PHPDoc',
-    //      'header'    => $header,
-    //     'separate'  => 'none'
-    // ],
     'array_syntax'                => [
-      'syntax' => 'short'
+        'syntax' => 'short'
     ],
-    'single_quote'                => true,
     'class_attributes_separation' => true,
-    'no_unused_imports'           => true,
-    'standardize_not_equals'      => true,
     'declare_strict_types'        => true,
-  ])->setFinder(PhpCsFixer\Finder::create()
+    'global_namespace_import'     => true,
+    'header_comment'              => [
+        'comment_type' => 'PHPDoc',
+        'header'       => $header,
+        'separate'     => 'bottom'
+    ],
+    'no_unused_imports'           => true,
+    'single_quote'                => true,
+    'standardize_not_equals'      => true,
+];
+
+$finder = PhpCsFixer\Finder::create()
     // ->exclude('test')
-                                 ->exclude('docs')->exclude('vendor')->in(__DIR__))->setUsingCache(false);
+       ->exclude('docs')
+       ->exclude('vendor')
+       ->in(__DIR__);
+
+return PhpCsFixer\Config::create()
+    ->setRiskyAllowed(true)
+    ->setRules($rules)
+    ->setFinder($finder)
+    ->setUsingCache(false);

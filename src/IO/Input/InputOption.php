@@ -8,25 +8,69 @@
 
 namespace Inhere\Console\IO\Input;
 
+use Inhere\Console\IO\Input;
+use function implode;
+
 /**
  * Class InputOption
  * - definition a input option
  *
  * @package Inhere\Console\IO\Input
  */
-class InputOption extends InputItem
+class InputOption extends InputFlag
 {
     /**
      * alias name
      *
      * @var string
      */
-    private $alias;
+    private $alias = '';
 
     /**
-     * @var string|array
+     * Shortcuts of the option. eg: ['a', 'b']
+     *
+     * @var array
      */
-    private $shortcut;
+    private $shortcuts = [];
+
+    /**
+     * eg: 'a|b'
+     *
+     * @var string
+     */
+    private $shortcut = '';
+
+    /**
+     * @return bool
+     */
+    public function isArray(): bool
+    {
+        return $this->hasMode(Input::OPT_IS_ARRAY);
+    }
+
+    /**
+     * @return bool
+     */
+    public function isOptional(): bool
+    {
+        return $this->hasMode(Input::OPT_OPTIONAL);
+    }
+
+    /**
+     * @return bool
+     */
+    public function isRequired(): bool
+    {
+        return $this->hasMode(Input::OPT_REQUIRED);
+    }
+
+    /**
+     * @return bool
+     */
+    public function isBoolean(): bool
+    {
+        return $this->hasMode(Input::OPT_BOOLEAN);
+    }
 
     /**
      * @return string
@@ -45,18 +89,39 @@ class InputOption extends InputItem
     }
 
     /**
-     * @return array
+     * @return string
      */
-    public function getShortcut()
+    public function getShortcut(): string
     {
         return $this->shortcut;
     }
 
     /**
-     * @param array|string $shortcut
+     * @param string $shortcut
      */
-    public function setShortcut($shortcut): void
+    public function setShortcutsByString(string $shortcut): void
     {
-        $this->shortcut = (array)$shortcut;
+        $shortcuts = preg_split('{(\|)-?}', ltrim($shortcut, '-'));
+        $shortcuts = array_filter($shortcuts);
+
+        $this->setShortcuts($shortcuts);
     }
+
+    /**
+     * @return array
+     */
+    public function getShortcuts(): array
+    {
+        return $this->shortcuts;
+    }
+
+    /**
+     * @param array $shortcuts
+     */
+    public function setShortcuts(array $shortcuts): void
+    {
+        $this->shortcuts = $shortcuts;
+        $this->shortcut  = implode('|', $shortcuts);
+    }
+
 }

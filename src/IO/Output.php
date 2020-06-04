@@ -11,7 +11,6 @@ namespace Inhere\Console\IO;
 use Inhere\Console\Component\Style\Style;
 use Inhere\Console\Console;
 use Inhere\Console\Traits\FormatOutputAwareTrait;
-use Inhere\Console\Util\Show;
 use Toolkit\Cli\Cli;
 use const STDERR;
 use const STDOUT;
@@ -21,7 +20,7 @@ use const STDOUT;
  *
  * @package Inhere\Console\IO
  */
-class Output implements OutputInterface
+class Output implements \Inhere\Console\Contract\OutputInterface
 {
     use FormatOutputAwareTrait;
 
@@ -150,7 +149,7 @@ class Output implements OutputInterface
     public function getStyle(): Style
     {
         if (!$this->style) {
-            $this->style = Show::getStyle();
+            $this->style = Style::instance();
         }
 
         return $this->style;

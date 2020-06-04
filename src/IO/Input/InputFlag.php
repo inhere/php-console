@@ -8,15 +8,16 @@
 
 namespace Inhere\Console\IO\Input;
 
+use Inhere\Console\Contract\InputFlagInterface;
 use Inhere\Console\IO\Input;
 
 /**
- * Class InputItem
+ * Class InputFlag
  * - definition a input item(option|argument)
  *
  * @package Inhere\Console\IO\Input
  */
-class InputItem
+abstract class InputFlag implements InputFlagInterface
 {
     /**
      * @var string
@@ -34,11 +35,11 @@ class InputItem
     private $mode;
 
     /**
-     * The argument data type. (eg: 'string', 'array', 'mixed')
+     * The argument data type. (eg: 'int', 'bool', 'string', 'array', 'mixed')
      *
      * @var string
      */
-    private $type;
+    private $type = '';
 
     /**
      * The default value
@@ -79,13 +80,24 @@ class InputItem
         $this->setDescription($description);
     }
 
+    /******************************************************************
+     * mode value
+     *****************************************************************/
+
     /**
+     * @param int $mode
+     *
      * @return bool
      */
-    public function isArray(): bool
+    public function hasMode(int $mode): bool
     {
-        return $this->mode === Input::ARG_IS_ARRAY;
+        return ($this->mode & $mode) > 0;
     }
+
+
+    /******************************************************************
+     *
+     *****************************************************************/
 
     /**
      * @return string
@@ -165,5 +177,22 @@ class InputItem
     public function setDescription(string $description): void
     {
         $this->description = $description;
+    }
+
+    /**
+     * @return array
+     */
+    public function toArray(): array
+    {
+        return [
+            'name'        => $this->name,
+            'mode'        => $this->mode,
+            'type'        => $this->type,
+            'default'     => $this->default,
+            'isArray'     => $this->isArray(),
+            'isOptional'  => $this->isOptional(),
+            'isRequired'  => $this->isRequired(),
+            'description' => $this->description,
+        ];
     }
 }

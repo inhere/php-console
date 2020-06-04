@@ -10,9 +10,9 @@ namespace Inhere\Console\Traits;
 
 use Inhere\Console\Console;
 use Inhere\Console\IO\Input;
-use Inhere\Console\IO\InputInterface;
+use Inhere\Console\Contract\InputInterface;
 use Inhere\Console\IO\Output;
-use Inhere\Console\IO\OutputInterface;
+use Inhere\Console\Contract\OutputInterface;
 
 /**
  * Class InputOutputAwareTrait

@@ -8,6 +8,7 @@
 
 namespace Inhere\Console\IO;
 
+use Inhere\Console\Util\Helper;
 use InvalidArgumentException;
 use LogicException;
 use function array_filter;
@@ -51,7 +52,7 @@ class InputDefinition
     /**
      * @var array[]
      */
-    private $arguments;
+    private $arguments = [];
 
     /**
      * @var int
@@ -210,8 +211,11 @@ class InputDefinition
             $this->hasOptionalArgument = true;
         }
 
+        $index = count($this->arguments);
+
         $this->arguments[$name] = [
             'mode'        => $mode,
+            'index'       => $index,
             'required'    => $required,
             'isArray'     => $isArray,
             'description' => $description,
@@ -361,27 +365,30 @@ class InputDefinition
             throw new InvalidArgumentException('An option name cannot be empty.');
         }
 
+        if (isset($this->options[$name])) {
+            throw new LogicException(sprintf('An option named "%s" already exists.', $name));
+        }
+
         if ($mode <= 0) {
             $mode = Input::OPT_BOOLEAN;
         } elseif (!is_int($mode) || $mode > 15 || $mode < 1) {
             throw new InvalidArgumentException(sprintf('Option mode "%s" is not valid.', $mode));
         }
 
-        $isArray = $mode === Input::OPT_IS_ARRAY;
+        $isArray = ($mode & Input::OPT_IS_ARRAY) > 0;
         if ($isArray && !$this->optionIsAcceptValue($mode)) {
             throw new InvalidArgumentException('Impossible to have an option mode OPT_IS_ARRAY if the option does not accept a value.');
         }
 
-        if (isset($this->options[$name])) {
-            throw new LogicException(sprintf('An option named "%s" already exists.', $name));
-        }
-
         // set default value
-        if (Input::OPT_BOOLEAN === (Input::OPT_BOOLEAN & $mode) && null !== $default) {
-            throw new LogicException('Cannot set a default value when using OPT_BOOLEAN mode.');
-        }
+        $isBoolean = Input::OPT_BOOLEAN === (Input::OPT_BOOLEAN & $mode);
+        if ($isBoolean) {
+            if (null !== $default) {
+                throw new LogicException('Cannot set a default value when using OPT_BOOLEAN mode.');
+            }
 
-        if ($isArray) {
+            $default = false;
+        } elseif ($isArray) {
             if (null === $default) {
                 $default = [];
             } elseif (!is_array($default)) {
@@ -411,9 +418,10 @@ class InputDefinition
 
         $this->options[$name] = [
             'mode'        => $mode,
+            'isArray'     => $isArray,
             'shortcut'    => $shortcut, // 允许数组
-            'required'    => $mode === Input::OPT_REQUIRED,
-            'optional'    => $mode === Input::OPT_OPTIONAL,
+            'required'    => Helper::hasMode($mode, Input::OPT_REQUIRED),
+            'optional'    => Helper::hasMode($mode, Input::OPT_OPTIONAL),
             'description' => $description,
             'default'     => $default,
         ];
@@ -609,7 +617,7 @@ class InputDefinition
      */
     protected function argumentIsAcceptValue(int $mode): bool
     {
-        return $mode === Input::ARG_REQUIRED || $mode === Input::ARG_OPTIONAL;
+        return $mode & Input::ARG_REQUIRED || $mode & Input::ARG_OPTIONAL;
     }
 
     /**
@@ -619,7 +627,7 @@ class InputDefinition
      */
     protected function optionIsAcceptValue(int $mode): bool
     {
-        return $mode === Input::OPT_REQUIRED || $mode === Input::OPT_OPTIONAL;
+        return $mode & Input::OPT_REQUIRED || $mode & Input::OPT_OPTIONAL;
     }
 
     /**

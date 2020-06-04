@@ -400,7 +400,6 @@ abstract class AbstractHandler implements CommandHandlerInterface
         }
 
         $in->setArgs($args);
-
         $this->checkNotExistsOptions($def);
 
         // check options
@@ -413,6 +412,8 @@ abstract class AbstractHandler implements CommandHandlerInterface
                 $shortNames = $conf['shortcut'] ? explode('|', $conf['shortcut']) : [];
                 if ($srt = $in->findOneShortOpts($shortNames)) {
                     $opts[$name] = $in->sOpt($srt);
+                } elseif ($conf['default']) {
+
                 } elseif ($conf['required']) {
                     $missingOpts[] = "--{$name}" . ($srt ? "|-{$srt}" : '');
                 }

@@ -60,6 +60,17 @@ class Helper
     }
 
     /**
+     * @param int $haystack
+     * @param int $value
+     *
+     * @return bool
+     */
+    public static function hasMode(int $haystack, int $value): bool
+    {
+        return ($haystack & $value) > 0;
+    }
+
+    /**
      * @param string $path
      *
      * @return bool
