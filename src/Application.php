@@ -257,7 +257,7 @@ class Application extends AbstractApplication
      * @throws ReflectionException
      * @throws InvalidArgumentException
      */
-    public function dispatch(string $name, bool $standAlone = false)
+    public function dispatch(string $name, bool $detachedRun = false)
     {
         $this->logf(Console::VERB_DEBUG, 'begin dispatch command: %s', $name);
 
@@ -287,23 +287,25 @@ class Application extends AbstractApplication
             return 2;
         }
 
+        $cmdOptions = $info['options'];
+
         // save command ID
         $this->input->setCommandId($info['cmdId']);
 
         // is command
         if ($info['type'] === Router::TYPE_SINGLE) {
-            return $this->runCommand($info['name'], $info['handler'], $info['options']);
+            return $this->runCommand($info['name'], $info['handler'], $cmdOptions);
         }
 
         // is controller/group
-        return $this->runAction($info['group'], $info['action'], $info['handler'], $info['options'], $standAlone);
+        return $this->runAction($info['group'], $info['action'], $info['handler'], $cmdOptions, $detachedRun);
     }
 
     /**
      * run a independent command
      *
      * @param string         $name    Command name
-     * @param Closure|string $handler Command class
+     * @param Closure|string $handler Command class or handler func
      * @param array          $options
      *
      * @return mixed
@@ -346,12 +348,12 @@ class Application extends AbstractApplication
      * @param string $action  Command method, no suffix
      * @param mixed  $handler The controller class or object
      * @param array  $options
-     * @param bool   $standAlone
+     * @param bool   $detachedRun
      *
      * @return mixed
      * @throws ReflectionException
      */
-    protected function runAction(string $group, string $action, $handler, array $options, bool $standAlone = false)
+    protected function runAction(string $group, string $action, $handler, array $options, bool $detachedRun = false)
     {
         /** @var Controller $handler */
         if (is_string($handler)) {
@@ -372,15 +374,18 @@ class Application extends AbstractApplication
             );
         }
 
+        // force set name and description
         $handler::setName($group);
-
         if ($desc = $options['description'] ?? '') {
             $handler::setDescription($desc);
         }
 
         $handler->setApp($this);
         $handler->setDelimiter($this->delimiter);
-        $handler->setExecutionAlone($standAlone);
+
+        if ($detachedRun) {
+            $handler->setDetached();
+        }
 
         return $handler->run($action);
     }

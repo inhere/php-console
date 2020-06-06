@@ -852,11 +852,27 @@ abstract class AbstractHandler implements CommandHandlerInterface
     }
 
     /**
+     * @return bool
+     */
+    public function isDetached(): bool
+    {
+        return $this->attached === false;
+    }
+
+    /**
      * @param bool $attached
      */
     public function setAttached(bool $attached): void
     {
         $this->attached = $attached;
+    }
+
+    /**
+     * Detached running
+     */
+    public function setDetached(): void
+    {
+        $this->attached = false;
     }
 
     /**

@@ -8,13 +8,13 @@
 
 namespace Inhere\Console\Exception;
 
-use RuntimeException;
+use InvalidArgumentException;
 
 /**
  * Class PromptException
  *
  * @package Inhere\Console\Exception
  */
-class PromptException extends RuntimeException
+class PromptException extends InvalidArgumentException
 {
 }

@@ -42,10 +42,14 @@ use const PHP_EOL;
  */
 abstract class Controller extends AbstractHandler implements ControllerInterface
 {
-    /** @var array sub-command aliases */
+    /**
+     * @var array sub-command aliases
+     */
     private static $commandAliases = [];
 
-    /** @var array global options for the group command */
+    /**
+     * @var array global options for the group command
+     */
     protected static $globalOptions = [
         '--show-disabled' => 'Whether display disabled commands',
     ];
@@ -57,25 +61,36 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
      */
     private $action;
 
-    /** @var string */
-    private $delimiter = ':'; // '/' ':'
+    /**
+     * eg: '/' ':'
+     *
+     * @var string
+     */
+    private $delimiter = ':';
 
-    /** @var bool Execution alone */
-    private $executionAlone = false;
-
-    /** @var string */
+    /**
+     * @var string
+     */
     private $defaultAction = '';
 
-    /** @var string */
-    private $actionSuffix = 'Command';
+    /**
+     * @var string
+     */
+    private $actionSuffix = self::COMMAND_SUFFIX;
 
-    /** @var string */
+    /**
+     * @var string
+     */
     protected $notFoundCallback = 'notFound';
 
-    /** @var array Common options for all sub-commands in the group */
+    /**
+     * @var array Common options for all sub-commands in the group
+     */
     private $groupOptions = [];
 
-    /** @var array From disabledCommands() */
+    /**
+     * @var array From disabledCommands()
+     */
     private $disabledCommands = [];
 
     /**
@@ -100,7 +115,7 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
         $this->groupOptions     = $this->groupOptions();
 
         if (!$this->actionSuffix) {
-            $this->actionSuffix = 'Command';
+            $this->actionSuffix = self::COMMAND_SUFFIX;
         }
     }
 
@@ -123,8 +138,8 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
      */
     protected function disabledCommands(): array
     {
-        return [// 'command1', 'command2'
-        ];
+        // ['command1', 'command2'];
+        return [];
     }
 
     /**
@@ -153,11 +168,11 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
      */
     protected function configure(): void
     {
-        // eg. IndexConfigure() for indexCommand()
-        $method = $this->action . 'Configure';
+        // eg. indexConfigure() for indexCommand()
+        $method = $this->action . self::CONFIGURE_SUFFIX;
 
         if (method_exists($this, $method)) {
-            $this->$method();
+            $this->$method($this->input);
         }
     }
 
@@ -176,7 +191,7 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
         $group  = static::getName();
 
         if ($this->isDisabled($action)) {
-            $output->liteError(sprintf("Sorry, The command '%s' is invalid in the group '%s'!", $action, $group));
+            $output->error(sprintf("Sorry, The command '%s' is invalid in the group '%s'!", $action, $group));
             return -1;
         }
 
@@ -282,7 +297,7 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
         return $this->showHelpByMethodAnnotations($method, $action, $aliases);
     }
 
-    protected function beforeShowCommandList()
+    protected function beforeShowCommandList(): void
     {
         // do something ...
     }
@@ -344,7 +359,7 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
 
         $script = $this->getScriptName();
 
-        if ($this->executionAlone) {
+        if ($detached = $this->isDetached()) {
             $name  = $sName . ' ';
             $usage = "$script <info>{command}</info> [--options ...] [arguments ...]";
         } else {
@@ -365,11 +380,8 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
             'sepChar' => '  ',
         ]);
 
-        $this->write(sprintf(
-            'More information about a command, please use: <cyan>%s %s{command} -h</cyan>',
-            $script,
-            $this->executionAlone ? '' : $name
-        ));
+        $msgTpl = 'More information about a command, please use: <cyan>%s %s{command} -h</cyan>';
+        $this->output->write(sprintf($msgTpl, $script, $detached ? '' : $name));
         $this->output->flush();
     }
 
@@ -519,7 +531,7 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
     /**
      * @param string $notFoundCallback
      */
-    public function setNotFoundCallback(string $notFoundCallback)
+    public function setNotFoundCallback(string $notFoundCallback): void
     {
         $this->notFoundCallback = $notFoundCallback;
     }
@@ -529,15 +541,17 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
      */
     public function isExecutionAlone(): bool
     {
-        return $this->executionAlone;
+        throw new \RuntimeException('please call isAttached() instead');
     }
 
     /**
      * @param bool $executionAlone
+     *
+     * @deprecated
      */
-    public function setExecutionAlone($executionAlone = true)
+    public function setExecutionAlone($executionAlone = true): void
     {
-        $this->executionAlone = (bool)$executionAlone;
+        throw new \RuntimeException('please call setAttached() instead');
     }
 
     /**

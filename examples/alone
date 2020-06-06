@@ -15,7 +15,7 @@ require dirname(__DIR__) . '/test/boot.php';
 
 $input = new Input();
 $ctrl  = new HomeController($input, new Output());
-$ctrl->setExecutionAlone();
+$ctrl->setDetached();
 
 try {
     exit($ctrl->run($input->getCommand()));

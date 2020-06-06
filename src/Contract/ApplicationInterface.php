@@ -39,12 +39,12 @@ interface ApplicationInterface
     /**
      * Dispatch input command, exec found command handler.
      *
-     * @param string $name       Inputted command name
-     * @param bool   $standAlone Use for an group commands execution alone
+     * @param string $name        Inputted command name
+     * @param bool   $detachedRun Use for an group commands execution alone
      *
      * @return int|mixed
      */
-    public function dispatch(string $name, bool $standAlone = false);
+    public function dispatch(string $name, bool $detachedRun = false);
 
     /**
      * @param int $code

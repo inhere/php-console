@@ -102,8 +102,10 @@ trait InputOutputAwareTrait
     }
 
     /**
-     * {@inheritdoc}
-     * @see Input::getOpt()
+     * @param int|string $name
+     * @param mixed $default
+     *
+     * @return mixed
      */
     public function getOpt($name, $default = null)
     {
@@ -111,8 +113,10 @@ trait InputOutputAwareTrait
     }
 
     /**
-     * {@inheritdoc}
-     * @see Input::getSameOpt()
+     * @param array $names
+     * @param mixed $default
+     *
+     * @return mixed
      */
     public function getSameOpt(array $names, $default = null)
     {
@@ -120,12 +124,14 @@ trait InputOutputAwareTrait
     }
 
     /**
-     * {@inheritdoc}
-     * @see Input::getRequiredOpt()
+     * @param string $name
+     * @param string $errMsg
+     *
+     * @return mixed
      */
-    public function getRequiredOpt(string $name)
+    public function getRequiredOpt(string $name, string $errMsg = '')
     {
-        return $this->input->getRequiredOpt($name);
+        return $this->input->getRequiredOpt($name, $errMsg);
     }
 
     /**

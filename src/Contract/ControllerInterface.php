@@ -15,6 +15,12 @@ namespace Inhere\Console\Contract;
  */
 interface ControllerInterface
 {
+    // eg sampleCommand()
+    public const COMMAND_SUFFIX = 'Command';
+
+    // eg sampleConfigure()
+    public const CONFIGURE_SUFFIX = 'Configure';
+
     /**
      * @return int
      */
