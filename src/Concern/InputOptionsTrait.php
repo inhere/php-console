@@ -124,6 +124,20 @@ trait InputOptionsTrait
     }
 
     /**
+     * Get (long/short)option value(bool)
+     * eg: -h --help
+     *
+     * @param string[] $names
+     * @param bool     $default
+     *
+     * @return bool
+     */
+    public function getSameBoolOpt(array $names, bool $default = false): bool
+    {
+        return (bool)$this->getSameOpt($names, $default);
+    }
+
+    /**
      * Alias of the getBoolOpt()
      *
      * @param string $name
