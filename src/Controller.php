@@ -349,7 +349,10 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
                 continue;
             }
 
-            $desc = PhpDoc::firstLine($m->getDocComment()) ?: $defaultDes;
+            $desc = $defaultDes;
+            if ($phpDoc = $m->getDocComment()) {
+                $desc = PhpDoc::firstLine($phpDoc);
+            }
 
             // is a annotation tag
             if (strpos($desc, '@') === 0) {
