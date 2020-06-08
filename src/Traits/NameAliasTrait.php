@@ -8,6 +8,8 @@
 
 namespace Inhere\Console\Traits;
 
+use InvalidArgumentException;
+
 /**
  * Class NameAliasTrait
  *
@@ -25,12 +27,16 @@ trait NameAliasTrait
      *
      * @param string       $name
      * @param string|array $alias
+     * @param bool         $validate
      */
-    public function setAlias(string $name, $alias): void
+    public function setAlias(string $name, $alias, bool $validate = false): void
     {
         foreach ((array)$alias as $aliasName) {
             if (!isset($this->aliases[$aliasName])) {
                 $this->aliases[$aliasName] = $name;
+            } elseif ($validate) {
+                $oldName = $this->aliases[$aliasName];
+                throw new InvalidArgumentException("Alias '{$aliasName}' has been registered by '{$oldName}', cannot assign to the '{$name}'");
             }
         }
     }

@@ -393,7 +393,7 @@ abstract class AbstractApplication implements ApplicationInterface
     public function addAliases(string $name, $aliases): self
     {
         if ($name && $aliases) {
-            $this->router->setAlias($name, $aliases);
+            $this->router->setAlias($name, $aliases, true);
         }
 
         return $this;

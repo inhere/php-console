@@ -97,6 +97,19 @@ trait InputOptionsTrait
     }
 
     /**
+     * Get an string option(long/short) value
+     *
+     * @param string[] $names eg ['n', 'name']
+     * @param string $default
+     *
+     * @return string
+     */
+    public function getSameStringOpt(array $names, string $default = ''): string
+    {
+        return (string)$this->getSameOpt($names, $default);
+    }
+
+    /**
      * Get an int option(long/short) value
      *
      * @param string $name

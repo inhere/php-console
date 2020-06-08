@@ -18,6 +18,7 @@ use ReflectionClass;
 use ReflectionException;
 use ReflectionMethod;
 use ReflectionObject;
+use RuntimeException;
 use Toolkit\Cli\ColorTag;
 use Toolkit\PhpUtil\PhpDoc;
 use Toolkit\StrUtil\Str;
@@ -25,6 +26,8 @@ use function array_flip;
 use function array_keys;
 use function array_merge;
 use function implode;
+use function is_array;
+use function is_string;
 use function ksort;
 use function lcfirst;
 use function method_exists;
@@ -43,7 +46,15 @@ use const PHP_EOL;
 abstract class Controller extends AbstractHandler implements ControllerInterface
 {
     /**
-     * @var array sub-command aliases
+     * The sub-command aliases mapping
+     *
+     * eg: [
+     *  alias => command,
+     *  alias1 => command1,
+     *  alias2 => command1,
+     * ]
+     *
+     * @var array
      */
     private static $commandAliases = [];
 
@@ -94,24 +105,35 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
     private $disabledCommands = [];
 
     /**
-     * define command alias map
+     * Define command alias mapping. please rewrite it on sub-class.
      *
      * @return array
      */
     protected static function commandAliases(): array
     {
-        return [
-            // alias => command
-            // 'i'  => 'install',
-        ];
+        // Usage:
+        // - method 1:
+        // alias => command
+        // [
+        //  'i'   => 'install',
+        //  'ins' => 'install',
+        // ]
+        //
+        // - method 2:
+        // command => alias[]
+        // [
+        //  'install'  => ['i', 'ins'],
+        // ]
+        return [];
     }
 
     protected function init(): void
     {
+        self::loadCommandAliases();
+
         $list = $this->disabledCommands();
         // save to property
         $this->disabledCommands = $list ? array_flip($list) : [];
-        self::$commandAliases   = static::commandAliases();
         $this->groupOptions     = $this->groupOptions();
 
         if (!$this->actionSuffix) {
@@ -440,6 +462,32 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
         return isset($this->disabledCommands[$name]);
     }
 
+    /**
+     * load sub-commands aliases from sub-class::commandAliases()
+     */
+    public static function loadCommandAliases(): void
+    {
+        $cmdAliases = static::commandAliases();
+        if (!$cmdAliases) {
+            return;
+        }
+
+        $fmtAliases = [];
+        foreach ($cmdAliases as $name => $item) {
+            // $name is command, $item is alias list
+            // eg: ['command1' => ['alias1', 'alias2']]
+            if (is_array($item)) {
+                foreach ($item as $alias) {
+                    $fmtAliases[$alias] = $name;
+                }
+            } elseif (is_string($item)) { // $item is command, $name is alias name
+                $fmtAliases[$name] = $item;
+            }
+        }
+
+        self::$commandAliases = $fmtAliases;
+    }
+
     /**************************************************************************
      * getter/setter methods
      **************************************************************************/
@@ -499,7 +547,7 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
     /**
      * @param string $defaultAction
      */
-    public function setDefaultAction(string $defaultAction)
+    public function setDefaultAction(string $defaultAction): void
     {
         $this->defaultAction = trim($defaultAction, $this->delimiter);
     }
@@ -515,7 +563,7 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
     /**
      * @param string $actionSuffix
      */
-    public function setActionSuffix(string $actionSuffix)
+    public function setActionSuffix(string $actionSuffix): void
     {
         $this->actionSuffix = $actionSuffix;
     }
@@ -541,7 +589,7 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
      */
     public function isExecutionAlone(): bool
     {
-        throw new \RuntimeException('please call isAttached() instead');
+        throw new RuntimeException('please call isAttached() instead');
     }
 
     /**
@@ -551,7 +599,7 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
      */
     public function setExecutionAlone($executionAlone = true): void
     {
-        throw new \RuntimeException('please call setAttached() instead');
+        throw new RuntimeException('please call setAttached() instead');
     }
 
     /**

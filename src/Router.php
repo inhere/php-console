@@ -135,7 +135,7 @@ class Router implements RouterInterface
 
         // has alias option
         if (isset($options['aliases'])) {
-            $this->setAlias($name, $options['aliases'] ?? []);
+            $this->setAlias($name, $options['aliases'], true);
         }
 
         return $this;
@@ -211,7 +211,7 @@ class Router implements RouterInterface
 
         // has alias option
         if (isset($options['aliases'])) {
-            $this->setAlias($name, $options['aliases'] ?? []);
+            $this->setAlias($name, $options['aliases'], true);
         }
 
         return $this;
