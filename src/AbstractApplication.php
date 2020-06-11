@@ -22,7 +22,7 @@ use Inhere\Console\Traits\InputOutputAwareTrait;
 use Inhere\Console\Traits\SimpleEventTrait;
 use InvalidArgumentException;
 use Throwable;
-use Toolkit\PhpUtil\PhpHelper;
+use Toolkit\Stdlib\Helper\PhpHelper;
 use function array_keys;
 use function array_merge;
 use function error_get_last;

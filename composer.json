@@ -24,8 +24,7 @@
   "require": {
     "php": ">7.1.0",
     "toolkit/cli-utils": "~1.0",
-    "toolkit/str-utils": "~1.0",
-    "toolkit/php-utils": "~1.0",
+    "toolkit/stdlib": "~1.0",
     "toolkit/sys-utils": "~1.0"
   },
   "require-dev": {

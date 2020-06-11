@@ -12,7 +12,7 @@ use LogicException;
 use RuntimeException;
 use Toolkit\Cli\Cli;
 use Toolkit\Cli\Download;
-use Toolkit\PhpUtil\Php;
+use Toolkit\Stdlib\Php;
 use function sleep;
 use function trigger_error;
 

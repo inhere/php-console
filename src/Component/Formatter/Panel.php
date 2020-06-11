@@ -11,7 +11,7 @@ namespace Inhere\Console\Component\Formatter;
 use Inhere\Console\Component\MessageFormatter;
 use Inhere\Console\Console;
 use Inhere\Console\Util\FormatUtil;
-use Toolkit\StrUtil\StrBuffer;
+use Toolkit\Stdlib\Str\StrBuffer;
 use function array_filter;
 use function array_merge;
 use function ceil;

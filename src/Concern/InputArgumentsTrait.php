@@ -36,14 +36,16 @@ trait InputArgumentsTrait
     /**
      * @param string $name
      * @param int    $index
+     * @return self|mixed
      */
-    public function bindArgument(string $name, int $index): void
+    public function bindArgument(string $name, int $index)
     {
         $this->binds[$name] = $index;
+        return $this;
     }
 
     /**
-     * @param array $map
+     * @param array $map [ argName => index, ]
      * @param bool  $replace
      */
     public function bindArguments(array $map, bool $replace = false): void

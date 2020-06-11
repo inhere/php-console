@@ -21,7 +21,7 @@ use Inhere\Console\Console;
 use LogicException;
 use Toolkit\Cli\Cli;
 use Toolkit\Cli\ColorTag;
-use Toolkit\StrUtil\Str;
+use Toolkit\Stdlib\Str;
 use Toolkit\Sys\Sys;
 use function array_keys;
 use function array_values;

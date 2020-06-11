@@ -11,7 +11,7 @@ namespace Inhere\Console\Component;
 use Inhere\Console\Console;
 use Inhere\Console\Contract\FormatterInterface;
 use RuntimeException;
-use Toolkit\PhpUtil\PhpHelper;
+use Toolkit\Stdlib\Obj\ObjectHelper;
 
 /**
  * Class Formatter - message formatter
@@ -49,7 +49,7 @@ abstract class MessageFormatter implements FormatterInterface
      */
     public function __construct(array $config = [])
     {
-        PhpHelper::initObject($this, $config);
+        ObjectHelper::init($this, $config);
 
         $this->config = $config;
     }

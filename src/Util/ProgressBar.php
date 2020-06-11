@@ -13,7 +13,7 @@ use Inhere\Console\IO\Output;
 use Inhere\Console\Contract\OutputInterface;
 use LogicException;
 use RuntimeException;
-use Toolkit\StrUtil\Str;
+use Toolkit\Stdlib\Str;
 use function max;
 
 /**

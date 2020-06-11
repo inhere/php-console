@@ -9,7 +9,7 @@
 namespace Inhere\Console\Traits;
 
 use InvalidArgumentException;
-use Toolkit\PhpUtil\PhpHelper;
+use Toolkit\Stdlib\Helper\PhpHelper;
 use function array_pop;
 use function explode;
 use function in_array;

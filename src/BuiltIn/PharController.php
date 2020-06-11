@@ -8,7 +8,6 @@
 
 namespace Inhere\Console\BuiltIn;
 
-use BadMethodCallException;
 use Closure;
 use Exception;
 use Inhere\Console\Component\PharCompiler;
@@ -18,7 +17,7 @@ use Inhere\Console\IO\Output;
 use Inhere\Console\Util\Helper;
 use Inhere\Console\Util\Show;
 use RuntimeException;
-use UnexpectedValueException;
+use Toolkit\Stdlib\Str;
 use function basename;
 use function file_exists;
 use function is_dir;
@@ -58,29 +57,43 @@ class PharController extends Controller
      *                          default is current work-dir.(<cyan>{workDir}</cyan>)
      *  -c, --config STRING     Use the custom config file for build phar(<cyan>./phar.build.inc</cyan>)
      *  -o, --output STRING     Setting the output file name(<cyan>{defaultPkgName}.phar</cyan>)
-     *  --fast BOOL             Fast build. only add modified files by <cyan>git status -s</cyan>
-     *  --refresh BOOL          Whether build vendor folder files on phar file exists(<cyan>False</cyan>)
+     *  --fast                  Fast build. only add modified files by <cyan>git status -s</cyan>
+     *  --refresh               Whether build vendor folder files on phar file exists(<cyan>False</cyan>)
+     *  --files  STRING         Only pack the list files to the exist phar, multi use ',' split
+     *  --no-progress           Disable output progress on the runtime
      *
-     * @param Input  $in
-     * @param Output $out
+     * @param Input  $input
+     * @param Output $output
      *
      * @return int
-     * @throws UnexpectedValueException
-     * @throws RuntimeException
-     * @throws BadMethodCallException
      * @throws Exception
+     * @example
+     *   {fullCommand}                               Pack current dir to a phar file.
+     *   {fullCommand} --dir vendor/swoft/devtool    Pack the specified dir to a phar file.
+     *
+     *  custom output phar file name
+     *   php -d phar.readonly=0 {binFile} phar:pack -o=mycli.phar
+     *
+     *  only update the input files:
+     *   php -d phar.readonly=0 {binFile} phar:pack -o=mycli.phar --debug --files app/Command/ServeCommand.php
      */
-    public function packCommand($in, $out): int
+    public function packCommand($input, $output): int
     {
-        $time    = microtime(1);
-        $workDir = $in->getPwd();
+        $startAt = microtime(1);
+        $workDir = $input->getPwd();
 
-        $dir = $in->getOpt('dir') ?: $workDir;
+        $dir = $input->getOpt('dir') ?: $workDir;
         $cpr = $this->configCompiler($dir);
 
-        $counter  = null;
-        $refresh  = $in->boolOpt('refresh');
-        $pharFile = $workDir . '/' . $in->sameOpt(['o', 'output'], basename($workDir) . '.phar');
+        $refresh  = $input->boolOpt('refresh');
+        $outFile  = $input->sameOpt(['o', 'output'], basename($workDir) . '.phar');
+        $pharFile = $workDir . '/' . $outFile;
+
+        Show::aList([
+            'work dir'  => $workDir,
+            'project'   => $dir,
+            'phar file' => $pharFile,
+        ], 'Building Information');
 
         // use fast build
         if ($this->input->boolOpt('fast')) {
@@ -88,40 +101,34 @@ class PharController extends Controller
             $this->output->liteNote('Use fast build, will only pack changed or new files(from git status)');
         }
 
-        $out->liteInfo("Now, will begin building phar package.\n from path: <comment>$workDir</comment>\n" . " phar file: <info>$pharFile</info>");
+        // Manual append some files
+        if ($files = $input->getStringOpt('files')) {
+            $cpr->setModifies(Str::explode($files));
+            $output->liteInfo("will only pack input files to the exists phar: $outFile");
+        }
 
-        $out->info('Pack file to Phar: ');
         $cpr->onError(function ($error) {
-            $this->output->warning($error);
+            $this->writeln("<warning>$error</warning>");
+        });
+        $cpr->on(PharCompiler::ON_MESSAGE, function ($msg) {
+            $this->output->colored('> ' . $msg);
         });
 
-        if ($in->getOpt('debug')) {
-            $cpr->onAdd(function ($path) {
-                $this->output->write(" <comment>+</comment> $path");
-            });
-        } else {
-            $counter = Show::counterTxt('Handling ...', 'Done.');
-            $cpr->onAdd(function () use ($counter) {
-                $counter->send(1);
-            });
-        }
+        $output->colored('Collect Pack files', 'comment');
+        $this->outputProgress($cpr, $input);
 
         // packing ...
         $cpr->pack($pharFile, $refresh);
 
-        // end
-        if ($counter) {
-            $counter->send(-1);
-        }
-
-        $out->write([
-            PHP_EOL . '<success>Phar build completed!</success>',
-            " - Phar file: $pharFile",
-            ' - Phar size: ' . round(filesize($pharFile) / 1024 / 1024, 2) . ' Mb',
-            ' - Pack Time: ' . round(microtime(1) - $time, 3) . ' s',
+        $info = [
+            PHP_EOL . '<success>Phar Build Completed!</success>',
             ' - Pack File: ' . $cpr->getCounter(),
-            ' - Commit ID: ' . $cpr->getVersion(),
-        ]);
+            ' - Pack Time: ' . round(microtime(true) - $startAt, 3) . ' s',
+            ' - Phar Size: ' . round(filesize($pharFile) / 1024 / 1024, 2) . ' Mb',
+            " - Phar File: $pharFile",
+            ' - Commit ID: ' . $cpr->getLastCommit(),
+        ];
+        $output->writeln($info);
 
         return 0;
     }
@@ -147,12 +154,46 @@ class PharController extends Controller
         $configFile = $this->input->getSameOpt(['c', 'config']) ?: $dir . '/phar.build.inc';
 
         if ($configFile && is_file($configFile)) {
+            /** @noinspection PhpIncludeInspection */
             require $configFile;
-
             return $compiler->in($dir);
         }
 
         throw new RuntimeException("The phar build config file not exists! File: $configFile");
+    }
+
+    /**
+     * @param PharCompiler $cpr
+     * @param Input        $input
+     *
+     * @return void
+     */
+    private function outputProgress(PharCompiler $cpr,Input $input): void
+    {
+        if ($input->getBoolOpt('no-progress')) {
+            return;
+        }
+
+        if ($input->getOpt('debug')) {
+            // $output->info('Pack file to Phar ... ...');
+            $cpr->onAdd(function (string $path) {
+                $this->writeln(" <info>+</info> $path");
+            });
+
+            $cpr->on('skip', function (string $path, bool $isFile) {
+                $mark = $isFile ? '[F]' : '[D]';
+                $this->writeln(" <red>-</red> $path <info>$mark</info>");
+            });
+        } else {
+            $counter = Show::counterTxt('Collecting ...', 'Done.');
+            $cpr->onAdd(function () use ($counter) {
+                $counter->send(1);
+            });
+            $cpr->on(PharCompiler::ON_COLLECTED, function () use ($counter) {
+                $counter->send(-1);
+                $this->writeln('');
+            });
+        }
     }
 
     /**

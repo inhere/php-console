@@ -5,7 +5,7 @@ namespace Inhere\Console\Component\Formatter;
 use Inhere\Console\Component\MessageFormatter;
 use Inhere\Console\Console;
 use Inhere\Console\Util\FormatUtil;
-use Toolkit\StrUtil\Str;
+use Toolkit\Stdlib\Str;
 use function array_merge;
 use function ceil;
 use function implode;

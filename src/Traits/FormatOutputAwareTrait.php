@@ -22,7 +22,7 @@ use Inhere\Console\Console;
 use Inhere\Console\Util\Interact;
 use Inhere\Console\Util\Show;
 use LogicException;
-use Toolkit\PhpUtil\Php;
+use Toolkit\Stdlib\Php;
 use function array_merge;
 use function json_encode;
 use function method_exists;

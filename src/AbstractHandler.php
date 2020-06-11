@@ -24,7 +24,7 @@ use ReflectionException;
 use RuntimeException;
 use Swoole\Coroutine;
 use Swoole\Event;
-use Toolkit\PhpUtil\PhpDoc;
+use Toolkit\Stdlib\Util\PhpDoc;
 use function array_diff_key;
 use function array_filter;
 use function array_key_exists;
