@@ -208,6 +208,7 @@ abstract class AbstractHandler implements CommandHandlerInterface
     protected function annotationVars(): array
     {
         $fullCmd = $this->input->getFullCommand();
+        $binFile = $this->input->getScript(); // bin/app
         $binName = $this->input->getScriptName();
         $command = $this->input->getCommand();
 
@@ -216,7 +217,8 @@ abstract class AbstractHandler implements CommandHandlerInterface
             'name'        => self::getName(),
             'group'       => self::getName(),
             'workDir'     => $this->input->getPwd(),
-            'script'      => $this->input->getScript(), // bin/app
+            'script'      => $binFile, // bin/app
+            'binFile'     => $binFile, // bin/app
             'binName'     => $binName, // app
             'scriptName'  => $binName, // app
             'command'     => $command, // demo OR home:test

@@ -66,6 +66,8 @@ class PharCompiler
 
     public const ON_COLLECTED = 'collected';
 
+    public const FILE_EXT = '.phar';
+
     /** @var array */
     private static $supportedSignatureTypes = [
         Phar::SHA512 => 1,

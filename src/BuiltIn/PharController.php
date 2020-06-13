@@ -41,11 +41,26 @@ class PharController extends Controller
      */
     private $compilerConfiger;
 
-    protected function init(): void
-    {
-        parent::init();
+    /**
+     * @var string
+     */
+    private $defPkgName;
 
-        $this->addCommentsVar('defaultPkgName', basename($this->input->getPwd()));
+    protected static function commandAliases(): array
+    {
+        return [
+            'pack' => ['build']
+        ];
+    }
+
+    /**
+     * @param Input $input
+     */
+    protected function packConfigure(Input $input): void
+    {
+        $this->defPkgName = trim(basename($input->getPwd()), '.') . PharCompiler::FILE_EXT;
+
+        $this->addCommentsVar('defaultPkgName', $this->defPkgName);
     }
 
     /**
@@ -54,9 +69,9 @@ class PharController extends Controller
      *
      * @options
      *  -d, --dir STRING        Setting the project directory for packing.
-     *                          default is current work-dir.(<cyan>{workDir}</cyan>)
-     *  -c, --config STRING     Use the custom config file for build phar(<cyan>./phar.build.inc</cyan>)
-     *  -o, --output STRING     Setting the output file name(<cyan>{defaultPkgName}.phar</cyan>)
+     *                          default is current work-dir(default: <cyan>{workDir}</cyan>)
+     *  -c, --config STRING     Use the custom config file for build phar(default: <cyan>./phar.build.inc</cyan>)
+     *  -o, --output STRING     Setting the output file name(<cyan>{defaultPkgName}</cyan>)
      *  --fast                  Fast build. only add modified files by <cyan>git status -s</cyan>
      *  --refresh               Whether build vendor folder files on phar file exists(<cyan>False</cyan>)
      *  --files  STRING         Only pack the list files to the exist phar, multi use ',' split
@@ -68,25 +83,25 @@ class PharController extends Controller
      * @return int
      * @throws Exception
      * @example
-     *   {fullCommand}                               Pack current dir to a phar file.
-     *   {fullCommand} --dir vendor/swoft/devtool    Pack the specified dir to a phar file.
+     *  {fullCommand}                               Pack current dir to a phar file.
+     *  {fullCommand} --dir vendor/swoft/devtool    Pack the specified dir to a phar file.
      *
-     *  custom output phar file name
+     * custom output phar file name
      *   php -d phar.readonly=0 {binFile} phar:pack -o=mycli.phar
      *
-     *  only update the input files:
+     * only update the input files:
      *   php -d phar.readonly=0 {binFile} phar:pack -o=mycli.phar --debug --files app/Command/ServeCommand.php
      */
     public function packCommand($input, $output): int
     {
-        $startAt = microtime(1);
+        $startAt = microtime(true);
         $workDir = $input->getPwd();
 
         $dir = $input->getOpt('dir') ?: $workDir;
         $cpr = $this->configCompiler($dir);
 
         $refresh  = $input->boolOpt('refresh');
-        $outFile  = $input->sameOpt(['o', 'output'], basename($workDir) . '.phar');
+        $outFile  = $input->getSameStringOpt(['o', 'output'], $this->defPkgName);
         $pharFile = $workDir . '/' . $outFile;
 
         Show::aList([
@@ -186,7 +201,7 @@ class PharController extends Controller
             });
         } else {
             $counter = Show::counterTxt('Collecting ...', 'Done.');
-            $cpr->onAdd(function () use ($counter) {
+            $cpr->onAdd(static function () use ($counter) {
                 $counter->send(1);
             });
             $cpr->on(PharCompiler::ON_COLLECTED, function () use ($counter) {
