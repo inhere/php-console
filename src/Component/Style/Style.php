@@ -28,6 +28,7 @@ use function strpos;
  *
  * @package Inhere\Console\Component\Style
  * @link    https://github.com/ventoviro/windwalker-IO
+ * @deprecated please use Toolkit\Cli\Style instead.
  *
  * @method string info(string $message)
  * @method string comment(string $message)

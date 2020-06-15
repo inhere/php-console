@@ -16,7 +16,7 @@ use Inhere\Console\Component\Progress\CounterText;
 use Inhere\Console\Component\Progress\DynamicText;
 use Inhere\Console\Component\Progress\SimpleBar;
 use Inhere\Console\Component\Progress\SimpleTextBar;
-use Inhere\Console\Component\Style\Style;
+use Toolkit\Cli\Style;
 use Inhere\Console\Console;
 use LogicException;
 use Toolkit\Cli\Cli;

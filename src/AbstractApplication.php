@@ -10,7 +10,6 @@ namespace Inhere\Console;
 
 use ErrorException;
 use Inhere\Console\Component\ErrorHandler;
-use Inhere\Console\Component\Style\Style;
 use Inhere\Console\Contract\ApplicationInterface;
 use Inhere\Console\Contract\ErrorHandlerInterface;
 use Inhere\Console\Contract\InputInterface;
@@ -22,6 +21,7 @@ use Inhere\Console\Traits\InputOutputAwareTrait;
 use Inhere\Console\Traits\SimpleEventTrait;
 use InvalidArgumentException;
 use Throwable;
+use Toolkit\Cli\Style;
 use Toolkit\Stdlib\Helper\PhpHelper;
 use function array_keys;
 use function array_merge;

@@ -17,7 +17,7 @@ use Inhere\Console\Component\Formatter\Section;
 use Inhere\Console\Component\Formatter\SingleList;
 use Inhere\Console\Component\Formatter\Table;
 use Inhere\Console\Component\Formatter\Title;
-use Inhere\Console\Component\Style\Style;
+use Toolkit\Cli\Style;
 use Inhere\Console\Console;
 use Inhere\Console\Util\Interact;
 use Inhere\Console\Util\Show;

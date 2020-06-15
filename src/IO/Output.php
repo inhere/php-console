@@ -8,7 +8,7 @@
 
 namespace Inhere\Console\IO;
 
-use Inhere\Console\Component\Style\Style;
+use Toolkit\Cli\Style;
 use Inhere\Console\Console;
 use Inhere\Console\Traits\FormatOutputAwareTrait;
 use Toolkit\Cli\Cli;

@@ -12,7 +12,7 @@ use Inhere\Console\AbstractApplication;
 use Inhere\Console\Contract\ErrorHandlerInterface;
 use Inhere\Console\Exception\PromptException;
 use Throwable;
-use Toolkit\Cli\Highlighter;
+use Toolkit\Cli\Util\Highlighter;
 use function file_get_contents;
 use function get_class;
 use function sprintf;

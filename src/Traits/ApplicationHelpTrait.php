@@ -9,7 +9,7 @@
 namespace Inhere\Console\Traits;
 
 use Inhere\Console\AbstractHandler;
-use Inhere\Console\Component\Style\Style;
+use Toolkit\Cli\Style;
 use Inhere\Console\Console;
 use Inhere\Console\Contract\CommandInterface;
 use Inhere\Console\IO\Input;
