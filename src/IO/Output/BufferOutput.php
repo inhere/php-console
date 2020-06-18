@@ -3,6 +3,7 @@
 namespace Inhere\Console\IO\Output;
 
 use Inhere\Console\IO\Output;
+use function fopen;
 
 /**
  * Class BufferOutput
@@ -11,23 +12,13 @@ use Inhere\Console\IO\Output;
  */
 class BufferOutput extends Output
 {
-    /**
-     * @var array
-     */
-    private $buffer = [];
-
-    /**
-     * @param       $messages
-     * @param bool  $nl
-     * @param bool  $quit
-     * @param array $opts
-     *
-     * @return int
-     */
-    public function write($messages, $nl = true, $quit = false, array $opts = []): int
+    public function __construct()
     {
-        $this->buffer[] = $messages;
+        parent::__construct(fopen('php://memory', 'rwb'));
+    }
 
-        return 0;
+    public function getBuffer(): string
+    {
+        return '';
     }
 }

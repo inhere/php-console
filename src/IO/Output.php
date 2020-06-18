@@ -25,18 +25,18 @@ class Output implements \Inhere\Console\Contract\OutputInterface
     use FormatOutputAwareTrait;
 
     /**
-     * Normal output stream
+     * Normal output stream. Default is STDOUT
      *
      * @var resource
      */
-    protected $outputStream = STDOUT;
+    protected $outputStream;
 
     /**
-     * Error output stream
+     * Error output stream. Default is STDERR
      *
      * @var resource
      */
-    protected $errorStream = STDERR;
+    protected $errorStream;
 
     /**
      * 控制台窗口(字体/背景)颜色添加处理
@@ -55,9 +55,16 @@ class Output implements \Inhere\Console\Contract\OutputInterface
     {
         if ($outputStream) {
             $this->outputStream = $outputStream;
+        } else {
+            $this->outputStream = Cli::getOutputStream();
         }
 
         $this->getStyle();
+    }
+
+    public function resetOutputStream(): void
+    {
+        $this->outputStream = Cli::getOutputStream();
     }
 
     /***************************************************************************

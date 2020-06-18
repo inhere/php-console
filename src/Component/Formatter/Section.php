@@ -10,7 +10,6 @@ use function array_merge;
 use function ceil;
 use function implode;
 use function is_array;
-use function str_pad;
 use function trim;
 use function ucwords;
 use const PHP_EOL;
@@ -52,9 +51,9 @@ class Section extends MessageFormatter
         if ($tLength >= $width) {
             $titleIndent = Str::pad(self::CHAR_SPACE, $indent, self::CHAR_SPACE);
         } elseif ($opts['titlePos'] === self::POS_RIGHT) {
-            $titleIndent = str_pad(self::CHAR_SPACE, ceil($width - $tLength) + $indent, self::CHAR_SPACE);
+            $titleIndent = Str::pad(self::CHAR_SPACE, ceil($width - $tLength) + $indent, self::CHAR_SPACE);
         } elseif ($opts['titlePos'] === self::POS_MIDDLE) {
-            $titleIndent = str_pad(self::CHAR_SPACE, ceil(($width - $tLength) / 2) + $indent, self::CHAR_SPACE);
+            $titleIndent = Str::pad(self::CHAR_SPACE, ceil(($width - $tLength) / 2) + $indent, self::CHAR_SPACE);
         } else {
             $titleIndent = Str::pad(self::CHAR_SPACE, $indent, self::CHAR_SPACE);
         }
@@ -67,7 +66,7 @@ class Section extends MessageFormatter
         $showBBorder = (bool)$opts['bottomBorder'];
 
         if ($showTBorder || $showBBorder) {
-            $border = str_pad($char, $width, $char);
+            $border = Str::pad($char, $width, $char);
 
             if ($showTBorder) {
                 $topBorder = "{$indentStr}$border\n";

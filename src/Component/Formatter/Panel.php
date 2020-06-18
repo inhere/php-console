@@ -11,6 +11,7 @@ namespace Inhere\Console\Component\Formatter;
 use Inhere\Console\Component\MessageFormatter;
 use Inhere\Console\Console;
 use Inhere\Console\Util\FormatUtil;
+use Toolkit\Stdlib\Str;
 use Toolkit\Stdlib\Str\StrBuffer;
 use function array_filter;
 use function array_merge;
@@ -20,7 +21,6 @@ use function is_bool;
 use function is_numeric;
 use function mb_strlen;
 use function rtrim;
-use function str_pad;
 use function strip_tags;
 use function trim;
 use function ucwords;
@@ -117,7 +117,8 @@ EOF;
         foreach ($data as $label => $value) {
             // label exists
             if (!is_numeric($label)) {
-                $width         = mb_strlen($label, 'UTF-8');
+                $width = Str::len2($label, 'UTF-8');
+
                 $labelMaxWidth = $width > $labelMaxWidth ? $width : $labelMaxWidth;
             }
 
@@ -158,16 +159,17 @@ EOF;
 
         // output title
         if ($title) {
-            $title       = ucwords($title);
+            $title = ucwords($title);
+
             $titleLength = mb_strlen($title, 'UTF-8');
             $panelWidth  = $panelWidth > $titleLength ? $panelWidth : $titleLength;
-            $indentSpace = str_pad(' ', ceil($panelWidth / 2) - ceil($titleLength / 2) + 2 * 2, ' ');
+            $indentSpace = Str::pad(' ', ceil($panelWidth / 2) - ceil($titleLength / 2) + 2 * 2, ' ');
             Console::write("  {$indentSpace}<bold>{$title}</bold>");
         }
 
         // output panel top border
         if ($borderChar) {
-            $border = str_pad($borderChar, $panelWidth + (3 * 3), $borderChar);
+            $border = Str::pad($borderChar, $panelWidth + (3 * 3), $borderChar);
             Console::write('  ' . $border);
         }
 
@@ -215,7 +217,8 @@ EOF;
         foreach ($data as $label => $value) {
             // label exists
             if (!is_numeric($label)) {
-                $width         = mb_strlen($label, 'UTF-8');
+                $width = Str::len2($label, 'UTF-8');
+
                 $labelMaxWidth = $width > $labelMaxWidth ? $width : $labelMaxWidth;
             }
 
@@ -257,13 +260,13 @@ EOF;
             $title       = ucwords($title);
             $titleLength = mb_strlen($title, 'UTF-8');
             $panelWidth  = $panelWidth > $titleLength ? $panelWidth : $titleLength;
-            $indentSpace = str_pad(' ', ceil($panelWidth / 2) - ceil($titleLength / 2) + 2 * 2, ' ');
+            $indentSpace = Str::pad(' ', ceil($panelWidth / 2) - ceil($titleLength / 2) + 2 * 2, ' ');
             $buffer->write("  {$indentSpace}<bold>{$title}</bold>\n");
         }
 
         // output panel top border
         if ($topBorder = $this->titleBorder) {
-            $border = str_pad($topBorder, $panelWidth + (3 * 3), $topBorder);
+            $border = Str::pad($topBorder, $panelWidth + (3 * 3), $topBorder);
             $buffer->write('  ' . $border . PHP_EOL);
         }
 
@@ -280,7 +283,7 @@ EOF;
 
         // output panel bottom border
         if ($footBorder = $this->footerBorder) {
-            $border = str_pad($footBorder, $panelWidth + (3 * 3), $footBorder);
+            $border = Str::pad($footBorder, $panelWidth + (3 * 3), $footBorder);
             $buffer->write('  ' . $border . PHP_EOL);
         }
 

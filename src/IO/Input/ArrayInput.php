@@ -10,8 +10,6 @@ namespace Inhere\Console\IO\Input;
 
 use Inhere\Console\IO\Input;
 use Toolkit\Cli\Flags;
-use function array_shift;
-use function implode;
 
 /**
  * Class ArrayInput
@@ -31,7 +29,7 @@ class ArrayInput extends Input
         parent::__construct([], false);
 
         if ($parsing && $args) {
-           $this->doParse($this->flags);
+            $this->doParse($this->flags);
         }
     }
 

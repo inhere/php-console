@@ -8,7 +8,6 @@ use Toolkit\Stdlib\Str;
 use Toolkit\Sys\Sys;
 use function array_merge;
 use function ceil;
-use function str_pad;
 
 /**
  * Class Title
@@ -63,7 +62,7 @@ class Title extends MessageFormatter
         }
 
         $titleLine = "$titleIndent<bold>$title</bold>\n";
-        $border    = $indentStr . str_pad($char, $width, $char);
+        $border    = $indentStr . Str::pad($char, $width, $char);
 
         Console::write($titleLine . $border);
     }

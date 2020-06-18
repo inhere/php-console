@@ -11,6 +11,7 @@ namespace Inhere\Console\Component\Formatter;
 use Inhere\Console\Component\MessageFormatter;
 use Inhere\Console\Console;
 use Toolkit\Cli\ColorTag;
+use Toolkit\Stdlib\Str;
 use Toolkit\Stdlib\Str\StrBuffer;
 use function array_keys;
 use function array_merge;
@@ -19,7 +20,6 @@ use function ceil;
 use function count;
 use function is_string;
 use function mb_strlen;
-use function str_pad;
 use function ucwords;
 
 /**
@@ -164,11 +164,11 @@ class Table extends MessageFormatter
             $tStyle      = $opts['titleStyle'] ?: 'bold';
             $title       = ucwords(trim($title));
             $titleLength = mb_strlen($title, 'UTF-8');
-            $indentSpace = str_pad(' ', ceil($tableWidth / 2) - ceil($titleLength / 2) + ($columnCount * 2), ' ');
+            $indentSpace = Str::pad(' ', ceil($tableWidth / 2) - ceil($titleLength / 2) + ($columnCount * 2), ' ');
             $buf->write("  {$indentSpace}<$tStyle>{$title}</$tStyle>\n");
         }
 
-        $border = $leftIndent . str_pad($rowBorderChar, $tableWidth + ($columnCount * 3) + 2, $rowBorderChar);
+        $border = $leftIndent . Str::pad($rowBorderChar, $tableWidth + ($columnCount * 3) + 2, $rowBorderChar);
 
         // output table top border
         if ($showBorder) {
@@ -184,7 +184,7 @@ class Table extends MessageFormatter
             foreach ($head as $index => $name) {
                 $colMaxWidth = $info['columnMaxWidth'][$index];
                 // format
-                $name    = str_pad($name, $colMaxWidth, ' ');
+                $name    = Str::pad($name, $colMaxWidth, ' ');
                 $name    = ColorTag::wrap($name, $opts['headStyle']);
                 $headStr .= " {$name} {$colBorderChar}";
             }
@@ -193,7 +193,7 @@ class Table extends MessageFormatter
 
             // head border: split head and body
             if ($headBorderChar = $opts['headBorderChar']) {
-                $headBorder = $leftIndent . str_pad(
+                $headBorder = $leftIndent . Str::pad(
                     $headBorderChar,
                     $tableWidth + ($columnCount * 3) + 2,
                     $headBorderChar
@@ -212,7 +212,7 @@ class Table extends MessageFormatter
             foreach ((array)$row as $value) {
                 $colMaxWidth = $info['columnMaxWidth'][$colIndex];
                 // format
-                $value  = str_pad($value, $colMaxWidth, ' ');
+                $value  = Str::pad($value, $colMaxWidth, ' ');
                 $value  = ColorTag::wrap($value, $opts['bodyStyle']);
                 $rowStr .= " {$value} {$colBorderChar}";
                 $colIndex++;

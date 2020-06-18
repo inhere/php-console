@@ -275,7 +275,7 @@ class ProgressBar
      */
     protected function buildLine()
     {
-        //        $regex = "{%([a-z\-_]+)(?:\:([^%]+))?%}i";
+        // $regex = "{%([a-z\-_]+)(?:\:([^%]+))?%}i";
         return preg_replace_callback('/{@([\w]+)(?:\:([\w-]+))?}/i', function ($matches) {
             if ($formatter = $this->getParser($matches[1])) {
                 $text = $formatter($this, $this->output);
@@ -305,10 +305,10 @@ class ProgressBar
     }
 
     /**
-     * get section Parser
+     * Get section Parser
      *
-     * @param string       $section
-     * @param bool|boolean $throwException
+     * @param string $section
+     * @param bool    $throwException
      *
      * @return mixed
      * @throws RuntimeException
@@ -549,35 +549,37 @@ class ProgressBar
     private static function loadDefaultParsers(): array
     {
         return [
-            'bar'       => function (self $bar) {
-                $completeBars = floor($bar->getMaxSteps() > 0 ? $bar->getPercent() * $bar->getBarWidth() :
-                    $bar->getProgress() % $bar->getBarWidth());
+            'bar'       => static function (self $bar) {
+                $barWidth = $bar->getBarWidth();
+                $completeBars = (int)floor($bar->getMaxSteps() > 0 ? $bar->getPercent() * $barWidth :
+                    $bar->getProgress() % $barWidth);
                 $display      = str_repeat($bar->getCompleteChar(), $completeBars);
 
-                if ($completeBars < $bar->getBarWidth()) {
-                    $emptyBars = $bar->getBarWidth() - $completeBars;
+                if ($completeBars < $barWidth) {
+                    $emptyBars = $barWidth - $completeBars;
                     $display   .= $bar->getProgressChar() . str_repeat($bar->getRemainingChar(), $emptyBars);
                 }
 
                 return $display;
             },
-            'elapsed'   => function (self $bar) {
+            'elapsed'   => static function (self $bar) {
                 return FormatUtil::howLongAgo(time() - $bar->getStartTime());
             },
-            'remaining' => function (self $bar) {
+            'remaining' => static function (self $bar) {
                 if (!$bar->getMaxSteps()) {
                     throw new LogicException('Unable to display the remaining time if the maximum number of steps is not set.');
                 }
 
-                if (!$bar->getProgress()) {
+                $progress = $bar->getProgress();
+                if (!$progress) {
                     $remaining = 0;
                 } else {
-                    $remaining = round((time() - $bar->getStartTime()) / $bar->getProgress() * ($bar->getMaxSteps() - $bar->getProgress()));
+                    $remaining = (int)round((time() - $bar->getStartTime()) / $progress * ($bar->getMaxSteps() - $progress));
                 }
 
                 return FormatUtil::howLongAgo($remaining);
             },
-            'estimated' => function (self $bar) {
+            'estimated' => static function (self $bar) {
                 if (!$bar->getMaxSteps()) {
                     return 0;
                     // throw new \LogicException('Unable to display the estimated time if the maximum number of steps is not set.');
@@ -586,22 +588,22 @@ class ProgressBar
                 if (!$bar->getProgress()) {
                     $estimated = 0;
                 } else {
-                    $estimated = round((time() - $bar->getStartTime()) / $bar->getProgress() * $bar->getMaxSteps());
+                    $estimated = (int)round((time() - $bar->getStartTime()) / $bar->getProgress() * $bar->getMaxSteps());
                 }
 
                 return FormatUtil::howLongAgo($estimated);
             },
-            'memory'    => function () {
+            'memory'    => static function () {
                 return FormatUtil::memoryUsage(memory_get_usage(true));
             },
-            'current'   => function (self $bar) {
-                return str_pad($bar->getProgress(), $bar->getStepWidth(), ' ', STR_PAD_LEFT);
+            'current'   => static function (self $bar) {
+                return Str::pad($bar->getProgress(), $bar->getStepWidth(), ' ', STR_PAD_LEFT);
             },
-            'max'       => function (self $bar) {
+            'max'       => static function (self $bar) {
                 return $bar->getMaxSteps();
             },
-            'percent'   => function (self $bar) {
-                return floor($bar->getPercent() * 100);
+            'percent'   => static function (self $bar) {
+                return (float)floor($bar->getPercent() * 100);
             },
         ];
     }

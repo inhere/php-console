@@ -8,6 +8,7 @@
 
 namespace Inhere\Console\IO;
 
+use Toolkit\Cli\Cli;
 use Toolkit\Cli\Flags;
 use function array_map;
 use function array_shift;
@@ -17,8 +18,6 @@ use function fwrite;
 use function implode;
 use function preg_match;
 use function trim;
-use const STDIN;
-use const STDOUT;
 
 /**
  * Class Input - The input information. by parse global var $argv.
@@ -36,9 +35,11 @@ class Input extends AbstractInput
     protected $commandId = '';
 
     /**
+     * Default is STDIN
+     *
      * @var resource
      */
-    protected $inputStream = STDIN;
+    protected $inputStream;
 
     /**
      * Input constructor.
@@ -52,6 +53,7 @@ class Input extends AbstractInput
             $args = $_SERVER['argv'];
         }
 
+        $this->inputStream = Cli::getInputStream();
         $this->collectInfo($args);
 
         if ($parsing) {
@@ -89,6 +91,11 @@ class Input extends AbstractInput
 
         // find command name
         $this->findCommand();
+    }
+
+    public function resetInputStream(): void
+    {
+        $this->inputStream = Cli::getInputStream();
     }
 
     /**
@@ -130,7 +137,7 @@ class Input extends AbstractInput
     public function read(string $question = '', bool $nl = false): string
     {
         if ($question) {
-            fwrite(STDOUT, $question . ($nl ? "\n" : ''));
+            fwrite(Cli::getOutputStream(), $question . ($nl ? "\n" : ''));
         }
 
         return trim(fgets($this->inputStream));

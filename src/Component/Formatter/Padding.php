@@ -6,8 +6,8 @@ use Inhere\Console\Component\MessageFormatter;
 use Inhere\Console\Console;
 use Inhere\Console\Util\Helper;
 use Toolkit\Cli\ColorTag;
+use Toolkit\Stdlib\Str;
 use function array_merge;
-use function str_pad;
 use function trim;
 use function ucfirst;
 
@@ -50,7 +50,7 @@ class Padding extends MessageFormatter
 
         foreach ($data as $label => $value) {
             $value  = ColorTag::wrap((string)$value, $opts['valueStyle']);
-            $string .= $opts['indent'] . str_pad((string)$label, $paddingLen, $opts['char']) . " $value\n";
+            $string .= $opts['indent'] . Str::pad($label, $paddingLen, $opts['char']) . " $value\n";
         }
 
         Console::write(trim($string));
