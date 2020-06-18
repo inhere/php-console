@@ -12,8 +12,6 @@ use Toolkit\Cli\Style;
 use Inhere\Console\Console;
 use Inhere\Console\Traits\FormatOutputAwareTrait;
 use Toolkit\Cli\Cli;
-use const STDERR;
-use const STDOUT;
 
 /**
  * Class Output

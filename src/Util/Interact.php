@@ -17,10 +17,10 @@ use Inhere\Console\Component\Interact\Password;
 use Inhere\Console\Component\Interact\Question;
 use Inhere\Console\Console;
 use RuntimeException;
+use Toolkit\Cli\Cli;
 use function sprintf;
 use function strtolower;
 use function trim;
-use const STDIN;
 
 /**
  * Class Interact
@@ -47,7 +47,7 @@ class Interact extends Show
             Console::write($message, $nl);
         }
 
-        $stream = $opts['stream'] ?? STDIN;
+        $stream = $opts['stream'] ?? Cli::getInputStream();
 
         return trim(fgets($stream));
     }
