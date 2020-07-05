@@ -58,6 +58,9 @@ class PharCompiler
 {
     public const ON_ADD   = 'add';
 
+    public const ADD_CLI_INDEX = 'add.index.cli';
+    public const ADD_WEB_INDEX = 'add.index.web';
+
     public const ON_SKIP  = 'skip';
 
     public const ON_ERROR = 'error';
@@ -631,11 +634,17 @@ class PharCompiler
     {
         if ($this->cliIndex) {
             $this->counter++;
-            $path    = $this->basePath . '/' . $this->cliIndex;
-            $content = preg_replace('{^#!/usr/bin/env php\s*}', '', file_get_contents($path));
+            $path = $this->basePath . '/' . $this->cliIndex;
 
             $this->fire(self::ON_ADD, $this->cliIndex, $this->counter);
-            $phar->addFromString($this->cliIndex, trim($content) . PHP_EOL);
+
+            $rawContent = preg_replace('{^#!/usr/bin/env php\s*}', '', file_get_contents($path));
+            $fmtContent = $this->fire(self::ADD_CLI_INDEX, $this->cliIndex, $rawContent);
+            if ($fmtContent) {
+                $rawContent = $fmtContent;
+            }
+
+            $phar->addFromString($this->cliIndex, trim($rawContent) . PHP_EOL);
         }
 
         if ($this->webIndex) {
@@ -644,8 +653,13 @@ class PharCompiler
 
             $this->fire(self::ON_ADD, $this->webIndex, $this->counter);
 
-            $content = file_get_contents($path);
-            $phar->addFromString($this->webIndex, trim($content) . PHP_EOL);
+            $rawContent = file_get_contents($path);
+            $fmtContent = $this->fire(self::ADD_WEB_INDEX, $this->cliIndex, $rawContent);
+            if ($fmtContent) {
+                $rawContent = $fmtContent;
+            }
+
+            $phar->addFromString($this->webIndex, trim($rawContent) . PHP_EOL);
         }
     }
 
@@ -842,13 +856,17 @@ EOF;
     /**
      * @param string $event
      * @param array  $args
+     *
+     * @return mixed|null
      */
-    private function fire(string $event, ...$args): void
+    private function fire(string $event, ...$args)
     {
         if (isset($this->events[$event])) {
             $cb = $this->events[$event];
-            $cb(...$args);
+            return $cb(...$args);
         }
+
+        return null;
     }
 
     /**
