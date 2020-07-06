@@ -400,6 +400,16 @@ abstract class AbstractApplication implements ApplicationInterface
     }
 
     /**
+     * @param string $name
+     *
+     * @return array
+     */
+    public function getAliases(string $name = ''): array
+    {
+        return $this->router->getAliases($name);
+    }
+
+    /**
      * @param int    $level
      * @param string $format
      * @param mixed  ...$args

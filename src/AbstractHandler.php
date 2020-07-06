@@ -414,8 +414,8 @@ abstract class AbstractHandler implements CommandHandlerInterface
                 $shortNames = $conf['shortcut'] ? explode('|', $conf['shortcut']) : [];
                 if ($srt = $in->findOneShortOpts($shortNames)) {
                     $opts[$name] = $in->sOpt($srt);
-                } elseif ($conf['default']) {
-
+                } elseif ($conf['default'] !== null) {
+                    $opts[$name] = $conf['default'];
                 } elseif ($conf['required']) {
                     $missingOpts[] = "--{$name}" . ($srt ? "|-{$srt}" : '');
                 }
@@ -606,8 +606,10 @@ abstract class AbstractHandler implements CommandHandlerInterface
         $ref  = new ReflectionClass($this);
         $name = $this->input->getCommand();
 
-        $this->logf(Console::VERB_CRAZY, 'display help info for the method=%s, action=%s, class=%s', $method, $action,
-            static::class);
+        $this->log(Console::VERB_CRAZY, "display help info for the method=$method", [
+            'class'  =>  static::class,
+            'action' => $action,
+        ]);
 
         if (!$ref->hasMethod($method)) {
             $this->write("The command [<info>$name</info>] don't exist in the group: " . static::getName());
@@ -663,7 +665,7 @@ abstract class AbstractHandler implements CommandHandlerInterface
 
         if (isset($help['Description:'])) {
             $description = $help['Description:'] ?: 'No description message for the command';
-            $this->write(ucfirst($description) . PHP_EOL);
+            $this->write(ucfirst($this->parseCommentsVars($description)) . PHP_EOL);
             unset($help['Description:']);
         }
 
@@ -803,6 +805,20 @@ abstract class AbstractHandler implements CommandHandlerInterface
         }
 
         Console::logf($level, $format, ...$args);
+    }
+
+    /**
+     * @param int    $level
+     * @param string $message
+     * @param array  $extra
+     */
+    public function log(int $level, string $message, array $extra = []): void
+    {
+        if ($this->getVerbLevel() < $level) {
+            return;
+        }
+
+        Console::log($message, $extra, $level);
     }
 
     /**

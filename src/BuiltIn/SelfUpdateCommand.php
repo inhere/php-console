@@ -25,13 +25,13 @@ use function strlen;
  */
 class SelfUpdateCommand extends Command
 {
-    public const VERSION_URL = 'https://padraic.github.io/humbug/downloads/humbug.version';
+    public const VERSION_URL = 'https://inhere.github.io/humbug/downloads/humbug.version';
 
-    public const PHAR_URL = 'https://padraic.github.io/humbug/downloads/humbug.phar';
+    public const PHAR_URL = 'https://inhere.github.io/humbug/downloads/humbug.phar';
 
-    public const PACKAGE_NAME = 'humbug/humbug';
+    public const PACKAGE_NAME = 'inhere/console';
 
-    public const FILE_NAME = 'humbug.phar';
+    public const FILE_NAME = 'console.phar';
 
     protected static $name = 'self-update';
 

@@ -42,7 +42,7 @@ trait NameAliasTrait
     }
 
     /**
-     * get real name by alias
+     * Get real name by alias
      *
      * @param string $alias
      *
@@ -64,10 +64,23 @@ trait NameAliasTrait
     }
 
     /**
+     * @param string $name
+     *
      * @return array
      */
-    public function getAliases(): array
+    public function getAliases(string $name = ''): array
     {
+        if ($name) {
+            $aliases = [];
+            foreach ($this->aliases as $alias => $n) {
+               if ($name === $n) {
+                   $aliases[] = $alias;
+               }
+            }
+
+            return $aliases;
+        }
+
         return $this->aliases;
     }
 }

@@ -315,6 +315,16 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
         $method  = $this->actionSuffix ? $action . ucfirst($this->actionSuffix) : $action;
         $aliases = $this->getCommandAliases($action);
 
+        // up: find global aliases from app
+        if ($this->app) {
+            $commandId = $this->input->getCommandId();
+            $gAliases  = $this->app->getAliases($commandId);
+
+            if ($gAliases) {
+                $aliases = array_merge($aliases, $gAliases);
+            }
+        }
+
         // For a specified sub-command.
         return $this->showHelpByMethodAnnotations($method, $action, $aliases);
     }
