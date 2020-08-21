@@ -6,7 +6,7 @@
  * Time: 11:38
  */
 
-namespace Inhere\Console\Traits;
+namespace Inhere\Console\Concern;
 
 use Closure;
 use Inhere\Console\Util\Interact;
@@ -16,7 +16,7 @@ use function method_exists;
 /**
  * Class UserInteractAwareTrait
  *
- * @package Inhere\Console\Traits
+ * @package Inhere\Console\Concern
  * @see     Interact
  *
  * @method string readRow($message = null, $nl = false)
@@ -32,10 +32,10 @@ use function method_exists;
 trait UserInteractAwareTrait
 {
     /**
-     * @param string       $description
-     * @param string|array $options Option data
-     * @param string|int   $default Default option
-     * @param bool         $allowExit
+     * @param string          $description
+     * @param string|array    $options Option data
+     * @param string|int|null $default Default option
+     * @param bool            $allowExit
      *
      * @return string
      * @see Interact::choice()
@@ -46,10 +46,10 @@ trait UserInteractAwareTrait
     }
 
     /**
-     * @param string       $description
-     * @param string|array $options Option data
-     * @param string|int   $default Default option
-     * @param bool         $allowExit
+     * @param string          $description
+     * @param string|array    $options Option data
+     * @param string|int|null $default Default option
+     * @param bool            $allowExit
      *
      * @return string
      */

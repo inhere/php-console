@@ -6,7 +6,7 @@
  * Time: 15:10
  */
 
-namespace Inhere\Console\Traits;
+namespace Inhere\Console\Concern;
 
 use Closure;
 use Generator;

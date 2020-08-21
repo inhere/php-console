@@ -6,7 +6,7 @@
  * Time: 09:54
  */
 
-namespace Inhere\Console\Traits;
+namespace Inhere\Console\Concern;
 
 use Inhere\Console\AbstractHandler;
 use Toolkit\Cli\Style;
@@ -39,7 +39,7 @@ use const PHP_VERSION;
 /**
  * Trait ApplicationHelpTrait
  *
- * @package Inhere\Console\Traits
+ * @package Inhere\Console\Concern
  */
 trait ApplicationHelpTrait
 {

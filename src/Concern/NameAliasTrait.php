@@ -6,14 +6,14 @@
  * Time: 9:20
  */
 
-namespace Inhere\Console\Traits;
+namespace Inhere\Console\Concern;
 
 use InvalidArgumentException;
 
 /**
  * Class NameAliasTrait
  *
- * @package Inhere\Console\Traits
+ * @package Inhere\Console\Concern
  */
 trait NameAliasTrait
 {

@@ -6,7 +6,7 @@
  * Time: 16:17
  */
 
-namespace Inhere\Console\Traits;
+namespace Inhere\Console\Concern;
 
 use function count;
 use function in_array;
@@ -14,7 +14,7 @@ use function in_array;
 /**
  * Class SimpleEventStaticTrait
  *
- * @package Inhere\Console\Traits
+ * @package Inhere\Console\Concern
  */
 trait SimpleEventTrait
 {

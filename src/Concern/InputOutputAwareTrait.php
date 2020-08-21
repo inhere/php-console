@@ -6,7 +6,7 @@
  * Time: 11:38
  */
 
-namespace Inhere\Console\Traits;
+namespace Inhere\Console\Concern;
 
 use Inhere\Console\Console;
 use Inhere\Console\IO\Input;
@@ -17,7 +17,7 @@ use Inhere\Console\Contract\OutputInterface;
 /**
  * Class InputOutputAwareTrait
  *
- * @package Inhere\Console\Traits
+ * @package Inhere\Console\Concern
  */
 trait InputOutputAwareTrait
 {

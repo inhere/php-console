@@ -8,9 +8,10 @@
 
 namespace Inhere\Console\IO;
 
+use Inhere\Console\Contract\OutputInterface;
 use Toolkit\Cli\Style;
 use Inhere\Console\Console;
-use Inhere\Console\Traits\FormatOutputAwareTrait;
+use Inhere\Console\Concern\FormatOutputAwareTrait;
 use Toolkit\Cli\Cli;
 
 /**
@@ -18,7 +19,7 @@ use Toolkit\Cli\Cli;
  *
  * @package Inhere\Console\IO
  */
-class Output implements \Inhere\Console\Contract\OutputInterface
+class Output implements OutputInterface
 {
     use FormatOutputAwareTrait;
 

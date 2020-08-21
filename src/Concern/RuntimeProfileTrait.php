@@ -6,7 +6,7 @@
  * Time: 13:10
  */
 
-namespace Inhere\Console\Traits;
+namespace Inhere\Console\Concern;
 
 use InvalidArgumentException;
 use Toolkit\Stdlib\Helper\PhpHelper;
@@ -19,7 +19,7 @@ use function microtime;
 /**
  * Trait RuntimeProfileTrait
  *
- * @package Inhere\Library\Traits
+ * @package Inhere\Library\Concern
  */
 trait RuntimeProfileTrait
 {
