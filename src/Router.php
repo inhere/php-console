@@ -78,7 +78,7 @@ class Router implements RouterInterface
      * Register a app group command(by controller)
      *
      * @param string                     $name  The controller name
-     * @param string|ControllerInterface $class The controller class
+     * @param string|ControllerInterface|null $class The controller class
      * @param array                      $options
      *                                          array:
      *                                          - aliases     The command aliases
@@ -145,7 +145,7 @@ class Router implements RouterInterface
      * Register a app independent console command
      *
      * @param string|CommandInterface         $name
-     * @param string|Closure|CommandInterface $handler
+     * @param string|Closure|CommandInterface|null $handler
      * @param array                           $options
      *  array:
      *  - aliases     The command aliases
