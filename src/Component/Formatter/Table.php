@@ -131,7 +131,7 @@ class Table extends MessageFormatter
                         $hasHead = true;
                     }
 
-                    $info['columnMaxWidth'][$index] = mb_strlen($name, 'UTF-8');
+                    $info['columnMaxWidth'][$index] = mb_strwidth($name, 'UTF-8');
                 }
             }
 
@@ -140,14 +140,14 @@ class Table extends MessageFormatter
             foreach ((array)$row as $value) {
                 // collection column max width
                 if (isset($info['columnMaxWidth'][$colIndex])) {
-                    $colWidth = mb_strlen($value, 'UTF-8');
+                    $colWidth = mb_strwidth($value, 'UTF-8');
 
                     // If current column width gt old column width. override old width.
                     if ($colWidth > $info['columnMaxWidth'][$colIndex]) {
                         $info['columnMaxWidth'][$colIndex] = $colWidth;
                     }
                 } else {
-                    $info['columnMaxWidth'][$colIndex] = mb_strlen($value, 'UTF-8');
+                    $info['columnMaxWidth'][$colIndex] = mb_strwidth($value, 'UTF-8');
                 }
 
                 $colIndex++;
@@ -163,7 +163,7 @@ class Table extends MessageFormatter
         if ($title) {
             $tStyle      = $opts['titleStyle'] ?: 'bold';
             $title       = ucwords(trim($title));
-            $titleLength = mb_strlen($title, 'UTF-8');
+            $titleLength = mb_strwidth($title, 'UTF-8');
             $indentSpace = Str::pad(' ', ceil($tableWidth / 2) - ceil($titleLength / 2) + ($columnCount * 2), ' ');
             $buf->write("  {$indentSpace}<$tStyle>{$title}</$tStyle>\n");
         }
@@ -184,7 +184,7 @@ class Table extends MessageFormatter
             foreach ($head as $index => $name) {
                 $colMaxWidth = $info['columnMaxWidth'][$index];
                 // format
-                $name    = Str::pad($name, $colMaxWidth, ' ');
+                $name    = self::padByWidth($name, $colMaxWidth); // Str::pad($name, $colMaxWidth, ' ');
                 $name    = ColorTag::wrap($name, $opts['headStyle']);
                 $headStr .= " {$name} {$colBorderChar}";
             }
@@ -212,7 +212,7 @@ class Table extends MessageFormatter
             foreach ((array)$row as $value) {
                 $colMaxWidth = $info['columnMaxWidth'][$colIndex];
                 // format
-                $value  = Str::pad($value, $colMaxWidth, ' ');
+                $value  = self::padByWidth($value, $colMaxWidth);
                 $value  = ColorTag::wrap($value, $opts['bodyStyle']);
                 $rowStr .= " {$value} {$colBorderChar}";
                 $colIndex++;
@@ -228,5 +228,9 @@ class Table extends MessageFormatter
         }
 
         return Console::write($buf);
+    }
+
+    public static function padByWidth(string $value,int $padLen, $padStr = ' ') {
+         return $value . str_repeat($padStr, $padLen - mb_strwidth($value, 'UTF-8'));
     }
 }
