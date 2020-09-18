@@ -162,7 +162,7 @@ class Table extends MessageFormatter
         // output title
         if ($title) {
             $tStyle      = $opts['titleStyle'] ?: 'bold';
-            $title       = ucwords(trim($title));
+            $title       = mb_convert_case(trim($title),MB_CASE_TITLE);
             $titleLength = mb_strwidth($title, 'UTF-8');
             $indentSpace = Str::pad(' ', ceil($tableWidth / 2) - ceil($titleLength / 2) + ($columnCount * 2), ' ');
             $buf->write("  {$indentSpace}<$tStyle>{$title}</$tStyle>\n");
@@ -184,7 +184,7 @@ class Table extends MessageFormatter
             foreach ($head as $index => $name) {
                 $colMaxWidth = $info['columnMaxWidth'][$index];
                 // format
-                $name    = self::padByWidth($name, $colMaxWidth); // Str::pad($name, $colMaxWidth, ' ');
+                $name    = self::padByWidth($name, $colMaxWidth);
                 $name    = ColorTag::wrap($name, $opts['headStyle']);
                 $headStr .= " {$name} {$colBorderChar}";
             }
