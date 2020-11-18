@@ -200,7 +200,7 @@ trait FormatOutputAwareTrait
      * @param string      $title
      * @param array       $opts
      */
-    public function aList($data, string $title = '', array $opts = []): void
+    public function aList($data, string $title = 'Information', array $opts = []): void
     {
         SingleList::show($data, $title, $opts);
     }

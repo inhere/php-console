@@ -99,13 +99,15 @@ class Console extends Cli
      */
     public static function logf(int $level, string $format, ...$args): void
     {
-        $levelName  = self::LEVEL_NAMES[$level] ?? 'INFO';
-        $colorName  = self::LEVEL2TAG[$level] ?? 'info';
+        $levelName = self::LEVEL_NAMES[$level] ?? 'INFO';
+        $colorName = self::LEVEL2TAG[$level] ?? 'info';
+
         $taggedName = ColorTag::add($levelName, $colorName);
 
-        $message = strpos($format, '%') > 0 ? sprintf($format, ...$args) : $format;
+        $datetime = date('Y/m/d H:i:s');
+        $message  = strpos($format, '%') > 0 ? sprintf($format, ...$args) : $format;
 
-        self::writef('[%s] %s', $taggedName, $message);
+        self::writef('%s [%s] %s', $datetime, $taggedName, $message);
     }
 
     /**
