@@ -101,12 +101,12 @@ abstract class AbstractHandler implements CommandHandlerInterface
     /**
      * @var InputDefinition|null
      */
-    private $definition;
+    protected $definition;
 
     /**
      * @var string
      */
-    private $processTitle = '';
+    protected $processTitle = '';
 
     /**
      * @var array

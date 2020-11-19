@@ -11,6 +11,7 @@ namespace Inhere\Console;
 use Generator;
 use Inhere\Console\Contract\ControllerInterface;
 use Inhere\Console\IO\Input;
+use Inhere\Console\IO\InputDefinition;
 use Inhere\Console\IO\Output;
 use Inhere\Console\Util\FormatUtil;
 use Inhere\Console\Util\Helper;
@@ -20,8 +21,8 @@ use ReflectionMethod;
 use ReflectionObject;
 use RuntimeException;
 use Toolkit\Cli\ColorTag;
-use Toolkit\Stdlib\Util\PhpDoc;
 use Toolkit\Stdlib\Str;
+use Toolkit\Stdlib\Util\PhpDoc;
 use function array_flip;
 use function array_keys;
 use function array_merge;
@@ -67,6 +68,7 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
 
     /**
      * Action name, no suffix.
+     * eg: updateCommand() -> action: 'update'
      *
      * @var string
      */
@@ -103,6 +105,21 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
      * @var array From disabledCommands()
      */
     private $disabledCommands = [];
+
+    /**
+     * Metadata for sub-commands. such as: desc, alias
+     * Notice: you must add metadata on `init()`
+     *
+     * [
+     *  'command real name' => [
+     *      'desc'  => 'sub command description',
+     *      'alias' => [],
+     *   ],
+     * ],
+     *
+     * @var array
+     */
+    protected $commandMetas = [];
 
     /**
      * Define command alias mapping. please rewrite it on sub-class.
@@ -177,11 +194,11 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
         }
 
         $this->action = Str::camelCase($this->getRealCommandName($command));
-
         if (!$this->action) {
             return $this->showHelp();
         }
 
+        // do running
         return parent::run($command);
     }
 
@@ -190,12 +207,30 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
      */
     protected function configure(): void
     {
-        // eg. indexConfigure() for indexCommand()
+        // eg. use `indexConfigure()` for `indexCommand()`
         $method = $this->action . self::CONFIGURE_SUFFIX;
 
         if (method_exists($this, $method)) {
             $this->$method($this->input);
         }
+    }
+
+    /**
+     * @return InputDefinition
+     */
+    protected function createDefinition(): InputDefinition
+    {
+        if (!$this->definition) {
+            $this->definition = new InputDefinition();
+
+            // if have been set desc for the sub-command
+            $cmdDesc = $this->commandMetas[$this->action]['desc'] ?? '';
+            if ($cmdDesc) {
+                $this->definition->setDescription($cmdDesc);
+            }
+        }
+
+        return $this->definition;
     }
 
     /**
@@ -271,6 +306,9 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
         return $this->helpCommand() === 0;
     }
 
+    /**
+     * @param array $help
+     */
     protected function beforeRenderCommandHelp(array &$help): void
     {
         $help['Group Options:'] = FormatUtil::alignOptions($this->groupOptions);
@@ -305,7 +343,7 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
     {
         $action = $this->action;
 
-        // For all sub-commands of the controller
+        // Not input action, for all sub-commands of the controller
         if (!$action && !($action = $this->getFirstArg())) {
             $this->showCommandList();
             return 0;
@@ -354,12 +392,15 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
         $showDisabled = (bool)$this->getOpt('show-disabled', false);
         $defaultDes   = 'No description message';
 
+        /**
+         * @var $cmd string The command name.
+         */
         foreach ($this->getAllCommandMethods($ref) as $cmd => $m) {
             if (!$cmd) {
                 continue;
             }
 
-            $desc = $defaultDes;
+            $desc = $this->getCommandMeta('desc', $defaultDes, $cmd);
             if ($phpDoc = $m->getDocComment()) {
                 $desc = PhpDoc::firstLine($phpDoc);
             }
@@ -629,5 +670,38 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
     public function setDelimiter(string $delimiter): void
     {
         $this->delimiter = $delimiter;
+    }
+
+    /**
+     * @return array
+     */
+    public function getCommandMetas(): array
+    {
+        return $this->commandMetas;
+    }
+
+    /**
+     * @param string $command
+     * @param array  $meta  eg: ['desc' => '', 'alias' => []]
+     */
+    public function setCommandMeta(string $command, array $meta): void
+    {
+        if ($command) {
+            $this->commandMetas[$command] = $meta;
+        }
+    }
+
+    /**
+     * @param string $key
+     * @param null   $default
+     * @param string $command if not set, will use $this->action
+     *
+     * @return mixed|null
+     */
+    public function getCommandMeta(string $key, $default = null, string $command = '')
+    {
+        $action = $command ?: $this->action;
+
+        return $this->commandMetas[$action][$key] ?? $default;
     }
 }

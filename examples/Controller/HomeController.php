@@ -42,6 +42,7 @@ class HomeController extends Controller
             'ml'  => 'multiList',
             'sl'  => 'splitLine',
             'dt'  => 'dynamicText',
+            'da'  => 'defArg',
         ];
     }
 
@@ -50,6 +51,10 @@ class HomeController extends Controller
         parent::init();
 
         $this->addCommentsVar('internalFonts', implode(',', ArtFont::getInternalFonts()));
+
+        $this->setCommandMeta('defArg', [
+            'desc' => 'the command args and opts config use defined configure, it like symfony console, please see defArgConfigure()',
+        ]);
     }
 
     /**
@@ -75,6 +80,7 @@ class HomeController extends Controller
     /**
      * this is a command's description message
      * the second line text
+     *
      * @usage {command} [arg ...] [--opt ...]
      * @arguments
      *  arg1        argument description 1
@@ -107,15 +113,13 @@ class HomeController extends Controller
     protected function defArgConfigure(): void
     {
         $this->createDefinition()
-            ->setDescription('the command arg/opt config use defined configure, it like symfony console: argument define by position')
+            // ->setDescription('the command args and opts config use defined configure, it like symfony console, please see defArgConfigure()')
             ->addArgument('name', Input::ARG_REQUIRED, "description for the argument 'name'")
             ->addOption('yes', 'y', Input::OPT_BOOLEAN, "description for the option 'yes'")
             ->addOption('opt1', null, Input::OPT_REQUIRED, "description for the option 'opt1'");
     }
 
-    /**
-     * the command arg/opt config use defined configure, it like symfony console: argument define by position
-     */
+    // desc set at $this->commandMetas.
     public function defArgCommand(): void
     {
         $this->output->dump($this->input->getArgs(), $this->input->getOpts(), $this->input->getBoolOpt('y'));
