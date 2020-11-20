@@ -1,0 +1,52 @@
+name: Unit-tests
+
+on:
+  push:
+    paths:
+      - '**.php'
+      - 'composer.json'
+      - '**.yml'
+
+jobs:
+  test:
+    name: Test on php ${{ matrix.php}} and ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    strategy:
+      fail-fast: true
+      matrix:
+        php: [7.3, 7.4] #
+        os: [ubuntu-latest, macOS-latest] # windows-latest,
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Set ENV vars
+        # https://docs.github.com/en/free-pro-team@latest/actions/reference/workflow-commands-for-github-actions#setting-an-environment-variable
+        run: |
+          echo "RELEASE_TAG=${GITHUB_REF:10}" >> $GITHUB_ENV
+          echo "RELEASE_NAME=$GITHUB_WORKFLOW" >> $GITHUB_ENV
+
+      - name: Display Env
+        run: env
+
+      # usage refer https://github.com/shivammathur/setup-php
+      - name: Setup PHP
+        timeout-minutes: 5
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php}}
+          tools: pecl, php-cs-fixer, phpunit
+          extensions: mbstring, dom, fileinfo, mysql, openssl, igbinary, redis # , swoole-4.4.19 #optional, setup extensions
+          ini-values: post_max_size=56M, short_open_tag=On #optional, setup php.ini configuration
+          coverage: none #optional, setup coverage driver: xdebug, none
+
+      - name: Install dependencies
+        run: composer install --no-progress --no-suggest
+
+      # Add a test script to composer.json, for instance: "test": "vendor/bin/phpunit"
+      # Docs: https://getcomposer.org/doc/articles/scripts.md
+
+      - name: Run unit tests
+        run: php vendor/bin/phpunit
