@@ -160,10 +160,17 @@ abstract class AbstractHandler implements CommandHandlerInterface
         $this->commentsVars = $this->annotationVars();
 
         $this->init();
+
+        $this->afterInit();
     }
 
     protected function init(): void
     {
+    }
+
+    protected function afterInit(): void
+    {
+        // do something...
     }
 
     /**
