@@ -45,12 +45,12 @@ jobs:
       # Add a test script to composer.json, for instance: "test": "vendor/bin/phpunit"
       # Docs: https://getcomposer.org/doc/articles/scripts.md
 
-      - name: Build phar and send to github assets
-        run: |
-          echo $RELEASE_TAG
-          echo $RELEASE_NAME
-          php -d phar.readonly=0 bin/kite phar:pack -o kite-${RELEASE_TAG}.phar --no-progress
-          php kite-${RELEASE_TAG}.phar -V
+#      - name: Build phar and send to github assets
+#        run: |
+#          echo $RELEASE_TAG
+#          echo $RELEASE_NAME
+#          php -d phar.readonly=0 bin/kite phar:pack -o kite-${RELEASE_TAG}.phar --no-progress
+#          php kite-${RELEASE_TAG}.phar -V
 
       # https://github.com/actions/create-release
       - uses: meeDamian/github-release@2.0
@@ -59,4 +59,4 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           tag: ${{ env.RELEASE_TAG }}
           name: ${{ env.RELEASE_TAG }}
-          files: kite-${{ env.RELEASE_TAG }}.phar
+#          files: kite-${{ env.RELEASE_TAG }}.phar
