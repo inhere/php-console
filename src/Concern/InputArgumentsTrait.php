@@ -252,30 +252,26 @@ trait InputArgumentsTrait
 
     /**
      * Get same args value
-     * eg: des description
+     * eg: des = description
      *
      * ```php
+     * $input->sameArg('des, description');
      * $input->sameArg(['des', 'description']);
      * ```
      *
-     * @param array $names
-     * @param mixed $default
-     *
-     * @return bool|mixed|null
-     */
-    public function getSameArg(array $names, $default = null)
-    {
-        return $this->sameArg($names, $default);
-    }
-
-    /**
-     * @param array $names
+     * @param string|array $names
      * @param mixed $default
      *
      * @return mixed
      */
-    public function sameArg(array $names, $default = null)
+    public function getSameArg($names, $default = null)
     {
+        if (is_string($names)) {
+            $names = array_map('trim', explode(',', $names));
+        } elseif (!is_array($names)) {
+            $names = (array)$names;
+        }
+
         foreach ($names as $name) {
             if ($this->hasArg($name)) {
                 return $this->get($name);
@@ -283,6 +279,17 @@ trait InputArgumentsTrait
         }
 
         return $default;
+    }
+
+    /**
+     * @param string|array $names
+     * @param mixed $default
+     *
+     * @return mixed
+     */
+    public function sameArg($names, $default = null)
+    {
+        return $this->getSameArg($names, $default);
     }
 
     /**

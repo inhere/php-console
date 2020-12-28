@@ -90,13 +90,13 @@ trait InputOutputAwareTrait
     }
 
     /**
-     * @param array $names
+     * @param string|array $names
      * @param mixed  $default
      *
      * @return bool|mixed|null
      * @see Input::getSameArg()
      */
-    public function getSameArg(array $names, $default = null)
+    public function getSameArg($names, $default = null)
     {
         return $this->input->getSameArg($names, $default);
     }
@@ -113,12 +113,12 @@ trait InputOutputAwareTrait
     }
 
     /**
-     * @param array $names
+     * @param string|string[] $names eg 'n,name' OR ['n', 'name']
      * @param mixed $default
      *
      * @return mixed
      */
-    public function getSameOpt(array $names, $default = null)
+    public function getSameOpt($names, $default = null)
     {
         return $this->input->getSameOpt($names, $default);
     }
