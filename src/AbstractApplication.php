@@ -64,7 +64,7 @@ abstract class AbstractApplication implements ApplicationInterface
     ];
 
     /** @var array Application runtime stats */
-    private $stats = [
+    protected $stats = [
         'startTime'   => 0,
         'endTime'     => 0,
         'startMemory' => 0,
@@ -72,19 +72,19 @@ abstract class AbstractApplication implements ApplicationInterface
     ];
 
     /** @var array Application config data */
-    private $config = [
-        'name'         => 'My Console Application',
-        'description'  => 'This is my console application',
-        'debug'        => Console::VERB_ERROR,
-        'profile'      => false,
-        'version'      => '0.5.1',
-        'publishAt'    => '2017.03.24',
-        'updateAt'     => '2019.01.01',
-        'rootPath'     => '',
-        'strictMode'   => false,
-        'hideRootPath' => true,
+    protected $config = [
+        'name'           => 'My Console Application',
+        'description'    => 'This is my console application',
+        'debug'          => Console::VERB_ERROR,
+        'profile'        => false,
+        'version'        => '0.5.1',
+        'publishAt'      => '2017.03.24',
+        'updateAt'       => '2019.01.01',
+        'rootPath'       => '',
+        'strictMode'     => false,
+        'hideRootPath'   => true,
         // global options
-        'no-interactive'  => true,
+        'no-interactive' => true,
 
         // 'timeZone' => 'Asia/Shanghai',
         // 'env' => 'prod', // dev test prod
@@ -102,21 +102,19 @@ abstract class AbstractApplication implements ApplicationInterface
     /**
      * @var Router
      */
-    private $router;
+    protected $router;
 
     /**
      * @var ErrorHandlerInterface Can custom error handler
      */
-    private $errorHandler;
+    protected $errorHandler;
 
     /**
      * Class constructor.
      *
-     * @param array  $config
-     * @param Input  $input
-     * @param Output $output
-     *
-     * @throws InvalidArgumentException
+     * @param array       $config
+     * @param Input|null  $input
+     * @param Output|null $output
      */
     public function __construct(array $config = [], Input $input = null, Output $output = null)
     {

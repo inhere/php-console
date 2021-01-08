@@ -87,19 +87,20 @@ abstract class AbstractInput implements \Inhere\Console\Contract\InputInterface
     abstract public function toString(): string;
 
     /**
-     * find command name. it is first argument.
+     * find command name, it is first argument.
+     * TIP: will reset args data after founded.
      */
-    protected function findCommand(): void
+    public function findCommandName(): string
     {
         if (!isset($this->args[0])) {
-            return;
+            return '';
         }
 
+        $command = '';
         $newArgs = [];
-
         foreach ($this->args as $key => $value) {
             if ($key === 0) {
-                $this->command = trim($value);
+                $command = trim($value);
             } elseif (is_int($key)) {
                 $newArgs[] = $value;
             } else {
@@ -107,7 +108,11 @@ abstract class AbstractInput implements \Inhere\Console\Contract\InputInterface
             }
         }
 
-        $this->args = $newArgs;
+        if ($command) {
+            $this->args = $newArgs;
+        }
+
+        return $command;
     }
 
     /***********************************************************************************

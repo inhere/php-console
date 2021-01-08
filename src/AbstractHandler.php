@@ -39,8 +39,8 @@ use function implode;
 use function is_array;
 use function is_int;
 use function is_string;
+use function json_encode;
 use function preg_replace;
-use function setproctitle;
 use function sprintf;
 use function strpos;
 use function strtr;
@@ -553,6 +553,8 @@ abstract class AbstractHandler implements CommandHandlerInterface
             return false;
         }
 
+        $this->log(Console::VERB_DEBUG, 'display help by definition');
+
         // if has InputDefinition object. (The comment of the command will not be parsed and used at this time.)
         $help = $definition->getSynopsis();
         // parse example
@@ -613,11 +615,6 @@ abstract class AbstractHandler implements CommandHandlerInterface
         $ref  = new ReflectionClass($this);
         $name = $this->input->getCommand();
 
-        $this->log(Console::VERB_CRAZY, "display help info for the method=$method", [
-            'class'  =>  static::class,
-            'action' => $action,
-        ]);
-
         if (!$ref->hasMethod($method)) {
             $this->write("The command [<info>$name</info>] don't exist in the group: " . static::getName());
             return 0;
@@ -639,6 +636,11 @@ abstract class AbstractHandler implements CommandHandlerInterface
             $help['Command:'] = sprintf('%s(alias: <info>%s</info>)', $realName, implode(',', $aliases));
         }
 
+        $path = $this->input->getBinName() . ' ' . $name;
+        if ($action) {
+            $path .= " $action";
+        }
+
         // is an command object
         $isCommand = $ref->isSubclassOf(CommandInterface::class);
         foreach (array_keys(self::$annotationTags) as $tag) {
@@ -650,7 +652,7 @@ abstract class AbstractHandler implements CommandHandlerInterface
                 }
 
                 if ($tag === 'usage') {
-                    $help['Usage:'] = $this->commentsVars['binWithCmd'] . ' [--options ...] [arguments ...]';
+                    $help['Usage:'] = "$path [--options ...] [arguments ...]";
                 }
 
                 continue;
@@ -825,7 +827,7 @@ abstract class AbstractHandler implements CommandHandlerInterface
             return;
         }
 
-        Console::log($message, $extra, $level);
+        Console::log($level, $message, $extra);
     }
 
     /**

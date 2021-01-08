@@ -45,6 +45,6 @@ class ArrayInput extends Input
         ] = Flags::parseArray($args);
 
         // find command name
-        $this->findCommand();
+        $this->command = $this->findCommandName();
     }
 }

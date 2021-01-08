@@ -191,12 +191,24 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
     {
         if (!$command = trim($command, $this->delimiter)) {
             $command = $this->defaultAction;
+
+            if (!$command) {
+                // use next arg as sub-command name.
+                $command = $this->input->findCommandName();
+            }
         }
 
-        $this->action = Str::camelCase($this->getRealCommandName($command));
-        if (!$this->action) {
+        // not input command
+        if (!$command) {
+            $this->logf(Console::VERB_DEBUG, 'group action is empty, display help for the group');
+
             return $this->showHelp();
         }
+
+        $command = $this->getRealCommandName($command);
+
+        $this->action = Str::camelCase($command);
+        $this->logf(Console::VERB_DEBUG, 'will run the group action: %s, command: %s', $this->action, $command);
 
         // do running
         return parent::run($command);
@@ -344,7 +356,7 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
         $action = $this->action;
 
         // Not input action, for all sub-commands of the controller
-        if (!$action && !($action = $this->getFirstArg())) {
+        if (!$action) {
             $this->showCommandList();
             return 0;
         }
@@ -363,6 +375,11 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
             }
         }
 
+        $this->log(Console::VERB_DEBUG, "display help for the controller method: $method", [
+            'group'  => static::$name,
+            'action' => $action,
+        ]);
+
         // For a specified sub-command.
         return $this->showHelpByMethodAnnotations($method, $action, $aliases);
     }
@@ -379,6 +396,8 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
      */
     final public function showCommandList(): void
     {
+        $this->logf(Console::VERB_DEBUG, 'display all sub-commands list of the group: %s', static::$name);
+
         $this->beforeShowCommandList();
 
         $ref   = new ReflectionClass($this);
@@ -435,12 +454,17 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
 
         $script = $this->getScriptName();
 
+        // if is alone running.
         if ($detached = $this->isDetached()) {
             $name  = $sName . ' ';
             $usage = "$script <info>{command}</info> [--options ...] [arguments ...]";
         } else {
             $name  = $sName . $this->delimiter;
-            $usage = "$script {$name}<info>{command}</info> [--options ...] [arguments ...]";
+            // $usage = "$script {$name}<info>{command}</info> [--options ...] [arguments ...]";
+            $usage = [
+                "$script {$name}<info>{command}</info> [--options ...] [arguments ...]",
+                "$script {$sName} <info>{command}</info> [--options ...] [arguments ...]",
+            ];
         }
 
         $globalOptions = array_merge(Application::getGlobalOptions(), static::$globalOptions);
@@ -456,8 +480,8 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
             'sepChar' => '  ',
         ]);
 
-        $msgTpl = 'More information about a command, please use: <cyan>%s %s{command} -h</cyan>';
-        $this->output->write(sprintf($msgTpl, $script, $detached ? '' : $name));
+        $msgTpl = 'More information about a command, please see: <cyan>%s %s {command} -h</cyan>';
+        $this->output->write(sprintf($msgTpl, $script, $detached ? '' : $sName));
         $this->output->flush();
     }
 

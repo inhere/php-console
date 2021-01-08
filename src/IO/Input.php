@@ -90,7 +90,7 @@ class Input extends AbstractInput
         ] = Flags::parseArgv($args);
 
         // find command name
-        $this->findCommand();
+        $this->command = $this->findCommandName();
     }
 
     public function resetInputStream(): void

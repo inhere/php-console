@@ -21,7 +21,6 @@ use function implode;
 use function is_object;
 use function is_string;
 use function method_exists;
-use function sprintf;
 use function strlen;
 use function strpos;
 use function substr;
@@ -62,7 +61,8 @@ class Application extends AbstractApplication
             ];
         }
 
-        $this->getRouter()->addGroup($name, $class, (array)$option);
+        $this->logf(Console::VERB_CRAZY, 'load group controller: %s', $name);
+        $this->router->addGroup($name, $class, (array)$option);
 
         return $this;
     }
@@ -70,9 +70,9 @@ class Application extends AbstractApplication
     /**
      * Add group/controller
      *
-     * @param string                     $name
-     * @param string|ControllerInterface $class The controller class
-     * @param null|array|string          $option
+     * @param string                          $name
+     * @param string|ControllerInterface|null $class The controller class
+     * @param null|array|string               $option
      *
      * @return Application|Contract\ApplicationInterface
      * @see controller()
@@ -83,9 +83,9 @@ class Application extends AbstractApplication
     }
 
     /**
-     * @param string                     $name
-     * @param string|ControllerInterface $class The controller class
-     * @param null|array|string          $option
+     * @param string                          $name
+     * @param string|ControllerInterface|null $class The controller class
+     * @param null|array|string               $option
      *
      * @return Application|Contract\ApplicationInterface
      * @see controller()
@@ -123,7 +123,7 @@ class Application extends AbstractApplication
      */
     public function addControllers(array $controllers): void
     {
-        $this->getRouter()->addControllers($controllers);
+        $this->router->addControllers($controllers);
     }
 
     /**
@@ -137,7 +137,7 @@ class Application extends AbstractApplication
             ];
         }
 
-        $this->getRouter()->addCommand($name, $handler, (array)$option);
+        $this->router->addCommand($name, $handler, (array)$option);
 
         return $this;
     }
@@ -164,7 +164,7 @@ class Application extends AbstractApplication
      */
     public function addCommands(array $commands): void
     {
-        $this->getRouter()->addCommands($commands);
+        $this->router->addCommands($commands);
     }
 
     /**
@@ -262,7 +262,7 @@ class Application extends AbstractApplication
         $this->logf(Console::VERB_DEBUG, 'begin dispatch command: %s', $name);
 
         // match handler by input name
-        $info = $this->getRouter()->match($name);
+        $info = $this->router->match($name);
 
         // command not found
         if (!$info) {
@@ -273,7 +273,7 @@ class Application extends AbstractApplication
 
             $this->output->error("The command '{$name}' is not exists!");
 
-            $commands = $this->getRouter()->getAllNames();
+            $commands = $this->router->getAllNames();
 
             // find similar command names by similar_text()
             if ($similar = Helper::findSimilar($name, $commands)) {
