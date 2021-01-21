@@ -10,6 +10,7 @@ namespace Inhere\Console;
 
 use ErrorException;
 use Inhere\Console\Component\ErrorHandler;
+use Inhere\Console\Concern\StyledOutputAwareTrait;
 use Inhere\Console\Contract\ApplicationInterface;
 use Inhere\Console\Contract\ErrorHandlerInterface;
 use Inhere\Console\Contract\InputInterface;
@@ -44,7 +45,10 @@ use const PHP_SAPI;
  */
 abstract class AbstractApplication implements ApplicationInterface
 {
-    use ApplicationHelpTrait, InputOutputAwareTrait, SimpleEventTrait;
+    use ApplicationHelpTrait;
+    use InputOutputAwareTrait;
+    use StyledOutputAwareTrait;
+    use SimpleEventTrait;
 
     /** @var array */
     protected static $internalCommands = [

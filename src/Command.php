@@ -34,6 +34,8 @@ abstract class Command extends AbstractHandler implements CommandInterface
     protected $parent;
 
     /**
+     * sub-commands of the command
+     *
      * @var Command[]
      */
     protected $commands = [];
