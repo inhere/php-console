@@ -39,7 +39,10 @@ interface ApplicationInterface
     /**
      * Dispatch input command, exec found command handler.
      *
-     * @param string $name        Inputted command name
+     * @param string $name        Inputted command name. allow:
+     *                            - 'command'
+     *                            - 'group:action'
+     *                            - 'group action'
      * @param bool   $detachedRun Use for an group commands execution alone
      *
      * @return int|mixed

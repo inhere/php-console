@@ -149,6 +149,8 @@ abstract class AbstractApplication implements ApplicationInterface
         }
 
         $this->registerErrorHandle();
+
+        $this->logf(Console::VERB_DEBUG, 'console application init completed');
     }
 
     /**
@@ -208,6 +210,8 @@ abstract class AbstractApplication implements ApplicationInterface
     public function run(bool $exit = true)
     {
         $command = trim($this->input->getCommand(), $this->delimiter);
+
+        $this->logf(Console::VERB_DEBUG, 'begin run the application, command is: %s', $command);
 
         try {
             $this->prepareRun();
@@ -537,7 +541,7 @@ abstract class AbstractApplication implements ApplicationInterface
     /**
      * Get config param value
      *
-     * @param null|string $name
+     * @param string $name
      * @param null|string $default
      *
      * @return array|string

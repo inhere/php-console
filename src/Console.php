@@ -171,8 +171,9 @@ class Console extends Cli
         if (isset($traces[$index+1])) {
             $tInfo = $traces[$index];
             $prev  = $traces[$index+1];
+            $type  = $prev['type'];
 
-            $position = sprintf('%s.%s:%d', $prev['class'], $prev['function'] ?? 'UNKNOWN', $tInfo['line']);
+            $position = sprintf('%s%s%s(),L%d', $prev['class'], $type, $prev['function'] ?? 'UNKNOWN', $tInfo['line']);
         }
 
         return ColorTag::add($position, 'green');
