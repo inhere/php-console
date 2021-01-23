@@ -139,6 +139,7 @@ class Application extends AbstractApplication
             ];
         }
 
+        $this->logf(Console::VERB_CRAZY, 'load application command: %s', $name);
         $this->router->addCommand($name, $handler, (array)$option);
 
         return $this;
@@ -265,7 +266,7 @@ class Application extends AbstractApplication
         }
 
         $cmdId = $name;
-        $this->logf(Console::VERB_DEBUG, 'begin dispatch the input command: %s', $name);
+        $this->debugf( 'begin dispatch the input command: %s', $name);
 
         // format is: `group action`
         if (strpos($name, ' ') > 0) {
@@ -277,8 +278,9 @@ class Application extends AbstractApplication
 
         // command not found
         if (!$info) {
-            if (true === $this->fire(ConsoleEvent::ON_NOT_FOUND, $cmdId, $this)) {
-                $this->logf(Console::VERB_DEBUG, 'not found handle by user, command: %s', $name);
+            $evtName = ConsoleEvent::ON_NOT_FOUND;
+            if (true === $this->fire($evtName, $cmdId, $this)) {
+                $this->debugf('user custom handle the not found command: %s, event: %s', $name, $evtName);
                 return 0;
             }
 

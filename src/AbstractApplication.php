@@ -429,6 +429,19 @@ abstract class AbstractApplication implements ApplicationInterface
         Console::logf($level, $format, ...$args);
     }
 
+    /**
+     * @param string $format
+     * @param mixed  ...$args
+     */
+    public function debugf(string $format, ...$args): void
+    {
+        if ($this->getVerbLevel() < Console::VERB_DEBUG) {
+            return;
+        }
+
+        Console::logf(Console::VERB_DEBUG, $format, ...$args);
+    }
+
     /**********************************************************
      * getter/setter methods
      **********************************************************/

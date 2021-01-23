@@ -217,7 +217,7 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
 
         // if not input sub-command, render group help.
         if (!$command) {
-            $this->logf(Console::VERB_DEBUG, 'sub-command is empty, display help for the group: %s', self::getName());
+            $this->debugf('sub-command is empty, display help for the group: %s', self::getName());
             return $this->showHelp();
         }
 
@@ -225,7 +225,7 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
 
         // convert 'boo-foo' to 'booFoo'
         $this->action = Str::camelCase($command);
-        $this->logf(Console::VERB_DEBUG, 'will run the group action: %s, sub-command: %s', $this->action, $command);
+        $this->debugf('will run the group action: %s, sub-command: %s', $this->action, $command);
 
         // do running
         return parent::run($command);
@@ -277,7 +277,7 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
         $group  = static::getName();
 
         if ($this->isDisabled($action)) {
-            $this->logf(Console::VERB_DEBUG, 'command %s is disabled on the group %s', $action, $group);
+            $this->debugf('command %s is disabled on the group %s', $action, $group);
             $output->error(sprintf("Sorry, The command '%s' is invalid in the group '%s'!", $action, $group));
             return -1;
         }
@@ -291,7 +291,7 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
             if (method_exists($this, $beforeFunc = 'before' . ucfirst($action))) {
                 $beforeOk = $this->$beforeFunc($input, $output);
                 if ($beforeOk === false) {
-                    $this->logf(Console::VERB_DEBUG, '%s() returns FALSE, interrupt processing continues', $beforeFunc);
+                    $this->debugf('%s() returns FALSE, interrupt processing continues', $beforeFunc);
                     return 0;
                 }
             }
@@ -309,11 +309,11 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
 
         // if user custom handle not found logic.
         if ($this->onNotFound($action)) {
-            $this->logf(Console::VERB_DEBUG, 'user custom handle the action:%s not found logic', $action);
+            $this->debugf('user custom handle the action:%s not found logic', $action);
             return 0;
         }
 
-        $this->logf(Console::VERB_DEBUG, 'action:%s not found on the group controller', $action);
+        $this->debugf('action:%s not found on the group controller', $action);
 
         // if you defined the method '$this->notFoundCallback' , will call it
         // if (($notFoundCallback = $this->notFoundCallback) && method_exists($this, $notFoundCallback)) {

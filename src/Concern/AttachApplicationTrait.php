@@ -102,6 +102,19 @@ trait AttachApplicationTrait
     }
 
     /**
+     * @param string $format
+     * @param mixed  ...$args
+     */
+    public function debugf(string $format, ...$args): void
+    {
+        if ($this->getVerbLevel() < Console::VERB_DEBUG) {
+            return;
+        }
+
+        Console::logf(Console::VERB_DEBUG, $format, ...$args);
+    }
+
+    /**
      * @param int    $level
      * @param string $format
      * @param mixed  ...$args
