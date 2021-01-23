@@ -309,11 +309,11 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
 
         // if user custom handle not found logic.
         if ($this->onNotFound($action)) {
-            $this->debugf('user custom handle the action:%s not found logic', $action);
+            $this->debugf('user custom handle the action "%s" not found logic', $action);
             return 0;
         }
 
-        $this->debugf('action:%s not found on the group controller', $action);
+        $this->debugf('action "%s" not found on the group controller', $action);
 
         // if you defined the method '$this->notFoundCallback' , will call it
         // if (($notFoundCallback = $this->notFoundCallback) && method_exists($this, $notFoundCallback)) {

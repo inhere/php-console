@@ -20,10 +20,14 @@ use Inhere\Console\Contract\OutputInterface;
 use Inhere\Console\Concern\ApplicationHelpTrait;
 use Inhere\Console\Concern\InputOutputAwareTrait;
 use Inhere\Console\Concern\SimpleEventAwareTrait;
+use Inhere\Console\Util\Interact;
 use InvalidArgumentException;
 use Throwable;
 use Toolkit\Cli\Style;
+use Toolkit\Cli\Util\LineParser;
 use Toolkit\Stdlib\Helper\PhpHelper;
+use Toolkit\Sys\Proc\ProcessUtil;
+use Toolkit\Sys\Proc\Signal;
 use function array_keys;
 use function array_merge;
 use function error_get_last;
@@ -59,7 +63,8 @@ abstract class AbstractApplication implements ApplicationInterface
 
     /** @var array */
     protected static $globalOptions = [
-        '--debug'          => 'Setting the application runtime debug level(0 - 4)',
+        '--debug'          => 'Setting the runtime log debug level(quiet 0 - 5 crazy)',
+        '--ishell'         => 'Run application an interactive shell environment',
         '--profile'        => 'Display timing and memory usage information',
         '--no-color'       => 'Disable color/ANSI for message output',
         '-h, --help'       => 'Display this help message',
@@ -356,13 +361,18 @@ abstract class AbstractApplication implements ApplicationInterface
     protected function filterSpecialCommand(string $command): bool
     {
         if (!$command) {
-            if ($this->input->getSameOpt(['V', 'version'])) {
+            if ($this->input->getSameBoolOpt(GlobalOption::VERSION_OPTS)) {
                 $this->showVersionInfo();
                 return true;
             }
 
-            if ($this->input->getSameOpt(['h', 'help'])) {
+            if ($this->input->getSameBoolOpt(GlobalOption::HELP_OPTS)) {
                 $this->showHelpInfo();
+                return true;
+            }
+
+            if ($this->input->getBoolOpt(GlobalOption::ISHELL)) {
+                $this->startInteractiveShell();
                 return true;
             }
 
@@ -388,6 +398,55 @@ abstract class AbstractApplication implements ApplicationInterface
                 return false;
         }
         return true;
+    }
+
+    /**********************************************************
+     * start interactive shell
+     **********************************************************/
+
+    /**
+     * start an interactive shell run
+     */
+    protected function startInteractiveShell(): void
+    {
+        $in = $this->input;
+        $out = $this->output;
+
+        $out->colored("Will start interactive shell for run application");
+
+        if (!($hasPcntl = ProcessUtil::hasPcntl())) {
+            $this->debugf('php is not enable "pcntl" extension, cannot listen CTRL+C signal');
+        }
+
+        if ($hasPcntl) {
+            // register signal.
+            ProcessUtil::installSignal(Signal::INT, static function () use ($out) {
+                $out->colored("\nQuit by CTRL+C");
+                exit(0);
+            });
+        }
+
+        while (true) {
+            $line = Interact::readln('<comment>CMD ></comment> ');
+            if ($line === 'exit' || $line === 'quit') {
+                break;
+            }
+
+            if ($hasPcntl) {
+                // listen signal.
+                ProcessUtil::dispatchSignal();
+            }
+
+            $args = LineParser::parseIt($line);
+
+            // reload and parse args
+            $in->parse($args);
+
+            // \vdump($in);
+            $this->run(false);
+        }
+
+        $out->colored("\nQuit. ByeBye!");
     }
 
     /**

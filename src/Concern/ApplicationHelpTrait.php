@@ -99,17 +99,29 @@ trait ApplicationHelpTrait
         $delimiter = $this->delimiter;
         $binName   = $in->getScriptName();
 
+        // built in options
+        $globalOptions = FormatUtil::alignOptions(self::$globalOptions);
+
         /** @var Output $out */
         $out = $this->output;
         $out->helpPanel([
-            'usage'   => "$binName <info>{command}</info> [--opt -v -h ...] [arg0 arg1 arg2=value2 ...]",
-            'example' => [
-                "$binName test (run a independent command)",
-                "$binName home{$delimiter}index (run a command of the group)",
-                "$binName help {command} (see a command help information)",
-                "$binName home{$delimiter}index -h (see a command help of the group)",
-                "$binName --auto-completion --shell-env [zsh|bash] [--gen-file stdout]",
-            ]
+            'Usage'    => "$binName <info>{command}</info> [--opt -v -h ...] [arg0 arg1 arg2=value2 ...]",
+            'Options' => $globalOptions,
+            'Example'  => [
+                "$binName test                     run a independent command",
+                "$binName home index               run a sub-command of the group",
+                sprintf("$binName home%sindex               run a sub-command of the group", $delimiter),
+                "$binName help {command}           see a command help information",
+                "$binName home index -h            see a sub-command help of the group",
+                sprintf("$binName home%sindex -h            see a sub-command help of the group", $delimiter),
+            ],
+            'Help' => [
+                'Generate shell auto completion scripts:',
+                "  <info>$binName --auto-completion --shell-env [zsh|bash] [--gen-file stdout]</info>",
+                ' eg:',
+                "  $binName --auto-completion --shell-env bash --gen-file stdout",
+                "  $binName --auto-completion --shell-env bash --gen-file myapp.sh",
+            ],
         ]);
     }
 
@@ -261,7 +273,7 @@ trait ApplicationHelpTrait
 
         // info
         $glue     = ' ';
-        $genFile  = (string)$input->getLongOpt('gen-file');
+        $genFile  = $input->getStringOpt('gen-file');
         $filename = 'auto-completion.' . $shellEnv;
         $tplDir   = dirname(__DIR__, 2) . '/resource/templates';
 

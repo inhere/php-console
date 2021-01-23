@@ -25,9 +25,10 @@ Provide console parameter parsing, command run, color style output, user informa
 - Commonly used special format information display (`section`, `panel`, `padding`, `helpPanel`, `table`, `tree`, `title`, `list`, `multiList`)
 - Rich dynamic information display (`pending/loading`, `pointing`, `spinner`, `counterTxt`, `dynamicText`, `progressTxt`, `progressBar`)
 - Common user information interaction support (`select`, `multiSelect`, `confirm`, `ask/question`, `askPassword/askHiddenInput`)
-- Support for predefined parameter definitions like `symfony/console` (giving parameter values ​​by position, recommended when strict parameter restrictions are required)
+- Support for predefined parameter definitions like `symfony/console` (giving parameter values by position, recommended when strict parameter restrictions are required)
 - The color output is `windows` `linux` `mac` compatible. Environments that do not support color will automatically remove the relevant CODE.
 - Quickly generate auto-completion scripts for the current application in the `bash/zsh` environment
+- NEW: Support start an interactive shell for run application
 
 ### Built-in tools
 
