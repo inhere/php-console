@@ -19,7 +19,7 @@ use Inhere\Console\IO\Output;
 use Inhere\Console\Contract\OutputInterface;
 use Inhere\Console\Concern\ApplicationHelpTrait;
 use Inhere\Console\Concern\InputOutputAwareTrait;
-use Inhere\Console\Concern\SimpleEventTrait;
+use Inhere\Console\Concern\SimpleEventAwareTrait;
 use InvalidArgumentException;
 use Throwable;
 use Toolkit\Cli\Style;
@@ -48,7 +48,7 @@ abstract class AbstractApplication implements ApplicationInterface
     use ApplicationHelpTrait;
     use InputOutputAwareTrait;
     use StyledOutputAwareTrait;
-    use SimpleEventTrait;
+    use SimpleEventAwareTrait;
 
     /** @var array */
     protected static $internalCommands = [
@@ -222,13 +222,13 @@ abstract class AbstractApplication implements ApplicationInterface
             }
 
             // call 'onBeforeRun' service, if it is registered.
-            $this->fire(self::ON_BEFORE_RUN, $this);
+            $this->fire(ConsoleEvent::ON_BEFORE_RUN, $this);
             $this->beforeRun();
 
             // do run ...
             $result = $this->dispatch($command);
         } catch (Throwable $e) {
-            $this->fire(self::ON_RUN_ERROR, $e, $this);
+            $this->fire(ConsoleEvent::ON_RUN_ERROR, $e, $this);
             $result = $e->getCode() === 0 ? $e->getLine() : $e->getCode();
             $this->handleException($e);
         }
@@ -236,7 +236,7 @@ abstract class AbstractApplication implements ApplicationInterface
         $this->stats['endTime'] = microtime(true);
 
         // call 'onAfterRun' service, if it is registered.
-        $this->fire(self::ON_AFTER_RUN, $this);
+        $this->fire(ConsoleEvent::ON_AFTER_RUN, $this);
         $this->afterRun();
 
         if ($exit) {
@@ -560,6 +560,18 @@ abstract class AbstractApplication implements ApplicationInterface
     }
 
     /**
+     * check is given verbose level
+     *
+     * @param int $level
+     *
+     * @return bool
+     */
+    public function isDebug(int $level = Console::VERB_DEBUG): bool
+    {
+        return $level <= $this->getVerbLevel();
+    }
+
+    /**
      * get current debug level value
      *
      * @return int
@@ -572,7 +584,7 @@ abstract class AbstractApplication implements ApplicationInterface
     }
 
     /**
-     * is profile
+     * is open profile
      *
      * @return boolean
      */
@@ -585,7 +597,7 @@ abstract class AbstractApplication implements ApplicationInterface
     }
 
     /**
-     * is interactive env
+     * is open interactive env
      *
      * @return bool
      */

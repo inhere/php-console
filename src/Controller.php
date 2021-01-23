@@ -9,6 +9,7 @@
 namespace Inhere\Console;
 
 use Generator;
+use Inhere\Console\Concern\ControllerHelpTrait;
 use Inhere\Console\Contract\ControllerInterface;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\InputDefinition;
@@ -17,7 +18,6 @@ use Inhere\Console\Util\FormatUtil;
 use Inhere\Console\Util\Helper;
 use ReflectionClass;
 use ReflectionException;
-use ReflectionMethod;
 use ReflectionObject;
 use RuntimeException;
 use Toolkit\Cli\ColorTag;
@@ -46,6 +46,8 @@ use const PHP_EOL;
  */
 abstract class Controller extends AbstractHandler implements ControllerInterface
 {
+    use ControllerHelpTrait;
+
     /**
      * The sub-command aliases mapping
      *
@@ -90,11 +92,6 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
      * @var string
      */
     private $actionSuffix = self::COMMAND_SUFFIX;
-
-    /**
-     * @var string
-     */
-    protected $notFoundCallback = 'notFound';
 
     /**
      * @var array Common options for all sub-commands in the group
@@ -149,6 +146,7 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
         self::loadCommandAliases();
 
         $list = $this->disabledCommands();
+
         // save to property
         $this->disabledCommands = $list ? array_flip($list) : [];
         $this->groupOptions     = $this->groupOptions();
@@ -182,6 +180,19 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
     }
 
     /**
+     * Will call it on action(sub-command) not found on the group.
+     *
+     * @param string $action
+     *
+     * @return bool if return True, will stop goon render group help.
+     */
+    protected function onNotFound(string $action): bool
+    {
+        // you can add custom logic on sub-command not found.
+        return false;
+    }
+
+    /**
      * @param string $command
      *
      * @return int|mixed
@@ -192,23 +203,29 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
         if (!$command = trim($command, $this->delimiter)) {
             $command = $this->defaultAction;
 
+            // try use next arg as sub-command name.
             if (!$command) {
-                // use next arg as sub-command name.
                 $command = $this->input->findCommandName();
+
+                // update the command id.
+                if ($command) {
+                    $group = $this->input->getCommand();
+                    $this->input->setCommandId("$group:$command");
+                }
             }
         }
 
-        // not input command
+        // if not input sub-command, render group help.
         if (!$command) {
-            $this->logf(Console::VERB_DEBUG, 'group action is empty, display help for the group');
-
+            $this->logf(Console::VERB_DEBUG, 'sub-command is empty, display help for the group: %s', self::getName());
             return $this->showHelp();
         }
 
         $command = $this->getRealCommandName($command);
 
+        // convert 'boo-foo' to 'booFoo'
         $this->action = Str::camelCase($command);
-        $this->logf(Console::VERB_DEBUG, 'will run the group action: %s, command: %s', $this->action, $command);
+        $this->logf(Console::VERB_DEBUG, 'will run the group action: %s, sub-command: %s', $this->action, $command);
 
         // do running
         return parent::run($command);
@@ -260,6 +277,7 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
         $group  = static::getName();
 
         if ($this->isDisabled($action)) {
+            $this->logf(Console::VERB_DEBUG, 'command %s is disabled on the group %s', $action, $group);
             $output->error(sprintf("Sorry, The command '%s' is invalid in the group '%s'!", $action, $group));
             return -1;
         }
@@ -267,16 +285,21 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
         $method = $this->actionSuffix ? $action . ucfirst($this->actionSuffix) : $action;
 
         // the action method exists and only allow access public method.
-        if (method_exists($this, $method) && (($rfm = new ReflectionMethod($this, $method)) && $rfm->isPublic())) {
-            // before
-            if (method_exists($this, $before = 'before' . ucfirst($action))) {
-                $this->$before($input, $output);
+        // if (method_exists($this, $method) && (($rfm = new ReflectionMethod($this, $method)) && $rfm->isPublic())) {
+        if (method_exists($this, $method)) {
+            // before run action
+            if (method_exists($this, $beforeFunc = 'before' . ucfirst($action))) {
+                $beforeOk = $this->$beforeFunc($input, $output);
+                if ($beforeOk === false) {
+                    $this->logf(Console::VERB_DEBUG, '%s() returns FALSE, interrupt processing continues', $beforeFunc);
+                    return 0;
+                }
             }
 
             // run action
             $result = $this->$method($input, $output);
 
-            // after
+            // after run action
             if (method_exists($this, $after = 'after' . ucfirst($action))) {
                 $this->$after($input, $output);
             }
@@ -284,24 +307,30 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
             return $result;
         }
 
-        // if you defined the method '$this->notFoundCallback' , will call it
-        if (($notFoundCallback = $this->notFoundCallback) && method_exists($this, $notFoundCallback)) {
-            $result = $this->{$notFoundCallback}($action);
-        } else {
-            $result = -1;
-            $output->liteError("Sorry, The command '$action' not exist of the group '{$group}'!");
-
-            // find similar command names
-            $similar = Helper::findSimilar($action, $this->getAllCommandMethods(null, true));
-
-            if ($similar) {
-                $output->write(sprintf("\nMaybe what you mean is:\n    <info>%s</info>", implode(', ', $similar)));
-            } else {
-                $this->showCommandList();
-            }
+        // if user custom handle not found logic.
+        if ($this->onNotFound($action)) {
+            $this->logf(Console::VERB_DEBUG, 'user custom handle the action:%s not found logic', $action);
+            return 0;
         }
 
-        return $result;
+        $this->logf(Console::VERB_DEBUG, 'action:%s not found on the group controller', $action);
+
+        // if you defined the method '$this->notFoundCallback' , will call it
+        // if (($notFoundCallback = $this->notFoundCallback) && method_exists($this, $notFoundCallback)) {
+        //     $result = $this->{$notFoundCallback}($action);
+        // } else {
+        $output->liteError("Sorry, The command '$action' not exist of the group '{$group}'!");
+
+        // find similar command names
+        $similar = Helper::findSimilar($action, $this->getAllCommandMethods(null, true));
+
+        if ($similar) {
+            $output->write(sprintf("\nMaybe what you mean is:\n    <info>%s</info>", implode(', ', $similar)));
+        } else {
+            $this->showCommandList();
+        }
+
+        return -1;
     }
 
     /**
@@ -517,16 +546,15 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
     /**
      * @param string $name
      *
-     * @return mixed|string
+     * @return string
      */
-    protected function getRealCommandName(string $name)
+    protected function getRealCommandName(string $name): string
     {
         if (!$name) {
             return '';
         }
 
         $map = $this->getCommandAliases();
-
         return $map[$name] ?? $name;
     }
 
@@ -644,22 +672,6 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
     public function setActionSuffix(string $actionSuffix): void
     {
         $this->actionSuffix = $actionSuffix;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getNotFoundCallback(): ?string
-    {
-        return $this->notFoundCallback;
-    }
-
-    /**
-     * @param string $notFoundCallback
-     */
-    public function setNotFoundCallback(string $notFoundCallback): void
-    {
-        $this->notFoundCallback = $notFoundCallback;
     }
 
     /**

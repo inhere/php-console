@@ -131,6 +131,8 @@ trait ApplicationHelpTrait
             return;
         }
 
+        $this->logf(Console::VERB_DEBUG, 'Display the application commands list');
+
         /** @var Output $output */ // $output = $this->output;
         /** @var Router $router */
         $router = $this->getRouter();

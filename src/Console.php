@@ -15,9 +15,7 @@ use function sprintf;
 use function strpos;
 use function trim;
 use const DEBUG_BACKTRACE_IGNORE_ARGS;
-use const JSON_PRETTY_PRINT;
 use const JSON_UNESCAPED_SLASHES;
-use const PHP_EOL;
 
 /**
  * Class Console
@@ -106,7 +104,7 @@ class Console extends Cli
      */
     public static function logf(int $level, string $format, ...$args): void
     {
-        $datetime = date('Y/m/d H:i:s');
+        $datetime  = date('Y/m/d H:i:s');
         $levelName = self::LEVEL_NAMES[$level] ?? 'INFO';
         $colorName = self::LEVEL2TAG[$level] ?? 'info';
 
@@ -114,7 +112,7 @@ class Console extends Cli
         $tagName = ColorTag::add($levelName, $colorName);
 
         $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, self::$traceIndex + 2);
-        $position = self::formatBacktrace($backtrace, self::$traceIndex);
+        $position  = self::formatBacktrace($backtrace, self::$traceIndex);
 
         self::writef('%s [%s] [%s] %s', $datetime, $tagName, $position, $message);
     }
@@ -153,7 +151,7 @@ class Console extends Cli
         $dataString = $data ? json_encode($data, JSON_UNESCAPED_SLASHES) : '';
 
         $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, self::$traceIndex + 2);
-        $position = self::formatBacktrace($backtrace, self::$traceIndex);
+        $position  = self::formatBacktrace($backtrace, self::$traceIndex);
 
         self::writef('%s [%s] [%s]%s %s %s', $datetime, $taggedName, $position, $optString, trim($msg), $dataString);
     }
@@ -168,9 +166,9 @@ class Console extends Cli
     {
         $position = 'unknown';
 
-        if (isset($traces[$index+1])) {
+        if (isset($traces[$index + 1])) {
             $tInfo = $traces[$index];
-            $prev  = $traces[$index+1];
+            $prev  = $traces[$index + 1];
             $type  = $prev['type'];
 
             $position = sprintf('%s%s%s(),L%d', $prev['class'], $type, $prev['function'] ?? 'UNKNOWN', $tInfo['line']);

@@ -277,7 +277,7 @@ class Application extends AbstractApplication
 
         // command not found
         if (!$info) {
-            if (true === $this->fire(self::ON_NOT_FOUND, $cmdId, $this)) {
+            if (true === $this->fire(ConsoleEvent::ON_NOT_FOUND, $cmdId, $this)) {
                 $this->logf(Console::VERB_DEBUG, 'not found handle by user, command: %s', $name);
                 return 0;
             }

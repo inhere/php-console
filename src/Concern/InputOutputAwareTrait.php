@@ -199,26 +199,4 @@ trait InputOutputAwareTrait
     {
         $this->output = $output;
     }
-
-    /**
-     * get debug level value
-     *
-     * @return int
-     */
-    public function getVerbLevel(): int
-    {
-        return (int)$this->input->getLongOpt('debug', Console::VERB_ERROR);
-    }
-
-    /**
-     * check is given verbose level
-     *
-     * @param int $level
-     *
-     * @return bool
-     */
-    public function isDebug(int $level = Console::VERB_DEBUG): bool
-    {
-        return $level <= $this->getVerbLevel();
-    }
 }

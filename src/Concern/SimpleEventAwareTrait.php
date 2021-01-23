@@ -16,7 +16,7 @@ use function in_array;
  *
  * @package Inhere\Console\Concern
  */
-trait SimpleEventTrait
+trait SimpleEventAwareTrait
 {
     /**
      * set the supported events, if you need.

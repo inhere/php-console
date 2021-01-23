@@ -8,6 +8,8 @@
 
 namespace Inhere\Console;
 
+use Inhere\Console\Concern\AttachApplicationTrait;
+use Inhere\Console\Concern\CommandHelpTrait;
 use Inhere\Console\Contract\CommandHandlerInterface;
 use Inhere\Console\Contract\CommandInterface;
 use Inhere\Console\IO\Input;
@@ -39,11 +41,8 @@ use function implode;
 use function is_array;
 use function is_int;
 use function is_string;
-use function json_encode;
 use function preg_replace;
 use function sprintf;
-use function strpos;
-use function strtr;
 use function ucfirst;
 use const ARRAY_FILTER_USE_BOTH;
 use const PHP_EOL;
@@ -56,10 +55,13 @@ use const PHP_OS;
  */
 abstract class AbstractHandler implements CommandHandlerInterface
 {
-    use InputOutputAwareTrait, UserInteractAwareTrait;
+    use AttachApplicationTrait;
+    Use CommandHelpTrait;
+    use InputOutputAwareTrait;
+    use UserInteractAwareTrait;
 
     /**
-     * command name e.g 'test' 'test:one'
+     * group/command name e.g 'test' 'test:one'
      *
      * @var string
      */
@@ -94,11 +96,6 @@ abstract class AbstractHandler implements CommandHandlerInterface
     ];
 
     /**
-     * @var Application
-     */
-    protected $app;
-
-    /**
      * @var InputDefinition|null
      */
     protected $definition;
@@ -107,18 +104,6 @@ abstract class AbstractHandler implements CommandHandlerInterface
      * @var string
      */
     protected $processTitle = '';
-
-    /**
-     * @var array
-     */
-    private $commentsVars;
-
-    /**
-     * Mark the command/controller is attached in application.
-     *
-     * @var bool
-     */
-    private $attached = true;
 
     /**
      * Whether enabled
@@ -253,17 +238,19 @@ abstract class AbstractHandler implements CommandHandlerInterface
         // load input definition configure
         $this->configure();
 
-        if ($this->input->sameOpt(['h', 'help'])) {
+        // if with option: -h|--help
+        if ($this->input->getSameBoolOpt(['h', 'help'])) {
             $this->showHelp();
             return 0;
         }
 
         // some prepare check
+        // - validate input arguments
         if (true !== $this->prepare()) {
             return -1;
         }
 
-        // return False to deny go on
+        // return False to deny goon run.
         if (false === $this->beforeExecute()) {
             return -1;
         }
@@ -293,12 +280,10 @@ abstract class AbstractHandler implements CommandHandlerInterface
             // $ch->push($result);
         });
 
-        // create co fail:
+        // if create co fail
         if ((int)$ok === 0) {
             // if open debug, output a tips
-            if ($this->isDebug()) {
-                $this->output->warning('The coroutine create failed!');
-            }
+            $this->logf(Console::VERB_DEBUG, 'ERROR: The coroutine create failed');
 
             // exec by normal flow
             $result = $this->execute($this->input, $this->output);
@@ -372,6 +357,8 @@ abstract class AbstractHandler implements CommandHandlerInterface
         if (!$def = $this->definition) {
             return true;
         }
+
+        $this->logf(Console::VERB_DEBUG, 'validate the input arguments and options by Definition');
 
         $in  = $this->input;
         $out = $this->output;
@@ -474,63 +461,6 @@ abstract class AbstractHandler implements CommandHandlerInterface
      **************************************************************************/
 
     /**
-     * @param string       $name
-     * @param string|array $value
-     */
-    protected function addCommentsVar(string $name, $value): void
-    {
-        if (!isset($this->commentsVars[$name])) {
-            $this->setCommentsVar($name, $value);
-        }
-    }
-
-    /**
-     * @param array $map
-     */
-    protected function addCommentsVars(array $map): void
-    {
-        foreach ($map as $name => $value) {
-            $this->setCommentsVar($name, $value);
-        }
-    }
-
-    /**
-     * @param string       $name
-     * @param string|array $value
-     */
-    protected function setCommentsVar(string $name, $value): void
-    {
-        $this->commentsVars[$name] = is_array($value) ? implode(',', $value) : (string)$value;
-    }
-
-    /**
-     * 替换注解中的变量为对应的值
-     *
-     * @param string $str
-     *
-     * @return string
-     */
-    protected function parseCommentsVars(string $str): string
-    {
-        // not use vars
-        if (false === strpos($str, self::HELP_VAR_LEFT)) {
-            return $str;
-        }
-
-        static $map;
-
-        if ($map === null) {
-            foreach ($this->commentsVars as $key => $value) {
-                $key = self::HELP_VAR_LEFT . $key . self::HELP_VAR_RIGHT;
-                // save
-                $map[$key] = $value;
-            }
-        }
-
-        return $map ? strtr($str, $map) : $str;
-    }
-
-    /**
      * @return bool
      */
     public function isAlone(): bool
@@ -553,7 +483,7 @@ abstract class AbstractHandler implements CommandHandlerInterface
             return false;
         }
 
-        $this->log(Console::VERB_DEBUG, 'display help by definition');
+        $this->log(Console::VERB_DEBUG, 'display help information by definition');
 
         // if has InputDefinition object. (The comment of the command will not be parsed and used at this time.)
         $help = $definition->getSynopsis();
@@ -575,7 +505,7 @@ abstract class AbstractHandler implements CommandHandlerInterface
         $binName = $this->getScriptName();
 
         // build usage
-        if ($this->attached) {
+        if ($this->isAttached()) {
             $help['usage:'] = sprintf('%s %s %s', $binName, $this->getCommandName(), $help['usage:']);
         } else {
             $help['usage:'] = $binName . ' ' . $help['usage:'];
@@ -604,7 +534,7 @@ abstract class AbstractHandler implements CommandHandlerInterface
      * Display command/action help by parse method annotations
      *
      * @param string $method
-     * @param string $action
+     * @param string $action action of an group
      * @param array  $aliases
      *
      * @return int
@@ -626,6 +556,8 @@ abstract class AbstractHandler implements CommandHandlerInterface
             return 0;
         }
 
+        $this->logf(Console::VERB_DEBUG, "render help for the command: %s", $this->input->getCommandId());
+
         $help = [];
         $doc  = $ref->getMethod($method)->getDocComment();
         $tags = PhpDoc::getTags($this->parseCommentsVars($doc));
@@ -636,9 +568,12 @@ abstract class AbstractHandler implements CommandHandlerInterface
             $help['Command:'] = sprintf('%s(alias: <info>%s</info>)', $realName, implode(',', $aliases));
         }
 
-        $path = $this->input->getBinName() . ' ' . $name;
+        $binName = $this->input->getBinName();
+
+        $path = $binName . ' ' . $name;
         if ($action) {
-            $path .= " $action";
+            $group = static::getName();
+            $path = "$binName $group $action";
         }
 
         // is an command object
@@ -682,6 +617,7 @@ abstract class AbstractHandler implements CommandHandlerInterface
         $help['Global Options:'] = FormatUtil::alignOptions(Application::getGlobalOptions());
 
         $this->beforeRenderCommandHelp($help);
+
 
         $this->output->mList($help, [
             'sepChar'     => '  ',
@@ -775,62 +711,6 @@ abstract class AbstractHandler implements CommandHandlerInterface
     }
 
     /**
-     * @return bool
-     */
-    public function isInteractive(): bool
-    {
-        if ($this->app) {
-            return $this->app->isInteractive();
-        }
-
-        $value = $this->input->getBoolOpt(GlobalOption::NO_INTERACTIVE);
-
-        return $value === false;
-    }
-
-    /**
-     * Get current debug level value
-     *
-     * @return int
-     */
-    public function getVerbLevel(): int
-    {
-        if ($this->app) {
-            return $this->app->getVerbLevel();
-        }
-
-        return (int)$this->input->getLongOpt('debug', Console::VERB_ERROR);
-    }
-
-    /**
-     * @param int    $level
-     * @param string $format
-     * @param mixed  ...$args
-     */
-    public function logf(int $level, string $format, ...$args): void
-    {
-        if ($this->getVerbLevel() < $level) {
-            return;
-        }
-
-        Console::logf($level, $format, ...$args);
-    }
-
-    /**
-     * @param int    $level
-     * @param string $message
-     * @param array  $extra
-     */
-    public function log(int $level, string $message, array $extra = []): void
-    {
-        if ($this->getVerbLevel() < $level) {
-            return;
-        }
-
-        Console::log($level, $message, $extra);
-    }
-
-    /**
      * @return InputDefinition|null
      */
     public function getDefinition(): ?InputDefinition
@@ -844,62 +724,6 @@ abstract class AbstractHandler implements CommandHandlerInterface
     public function setDefinition(InputDefinition $definition): void
     {
         $this->definition = $definition;
-    }
-
-    /**
-     * @return array
-     */
-    public function getCommentsVars(): array
-    {
-        return $this->commentsVars;
-    }
-
-    /**
-     * @return AbstractApplication
-     */
-    public function getApp(): AbstractApplication
-    {
-        return $this->app;
-    }
-
-    /**
-     * @param AbstractApplication $app
-     */
-    public function setApp(AbstractApplication $app): void
-    {
-        $this->app = $app;
-    }
-
-    /**
-     * @return bool
-     */
-    public function isAttached(): bool
-    {
-        return $this->attached;
-    }
-
-    /**
-     * @return bool
-     */
-    public function isDetached(): bool
-    {
-        return $this->attached === false;
-    }
-
-    /**
-     * @param bool $attached
-     */
-    public function setAttached(bool $attached): void
-    {
-        $this->attached = $attached;
-    }
-
-    /**
-     * Detached running
-     */
-    public function setDetached(): void
-    {
-        $this->attached = false;
     }
 
     /**
