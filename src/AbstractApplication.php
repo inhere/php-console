@@ -426,10 +426,23 @@ abstract class AbstractApplication implements ApplicationInterface
             });
         }
 
+        $exitKeys = [
+            'q'    => 1,
+            'quit' => 1,
+            'exit' => 1,
+        ];
+
         while (true) {
             $line = Interact::readln('<comment>CMD ></comment> ');
-            if ($line === 'exit' || $line === 'quit') {
-                break;
+            if (strlen($line) < 5) {
+                if (isset($exitKeys[$line])) {
+                    break;
+                }
+
+                // "?" as show help
+                if ($line === '?') {
+                    $line = 'help';
+                }
             }
 
             if ($hasPcntl) {
@@ -444,6 +457,7 @@ abstract class AbstractApplication implements ApplicationInterface
 
             // \vdump($in);
             $this->run(false);
+            $out->println('');
         }
 
         $out->colored("\nQuit. ByeBye!");
