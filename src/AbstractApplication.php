@@ -10,6 +10,7 @@ namespace Inhere\Console;
 
 use ErrorException;
 use Inhere\Console\Component\ErrorHandler;
+use Inhere\Console\Component\Formatter\Title;
 use Inhere\Console\Concern\StyledOutputAwareTrait;
 use Inhere\Console\Contract\ApplicationInterface;
 use Inhere\Console\Contract\ErrorHandlerInterface;
@@ -34,6 +35,7 @@ use function error_get_last;
 use function header;
 use function in_array;
 use function is_int;
+use function json_encode;
 use function memory_get_usage;
 use function microtime;
 use function register_shutdown_function;
@@ -90,6 +92,7 @@ abstract class AbstractApplication implements ApplicationInterface
         'publishAt'      => '2017.03.24',
         'updateAt'       => '2019.01.01',
         'rootPath'       => '',
+        'ishellName'     => '', // name prefix on i-shell env.
         'strictMode'     => false,
         'hideRootPath'   => true,
         // global options
@@ -412,7 +415,9 @@ abstract class AbstractApplication implements ApplicationInterface
         $in = $this->input;
         $out = $this->output;
 
-        $out->colored("Will start interactive shell for run application");
+        $out->title("Welcome interactive shell for run application", [
+            'titlePos' => Title::POS_MIDDLE,
+        ]);
 
         if (!($hasPcntl = ProcessUtil::hasPcntl())) {
             $this->debugf('php is not enable "pcntl" extension, cannot listen CTRL+C signal');
@@ -426,6 +431,11 @@ abstract class AbstractApplication implements ApplicationInterface
             });
         }
 
+        $prefix = $this->getParam('ishellName') ?: $this->getName();
+        if (!$prefix) {
+            $prefix = 'CMD';
+        }
+
         $exitKeys = [
             'q'    => 1,
             'quit' => 1,
@@ -433,7 +443,7 @@ abstract class AbstractApplication implements ApplicationInterface
         ];
 
         while (true) {
-            $line = Interact::readln('<comment>CMD ></comment> ');
+            $line = Interact::readln("<comment>$prefix ></comment> ");
             if (strlen($line) < 5) {
                 if (isset($exitKeys[$line])) {
                     break;
@@ -451,9 +461,11 @@ abstract class AbstractApplication implements ApplicationInterface
             }
 
             $args = LineParser::parseIt($line);
+            $this->debugf('input line: %s, parsed args: %s', $line, json_encode($args));
 
             // reload and parse args
             $in->parse($args);
+            $in->setFullScript($line);
 
             // \vdump($in);
             $this->run(false);

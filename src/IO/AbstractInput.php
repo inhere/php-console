@@ -10,6 +10,7 @@ namespace Inhere\Console\IO;
 
 use Inhere\Console\Concern\InputArgumentsTrait;
 use Inhere\Console\Concern\InputOptionsTrait;
+use Inhere\Console\Contract\InputInterface;
 use function getcwd;
 use function is_int;
 use function trim;
@@ -19,7 +20,7 @@ use function trim;
  *
  * @package Inhere\Console\IO
  */
-abstract class AbstractInput implements \Inhere\Console\Contract\InputInterface
+abstract class AbstractInput implements InputInterface
 {
     use InputArgumentsTrait, InputOptionsTrait;
 
