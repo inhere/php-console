@@ -47,11 +47,19 @@ abstract class AbstractInput implements InputInterface
 
     /**
      * the command name(Is first argument)
-     * e.g `start` OR `start`
+     * e.g `git` OR `start`
      *
      * @var string
      */
     protected $command = '';
+
+    /**
+     * the command name(Is first argument)
+     * e.g `subcmd` in the `./app group subcmd`
+     *
+     * @var string
+     */
+    protected $subCommand = '';
 
     /**
      * eg `./examples/app home:useArg status=2 name=john arg0 -s=test --page=23`
@@ -226,5 +234,21 @@ abstract class AbstractInput implements InputInterface
     public function setTokens(array $tokens): void
     {
         $this->tokens = $tokens;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSubCommand(): string
+    {
+        return $this->subCommand;
+    }
+
+    /**
+     * @param string $subCommand
+     */
+    public function setSubCommand(string $subCommand): void
+    {
+        $this->subCommand = $subCommand;
     }
 }

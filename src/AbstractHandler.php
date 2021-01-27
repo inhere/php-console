@@ -477,13 +477,15 @@ abstract class AbstractHandler implements CommandHandlerInterface
      *
      * @return bool
      */
-    protected function showHelp(): bool
-    {
-        if (!$definition = $this->getDefinition()) {
-            return false;
-        }
+    abstract protected function showHelp(): bool;
 
-        $this->log(Console::VERB_DEBUG, 'display help information by definition');
+    /**
+     * @param InputDefinition $definition
+     * @param array           $aliases
+     */
+    protected function showHelpByDefinition(InputDefinition $definition, array $aliases = []): void
+    {
+        $this->log(Console::VERB_DEBUG, 'display help information by input definition');
 
         // if has InputDefinition object. (The comment of the command will not be parsed and used at this time.)
         $help = $definition->getSynopsis();
@@ -514,7 +516,8 @@ abstract class AbstractHandler implements CommandHandlerInterface
         // align global options
         $help['global options:'] = FormatUtil::alignOptions(Application::getGlobalOptions());
 
-        if (empty($help[0]) && $this->isAlone()) {
+        $isAlone = $this->isAlone();
+        if ($isAlone && empty($help[0])) {
             $help[0] = self::getDescription();
         }
 
@@ -524,10 +527,14 @@ abstract class AbstractHandler implements CommandHandlerInterface
 
         // output description
         $this->write(ucfirst($help[0]) . PHP_EOL);
+
+        if ($aliases) {
+            $this->output->writef('<comment>Alias:</comment> %s', implode(',', $aliases));
+        }
+
         unset($help[0]);
 
         $this->output->mList($help, ['sepChar' => '  ']);
-        return true;
     }
 
     /**
@@ -546,7 +553,8 @@ abstract class AbstractHandler implements CommandHandlerInterface
         $name = $this->input->getCommand();
 
         if (!$ref->hasMethod($method)) {
-            $this->write("The command [<info>$name</info>] don't exist in the group: " . static::getName());
+            $subCmd = $this->input->getSubCommand();
+            $this->write("The command '<info>$subCmd</info>' dont exist in the group: " . static::getName());
             return 0;
         }
 
@@ -634,6 +642,19 @@ abstract class AbstractHandler implements CommandHandlerInterface
     /**************************************************************************
      * getter/setter methods
      **************************************************************************/
+
+    /**
+     * @return array
+     */
+    public function getAliases(): array
+    {
+        $aliases = [];
+        if ($this->app) {
+            $aliases = $this->app->getAliases(self::getName());
+        }
+
+        return $aliases;
+    }
 
     /**
      * @param string $name

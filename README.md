@@ -3,11 +3,12 @@
 [![License](https://img.shields.io/packagist/l/inhere/console.svg?style=flat-square)](LICENSE)
 [![Php Version](https://img.shields.io/badge/php-%3E=7.3.0-brightgreen.svg?maxAge=2592000)](https://packagist.org/packages/inhere/console)
 [![Latest Stable Version](http://img.shields.io/packagist/v/inhere/console.svg)](https://packagist.org/packages/inhere/console)
+[![Github Actions Status](https://github.com/inhere/console/workflows/Unit-tests/badge.svg)](https://github.com/inhere/console/actions)
 
 A simple, full-featured php command line application library. 
 Provide console parameter parsing, command run, color style output, user information interaction, and special format information display.
 
-> **[中文README](./README_cn.md)**
+> **[中文README](./README.zh-CN.md)**
 
 ## Command line preview
 

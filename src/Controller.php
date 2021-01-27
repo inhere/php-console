@@ -193,7 +193,7 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
     }
 
     /**
-     * @param string $command
+     * @param string $command command in the group
      *
      * @return int|mixed
      * @throws ReflectionException
@@ -221,6 +221,9 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
             return $this->showHelp();
         }
 
+        $this->input->setSubCommand($command);
+
+        // get real sub-command name
         $command = $this->getRealCommandName($command);
 
         // convert 'boo-foo' to 'booFoo'
@@ -339,8 +342,15 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
      */
     protected function showHelp(): bool
     {
-        // help info has been build by input definition.
-        if (true === parent::showHelp()) {
+        // render help by Definition
+        if ($definition = $this->getDefinition()) {
+            if ($action = $this->action) {
+                $aliases = $this->getCommandAliases($action);
+            } else {
+                $aliases = $this->getAliases();
+            }
+
+            $this->showHelpByDefinition($definition, $aliases);
             return true;
         }
 
@@ -500,6 +510,11 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
 
         $this->output->startBuffer();
         $this->output->write(ucfirst($classDes) . PHP_EOL);
+
+        if ($aliases = $this->getAliases()) {
+            $this->output->writef('<comment>Alias:</comment> %s', implode(',', $aliases));
+        }
+
         $this->output->mList([
             'Usage:'              => $usage,
             //'Group Name:' => "<info>$sName</info>",

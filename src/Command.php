@@ -67,16 +67,18 @@ abstract class Command extends AbstractHandler implements CommandInterface
      */
     protected function showHelp(): bool
     {
-        // help info has been build by input definition.
-        if (true === parent::showHelp()) {
+        $aliases = $this->getAliases();
+
+        // render help by input definition.
+        if ($definition = $this->getDefinition()) {
+            $this->showHelpByDefinition($definition, $aliases);
             return true;
         }
 
         $execMethod = 'execute';
-        $cmdAliases = static::aliases();
 
-        $this->logf(Console::VERB_CRAZY, "display help info for the command: %s", static::$name);
+        $this->logf(Console::VERB_CRAZY, "display help info for the command: %s", self::getName());
 
-        return $this->showHelpByMethodAnnotations($execMethod, '', $cmdAliases) !== 0;
+        return $this->showHelpByMethodAnnotations($execMethod, '', $aliases) !== 0;
     }
 }

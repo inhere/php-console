@@ -3,6 +3,7 @@
 [![License](https://img.shields.io/packagist/l/inhere/console.svg?style=flat-square)](LICENSE)
 [![Php Version](https://img.shields.io/badge/php-%3E=7.1.0-brightgreen.svg?maxAge=2592000)](https://packagist.org/packages/inhere/console)
 [![Latest Stable Version](http://img.shields.io/packagist/v/inhere/console.svg)](https://packagist.org/packages/inhere/console)
+[![Github Actions Status](https://github.com/inhere/console/workflows/Unit-tests/badge.svg)](https://github.com/inhere/console/actions)
 
 简洁、功能全面的php命令行应用库。提供控制台参数解析, 命令运行，颜色风格输出, 用户信息交互, 特殊格式信息显示。
 

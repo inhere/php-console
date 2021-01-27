@@ -19,6 +19,7 @@ use function trigger_error;
 /**
  * default command controller. there are some command usage examples(1)
  * Class HomeController
+ *
  * @package Inhere\Console\Examples\Controller
  */
 class HomeController extends Controller
@@ -34,15 +35,15 @@ class HomeController extends Controller
     {
         return [
             // now, 'home:i' is equals to 'home:index'
-            'i'   => 'index',
-            'prg' => 'progress',
-            'pgb' => 'progressBar',
-            'l'   => 'list',
-            'af'  => 'artFont',
-            'ml'  => 'multiList',
-            'sl'  => 'splitLine',
-            'dt'  => 'dynamicText',
-            'da'  => 'defArg',
+            'i'      => 'index',
+            'prg'    => 'progress',
+            'pgb'    => 'progressBar',
+            'l'      => 'list',
+            'af'     => 'artFont',
+            'ml'     => 'multiList',
+            'sl'     => 'splitLine',
+            'dt'     => 'dynamicText',
+            'defArg' => ['da', 'defarg'],
         ];
     }
 
@@ -108,6 +109,7 @@ class HomeController extends Controller
 
     /**
      * command `defArgCommand` config
+     *
      * @throws LogicException
      */
     protected function defArgConfigure(): void
@@ -127,6 +129,7 @@ class HomeController extends Controller
 
     /**
      * a command for test throw exception
+     *
      * @throws RuntimeException
      */
     public function exCommand(): void
@@ -181,6 +184,7 @@ class HomeController extends Controller
 
     /**
      * output art font text
+     *
      * @options
      *  --font    Set the art font name(allow: {internalFonts}).
      *  --italic  Set the art font type is italic.
@@ -205,9 +209,10 @@ class HomeController extends Controller
 
     /**
      * dynamic notice message show: counterTxt. It is like progress txt, but no max value.
+     *
+     * @return int
      * @example
      *  {script} {command}
-     * @return int
      */
     public function counterCommand(): int
     {
@@ -293,16 +298,19 @@ class HomeController extends Controller
 
     /**
      * a progress bar example show, by Show::progressBar()
+     *
      * @options
      *  --type      the progress type, allow: bar,txt. <cyan>txt</cyan>
      *  --done-char the done show char. <info>=</info>
      *  --wait-char the waiting show char. <info>-</info>
      *  --sign-char the sign char show. <info>></info>
+     *
+     * @param Input $input
+     *
+     * @return int
      * @example
      *  {script} {command}
      *  {script} {command} --done-char '#' --wait-char ' '
-     * @param Input $input
-     * @return int
      */
     public function progressCommand($input): int
     {
@@ -333,6 +341,7 @@ class HomeController extends Controller
 
     /**
      * a progress bar example show, by class ProgressBar
+     *
      * @throws LogicException
      */
     public function progressBarCommand(): void
@@ -474,6 +483,7 @@ class HomeController extends Controller
 
     /**
      * a example for use arguments on command
+     *
      * @usage home:useArg [arg1=val1 arg2=arg2] [options]
      * @example
      *  home:useArg status=2 name=john arg0 -s=test --page=23 -d -rf --debug --test=false -a v1 --ab -c -g --cd val -h '' -i stat=online
@@ -513,6 +523,7 @@ class HomeController extends Controller
     /**
      * This is a demo for download a file to local
      * @usage {command} url=url saveTo=[saveAs] type=[bar|text]
+     *
      * @example {command} url=https://github.com/inhere/php-console/archive/master.zip type=bar
      */
     public function downCommand(): int
