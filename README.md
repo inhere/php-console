@@ -1,4 +1,4 @@
-# PHP console
+# PHP Console
 
 [![License](https://img.shields.io/packagist/l/inhere/console.svg?style=flat-square)](LICENSE)
 [![Php Version](https://img.shields.io/badge/php-%3E=7.3.0-brightgreen.svg?maxAge=2592000)](https://packagist.org/packages/inhere/console)
@@ -6,6 +6,7 @@
 [![Github Actions Status](https://github.com/inhere/php-console/workflows/Unit-tests/badge.svg)](https://github.com/inhere/php-console/actions)
 
 A simple, full-featured php command line application library. 
+
 Provide console parameter parsing, command run, color style output, user information interaction, and special format information display.
 
 > **[中文README](./README.zh-CN.md)**
@@ -20,7 +21,8 @@ Provide console parameter parsing, command run, color style output, user informa
 
 - Command line application, `controller`, `command` parsing run on the command line
 - Support for setting aliases for commands. A command can have multiple aliases. Support command display/hide, enable/disable
-- Full-featured command line option parameter parsing (named parameters, short options, long options...). `input`, `output` of the command line, management, use
+- Full-featured command line option parameter parsing (named parameters, short options `-s`, long options `--long`). 
+- The `input`, `output` of the command line, management, use
 - Command method comments are automatically parsed as help information (by default, `@usage` `@arguments` `@options` `@example`)
 - Support for outputting message texts of multiple color styles (`info`, `comment`, `success`, `warning`, `danger`, `error` ... )
 - Commonly used special format information display (`section`, `panel`, `padding`, `helpPanel`, `table`, `tree`, `title`, `list`, `multiList`)
@@ -42,7 +44,7 @@ Provide console parameter parsing, command run, color style output, user informa
 
 > All features, effects; can be run in the example code `phps/app` in `examples/`. Basically covers all the features and can be tested directly
 
-## Quick installation
+## Installation
 
 ```bash
 composer require inhere/console

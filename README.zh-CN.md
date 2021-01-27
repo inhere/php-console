@@ -1,4 +1,4 @@
-# php 命令行应用库
+# PHP Console
 
 [![License](https://img.shields.io/packagist/l/inhere/console.svg?style=flat-square)](LICENSE)
 [![Php Version](https://img.shields.io/badge/php-%3E=7.1.0-brightgreen.svg?maxAge=2592000)](https://packagist.org/packages/inhere/console)
@@ -19,7 +19,8 @@
 
 - 命令行应用, 命令行的 `controller`, `command` 解析运行 
 - 支持给命令设置别名,一个命令可以有多个别名。支持命令的显示/隐藏，启用/禁用
-- 功能全面的命令行的选项参数解析(命名参数，短选项，长选项 ...)。命令行的 `input`, `output` 管理、使用
+- 功能全面的命令行的选项参数解析(命名参数，短选项 `-s`，长选项 `--long`)
+- 命令行下的 输入`input`, 输出 `output` 管理、使用
 - 命令方法注释自动解析为帮助信息（默认提取 `@usage` `@arguments` `@options` `@example` 等信息）
 - 支持输出多种颜色风格的消息文本(`info`, `comment`, `success`, `warning`, `danger`, `error` ... )
 - 常用的特殊格式信息显示(`section`, `panel`, `padding`, `helpPanel`, `table`, `tree`, `title`, `list`, `multiList`)
