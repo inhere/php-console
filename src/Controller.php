@@ -9,19 +9,20 @@
 namespace Inhere\Console;
 
 use Generator;
+use Inhere\Console\Concern\ControllerHelpTrait;
 use Inhere\Console\Contract\ControllerInterface;
 use Inhere\Console\IO\Input;
+use Inhere\Console\IO\InputDefinition;
 use Inhere\Console\IO\Output;
 use Inhere\Console\Util\FormatUtil;
 use Inhere\Console\Util\Helper;
 use ReflectionClass;
 use ReflectionException;
-use ReflectionMethod;
 use ReflectionObject;
 use RuntimeException;
 use Toolkit\Cli\ColorTag;
-use Toolkit\Stdlib\Util\PhpDoc;
 use Toolkit\Stdlib\Str;
+use Toolkit\Stdlib\Util\PhpDoc;
 use function array_flip;
 use function array_keys;
 use function array_merge;
@@ -45,6 +46,8 @@ use const PHP_EOL;
  */
 abstract class Controller extends AbstractHandler implements ControllerInterface
 {
+    use ControllerHelpTrait;
+
     /**
      * The sub-command aliases mapping
      *
@@ -67,6 +70,7 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
 
     /**
      * Action name, no suffix.
+     * eg: updateCommand() -> action: 'update'
      *
      * @var string
      */
@@ -90,11 +94,6 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
     private $actionSuffix = self::COMMAND_SUFFIX;
 
     /**
-     * @var string
-     */
-    protected $notFoundCallback = 'notFound';
-
-    /**
      * @var array Common options for all sub-commands in the group
      */
     private $groupOptions = [];
@@ -103,6 +102,21 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
      * @var array From disabledCommands()
      */
     private $disabledCommands = [];
+
+    /**
+     * Metadata for sub-commands. such as: desc, alias
+     * Notice: you must add metadata on `init()`
+     *
+     * [
+     *  'command real name' => [
+     *      'desc'  => 'sub command description',
+     *      'alias' => [],
+     *   ],
+     * ],
+     *
+     * @var array
+     */
+    protected $commandMetas = [];
 
     /**
      * Define command alias mapping. please rewrite it on sub-class.
@@ -132,6 +146,7 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
         self::loadCommandAliases();
 
         $list = $this->disabledCommands();
+
         // save to property
         $this->disabledCommands = $list ? array_flip($list) : [];
         $this->groupOptions     = $this->groupOptions();
@@ -165,7 +180,20 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
     }
 
     /**
-     * @param string $command
+     * Will call it on action(sub-command) not found on the group.
+     *
+     * @param string $action
+     *
+     * @return bool if return True, will stop goon render group help.
+     */
+    protected function onNotFound(string $action): bool
+    {
+        // you can add custom logic on sub-command not found.
+        return false;
+    }
+
+    /**
+     * @param string $command command in the group
      *
      * @return int|mixed
      * @throws ReflectionException
@@ -174,14 +202,35 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
     {
         if (!$command = trim($command, $this->delimiter)) {
             $command = $this->defaultAction;
+
+            // try use next arg as sub-command name.
+            if (!$command) {
+                $command = $this->input->findCommandName();
+
+                // update the command id.
+                if ($command) {
+                    $group = $this->input->getCommand();
+                    $this->input->setCommandId("$group:$command");
+                }
+            }
         }
 
-        $this->action = Str::camelCase($this->getRealCommandName($command));
-
-        if (!$this->action) {
+        // if not input sub-command, render group help.
+        if (!$command) {
+            $this->debugf('sub-command is empty, display help for the group: %s', self::getName());
             return $this->showHelp();
         }
 
+        $this->input->setSubCommand($command);
+
+        // get real sub-command name
+        $command = $this->getRealCommandName($command);
+
+        // convert 'boo-foo' to 'booFoo'
+        $this->action = Str::camelCase($command);
+        $this->debugf('will run the group action: %s, sub-command: %s', $this->action, $command);
+
+        // do running
         return parent::run($command);
     }
 
@@ -190,12 +239,30 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
      */
     protected function configure(): void
     {
-        // eg. indexConfigure() for indexCommand()
+        // eg. use `indexConfigure()` for `indexCommand()`
         $method = $this->action . self::CONFIGURE_SUFFIX;
 
         if (method_exists($this, $method)) {
             $this->$method($this->input);
         }
+    }
+
+    /**
+     * @return InputDefinition
+     */
+    protected function createDefinition(): InputDefinition
+    {
+        if (!$this->definition) {
+            $this->definition = new InputDefinition();
+
+            // if have been set desc for the sub-command
+            $cmdDesc = $this->commandMetas[$this->action]['desc'] ?? '';
+            if ($cmdDesc) {
+                $this->definition->setDescription($cmdDesc);
+            }
+        }
+
+        return $this->definition;
     }
 
     /**
@@ -213,6 +280,7 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
         $group  = static::getName();
 
         if ($this->isDisabled($action)) {
+            $this->debugf('command %s is disabled on the group %s', $action, $group);
             $output->error(sprintf("Sorry, The command '%s' is invalid in the group '%s'!", $action, $group));
             return -1;
         }
@@ -220,16 +288,21 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
         $method = $this->actionSuffix ? $action . ucfirst($this->actionSuffix) : $action;
 
         // the action method exists and only allow access public method.
-        if (method_exists($this, $method) && (($rfm = new ReflectionMethod($this, $method)) && $rfm->isPublic())) {
-            // before
-            if (method_exists($this, $before = 'before' . ucfirst($action))) {
-                $this->$before($input, $output);
+        // if (method_exists($this, $method) && (($rfm = new ReflectionMethod($this, $method)) && $rfm->isPublic())) {
+        if (method_exists($this, $method)) {
+            // before run action
+            if (method_exists($this, $beforeFunc = 'before' . ucfirst($action))) {
+                $beforeOk = $this->$beforeFunc($input, $output);
+                if ($beforeOk === false) {
+                    $this->debugf('%s() returns FALSE, interrupt processing continues', $beforeFunc);
+                    return 0;
+                }
             }
 
             // run action
             $result = $this->$method($input, $output);
 
-            // after
+            // after run action
             if (method_exists($this, $after = 'after' . ucfirst($action))) {
                 $this->$after($input, $output);
             }
@@ -237,24 +310,30 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
             return $result;
         }
 
-        // if you defined the method '$this->notFoundCallback' , will call it
-        if (($notFoundCallback = $this->notFoundCallback) && method_exists($this, $notFoundCallback)) {
-            $result = $this->{$notFoundCallback}($action);
-        } else {
-            $result = -1;
-            $output->liteError("Sorry, The command '$action' not exist of the group '{$group}'!");
-
-            // find similar command names
-            $similar = Helper::findSimilar($action, $this->getAllCommandMethods(null, true));
-
-            if ($similar) {
-                $output->write(sprintf("\nMaybe what you mean is:\n    <info>%s</info>", implode(', ', $similar)));
-            } else {
-                $this->showCommandList();
-            }
+        // if user custom handle not found logic.
+        if ($this->onNotFound($action)) {
+            $this->debugf('user custom handle the action "%s" not found logic', $action);
+            return 0;
         }
 
-        return $result;
+        $this->debugf('action "%s" not found on the group controller', $action);
+
+        // if you defined the method '$this->notFoundCallback' , will call it
+        // if (($notFoundCallback = $this->notFoundCallback) && method_exists($this, $notFoundCallback)) {
+        //     $result = $this->{$notFoundCallback}($action);
+        // } else {
+        $output->liteError("Sorry, The command '$action' not exist of the group '{$group}'!");
+
+        // find similar command names
+        $similar = Helper::findSimilar($action, $this->getAllCommandMethods(null, true));
+
+        if ($similar) {
+            $output->write(sprintf("\nMaybe what you mean is:\n    <info>%s</info>", implode(', ', $similar)));
+        } else {
+            $this->showCommandList();
+        }
+
+        return -1;
     }
 
     /**
@@ -263,14 +342,24 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
      */
     protected function showHelp(): bool
     {
-        // help info has been build by input definition.
-        if (true === parent::showHelp()) {
+        // render help by Definition
+        if ($definition = $this->getDefinition()) {
+            if ($action = $this->action) {
+                $aliases = $this->getCommandAliases($action);
+            } else {
+                $aliases = $this->getAliases();
+            }
+
+            $this->showHelpByDefinition($definition, $aliases);
             return true;
         }
 
         return $this->helpCommand() === 0;
     }
 
+    /**
+     * @param array $help
+     */
     protected function beforeRenderCommandHelp(array &$help): void
     {
         $help['Group Options:'] = FormatUtil::alignOptions($this->groupOptions);
@@ -305,8 +394,8 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
     {
         $action = $this->action;
 
-        // For all sub-commands of the controller
-        if (!$action && !($action = $this->getFirstArg())) {
+        // Not input action, for all sub-commands of the controller
+        if (!$action) {
             $this->showCommandList();
             return 0;
         }
@@ -325,6 +414,11 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
             }
         }
 
+        $this->log(Console::VERB_DEBUG, "display help for the controller method: $method", [
+            'group'  => static::$name,
+            'action' => $action,
+        ]);
+
         // For a specified sub-command.
         return $this->showHelpByMethodAnnotations($method, $action, $aliases);
     }
@@ -341,6 +435,8 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
      */
     final public function showCommandList(): void
     {
+        $this->logf(Console::VERB_DEBUG, 'display all sub-commands list of the group: %s', static::$name);
+
         $this->beforeShowCommandList();
 
         $ref   = new ReflectionClass($this);
@@ -354,12 +450,15 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
         $showDisabled = (bool)$this->getOpt('show-disabled', false);
         $defaultDes   = 'No description message';
 
+        /**
+         * @var $cmd string The command name.
+         */
         foreach ($this->getAllCommandMethods($ref) as $cmd => $m) {
             if (!$cmd) {
                 continue;
             }
 
-            $desc = $defaultDes;
+            $desc = $this->getCommandMeta('desc', $defaultDes, $cmd);
             if ($phpDoc = $m->getDocComment()) {
                 $desc = PhpDoc::firstLine($phpDoc);
             }
@@ -394,18 +493,28 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
 
         $script = $this->getScriptName();
 
+        // if is alone running.
         if ($detached = $this->isDetached()) {
             $name  = $sName . ' ';
             $usage = "$script <info>{command}</info> [--options ...] [arguments ...]";
         } else {
             $name  = $sName . $this->delimiter;
-            $usage = "$script {$name}<info>{command}</info> [--options ...] [arguments ...]";
+            // $usage = "$script {$name}<info>{command}</info> [--options ...] [arguments ...]";
+            $usage = [
+                "$script {$name}<info>{command}</info> [--options ...] [arguments ...]",
+                "$script {$sName} <info>{command}</info> [--options ...] [arguments ...]",
+            ];
         }
 
         $globalOptions = array_merge(Application::getGlobalOptions(), static::$globalOptions);
 
         $this->output->startBuffer();
         $this->output->write(ucfirst($classDes) . PHP_EOL);
+
+        if ($aliases = $this->getAliases()) {
+            $this->output->writef('<comment>Alias:</comment> %s', implode(',', $aliases));
+        }
+
         $this->output->mList([
             'Usage:'              => $usage,
             //'Group Name:' => "<info>$sName</info>",
@@ -415,8 +524,8 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
             'sepChar' => '  ',
         ]);
 
-        $msgTpl = 'More information about a command, please use: <cyan>%s %s{command} -h</cyan>';
-        $this->output->write(sprintf($msgTpl, $script, $detached ? '' : $name));
+        $msgTpl = 'More information about a command, please see: <cyan>%s %s {command} -h</cyan>';
+        $this->output->write(sprintf($msgTpl, $script, $detached ? '' : $sName));
         $this->output->flush();
     }
 
@@ -452,16 +561,15 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
     /**
      * @param string $name
      *
-     * @return mixed|string
+     * @return string
      */
-    protected function getRealCommandName(string $name)
+    protected function getRealCommandName(string $name): string
     {
         if (!$name) {
             return '';
         }
 
         $map = $this->getCommandAliases();
-
         return $map[$name] ?? $name;
     }
 
@@ -582,22 +690,6 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
     }
 
     /**
-     * @return string|null
-     */
-    public function getNotFoundCallback(): ?string
-    {
-        return $this->notFoundCallback;
-    }
-
-    /**
-     * @param string $notFoundCallback
-     */
-    public function setNotFoundCallback(string $notFoundCallback): void
-    {
-        $this->notFoundCallback = $notFoundCallback;
-    }
-
-    /**
      * @return bool
      */
     public function isExecutionAlone(): bool
@@ -629,5 +721,38 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
     public function setDelimiter(string $delimiter): void
     {
         $this->delimiter = $delimiter;
+    }
+
+    /**
+     * @return array
+     */
+    public function getCommandMetas(): array
+    {
+        return $this->commandMetas;
+    }
+
+    /**
+     * @param string $command
+     * @param array  $meta  eg: ['desc' => '', 'alias' => []]
+     */
+    public function setCommandMeta(string $command, array $meta): void
+    {
+        if ($command) {
+            $this->commandMetas[$command] = $meta;
+        }
+    }
+
+    /**
+     * @param string $key
+     * @param null   $default
+     * @param string $command if not set, will use $this->action
+     *
+     * @return mixed|null
+     */
+    public function getCommandMeta(string $key, $default = null, string $command = '')
+    {
+        $action = $command ?: $this->action;
+
+        return $this->commandMetas[$action][$key] ?? $default;
     }
 }

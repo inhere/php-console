@@ -6,7 +6,7 @@ use Closure;
 use Inhere\Console\Contract\CommandInterface;
 use Inhere\Console\Contract\ControllerInterface;
 use Inhere\Console\Contract\RouterInterface;
-use Inhere\Console\Traits\NameAliasTrait;
+use Inhere\Console\Concern\NameAliasTrait;
 use Inhere\Console\Util\Helper;
 use InvalidArgumentException;
 use function array_keys;

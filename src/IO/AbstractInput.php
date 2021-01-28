@@ -10,6 +10,7 @@ namespace Inhere\Console\IO;
 
 use Inhere\Console\Concern\InputArgumentsTrait;
 use Inhere\Console\Concern\InputOptionsTrait;
+use Inhere\Console\Contract\InputInterface;
 use function getcwd;
 use function is_int;
 use function trim;
@@ -19,7 +20,7 @@ use function trim;
  *
  * @package Inhere\Console\IO
  */
-abstract class AbstractInput implements \Inhere\Console\Contract\InputInterface
+abstract class AbstractInput implements InputInterface
 {
     use InputArgumentsTrait, InputOptionsTrait;
 
@@ -46,11 +47,19 @@ abstract class AbstractInput implements \Inhere\Console\Contract\InputInterface
 
     /**
      * the command name(Is first argument)
-     * e.g `start` OR `start`
+     * e.g `git` OR `start`
      *
      * @var string
      */
     protected $command = '';
+
+    /**
+     * the command name(Is first argument)
+     * e.g `subcmd` in the `./app group subcmd`
+     *
+     * @var string
+     */
+    protected $subCommand = '';
 
     /**
      * eg `./examples/app home:useArg status=2 name=john arg0 -s=test --page=23`
@@ -87,19 +96,20 @@ abstract class AbstractInput implements \Inhere\Console\Contract\InputInterface
     abstract public function toString(): string;
 
     /**
-     * find command name. it is first argument.
+     * find command name, it is first argument.
+     * TIP: will reset args data after founded.
      */
-    protected function findCommand(): void
+    public function findCommandName(): string
     {
         if (!isset($this->args[0])) {
-            return;
+            return '';
         }
 
+        $command = '';
         $newArgs = [];
-
         foreach ($this->args as $key => $value) {
             if ($key === 0) {
-                $this->command = trim($value);
+                $command = trim($value);
             } elseif (is_int($key)) {
                 $newArgs[] = $value;
             } else {
@@ -107,7 +117,11 @@ abstract class AbstractInput implements \Inhere\Console\Contract\InputInterface
             }
         }
 
-        $this->args = $newArgs;
+        if ($command) {
+            $this->args = $newArgs;
+        }
+
+        return $command;
     }
 
     /***********************************************************************************
@@ -220,5 +234,21 @@ abstract class AbstractInput implements \Inhere\Console\Contract\InputInterface
     public function setTokens(array $tokens): void
     {
         $this->tokens = $tokens;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSubCommand(): string
+    {
+        return $this->subCommand;
+    }
+
+    /**
+     * @param string $subCommand
+     */
+    public function setSubCommand(string $subCommand): void
+    {
+        $this->subCommand = $subCommand;
     }
 }

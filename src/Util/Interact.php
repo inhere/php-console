@@ -49,7 +49,7 @@ class Interact extends Show
 
         $stream = $opts['stream'] ?? Cli::getInputStream();
 
-        return trim(fgets($stream));
+        return trim((string)fgets($stream));
     }
 
     /**

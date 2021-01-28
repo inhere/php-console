@@ -13,6 +13,8 @@ class GlobalOption
 
     public const DEBUG = 'debug';
 
+    public const ISHELL = 'ishell';
+
     public const VERSION = 'version';
 
     public const PROFILE = 'profile';
@@ -21,8 +23,13 @@ class GlobalOption
 
     public const NO_INTERACTIVE = 'no-interactive';
 
+    public const HELP_OPTS = ['h', 'help'];
+
+    public const VERSION_OPTS = ['V', 'version'];
+
     public const KEY_MAP = [
         'debug'          => 1,
+        'ishell'         => 1,
         'profile'        => 1,
         'no-color'       => 1,
         'h'              => 1,

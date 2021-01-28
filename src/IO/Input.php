@@ -71,11 +71,22 @@ class Input extends AbstractInput
         $this->tokens = $args;
         $this->script = array_shift($args);
         $this->flags  = $args; // no script
+
         // bin name
         $this->scriptName = basename($this->script);
+
         // full script
         $this->fullScript = implode(' ', $args);
+    }
 
+    /**
+     * re-parse args/opts from given args
+     *
+     * @param array $args
+     */
+    public function parse(array $args): void
+    {
+        $this->doParse($args);
     }
 
     /**
@@ -90,7 +101,7 @@ class Input extends AbstractInput
         ] = Flags::parseArgv($args);
 
         // find command name
-        $this->findCommand();
+        $this->command = $this->findCommandName();
     }
 
     public function resetInputStream(): void
@@ -140,7 +151,7 @@ class Input extends AbstractInput
             fwrite(Cli::getOutputStream(), $question . ($nl ? "\n" : ''));
         }
 
-        return trim(fgets($this->inputStream));
+        return trim((string)fgets($this->inputStream));
     }
 
     /***********************************************************************************

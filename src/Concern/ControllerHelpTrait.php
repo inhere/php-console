@@ -1,11 +1,11 @@
 <?php declare(strict_types=1);
 
-namespace Inhere\Console\Traits;
+namespace Inhere\Console\Concern;
 
 /**
  * Trait ControllerHelpTrait
  *
- * @package Inhere\Console\Traits
+ * @package Inhere\Console\Concern
  */
 trait ControllerHelpTrait
 {

@@ -10,26 +10,29 @@ namespace Inhere\Console\IO\Input;
 
 use Inhere\Console\IO\Input;
 use Toolkit\Cli\Flags;
+use Toolkit\Cli\Util\LineParser;
 
 /**
- * Class ArrayInput
+ * Class StringInput
  *
  * @package Inhere\Console\IO\Input
  */
-class ArrayInput extends Input
+class StringInput extends Input
 {
     /**
      * Input constructor.
      *
-     * @param null|array $args
-     * @param bool       $parsing
+     * @param string $line
+     * @param bool   $parsing
      */
-    public function __construct(array $args = null, bool $parsing = true)
+    public function __construct(string $line, bool $parsing = true)
     {
         parent::__construct([], false);
 
-        if ($parsing && $args) {
-            $this->doParse($this->flags);
+        if ($parsing && $line) {
+            $flags = LineParser::parseIt($line);
+
+            $this->doParse($flags);
         }
     }
 

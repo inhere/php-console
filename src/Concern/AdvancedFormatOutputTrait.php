@@ -6,12 +6,12 @@
  * Time: 9:44
  */
 
-namespace Inhere\Console\Traits;
+namespace Inhere\Console\Concern;
 
 /**
  * Trait AdvancedFormatOutputTrait
  *
- * @package Inhere\Console\Traits
+ * @package Inhere\Console\Concern
  */
 trait AdvancedFormatOutputTrait
 {

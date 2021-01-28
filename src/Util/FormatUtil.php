@@ -9,6 +9,7 @@
 namespace Inhere\Console\Util;
 
 use Toolkit\Cli\ColorTag;
+use Toolkit\Stdlib\Helper\JsonHelper;
 use Toolkit\Sys\Sys;
 use function array_keys;
 use function array_merge;
@@ -279,12 +280,11 @@ final class FormatUtil
             if (is_array($value)) {
                 $temp = '[';
 
-                /** @var array $value */
                 foreach ($value as $k => $val) {
                     if (is_bool($val)) {
                         $val = $val ? '(True)' : '(False)';
                     } else {
-                        $val = is_scalar($val) ? (string)$val : gettype($val);
+                        $val = is_scalar($val) ? (string)$val : JsonHelper::unescaped($val);
                     }
 
                     $temp .= (!is_numeric($k) ? "$k: " : '') . "$val, ";

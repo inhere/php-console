@@ -21,10 +21,11 @@ use function implode;
 use function is_object;
 use function is_string;
 use function method_exists;
-use function sprintf;
+use function str_replace;
 use function strlen;
 use function strpos;
 use function substr;
+use function trim;
 
 /**
  * Class App
@@ -62,7 +63,8 @@ class Application extends AbstractApplication
             ];
         }
 
-        $this->getRouter()->addGroup($name, $class, (array)$option);
+        $this->logf(Console::VERB_CRAZY, 'load group controller: %s', $name);
+        $this->router->addGroup($name, $class, (array)$option);
 
         return $this;
     }
@@ -70,9 +72,9 @@ class Application extends AbstractApplication
     /**
      * Add group/controller
      *
-     * @param string                     $name
-     * @param string|ControllerInterface $class The controller class
-     * @param null|array|string          $option
+     * @param string                          $name
+     * @param string|ControllerInterface|null $class The controller class
+     * @param null|array|string               $option
      *
      * @return Application|Contract\ApplicationInterface
      * @see controller()
@@ -83,9 +85,9 @@ class Application extends AbstractApplication
     }
 
     /**
-     * @param string                     $name
-     * @param string|ControllerInterface $class The controller class
-     * @param null|array|string          $option
+     * @param string                          $name
+     * @param string|ControllerInterface|null $class The controller class
+     * @param null|array|string               $option
      *
      * @return Application|Contract\ApplicationInterface
      * @see controller()
@@ -123,7 +125,7 @@ class Application extends AbstractApplication
      */
     public function addControllers(array $controllers): void
     {
-        $this->getRouter()->addControllers($controllers);
+        $this->router->addControllers($controllers);
     }
 
     /**
@@ -137,7 +139,8 @@ class Application extends AbstractApplication
             ];
         }
 
-        $this->getRouter()->addCommand($name, $handler, (array)$option);
+        $this->logf(Console::VERB_CRAZY, 'load application command: %s', $name);
+        $this->router->addCommand($name, $handler, (array)$option);
 
         return $this;
     }
@@ -164,7 +167,7 @@ class Application extends AbstractApplication
      */
     public function addCommands(array $commands): void
     {
-        $this->getRouter()->addCommands($commands);
+        $this->router->addCommands($commands);
     }
 
     /**
@@ -255,25 +258,34 @@ class Application extends AbstractApplication
     /**
      * @inheritdoc
      * @throws ReflectionException
-     * @throws InvalidArgumentException
      */
     public function dispatch(string $name, bool $detachedRun = false)
     {
-        $this->logf(Console::VERB_DEBUG, 'begin dispatch command: %s', $name);
+        if (!$name = trim($name)) {
+            throw new InvalidArgumentException('cannot dispatch an empty command');
+        }
+
+        $cmdId = $name;
+        $this->debugf( 'begin dispatch the input command: %s', $name);
+
+        // format is: `group action`
+        if (strpos($name, ' ') > 0) {
+            $cmdId = str_replace(' ', $this->delimiter, $name);
+        }
 
         // match handler by input name
-        $info = $this->getRouter()->match($name);
+        $info = $this->router->match($cmdId);
 
         // command not found
         if (!$info) {
-            if (true === $this->fire(self::ON_NOT_FOUND, $name, $this)) {
-                $this->logf(Console::VERB_DEBUG, 'not found handle by user, command: %s', $name);
+            $evtName = ConsoleEvent::ON_NOT_FOUND;
+            if (true === $this->fire($evtName, $cmdId, $this)) {
+                $this->debugf('user custom handle the not found command: %s, event: %s', $name, $evtName);
                 return 0;
             }
 
+            $commands = $this->router->getAllNames();
             $this->output->error("The command '{$name}' is not exists!");
-
-            $commands = $this->getRouter()->getAllNames();
 
             // find similar command names by similar_text()
             if ($similar = Helper::findSimilar($name, $commands)) {
@@ -287,9 +299,8 @@ class Application extends AbstractApplication
             return 2;
         }
 
-        $cmdOptions = $info['options'];
-
         // save command ID
+        $cmdOptions = $info['options'];
         $this->input->setCommandId($info['cmdId']);
 
         // is command

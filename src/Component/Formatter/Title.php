@@ -4,6 +4,7 @@ namespace Inhere\Console\Component\Formatter;
 
 use Inhere\Console\Component\MessageFormatter;
 use Inhere\Console\Console;
+use Toolkit\Cli\ColorTag;
 use Toolkit\Stdlib\Str;
 use Toolkit\Sys\Sys;
 use function array_merge;
@@ -26,15 +27,16 @@ class Title extends MessageFormatter
             'width'      => 80,
             'char'       => self::CHAR_EQUAL,
             'titlePos'   => self::POS_LEFT,
-            'indent'     => 2,
+            'titleStyle' => 'bold',
+            'indent'     => 0,
             'ucWords'    => true,
             'showBorder' => true,
         ], $opts);
 
         // list($sW, $sH) = Helper::getScreenSize();
-        $width     = (int)$opts['width'];
-        $char      = trim($opts['char']);
-        $indent    = (int)$opts['indent'] >= 0 ? $opts['indent'] : 2;
+        $width  = (int)$opts['width'];
+        $char   = trim($opts['char']);
+        $indent = (int)$opts['indent'] >= 0 ? $opts['indent'] : 2;
 
         $indentStr = '';
         if ($indent > 0) {
@@ -61,8 +63,10 @@ class Title extends MessageFormatter
             $titleIndent = Str::pad(self::CHAR_SPACE, $indent, self::CHAR_SPACE);
         }
 
-        $titleLine = "$titleIndent<bold>$title</bold>\n";
-        $border    = $indentStr . Str::pad($char, $width, $char);
+        $titleText = ColorTag::wrap($title, $opts['titleStyle']);
+        $titleLine = "$titleIndent{$titleText}\n";
+
+        $border = $indentStr . Str::pad($char, $width, $char);
 
         Console::write($titleLine . $border);
     }

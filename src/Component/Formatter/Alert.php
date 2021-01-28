@@ -17,4 +17,29 @@ use Inhere\Console\Component\MessageFormatter;
  */
 class Alert extends MessageFormatter
 {
+    public const THEMES = [
+        'default' => '<{@style}>{@message}</{@style}>',
+        'theme1'  => '<{@style}>[{@type}] {@message}</{@style}>',
+        'lite'    => '[<{@style}>{@type}</{@style}>] {@message}',
+    ];
+
+    public static function simple(string $message, string $style = 'info', array $opts = []): void
+    {
+    }
+
+    public static function block(string $message, string $style = 'info', array $opts = []): void
+    {
+        $opts = array_merge([
+            'paddingX' => 1, // line
+            'paddingY' => 1, // space
+
+            'icon'     => '',
+            'theme'    => 'default',
+            'template' => ''
+        ], $opts);
+    }
+
+    public static function lite(string $message, string $style = 'info'): void
+    {
+    }
 }

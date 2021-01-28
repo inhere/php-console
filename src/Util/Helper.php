@@ -11,7 +11,7 @@
 namespace Inhere\Console\Util;
 
 use FilesystemIterator;
-use Inhere\Console\Traits\RuntimeProfileTrait;
+use Inhere\Console\Concern\RuntimeProfileTrait;
 use InvalidArgumentException;
 use Iterator;
 use RecursiveCallbackFilterIterator;

@@ -10,25 +10,32 @@ namespace Inhere\Console;
 
 use ErrorException;
 use Inhere\Console\Component\ErrorHandler;
+use Inhere\Console\Component\Formatter\Title;
+use Inhere\Console\Concern\StyledOutputAwareTrait;
 use Inhere\Console\Contract\ApplicationInterface;
 use Inhere\Console\Contract\ErrorHandlerInterface;
 use Inhere\Console\Contract\InputInterface;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
 use Inhere\Console\Contract\OutputInterface;
-use Inhere\Console\Traits\ApplicationHelpTrait;
-use Inhere\Console\Traits\InputOutputAwareTrait;
-use Inhere\Console\Traits\SimpleEventTrait;
+use Inhere\Console\Concern\ApplicationHelpTrait;
+use Inhere\Console\Concern\InputOutputAwareTrait;
+use Inhere\Console\Concern\SimpleEventAwareTrait;
+use Inhere\Console\Util\Interact;
 use InvalidArgumentException;
 use Throwable;
 use Toolkit\Cli\Style;
+use Toolkit\Cli\Util\LineParser;
 use Toolkit\Stdlib\Helper\PhpHelper;
+use Toolkit\Sys\Proc\ProcessUtil;
+use Toolkit\Sys\Proc\Signal;
 use function array_keys;
 use function array_merge;
 use function error_get_last;
 use function header;
 use function in_array;
 use function is_int;
+use function json_encode;
 use function memory_get_usage;
 use function microtime;
 use function register_shutdown_function;
@@ -44,7 +51,10 @@ use const PHP_SAPI;
  */
 abstract class AbstractApplication implements ApplicationInterface
 {
-    use ApplicationHelpTrait, InputOutputAwareTrait, SimpleEventTrait;
+    use ApplicationHelpTrait;
+    use InputOutputAwareTrait;
+    use StyledOutputAwareTrait;
+    use SimpleEventAwareTrait;
 
     /** @var array */
     protected static $internalCommands = [
@@ -55,7 +65,8 @@ abstract class AbstractApplication implements ApplicationInterface
 
     /** @var array */
     protected static $globalOptions = [
-        '--debug'          => 'Setting the application runtime debug level(0 - 4)',
+        '--debug'          => 'Setting the runtime log debug level(quiet 0 - 5 crazy)',
+        '--ishell'         => 'Run application an interactive shell environment',
         '--profile'        => 'Display timing and memory usage information',
         '--no-color'       => 'Disable color/ANSI for message output',
         '-h, --help'       => 'Display this help message',
@@ -64,7 +75,7 @@ abstract class AbstractApplication implements ApplicationInterface
     ];
 
     /** @var array Application runtime stats */
-    private $stats = [
+    protected $stats = [
         'startTime'   => 0,
         'endTime'     => 0,
         'startMemory' => 0,
@@ -72,19 +83,20 @@ abstract class AbstractApplication implements ApplicationInterface
     ];
 
     /** @var array Application config data */
-    private $config = [
-        'name'         => 'My Console Application',
-        'description'  => 'This is my console application',
-        'debug'        => Console::VERB_ERROR,
-        'profile'      => false,
-        'version'      => '0.5.1',
-        'publishAt'    => '2017.03.24',
-        'updateAt'     => '2019.01.01',
-        'rootPath'     => '',
-        'strictMode'   => false,
-        'hideRootPath' => true,
+    protected $config = [
+        'name'           => 'My Console Application',
+        'description'    => 'This is my console application',
+        'debug'          => Console::VERB_ERROR,
+        'profile'        => false,
+        'version'        => '0.5.1',
+        'publishAt'      => '2017.03.24',
+        'updateAt'       => '2019.01.01',
+        'rootPath'       => '',
+        'ishellName'     => '', // name prefix on i-shell env.
+        'strictMode'     => false,
+        'hideRootPath'   => true,
         // global options
-        'no-interactive'  => true,
+        'no-interactive' => true,
 
         // 'timeZone' => 'Asia/Shanghai',
         // 'env' => 'prod', // dev test prod
@@ -102,21 +114,19 @@ abstract class AbstractApplication implements ApplicationInterface
     /**
      * @var Router
      */
-    private $router;
+    protected $router;
 
     /**
      * @var ErrorHandlerInterface Can custom error handler
      */
-    private $errorHandler;
+    protected $errorHandler;
 
     /**
      * Class constructor.
      *
-     * @param array  $config
-     * @param Input  $input
-     * @param Output $output
-     *
-     * @throws InvalidArgumentException
+     * @param array       $config
+     * @param Input|null  $input
+     * @param Output|null $output
      */
     public function __construct(array $config = [], Input $input = null, Output $output = null)
     {
@@ -147,6 +157,8 @@ abstract class AbstractApplication implements ApplicationInterface
         }
 
         $this->registerErrorHandle();
+
+        $this->logf(Console::VERB_DEBUG, 'console application init completed');
     }
 
     /**
@@ -207,6 +219,8 @@ abstract class AbstractApplication implements ApplicationInterface
     {
         $command = trim($this->input->getCommand(), $this->delimiter);
 
+        $this->logf(Console::VERB_DEBUG, 'begin run the application, command is: %s', $command);
+
         try {
             $this->prepareRun();
 
@@ -216,13 +230,13 @@ abstract class AbstractApplication implements ApplicationInterface
             }
 
             // call 'onBeforeRun' service, if it is registered.
-            $this->fire(self::ON_BEFORE_RUN, $this);
+            $this->fire(ConsoleEvent::ON_BEFORE_RUN, $this);
             $this->beforeRun();
 
             // do run ...
             $result = $this->dispatch($command);
         } catch (Throwable $e) {
-            $this->fire(self::ON_RUN_ERROR, $e, $this);
+            $this->fire(ConsoleEvent::ON_RUN_ERROR, $e, $this);
             $result = $e->getCode() === 0 ? $e->getLine() : $e->getCode();
             $this->handleException($e);
         }
@@ -230,7 +244,7 @@ abstract class AbstractApplication implements ApplicationInterface
         $this->stats['endTime'] = microtime(true);
 
         // call 'onAfterRun' service, if it is registered.
-        $this->fire(self::ON_AFTER_RUN, $this);
+        $this->fire(ConsoleEvent::ON_AFTER_RUN, $this);
         $this->afterRun();
 
         if ($exit) {
@@ -350,13 +364,18 @@ abstract class AbstractApplication implements ApplicationInterface
     protected function filterSpecialCommand(string $command): bool
     {
         if (!$command) {
-            if ($this->input->getSameOpt(['V', 'version'])) {
+            if ($this->input->getSameBoolOpt(GlobalOption::VERSION_OPTS)) {
                 $this->showVersionInfo();
                 return true;
             }
 
-            if ($this->input->getSameOpt(['h', 'help'])) {
+            if ($this->input->getSameBoolOpt(GlobalOption::HELP_OPTS)) {
                 $this->showHelpInfo();
+                return true;
+            }
+
+            if ($this->input->getBoolOpt(GlobalOption::ISHELL)) {
+                $this->startInteractiveShell();
                 return true;
             }
 
@@ -382,6 +401,78 @@ abstract class AbstractApplication implements ApplicationInterface
                 return false;
         }
         return true;
+    }
+
+    /**********************************************************
+     * start interactive shell
+     **********************************************************/
+
+    /**
+     * start an interactive shell run
+     */
+    protected function startInteractiveShell(): void
+    {
+        $in = $this->input;
+        $out = $this->output;
+
+        $out->title("Welcome interactive shell for run application", [
+            'titlePos' => Title::POS_MIDDLE,
+        ]);
+
+        if (!($hasPcntl = ProcessUtil::hasPcntl())) {
+            $this->debugf('php is not enable "pcntl" extension, cannot listen CTRL+C signal');
+        }
+
+        if ($hasPcntl) {
+            // register signal.
+            ProcessUtil::installSignal(Signal::INT, static function () use ($out) {
+                $out->colored("\nQuit by CTRL+C");
+                exit(0);
+            });
+        }
+
+        $prefix = $this->getParam('ishellName') ?: $this->getName();
+        if (!$prefix) {
+            $prefix = 'CMD';
+        }
+
+        $exitKeys = [
+            'q'    => 1,
+            'quit' => 1,
+            'exit' => 1,
+        ];
+
+        while (true) {
+            $line = Interact::readln("<comment>$prefix ></comment> ");
+            if (strlen($line) < 5) {
+                if (isset($exitKeys[$line])) {
+                    break;
+                }
+
+                // "?" as show help
+                if ($line === '?') {
+                    $line = 'help';
+                }
+            }
+
+            if ($hasPcntl) {
+                // listen signal.
+                ProcessUtil::dispatchSignal();
+            }
+
+            $args = LineParser::parseIt($line);
+            $this->debugf('input line: %s, parsed args: %s', $line, json_encode($args));
+
+            // reload and parse args
+            $in->parse($args);
+            $in->setFullScript($line);
+
+            // \vdump($in);
+            $this->run(false);
+            $out->println('');
+        }
+
+        $out->colored("\nQuit. ByeBye!");
     }
 
     /**
@@ -421,6 +512,19 @@ abstract class AbstractApplication implements ApplicationInterface
         }
 
         Console::logf($level, $format, ...$args);
+    }
+
+    /**
+     * @param string $format
+     * @param mixed  ...$args
+     */
+    public function debugf(string $format, ...$args): void
+    {
+        if ($this->getVerbLevel() < Console::VERB_DEBUG) {
+            return;
+        }
+
+        Console::logf(Console::VERB_DEBUG, $format, ...$args);
     }
 
     /**********************************************************
@@ -535,7 +639,7 @@ abstract class AbstractApplication implements ApplicationInterface
     /**
      * Get config param value
      *
-     * @param null|string $name
+     * @param string $name
      * @param null|string $default
      *
      * @return array|string
@@ -554,6 +658,18 @@ abstract class AbstractApplication implements ApplicationInterface
     }
 
     /**
+     * check is given verbose level
+     *
+     * @param int $level
+     *
+     * @return bool
+     */
+    public function isDebug(int $level = Console::VERB_DEBUG): bool
+    {
+        return $level <= $this->getVerbLevel();
+    }
+
+    /**
      * get current debug level value
      *
      * @return int
@@ -566,7 +682,7 @@ abstract class AbstractApplication implements ApplicationInterface
     }
 
     /**
-     * is profile
+     * is open profile
      *
      * @return boolean
      */
@@ -579,7 +695,7 @@ abstract class AbstractApplication implements ApplicationInterface
     }
 
     /**
-     * is interactive env
+     * is open interactive env
      *
      * @return bool
      */

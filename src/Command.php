@@ -28,6 +28,18 @@ use ReflectionException;
  */
 abstract class Command extends AbstractHandler implements CommandInterface
 {
+    /**
+     * @var Command
+     */
+    protected $parent;
+
+    /**
+     * sub-commands of the command
+     *
+     * @var Command[]
+     */
+    protected $commands = [];
+
     /*
      * Do execute command
      */
@@ -55,14 +67,18 @@ abstract class Command extends AbstractHandler implements CommandInterface
      */
     protected function showHelp(): bool
     {
-        // help info has been build by input definition.
-        if (true === parent::showHelp()) {
+        $aliases = $this->getAliases();
+
+        // render help by input definition.
+        if ($definition = $this->getDefinition()) {
+            $this->showHelpByDefinition($definition, $aliases);
             return true;
         }
 
         $execMethod = 'execute';
-        $cmdAliases = static::aliases();
 
-        return $this->showHelpByMethodAnnotations($execMethod, '', $cmdAliases) !== 0;
+        $this->logf(Console::VERB_CRAZY, "display help info for the command: %s", self::getName());
+
+        return $this->showHelpByMethodAnnotations($execMethod, '', $aliases) !== 0;
     }
 }

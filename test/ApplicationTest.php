@@ -13,11 +13,16 @@ use Throwable;
 use function get_class;
 use function strpos;
 
+/**
+ * Class ApplicationTest
+ *
+ * @package Inhere\ConsoleTest
+ */
 class ApplicationTest extends TestCase
 {
     protected function assertStringContains(string $string, string $contains): void
     {
-        $this->assertNotSame(false, strpos($string, $contains), "string \"$string\" not contains: $contains");
+        self::assertNotFalse(strpos($string, $contains), "string \"$string\" not contains: $contains");
     }
 
     private function newApp(array $args = null): Application
@@ -37,11 +42,11 @@ class ApplicationTest extends TestCase
             'name' => 'Tests',
         ]);
 
-        $this->assertArrayHasKey('name', $app->getConfig());
-        $this->assertEquals('Tests', $app->getName());
-        $this->assertEquals('Tests', $app->getParam('name'));
+        self::assertArrayHasKey('name', $app->getConfig());
+        self::assertEquals('Tests', $app->getName());
+        self::assertEquals('Tests', $app->getParam('name'));
 
-        $this->assertInstanceOf(InputInterface::class, $app->getInput());
+        self::assertInstanceOf(InputInterface::class, $app->getInput());
     }
 
     public function testAddCommand(): void
@@ -54,10 +59,10 @@ class ApplicationTest extends TestCase
 
         $router = $app->getRouter();
 
-        $this->assertTrue($router->isCommand('test'));
-        $this->assertFalse($router->isController('test'));
-        $this->assertArrayHasKey('test', $router->getCommands());
-        $this->assertContains('test', $router->getCommandNames());
+        self::assertTrue($router->isCommand('test'));
+        self::assertFalse($router->isController('test'));
+        self::assertArrayHasKey('test', $router->getCommands());
+        self::assertContains('test', $router->getCommandNames());
     }
 
     public function testAddCommandError(): void
@@ -66,14 +71,14 @@ class ApplicationTest extends TestCase
         try {
             $app->addCommand('');
         } catch (Throwable $e) {
-            $this->assertSame(get_class($e), InvalidArgumentException::class);
+            self::assertSame(get_class($e), InvalidArgumentException::class);
         }
 
         try {
             $app->addCommand('test', 'invalid');
         } catch (Throwable $e) {
-            $this->assertSame(get_class($e), InvalidArgumentException::class);
-            $this->assertSame($e->getMessage(), 'The console command class [invalid] not exists!');
+            self::assertSame(get_class($e), InvalidArgumentException::class);
+            self::assertSame($e->getMessage(), 'The console command class [invalid] not exists!');
         }
     }
 
@@ -89,7 +94,7 @@ class ApplicationTest extends TestCase
         });
 
         $ret = $app->run(false);
-        $this->assertSame('hello', $ret);
+        self::assertSame('hello', $ret);
     }
 
     public function testAddController(): void
@@ -100,13 +105,13 @@ class ApplicationTest extends TestCase
 
         $router = $app->getRouter();
 
-        $this->assertTrue($app->getRouter()->isController('test'));
-        $this->assertFalse($app->getRouter()->isCommand('test'));
-        $this->assertArrayHasKey('test', $router->getControllers());
+        self::assertTrue($app->getRouter()->isController('test'));
+        self::assertFalse($app->getRouter()->isCommand('test'));
+        self::assertArrayHasKey('test', $router->getControllers());
 
         $group = $router->getControllers()['test'];
-        $this->assertSame(TestController::class, $group['handler']);
-        $this->assertSame(Router::TYPE_GROUP, $group['type']);
+        self::assertSame(TestController::class, $group['handler']);
+        self::assertSame(Router::TYPE_GROUP, $group['type']);
     }
 
     public function testAddControllerError(): void
@@ -116,15 +121,15 @@ class ApplicationTest extends TestCase
         try {
             $app->addController('');
         } catch (Throwable $e) {
-            $this->assertSame(get_class($e), InvalidArgumentException::class);
+            self::assertSame(get_class($e), InvalidArgumentException::class);
             $this->assertStringContains($e->getMessage(), '"name" and "controller" cannot be empty');
         }
 
         try {
             $app->controller('test', 'invalid');
         } catch (Throwable $e) {
-            $this->assertSame(get_class($e), InvalidArgumentException::class);
-            $this->assertSame($e->getMessage(), 'The console controller class [invalid] not exists!');
+            self::assertSame(get_class($e), InvalidArgumentException::class);
+            self::assertSame($e->getMessage(), 'The console controller class [invalid] not exists!');
         }
     }
 
@@ -138,7 +143,7 @@ class ApplicationTest extends TestCase
         $app->controller('test', TestController::class);
 
         $ret = $app->run(false);
-        $this->assertSame('Inhere\ConsoleTest\TestController::demoCommand', $ret);
+        self::assertSame('Inhere\ConsoleTest\TestController::demoCommand', $ret);
     }
 
     public function testTriggerEvent(): void
@@ -155,6 +160,6 @@ class ApplicationTest extends TestCase
         $app->addCommand('test1', TestCommand::class);
 
         $ret = $app->run(false);
-        $this->assertSame('Inhere\ConsoleTest\TestCommand::execute', $ret);
+        self::assertSame('Inhere\ConsoleTest\TestCommand::execute', $ret);
     }
 }

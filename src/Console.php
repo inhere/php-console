@@ -7,15 +7,15 @@ use Inhere\Console\IO\Output;
 use Toolkit\Cli\Cli;
 use Toolkit\Cli\ColorTag;
 use function date;
+use function debug_backtrace;
 use function implode;
 use function is_numeric;
 use function json_encode;
 use function sprintf;
 use function strpos;
 use function trim;
-use const JSON_PRETTY_PRINT;
+use const DEBUG_BACKTRACE_IGNORE_ARGS;
 use const JSON_UNESCAPED_SLASHES;
-use const PHP_EOL;
 
 /**
  * Class Console
@@ -93,19 +93,28 @@ class Console extends Cli
     }
 
     /**
+     * @var int
+     */
+    public static $traceIndex = 1;
+
+    /**
      * @param int    $level
      * @param string $format
      * @param mixed  ...$args
      */
     public static function logf(int $level, string $format, ...$args): void
     {
-        $levelName  = self::LEVEL_NAMES[$level] ?? 'INFO';
-        $colorName  = self::LEVEL2TAG[$level] ?? 'info';
-        $taggedName = ColorTag::add($levelName, $colorName);
+        $datetime  = date('Y/m/d H:i:s');
+        $levelName = self::LEVEL_NAMES[$level] ?? 'INFO';
+        $colorName = self::LEVEL2TAG[$level] ?? 'info';
 
         $message = strpos($format, '%') > 0 ? sprintf($format, ...$args) : $format;
+        $tagName = ColorTag::add($levelName, $colorName);
 
-        self::writef('[%s] %s', $taggedName, $message);
+        $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, self::$traceIndex + 2);
+        $position  = self::formatBacktrace($backtrace, self::$traceIndex);
+
+        self::writef('%s [%s] [%s] %s', $datetime, $tagName, $position, $message);
     }
 
     /**
@@ -122,13 +131,14 @@ class Console extends Cli
      *  'coId' => 12,
      *  ]
      */
-    public static function log(string $msg, array $data = [], int $level = self::VERB_DEBUG, array $opts = []): void
+    public static function log(int $level, string $msg, array $data = [], array $opts = []): void
     {
         $levelName  = self::LEVEL_NAMES[$level] ?? 'INFO';
         $colorName  = self::LEVEL2TAG[$level] ?? 'info';
         $taggedName = ColorTag::add($levelName, $colorName);
 
         $userOpts = [];
+        $datetime = date('Y/m/d H:i:s');
         foreach ($opts as $n => $v) {
             if (is_numeric($n) || strpos($n, '_') === 0) {
                 $userOpts[] = "[$v]";
@@ -138,8 +148,32 @@ class Console extends Cli
         }
 
         $optString  = $userOpts ? ' ' . implode(' ', $userOpts) : '';
-        $dataString = $data ? PHP_EOL . json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) : '';
+        $dataString = $data ? json_encode($data, JSON_UNESCAPED_SLASHES) : '';
 
-        self::writef('%s [%s]%s %s %s', date('Y/m/d H:i:s'), $taggedName, $optString, trim($msg), $dataString);
+        $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, self::$traceIndex + 2);
+        $position  = self::formatBacktrace($backtrace, self::$traceIndex);
+
+        self::writef('%s [%s] [%s]%s %s %s', $datetime, $taggedName, $position, $optString, trim($msg), $dataString);
+    }
+
+    /**
+     * @param array $traces
+     * @param int   $index
+     *
+     * @return string
+     */
+    private static function formatBacktrace(array $traces, int $index): string
+    {
+        $position = 'unknown';
+
+        if (isset($traces[$index + 1])) {
+            $tInfo = $traces[$index];
+            $prev  = $traces[$index + 1];
+            $type  = $prev['type'];
+
+            $position = sprintf('%s%s%s(),L%d', $prev['class'], $type, $prev['function'] ?? 'UNKNOWN', $tInfo['line']);
+        }
+
+        return ColorTag::add($position, 'green');
     }
 }

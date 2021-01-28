@@ -6,7 +6,7 @@
  * Time: 11:38
  */
 
-namespace Inhere\Console\Traits;
+namespace Inhere\Console\Concern;
 
 use Inhere\Console\Console;
 use Inhere\Console\IO\Input;
@@ -17,7 +17,7 @@ use Inhere\Console\Contract\OutputInterface;
 /**
  * Class InputOutputAwareTrait
  *
- * @package Inhere\Console\Traits
+ * @package Inhere\Console\Concern
  */
 trait InputOutputAwareTrait
 {
@@ -90,13 +90,13 @@ trait InputOutputAwareTrait
     }
 
     /**
-     * @param array $names
+     * @param string|array $names
      * @param mixed  $default
      *
      * @return bool|mixed|null
      * @see Input::getSameArg()
      */
-    public function getSameArg(array $names, $default = null)
+    public function getSameArg($names, $default = null)
     {
         return $this->input->getSameArg($names, $default);
     }
@@ -113,12 +113,12 @@ trait InputOutputAwareTrait
     }
 
     /**
-     * @param array $names
+     * @param string|string[] $names eg 'n,name' OR ['n', 'name']
      * @param mixed $default
      *
      * @return mixed
      */
-    public function getSameOpt(array $names, $default = null)
+    public function getSameOpt($names, $default = null)
     {
         return $this->input->getSameOpt($names, $default);
     }
@@ -198,27 +198,5 @@ trait InputOutputAwareTrait
     public function setOutput(OutputInterface $output): void
     {
         $this->output = $output;
-    }
-
-    /**
-     * get debug level value
-     *
-     * @return int
-     */
-    public function getVerbLevel(): int
-    {
-        return (int)$this->input->getLongOpt('debug', Console::VERB_ERROR);
-    }
-
-    /**
-     * check is given verbose level
-     *
-     * @param int $level
-     *
-     * @return bool
-     */
-    public function isDebug(int $level = Console::VERB_DEBUG): bool
-    {
-        return $level <= $this->getVerbLevel();
     }
 }

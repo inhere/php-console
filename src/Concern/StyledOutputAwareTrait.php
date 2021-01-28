@@ -1,12 +1,6 @@
 <?php declare(strict_types=1);
-/**
- * Created by PhpStorm.
- * User: inhere
- * Date: 2017-06-20
- * Time: 15:10
- */
 
-namespace Inhere\Console\Traits;
+namespace Inhere\Console\Concern;
 
 use Closure;
 use Generator;
@@ -17,23 +11,19 @@ use Inhere\Console\Component\Formatter\Section;
 use Inhere\Console\Component\Formatter\SingleList;
 use Inhere\Console\Component\Formatter\Table;
 use Inhere\Console\Component\Formatter\Title;
-use Toolkit\Cli\Style;
-use Inhere\Console\Console;
 use Inhere\Console\Util\Interact;
 use Inhere\Console\Util\Show;
 use LogicException;
-use Toolkit\Stdlib\Php;
-use function array_merge;
-use function json_encode;
+use Toolkit\Cli\Style;
 use function method_exists;
 use function sprintf;
 use function strpos;
 use function substr;
 
 /**
- * Class FormatOutputAwareTrait
+ * Trait StyledOutputAwareTrait
  *
- * @package Inhere\Console\Traits
+ * @package Inhere\Console\Concern
  *
  * @method int info($messages, $quit = false)
  * @method int note($messages, $quit = false)
@@ -70,75 +60,8 @@ use function substr;
  * @method ask(string $question, string $default = '', Closure $validator = null): string
  * @method askPassword(string $prompt = 'Enter Password:'): string
  */
-trait FormatOutputAwareTrait
+trait StyledOutputAwareTrait
 {
-    /**
-     * @inheritdoc
-     * @see Console::write()
-     */
-    public function write($messages, $nl = true, $quit = false, array $opts = []): int
-    {
-        return Console::write($messages, $nl, $quit, array_merge([
-            'flush'  => true,
-            'stream' => $this->outputStream,
-        ], $opts));
-    }
-
-    /**
-     * @param string $format
-     * @param mixed  ...$args
-     */
-    public function writef(string $format, ...$args): void
-    {
-        Console::printf($format, ...$args);
-    }
-
-    /**
-     * @param string $format
-     * @param mixed  ...$args
-     */
-    public function printf(string $format, ...$args): void
-    {
-        Console::printf($format, ...$args);
-    }
-
-    /**
-     * @param string|mixed $text
-     * @param bool         $quit
-     * @param array        $opts
-     *
-     * @return int
-     */
-    public function writeln($text, $quit = false, array $opts = []): int
-    {
-        return Console::writeln($text, $quit, $opts);
-    }
-
-    /**
-     * @param string|mixed $text
-     * @param bool         $quit
-     * @param array        $opts
-     *
-     * @return int
-     */
-    public function println($text, $quit = false, array $opts = []): int
-    {
-        return Console::writeln($text, $quit, $opts);
-    }
-
-    /**
-     * @param string|mixed $text
-     * @param bool         $nl
-     * @param bool         $quit
-     * @param array        $opts
-     *
-     * @return int
-     */
-    public function writeRaw($text, bool $nl = true, $quit = false, array $opts = []): int
-    {
-        return Console::writeRaw($text, $nl, $quit, $opts);
-    }
-
     /**
      * @param string $text
      * @param string $tag
@@ -200,7 +123,7 @@ trait FormatOutputAwareTrait
      * @param string      $title
      * @param array       $opts
      */
-    public function aList($data, string $title = '', array $opts = []): void
+    public function aList($data, string $title = 'Information', array $opts = []): void
     {
         SingleList::show($data, $title, $opts);
     }
@@ -264,7 +187,10 @@ trait FormatOutputAwareTrait
     }
 
     /**
-     * @inheritdoc
+     * @param integer $total
+     * @param array $opts
+     *
+     * @return Generator
      * @see Show::progressBar()
      */
     public function progressBar($total, array $opts = []): Generator
@@ -308,40 +234,4 @@ trait FormatOutputAwareTrait
         throw new LogicException("Call a not exists method: $method of the " . static::class);
     }
 
-    /**
-     * @param mixed $data
-     * @param bool  $echo
-     * @param int   $flags
-     *
-     * @return int|string
-     */
-    public function json(
-        $data,
-        bool $echo = true,
-        int $flags = JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
-    ) {
-        $string = json_encode($data, $flags);
-
-        if ($echo) {
-            return Console::write($string);
-        }
-
-        return $string;
-    }
-
-    /**
-     * @param mixed ...$vars
-     */
-    public function dump(...$vars): void
-    {
-        Console::write(Php::dumpVars(...$vars));
-    }
-
-    /**
-     * @param mixed ...$vars
-     */
-    public function prints(...$vars): void
-    {
-        Console::write(Php::printVars(...$vars));
-    }
 }

@@ -3,8 +3,12 @@
 namespace Inhere\Console\Concern;
 
 use Inhere\Console\Exception\PromptException;
+use function array_map;
 use function array_merge;
+use function explode;
+use function is_array;
 use function is_bool;
+use function is_string;
 
 /**
  * Trait InputOptionsTrait
@@ -13,7 +17,6 @@ use function is_bool;
  */
 trait InputOptionsTrait
 {
-
     /**
      * Input short-opts data
      *
@@ -99,12 +102,12 @@ trait InputOptionsTrait
     /**
      * Get an string option(long/short) value
      *
-     * @param string[] $names eg ['n', 'name']
+     * @param string|string[] $names eg 'n,name' OR ['n', 'name']
      * @param string $default
      *
      * @return string
      */
-    public function getSameStringOpt(array $names, string $default = ''): string
+    public function getSameStringOpt($names, string $default = ''): string
     {
         return (string)$this->getSameOpt($names, $default);
     }
@@ -140,12 +143,12 @@ trait InputOptionsTrait
      * Get (long/short)option value(bool)
      * eg: -h --help
      *
-     * @param string[] $names
+     * @param string|string[] $names eg 'n,name' OR ['n', 'name']
      * @param bool     $default
      *
      * @return bool
      */
-    public function getSameBoolOpt(array $names, bool $default = false): bool
+    public function getSameBoolOpt($names, bool $default = false): bool
     {
         return (bool)$this->getSameOpt($names, $default);
     }
@@ -180,29 +183,23 @@ trait InputOptionsTrait
      * eg: -h --help
      *
      * ```php
+     * $input->sameOpt('h,help');
      * $input->sameOpt(['h','help']);
      * ```
      *
-     * @param array $names
+     * @param string|string[] $names eg 'n,name' OR ['n', 'name']
      * @param mixed $default
      *
      * @return bool|mixed|null
      */
-    public function getSameOpt(array $names, $default = null)
+    public function getSameOpt($names, $default = null)
     {
-        return $this->sameOpt($names, $default);
-    }
+        if (is_string($names)) {
+            $names = array_map('trim', explode(',', $names));
+        } elseif (!is_array($names)) {
+            $names = (array)$names;
+        }
 
-    /**
-     * Alias of the getSameOpt()
-     *
-     * @param array $names
-     * @param null  $default
-     *
-     * @return bool|mixed|null
-     */
-    public function sameOpt(array $names, $default = null)
-    {
         foreach ($names as $name) {
             if ($this->hasOpt($name)) {
                 return $this->getOpt($name);
@@ -210,6 +207,19 @@ trait InputOptionsTrait
         }
 
         return $default;
+    }
+
+    /**
+     * Alias of the getSameOpt()
+     *
+     * @param string|array $names
+     * @param mixed  $default
+     *
+     * @return bool|mixed|null
+     */
+    public function sameOpt($names, $default = null)
+    {
+        return $this->getSameOpt($names, $default);
     }
 
     /**
