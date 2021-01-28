@@ -33,11 +33,11 @@ interface CommandHandlerInterface
     /**
      * Run command
      *
-     * @param string $command
+     * @param array $args
      *
      * @return int|mixed return int is exit code. other is command exec result.
      */
-    public function run(string $command = '');
+    public function run(array $args);
 
     /**
      * @return InputDefinition|null

@@ -18,7 +18,7 @@ $ctrl  = new HomeController($input, new Output());
 $ctrl->setDetached();
 
 try {
-    exit($ctrl->run($input->getCommand()));
+    exit($ctrl->run([$input->getCommand()]));
 } catch (\Exception $e) {
     $message = Color::apply('error', $e->getMessage());
 

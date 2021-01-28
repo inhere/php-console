@@ -10,6 +10,7 @@ namespace Inhere\Console;
 
 use Inhere\Console\Concern\AttachApplicationTrait;
 use Inhere\Console\Concern\CommandHelpTrait;
+use Inhere\Console\Concern\SubCommandsWareTrait;
 use Inhere\Console\Contract\CommandHandlerInterface;
 use Inhere\Console\Contract\CommandInterface;
 use Inhere\Console\IO\Input;
@@ -59,6 +60,7 @@ abstract class AbstractHandler implements CommandHandlerInterface
     Use CommandHelpTrait;
     use InputOutputAwareTrait;
     use UserInteractAwareTrait;
+    use SubCommandsWareTrait;
 
     /**
      * group/command name e.g 'test' 'test:one'
@@ -151,6 +153,8 @@ abstract class AbstractHandler implements CommandHandlerInterface
 
     protected function init(): void
     {
+        $this->debugf('attach inner sub-commands to "%s"', self::getName());
+        $this->addCommands($this->commands());
     }
 
     protected function afterInit(): void
@@ -227,14 +231,13 @@ abstract class AbstractHandler implements CommandHandlerInterface
     /**
      * run command
      *
-     * @param string $command
+     * @param array $args
      *
      * @return int|mixed
-     * @throws RuntimeException
-     * @throws InvalidArgumentException
      */
-    public function run(string $command = '')
+    public function run(array $args)
     {
+        $this->debugf('begin run command. load input definition configure');
         // load input definition configure
         $this->configure();
 

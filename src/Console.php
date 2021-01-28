@@ -56,6 +56,10 @@ class Console extends Cli
         self::VERB_CRAZY => 'magenta',
     ];
 
+    public const CMD_GROUP  = 1;
+
+    public const CMD_SINGLE = 2;
+
     /**
      * @var Application
      */

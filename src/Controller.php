@@ -193,13 +193,15 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
     }
 
     /**
-     * @param string $command command in the group
+     * @param array $args
      *
      * @return int|mixed
      * @throws ReflectionException
      */
-    public function run(string $command = '')
+    public function run(array $args)
     {
+        $command = $args[0];
+
         if (!$command = trim($command, $this->delimiter)) {
             $command = $this->defaultAction;
 
@@ -231,7 +233,7 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
         $this->debugf('will run the group action: %s, sub-command: %s', $this->action, $command);
 
         // do running
-        return parent::run($command);
+        return parent::run([$command]);
     }
 
     /**
