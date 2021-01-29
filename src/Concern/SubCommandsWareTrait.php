@@ -165,6 +165,16 @@ trait SubCommandsWareTrait
      **********************************************************/
 
     /**
+     * @param string $name
+     *
+     * @return bool
+     */
+    public function isSubCommand(string $name): bool
+    {
+        return isset($this->commands[$name]);
+    }
+
+    /**
      * @param      $name
      *
      * @throws InvalidArgumentException

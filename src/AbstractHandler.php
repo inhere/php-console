@@ -237,6 +237,16 @@ abstract class AbstractHandler implements CommandHandlerInterface
      */
     public function run(array $args)
     {
+        if (isset($args[0])) {
+            $first = $args[0];
+            $rName = $this->resolveAlias($first);
+
+            if ($this->isSubCommand($rName)) {
+
+            }
+
+        }
+
         $this->debugf('begin run command. load input definition configure');
         // load input definition configure
         $this->configure();
@@ -252,6 +262,8 @@ abstract class AbstractHandler implements CommandHandlerInterface
         if (true !== $this->prepare()) {
             return -1;
         }
+
+        // $this->dispatchCommand($name);
 
         // return False to deny goon run.
         if (false === $this->beforeExecute()) {

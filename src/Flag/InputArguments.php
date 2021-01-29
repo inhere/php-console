@@ -6,7 +6,7 @@
  * Time: 10:11
  */
 
-namespace Inhere\Console\IO\Input;
+namespace Inhere\Console\Flag;
 
 /**
  * Class InputArguments

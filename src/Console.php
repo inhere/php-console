@@ -82,6 +82,22 @@ class Console extends Cli
     }
 
     /**
+     * @return Input
+     */
+    public static function getInput(): Input
+    {
+        return self::$app->getInput();
+    }
+
+    /**
+     * @return Output
+     */
+    public static function getOutput(): Output
+    {
+        return self::$app->getOutput();
+    }
+
+    /**
      * @param array       $config
      * @param Input|null  $input
      * @param Output|null $output

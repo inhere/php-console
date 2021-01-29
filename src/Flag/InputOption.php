@@ -6,7 +6,7 @@
  * Time: 10:28
  */
 
-namespace Inhere\Console\IO\Input;
+namespace Inhere\Console\Flag;
 
 use Inhere\Console\IO\Input;
 use function implode;

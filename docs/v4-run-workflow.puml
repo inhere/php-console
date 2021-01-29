@@ -1,0 +1,27 @@
+@startuml
+start
+:input command line - Entry;
+
+:create app: new Application();
+
+:create Input/Output instance;
+
+partition AppInit {
+    :save app instance to Console::$app;
+    :load application config;
+    :register command/group commands;
+}
+
+:run: app->run();
+
+partition AppRun {
+    :match global flags: --debug;
+    :match global help flag: -h|--help;
+    if (TRUE) then(Yes)
+        :display commands and exit;
+    endif
+    :match global flags: -V|--version;
+}
+
+stop
+@enduml
