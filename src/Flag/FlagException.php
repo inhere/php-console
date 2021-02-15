@@ -3,11 +3,11 @@
 namespace Inhere\Console\Flag;
 
 /**
- * Class Parser
+ * Class FlagException
  *
  * @package Inhere\Console\Flag
  */
-class Parser
+class FlagException extends \RuntimeException
 {
 
 }

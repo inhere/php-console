@@ -63,6 +63,26 @@ abstract class Command extends AbstractHandler implements CommandInterface
     }
 
     /**
+     * @return $this
+     */
+    public function getRootCommand(): Command
+    {
+        if ($this->parent) {
+            return $this->parent->getRootCommand();
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Command|null
+     */
+    public function getParent(): ?Command
+    {
+        return $this->parent;
+    }
+
+    /**
      * Show help information
      *
      * @return bool
