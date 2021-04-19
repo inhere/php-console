@@ -18,8 +18,8 @@ use function array_merge;
 use function array_sum;
 use function ceil;
 use function count;
+use function is_bool;
 use function is_string;
-use function mb_strlen;
 use function ucwords;
 
 /**
@@ -131,7 +131,7 @@ class Table extends MessageFormatter
                         $hasHead = true;
                     }
 
-                    $info['columnMaxWidth'][$index] = mb_strlen($name, 'UTF-8');
+                    $info['columnMaxWidth'][$index] = Str::utf8Len($name, 'UTF-8');
                 }
             }
 
@@ -140,14 +140,18 @@ class Table extends MessageFormatter
             foreach ((array)$row as $value) {
                 // collection column max width
                 if (isset($info['columnMaxWidth'][$colIndex])) {
-                    $colWidth = mb_strlen($value, 'UTF-8');
+                    if (is_bool($value)) {
+                        $colWidth = $value ? 4 : 5;
+                    } else {
+                        $colWidth = Str::utf8Len($value, 'UTF-8');
+                    }
 
                     // If current column width gt old column width. override old width.
                     if ($colWidth > $info['columnMaxWidth'][$colIndex]) {
                         $info['columnMaxWidth'][$colIndex] = $colWidth;
                     }
                 } else {
-                    $info['columnMaxWidth'][$colIndex] = mb_strlen($value, 'UTF-8');
+                    $info['columnMaxWidth'][$colIndex] = Str::utf8Len($value, 'UTF-8');
                 }
 
                 $colIndex++;
@@ -163,7 +167,7 @@ class Table extends MessageFormatter
         if ($title) {
             $tStyle      = $opts['titleStyle'] ?: 'bold';
             $title       = ucwords(trim($title));
-            $titleLength = mb_strlen($title, 'UTF-8');
+            $titleLength = Str::utf8Len($title, 'UTF-8');
             $indentSpace = Str::pad(' ', ceil($tableWidth / 2) - ceil($titleLength / 2) + ($columnCount * 2), ' ');
             $buf->write("  {$indentSpace}<$tStyle>{$title}</$tStyle>\n");
         }
@@ -183,9 +187,12 @@ class Table extends MessageFormatter
 
             foreach ($head as $index => $name) {
                 $colMaxWidth = $info['columnMaxWidth'][$index];
-                // format
-                $name    = Str::pad($name, $colMaxWidth, ' ');
-                $name    = ColorTag::wrap($name, $opts['headStyle']);
+                // format head title
+                // $name = Str::pad($name, $colMaxWidth, ' ');
+                // use Str::padByWidth support zh-CN words
+                $name = Str::padByWidth($name, $colMaxWidth, ' ');
+                $name = ColorTag::wrap($name, $opts['headStyle']);
+                // join string
                 $headStr .= " {$name} {$colBorderChar}";
             }
 
@@ -194,10 +201,10 @@ class Table extends MessageFormatter
             // head border: split head and body
             if ($headBorderChar = $opts['headBorderChar']) {
                 $headBorder = $leftIndent . Str::pad(
-                    $headBorderChar,
-                    $tableWidth + ($columnCount * 3) + 2,
-                    $headBorderChar
-                );
+                        $headBorderChar,
+                        $tableWidth + ($columnCount * 3) + 2,
+                        $headBorderChar
+                    );
                 $buf->write($headBorder . "\n");
             }
         }
@@ -212,7 +219,13 @@ class Table extends MessageFormatter
             foreach ((array)$row as $value) {
                 $colMaxWidth = $info['columnMaxWidth'][$colIndex];
                 // format
-                $value  = Str::pad($value, $colMaxWidth, ' ');
+                if (is_bool($value)) {
+                    $value = $value ? 'TRUE' : 'FALSE';
+                }
+
+                // $value = Str::pad($value, $colMaxWidth, ' ');
+                // use Str::padByWidth support zh-CN words
+                $value  = Str::padByWidth($value, $colMaxWidth, ' ');
                 $value  = ColorTag::wrap($value, $opts['bodyStyle']);
                 $rowStr .= " {$value} {$colBorderChar}";
                 $colIndex++;
