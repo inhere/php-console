@@ -20,7 +20,6 @@ use function ceil;
 use function count;
 use function is_bool;
 use function is_string;
-use function ucwords;
 
 /**
  * Class Table - Tabular data display
@@ -166,7 +165,7 @@ class Table extends MessageFormatter
         // output title
         if ($title) {
             $tStyle      = $opts['titleStyle'] ?: 'bold';
-            $title       = ucwords(trim($title));
+            $title       = Str::ucwords(trim($title));
             $titleLength = Str::utf8Len($title, 'UTF-8');
             $indentSpace = Str::pad(' ', ceil($tableWidth / 2) - ceil($titleLength / 2) + ($columnCount * 2), ' ');
             $buf->write("  {$indentSpace}<$tStyle>{$title}</$tStyle>\n");

@@ -6,9 +6,9 @@ use Inhere\Console\Component\MessageFormatter;
 use Inhere\Console\Console;
 use Inhere\Console\Util\FormatUtil;
 use Toolkit\Cli\ColorTag;
+use Toolkit\Stdlib\Str;
 use function array_merge;
 use function trim;
-use function ucwords;
 use const PHP_EOL;
 
 /**
@@ -50,7 +50,7 @@ class SingleList extends MessageFormatter
 
         // title
         if ($title) {
-            $title  = ucwords(trim($title));
+            $title  = Str::ucwords(trim($title));
             $string .= ColorTag::wrap($title, $opts['titleStyle']) . PHP_EOL;
         }
 
