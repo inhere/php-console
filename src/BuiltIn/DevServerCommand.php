@@ -59,7 +59,7 @@ class DevServerCommand extends Command
     {
         $serveAddr = $input->getSameStringOpt('s,S,addr');
         if (!$serveAddr) {
-            $serveAddr = $this->getSameOpt(['H', 'host'], '127.0.0.1');
+            $serveAddr = $input->getSameStringOpt(['H', 'host']);
         }
 
         $port = $input->getSameStringOpt(['p', 'port']);
