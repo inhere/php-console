@@ -67,15 +67,16 @@ class DevServerCommand extends Command
             $serveAddr .= ':' . $port;
         }
 
+        $docRoot = $input->getSameStringOpt('t,doc-root');
         $hceFile = $input->getStringOpt('hce-file');
         $hceEnv  = $input->getStringOpt('hce-env');
-        $docRoot = $input->getSameStringOpt('t,doc-root');
+        $phpBin  = $input->getStringOpt('php-bin');
 
         $input->bindArgument('file', 0);
         $entryFile = $input->getStringArg('file');
 
-        $pds = PhpDevServe::new($serveAddr, $docRoot);
-        $pds->setEntryFile($entryFile);
+        $pds = PhpDevServe::new($serveAddr, $docRoot, $entryFile);
+        $pds->setPhpBin($phpBin);
 
         if ($hceEnv && $hceFile) {
             $pds->loadHceFile($hceFile);

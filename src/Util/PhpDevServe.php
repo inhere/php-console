@@ -30,14 +30,14 @@ class PhpDevServe
      *
      * @var string
      */
-    public $phpBin = self::PHP_BIN;
+    protected $phpBin = self::PHP_BIN;
 
     /**
      * The document root dir for server
      *
      * @var string
      */
-    public $docRoot = './';
+    protected $docRoot = './';
 
     /**
      * The entry file for server. e.g web/index.php
@@ -107,14 +107,14 @@ class PhpDevServe
      * Class constructor.
      *
      * @param string $serveAddr
-     * @param string $documentRoot
+     * @param string $docRoot
      * @param string $entryFile
      */
-    public function __construct(string $serveAddr, string $documentRoot, string $entryFile = '')
+    public function __construct(string $serveAddr, string $docRoot, string $entryFile = '')
     {
-        $this->docRoot   = $documentRoot;
-        $this->entryFile = $entryFile;
         $this->serveAddr = $serveAddr ?: self::SVR_ADDR;
+        $this->setDocRoot($docRoot);
+        $this->setEntryFile($entryFile);
     }
 
     /**
@@ -321,6 +321,34 @@ class PhpDevServe
     public function setEntryFile(string $entryFile): self
     {
         $this->entryFile = $entryFile;
+        return $this;
+    }
+
+    /**
+     * @param string $phpBin
+     *
+     * @return PhpDevServe
+     */
+    public function setPhpBin(string $phpBin): self
+    {
+        if ($phpBin) {
+            $this->phpBin = $phpBin;
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param string $docRoot
+     *
+     * @return PhpDevServe
+     */
+    public function setDocRoot(string $docRoot): self
+    {
+        if ($docRoot) {
+            $this->docRoot = $docRoot;
+        }
+
         return $this;
     }
 }
