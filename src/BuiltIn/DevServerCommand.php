@@ -8,12 +8,12 @@
 
 namespace Inhere\Console\BuiltIn;
 
+use Exception;
 use Inhere\Console\Command;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
-use Toolkit\Sys\Sys;
+use Inhere\Console\Util\PhpDevServe;
 use function strpos;
-use const PHP_VERSION;
 
 /**
  * Class DevServerCommand
@@ -39,56 +39,49 @@ class DevServerCommand extends Command
      *  {command} [-H HOST] [-p PORT]
      *  {command} [-S HOST:PORT] [file=]web/index.php
      * @options
-     *  -S STRING               The http server address. e.g 127.0.0.1:8552
-     *  -t STRING               The document root dir for server(<comment>web</comment>)
+     *  -s, -S, --addr STRING   The http server address. e.g 127.0.0.1:8552
+     *  -t, --doc-root STRING   The document root dir for server(<comment>public</comment>)
      *  -H,--host STRING        The server host address(<comment>127.0.0.1</comment>)
      *  -p,--port INTEGER       The server port number(<comment>8552</comment>)
      *  -b,--php-bin STRING     The php binary file(<comment>php</comment>)
      * @arguments
      *  file=STRING         The entry file for server. e.g web/index.php
      *
-     * @param Input  $in
-     * @param Output $out
+     * @param Input  $input
+     * @param Output $output
      *
      * @return int|mixed|void
+     * @throws Exception
      * @example
      *  {command} -S 127.0.0.1:8552 web/index.php
      */
-    public function execute($in, $out)
+    public function execute($input, $output)
     {
-        if (!$server = $this->getOpt('S')) {
-            $server = $this->getSameOpt(['H', 'host'], '127.0.0.1');
+        $serveAddr = $input->getSameStringOpt('s,S,addr');
+        if (!$serveAddr) {
+            $serveAddr = $this->getSameOpt(['H', 'host'], '127.0.0.1');
         }
 
-        if (!strpos($server, ':')) {
-            $port   = $this->getSameOpt(['p', 'port'], 8552);
-            $server .= ':' . $port;
+        $port = $input->getSameStringOpt(['p', 'port']);
+        if ($port && strpos($serveAddr, ':') === false) {
+            $serveAddr .= ':' . $port;
         }
 
-        $version = PHP_VERSION;
-        $workDir = $this->input->getPwd();
-        $docDir  = $this->getOpt('t');
-        $docRoot = $docDir ? $workDir . '/' . $docDir : $workDir;
+        $hceFile = $input->getStringOpt('hce-file');
+        $hceEnv  = $input->getStringOpt('hce-env');
+        $docRoot = $input->getSameStringOpt('t,doc-root');
 
-        $this->write([
-            "PHP $version Development Server started\nServer listening on http://<info>$server</info>",
-            "Document root is <comment>$docRoot</comment>",
-            'You can use <comment>CTRL + C</comment> to stop run.',
-        ]);
+        $input->bindArgument('file', 0);
+        $entryFile = $input->getStringArg('file');
 
-        // $command = "php -S {$server} -t web web/index.php";
-        $command = "php -S {$server}";
+        $pds = PhpDevServe::new($serveAddr, $docRoot);
+        $pds->setEntryFile($entryFile);
 
-        if ($docDir) {
-            $command .= " -t $docDir";
+        if ($hceEnv && $hceFile) {
+            $pds->loadHceFile($hceFile);
+            $pds->useHceEnv($hceEnv);
         }
 
-        if ($entryFile = $this->getSameArg(['file', 0])) {
-            $command .= " $entryFile";
-        }
-
-        $this->write("<cyan>></cyan> <darkGray>$command</darkGray>");
-
-        Sys::execute($command);
+        $pds->listen();
     }
 }
