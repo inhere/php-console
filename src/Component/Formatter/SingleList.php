@@ -39,18 +39,19 @@ class SingleList extends MessageFormatter
     {
         $string = '';
         $opts   = array_merge([
-            'leftChar'    => '  ',
+            'leftChar'     => '  ',
             // 'sepChar' => '  ',
-            'keyStyle'    => 'info',
-            'keyMinWidth' => 8,
-            'titleStyle'  => 'comment',
-            'returned'    => false,
-            'lastNewline' => true,
+            'keyStyle'     => 'info',
+            'keyMinWidth'  => 8,
+            'titleStyle'   => 'comment',
+            'returned'     => false,
+            'ucTitleWords' => true,
+            'lastNewline'  => true,
         ], $opts);
 
         // title
         if ($title) {
-            $title  = Str::ucwords(trim($title));
+            $title  =  $opts['ucTitleWords'] ? Str::ucwords(trim($title)) : $title;
             $string .= ColorTag::wrap($title, $opts['titleStyle']) . PHP_EOL;
         }
 
