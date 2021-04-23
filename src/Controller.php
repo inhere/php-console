@@ -563,7 +563,7 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
      *
      * @return string
      */
-    protected function getRealCommandName(string $name): string
+    public function getRealCommandName(string $name): string
     {
         if (!$name) {
             return '';

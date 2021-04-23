@@ -122,6 +122,11 @@ abstract class AbstractApplication implements ApplicationInterface
     protected $errorHandler;
 
     /**
+     * @var Controller[]
+     */
+    protected $groupObjects = [];
+
+    /**
      * Class constructor.
      *
      * @param array       $config
