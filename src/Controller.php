@@ -339,7 +339,7 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
             return 0;
         }
 
-        $this->debugf('action "%s" not found on the group controller', $action);
+        $this->debugf('action "%s" not found on the group controller "%s"', $action, $group);
 
         // if you defined the method '$this->notFoundCallback' , will call it
         // if (($notFoundCallback = $this->notFoundCallback) && method_exists($this, $notFoundCallback)) {
