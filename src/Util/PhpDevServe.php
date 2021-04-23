@@ -11,6 +11,8 @@ use Toolkit\Sys\Sys;
 use function explode;
 use function file_exists;
 use function file_get_contents;
+use function is_dir;
+use function is_file;
 use function random_int;
 use function strpos;
 
@@ -174,27 +176,50 @@ class PhpDevServe
      */
     public function listen(): void
     {
-        $phpBin  = $this->getPhpBin();
-        $svrAddr = $this->getServerAddr();
-        // command eg: "php -S 127.0.0.1:8080 -t web web/index.php";
-        $command = "$phpBin -S {$svrAddr}";
-
-        if ($this->docRoot) {
-            $command .= " -t {$this->docRoot}";
-        }
-
-        if ($entryFile = $this->getEntryFile()) {
-            $command .= " $entryFile";
-        }
-
         if ($fn = $this->beforeStart) {
             $fn($this);
         } else {
             $this->printDefaultMessage();
         }
 
+        $command = $this->getCommand();
+
         Cli::write("<cyan>></cyan> <darkGray>$command</darkGray>");
         Sys::execute($command);
+    }
+
+    /**
+     * build full command line string
+     *
+     * @param bool $checkEnv
+     *
+     * @return string
+     * @throws Exception
+     */
+    public function getCommand(bool $checkEnv = true): string
+    {
+        $phpBin  = $this->getPhpBin();
+        $svrAddr = $this->getServerAddr();
+        // command eg: "php -S 127.0.0.1:8080 -t web web/index.php";
+        $command = "$phpBin -S {$svrAddr}";
+
+        if ($docRoot = $this->docRoot) {
+            if ($checkEnv && !is_dir($docRoot)) {
+                throw new RuntimeException("the document root is not exists. path: $docRoot");
+            }
+
+            $command .= " -t {$docRoot}";
+        }
+
+        if ($entryFile = $this->getEntryFile()) {
+            if ($checkEnv && !is_file($entryFile)) {
+                throw new RuntimeException("the entry file is not exists. path: $entryFile");
+            }
+
+            $command .= " $entryFile";
+        }
+
+        return $command;
     }
 
     /**
