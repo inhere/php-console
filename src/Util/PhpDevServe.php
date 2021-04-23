@@ -121,17 +121,25 @@ class PhpDevServe
 
     /**
      * @param string $hceFile
+     * @param bool   $mustLoad
+     *
+     * @return bool
      */
-    public function loadHceFile(string $hceFile): void
+    public function loadHceFile(string $hceFile, bool $mustLoad = false): bool
     {
         if (!file_exists($hceFile)) {
-            throw new RuntimeException('the IDEA http-client env json file not exists. file: ' . $hceFile);
+            if ($mustLoad) {
+                throw new RuntimeException('the http-client env json file not exists. file: ' . $hceFile);
+            }
+
+            return false;
         }
 
         $jsonString = file_get_contents($hceFile);
 
         // load data
         $this->hceData = Json::decode($jsonString, true);
+        return true;
     }
 
     /**
@@ -233,6 +241,7 @@ class PhpDevServe
             'serverAddr'   => $this->getServerAddr(),
             'documentRoot' => $this->docRoot,
             'entryFile'    => $this->getEntryFile(),
+            'commandLine'  => $this->getCommand(false),
         ];
     }
 
