@@ -266,6 +266,23 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
     }
 
     /**
+     * Before controller method execute
+     *
+     * @return boolean It MUST return TRUE to continue execute. if return False, will stop run.
+     */
+    protected function beforeAction(): bool
+    {
+        return true;
+    }
+
+    /**
+     * After controller method execute
+     */
+    protected function afterAction(): void
+    {
+    }
+
+    /**
      * Run command action in the group
      *
      * @param Input  $input
@@ -291,6 +308,11 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
         // if (method_exists($this, $method) && (($rfm = new ReflectionMethod($this, $method)) && $rfm->isPublic())) {
         if (method_exists($this, $method)) {
             // before run action
+            if (!$this->beforeAction()) {
+                $this->debugf('beforeAction() returns FALSE, interrupt processing continues');
+                return 0;
+            }
+
             if (method_exists($this, $beforeFunc = 'before' . ucfirst($action))) {
                 $beforeOk = $this->$beforeFunc($input, $output);
                 if ($beforeOk === false) {
@@ -307,6 +329,7 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
                 $this->$after($input, $output);
             }
 
+            $this->afterAction();
             return $result;
         }
 
