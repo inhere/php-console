@@ -44,6 +44,7 @@ class SingleList extends MessageFormatter
             'keyStyle'     => 'info',
             'keyMinWidth'  => 8,
             'titleStyle'   => 'comment',
+            'ucFirst'      => false,
             'returned'     => false,
             'ucTitleWords' => true,
             'lastNewline'  => true,

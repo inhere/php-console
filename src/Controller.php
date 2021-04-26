@@ -196,7 +196,6 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
      * @param string $command command in the group
      *
      * @return int|mixed
-     * @throws ReflectionException
      */
     public function run(string $command = '')
     {
@@ -361,7 +360,6 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
 
     /**
      * @return bool
-     * @throws ReflectionException
      */
     protected function showHelp(): bool
     {
@@ -404,7 +402,6 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
      *  -s, --search  Search command by input keywords
      *  --format      Set the help information dump format(raw, xml, json, markdown)
      * @return int
-     * @throws ReflectionException
      * @example
      *  {script} {name} -h
      *  {script} {name}:help
@@ -453,8 +450,6 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
 
     /**
      * Display all sub-commands list of the controller class
-     *
-     * @throws ReflectionException
      */
     final public function showCommandList(): void
     {

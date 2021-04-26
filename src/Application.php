@@ -258,7 +258,6 @@ class Application extends AbstractApplication
 
     /**
      * @inheritdoc
-     * @throws ReflectionException
      */
     public function dispatch(string $name, bool $detachedRun = false)
     {
@@ -361,7 +360,6 @@ class Application extends AbstractApplication
      * @param bool   $detachedRun
      *
      * @return mixed
-     * @throws ReflectionException
      */
     protected function runAction(array $info,  array $options, bool $detachedRun = false)
     {
