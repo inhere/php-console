@@ -4,10 +4,13 @@
 
 > begin at: 2020.08.21, branch `master`
 
+## v3.1.21
+
 ## v3.1.20
 
 **update**
 
+- update some for error tips and sigle list
 - add before/after methods on run controller method.
 - support controller object cache on repeat fetch
 - enhance built in php serve util logic
