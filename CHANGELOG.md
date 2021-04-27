@@ -10,7 +10,7 @@
 
 **update**
 
-- update some for error tips and sigle list
+- update some for error tips and single list
 - add before/after methods on run controller method.
 - support controller object cache on repeat fetch
 - enhance built in php serve util logic
