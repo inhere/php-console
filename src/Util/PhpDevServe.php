@@ -39,7 +39,7 @@ class PhpDevServe
      *
      * @var string
      */
-    protected $docRoot = './';
+    protected $docRoot = '';
 
     /**
      * The entry file for server. e.g web/index.php
