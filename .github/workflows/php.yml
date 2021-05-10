@@ -17,6 +17,10 @@ jobs:
       matrix:
         php: [7.3, 7.4, 8.0] #
         os: [ubuntu-latest, macOS-latest] # windows-latest,
+        include:
+          - os: 'ubuntu-latest'
+            php: '7.2'
+            phpunit: '8.5.13'
 
     steps:
       - name: Checkout
@@ -37,7 +41,7 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php}}
-          tools: pecl, php-cs-fixer, phpunit
+          tools: pecl, php-cs-fixer, phpunit:${{ matrix.phpunit }}
           extensions: mbstring, dom, fileinfo, mysql, openssl, igbinary, redis # , swoole-4.4.19 #optional, setup extensions
           ini-values: post_max_size=56M, short_open_tag=On #optional, setup php.ini configuration
           coverage: none #optional, setup coverage driver: xdebug, none
