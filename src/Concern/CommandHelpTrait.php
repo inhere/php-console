@@ -2,6 +2,7 @@
 
 namespace Inhere\Console\Concern;
 
+use Inhere\Console\AbstractHandler;
 use function strpos;
 use function strtr;
 
@@ -14,6 +15,7 @@ trait CommandHelpTrait
 {
     /**
      * @var array [name => value]
+     * @see AbstractHandler::annotationVars()
      */
     private $commentsVars;
 

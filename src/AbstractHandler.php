@@ -533,7 +533,6 @@ abstract class AbstractHandler implements CommandHandlerInterface
         }
 
         unset($help[0]);
-
         $this->output->mList($help, ['sepChar' => '  ']);
     }
 
@@ -545,7 +544,6 @@ abstract class AbstractHandler implements CommandHandlerInterface
      * @param array  $aliases
      *
      * @return int
-     * @throws ReflectionException
      */
     protected function showHelpByMethodAnnotations(string $method, string $action = '', array $aliases = []): int
     {
@@ -625,7 +623,6 @@ abstract class AbstractHandler implements CommandHandlerInterface
         $help['Global Options:'] = FormatUtil::alignOptions(Application::getGlobalOptions());
 
         $this->beforeRenderCommandHelp($help);
-
 
         $this->output->mList($help, [
             'sepChar'     => '  ',

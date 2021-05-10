@@ -161,9 +161,17 @@ class Input extends AbstractInput
     /**
      * @return string
      */
+    public function getBinWithCommand(): string
+    {
+        return $this->scriptName . ' ' . $this->getCommandPath();
+    }
+
+    /**
+     * @return string
+     */
     public function getFullCommand(): string
     {
-        return $this->script . ' ' . $this->command;
+        return $this->script . ' ' . $this->getCommandPath();
     }
 
     /**

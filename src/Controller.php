@@ -217,6 +217,10 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
         return $command;
     }
 
+    protected function beforeRun(): void
+    {
+    }
+
     /**
      * @param string $command command in the group
      *
@@ -233,7 +237,14 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
             return $this->showHelp();
         }
 
+        // update subcommand
         $this->input->setSubCommand($command);
+
+        // update some comment vars
+        $fullCmd = $this->input->getFullCommand();
+        $this->setCommentsVar('fullCmd', $fullCmd);
+        $this->setCommentsVar('fullCommand', $fullCmd);
+        $this->setCommentsVar('binWithCmd', $this->input->getBinWithCommand());
 
         // get real sub-command name
         $command = $this->getRealCommandName($command);
@@ -254,10 +265,6 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
 
         // do running
         return parent::run($command);
-    }
-
-    protected function beforeRun(): void
-    {
     }
 
     /**

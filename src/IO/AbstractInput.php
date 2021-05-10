@@ -124,6 +124,19 @@ abstract class AbstractInput implements InputInterface
         return $command;
     }
 
+    /**
+     * @return string
+     */
+    public function getCommandPath(): string
+    {
+        $path = $this->command;
+        if ($this->subCommand) {
+            $path .= ' ' . $this->subCommand;
+        }
+
+        return $path;
+    }
+
     /***********************************************************************************
      * getter/setter
      ***********************************************************************************/
