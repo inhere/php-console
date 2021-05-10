@@ -257,7 +257,7 @@ abstract class AbstractHandler implements CommandHandlerInterface
 
         // if enable swoole coroutine
         if (static::isCoroutine() && Helper::isSupportCoroutine()) {
-            $result = $this->coroutineRun();
+            $result = $this->coExecute();
         } else { // when not enable coroutine
             $result = $this->execute($this->input, $this->output);
         }
@@ -272,7 +272,7 @@ abstract class AbstractHandler implements CommandHandlerInterface
      *
      * @return bool
      */
-    public function coroutineRun(): bool
+    public function coExecute(): bool
     {
         // $ch = new Coroutine\Channel(1);
         $ok = Coroutine::create(function () {

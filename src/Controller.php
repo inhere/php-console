@@ -193,11 +193,11 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
     }
 
     /**
-     * @param string $command command in the group
+     * @param string $command
      *
-     * @return int|mixed
+     * @return string
      */
-    public function run(string $command = '')
+    protected function findCommandName(string $command): string
     {
         if (!$command = trim($command, $this->delimiter)) {
             $command = $this->defaultAction;
@@ -214,6 +214,19 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
             }
         }
 
+        return $command;
+    }
+
+    /**
+     * @param string $command command in the group
+     *
+     * @return int|mixed
+     * @throws ReflectionException
+     */
+    public function run(string $command = '')
+    {
+        $command = $this->findCommandName($command);
+
         // if not input sub-command, render group help.
         if (!$command) {
             $this->debugf('sub-command is empty, display help for the group: %s', self::getName());
@@ -226,11 +239,25 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
         $command = $this->getRealCommandName($command);
 
         // convert 'boo-foo' to 'booFoo'
-        $this->action = Str::camelCase($command);
-        $this->debugf('will run the group action: %s, sub-command: %s', $this->action, $command);
+        $this->action = $action = Str::camelCase($command);
+        $this->debugf("will run the '%s' group action: %s, sub-command: %s", static::getName(), $this->action, $command);
+
+        $this->beforeRun();
+
+        // check method not exist
+        $method = $this->getMethodName($action);
+
+        // if command method not exists.
+        if (!method_exists($this, $method)) {
+            return $this->handleNotFound(static::getName(), $action);
+        }
 
         // do running
         return parent::run($command);
+    }
+
+    protected function beforeRun(): void
+    {
     }
 
     /**
@@ -288,7 +315,6 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
      * @param Output $output
      *
      * @return mixed
-     * @throws ReflectionException
      */
     final public function execute($input, $output)
     {
@@ -301,40 +327,47 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
             return -1;
         }
 
-        $method = $this->actionSuffix ? $action . ucfirst($this->actionSuffix) : $action;
+        $method = $this->getMethodName($action);
 
         // the action method exists and only allow access public method.
-        // if (method_exists($this, $method) && (($rfm = new ReflectionMethod($this, $method)) && $rfm->isPublic())) {
-        if (method_exists($this, $method)) {
-            // before run action
-            if (!$this->beforeAction()) {
-                $this->debugf('beforeAction() returns FALSE, interrupt processing continues');
-                return 0;
-            }
-
-            if (method_exists($this, $beforeFunc = 'before' . ucfirst($action))) {
-                $beforeOk = $this->$beforeFunc($input, $output);
-                if ($beforeOk === false) {
-                    $this->debugf('%s() returns FALSE, interrupt processing continues', $beforeFunc);
-                    return 0;
-                }
-            }
-
-            // run action
-            $result = $this->$method($input, $output);
-
-            // after run action
-            if (method_exists($this, $after = 'after' . ucfirst($action))) {
-                $this->$after($input, $output);
-            }
-
-            $this->afterAction();
-            return $result;
+        // if (method_exists($this, $method)) {
+        // before run action
+        if (!$this->beforeAction()) {
+            $this->debugf('beforeAction() returns FALSE, interrupt processing continues');
+            return 0;
         }
 
+        if (method_exists($this, $beforeFunc = 'before' . ucfirst($action))) {
+            $beforeOk = $this->$beforeFunc($input, $output);
+            if ($beforeOk === false) {
+                $this->debugf('%s() returns FALSE, interrupt processing continues', $beforeFunc);
+                return 0;
+            }
+        }
+
+        // run action
+        $result = $this->$method($input, $output);
+
+        // after run action
+        if (method_exists($this, $after = 'after' . ucfirst($action))) {
+            $this->$after($input, $output);
+        }
+
+        $this->afterAction();
+        return $result;
+    }
+
+    /**
+     * @param string $group
+     * @param string $action
+     *
+     * @return int
+     */
+    protected function handleNotFound(string $group, string $action): int
+    {
         // if user custom handle not found logic.
         if ($this->onNotFound($action)) {
-            $this->debugf('user custom handle the action "%s" not found logic', $action);
+            $this->debugf('user custom handle the "%s" action "%s" not found', $group, $action);
             return 0;
         }
 
@@ -344,13 +377,13 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
         // if (($notFoundCallback = $this->notFoundCallback) && method_exists($this, $notFoundCallback)) {
         //     $result = $this->{$notFoundCallback}($action);
         // } else {
-        $output->liteError("Sorry, The command '$action' not exist of the group '{$group}'!");
+        $this->output->liteError("Sorry, The command '$action' not exist of the group '$group'!");
 
         // find similar command names
         $similar = Helper::findSimilar($action, $this->getAllCommandMethods(null, true));
 
         if ($similar) {
-            $output->write(sprintf("\nMaybe what you mean is:\n    <info>%s</info>", implode(', ', $similar)));
+            $this->output->writef("\nMaybe what you mean is:\n    <info>%s</info>", implode(', ', $similar));
         } else {
             $this->showCommandList();
         }
@@ -359,7 +392,18 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
     }
 
     /**
+     * @param string $action
+     *
+     * @return string
+     */
+    protected function getMethodName(string $action): string
+    {
+        return $this->actionSuffix ? $action . ucfirst($this->actionSuffix) : $action;
+    }
+
+    /**
      * @return bool
+     * @throws ReflectionException
      */
     protected function showHelp(): bool
     {
@@ -402,13 +446,13 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
      *  -s, --search  Search command by input keywords
      *  --format      Set the help information dump format(raw, xml, json, markdown)
      * @return int
+     * @throws ReflectionException
      * @example
      *  {script} {name} -h
      *  {script} {name}:help
      *  {script} {name}:help index
      *  {script} {name}:index -h
      *  {script} {name} index
-     *
      */
     final public function helpCommand(): int
     {
@@ -519,8 +563,8 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
             $name  = $sName . $this->delimiter;
             // $usage = "$script {$name}<info>{command}</info> [--options ...] [arguments ...]";
             $usage = [
-                "$script {$name}<info>{command}</info> [--options ...] [arguments ...]",
-                "$script {$sName} <info>{command}</info> [--options ...] [arguments ...]",
+                "$script $name<info>{command}</info> [--options ...] [arguments ...]",
+                "$script $sName <info>{command}</info> [--options ...] [arguments ...]",
             ];
         }
 
@@ -709,6 +753,7 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
 
     /**
      * @return bool
+     * @deprecated
      */
     public function isExecutionAlone(): bool
     {
@@ -716,11 +761,9 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
     }
 
     /**
-     * @param bool $executionAlone
-     *
      * @deprecated
      */
-    public function setExecutionAlone($executionAlone = true): void
+    public function setExecutionAlone(): void
     {
         throw new RuntimeException('please call setAttached() instead');
     }
