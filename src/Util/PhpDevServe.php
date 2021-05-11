@@ -256,7 +256,7 @@ class PhpDevServe
         $docRoot = $this->docRoot ? $workDir . '/' . $this->docRoot : $workDir;
 
         Cli::writeln([
-            "PHP Development Server started\nServer listening on http://<info>$svrAddr</info>",
+            "PHP Development Server start listening on <info>http://$svrAddr</info>",
             "Document root is <comment>$docRoot</comment>",
             'You can use <comment>CTRL + C</comment> to stop run.',
         ]);
