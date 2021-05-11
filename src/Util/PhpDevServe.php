@@ -209,14 +209,14 @@ class PhpDevServe
         $phpBin  = $this->getPhpBin();
         $svrAddr = $this->getServerAddr();
         // command eg: "php -S 127.0.0.1:8080 -t web web/index.php";
-        $command = "$phpBin -S {$svrAddr}";
+        $command = "$phpBin -S $svrAddr";
 
         if ($docRoot = $this->docRoot) {
             if ($checkEnv && !is_dir($docRoot)) {
                 throw new RuntimeException("the document root is not exists. path: $docRoot");
             }
 
-            $command .= " -t {$docRoot}";
+            $command .= " -t $docRoot";
         }
 
         if ($entryFile = $this->getEntryFile()) {
@@ -250,13 +250,13 @@ class PhpDevServe
      */
     protected function printDefaultMessage(): void
     {
-        $version = PHP_VERSION;
+        // $version = PHP_VERSION;
         $workDir = (string)getcwd();
         $svrAddr = $this->getServerAddr();
         $docRoot = $this->docRoot ? $workDir . '/' . $this->docRoot : $workDir;
 
         Cli::writeln([
-            "PHP $version Development Server started\nServer listening on http://<info>$svrAddr</info>",
+            "PHP Development Server started\nServer listening on http://<info>$svrAddr</info>",
             "Document root is <comment>$docRoot</comment>",
             'You can use <comment>CTRL + C</comment> to stop run.',
         ]);
