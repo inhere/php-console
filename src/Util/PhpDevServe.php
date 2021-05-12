@@ -43,6 +43,7 @@ class PhpDevServe
 
     /**
      * The entry file for server. e.g web/index.php
+     * NOTICE: if set the entry file, will need handle static file access.
      *
      * @var string
      */
@@ -302,10 +303,9 @@ class PhpDevServe
      */
     public function getEntryFile(): string
     {
-        if (!$this->entryFile) {
-            $this->entryFile = self::IDX_FILE;
-        }
-
+        // if (!$this->entryFile) {
+        //     $this->entryFile = self::IDX_FILE;
+        // }
         return $this->entryFile;
     }
 
