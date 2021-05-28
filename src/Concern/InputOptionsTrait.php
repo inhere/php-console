@@ -126,6 +126,19 @@ trait InputOptionsTrait
     }
 
     /**
+     * Get an int option(long/short) value
+     *
+     * @param string|string[] $names eg 'l,length' OR ['l', 'length']
+     * @param int $default
+     *
+     * @return int
+     */
+    public function getSameIntOpt($names, int $default = 0): int
+    {
+        return (int)$this->getSameOpt($names, $default);
+    }
+
+    /**
      * Get (long/short)option value(bool)
      * eg: -h --help
      *
