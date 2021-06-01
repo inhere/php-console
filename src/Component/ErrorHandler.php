@@ -69,7 +69,7 @@ ERR;
         }
 
         // simple output
-        $app->getOutput()->error('An error occurred! MESSAGE: ' . $e->getMessage());
+        $app->getOutput()->error('An error occurred! - ' . $e->getMessage());
         $app->write("\nYou can use '--debug 4' to see error details.");
     }
 }
