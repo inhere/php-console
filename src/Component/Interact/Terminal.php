@@ -2,13 +2,13 @@
 
 namespace Inhere\Console\Component\Interact;
 
-use Inhere\Console\Component\InteractMessage;
+use Inhere\Console\Component\InteractiveHandle;
 
 /**
  * Class Terminal
  *
  * @package Inhere\Console\Component\Interact
  */
-class Terminal extends InteractMessage
+class Terminal extends InteractiveHandle
 {
 }

@@ -428,8 +428,8 @@ abstract class AbstractApplication implements ApplicationInterface
             $this->debugf('php is not enable "pcntl" extension, cannot listen CTRL+C signal');
         }
 
+        // register signal.
         if ($hasPcntl) {
-            // register signal.
             ProcessUtil::installSignal(Signal::INT, static function () use ($out) {
                 $out->colored("\nQuit by CTRL+C");
                 exit(0);
@@ -460,8 +460,8 @@ abstract class AbstractApplication implements ApplicationInterface
                 }
             }
 
+            // listen signal.
             if ($hasPcntl) {
-                // listen signal.
                 ProcessUtil::dispatchSignal();
             }
 

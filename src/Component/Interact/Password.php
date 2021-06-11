@@ -2,7 +2,7 @@
 
 namespace Inhere\Console\Component\Interact;
 
-use Inhere\Console\Component\InteractMessage;
+use Inhere\Console\Component\InteractiveHandle;
 use RuntimeException;
 use Toolkit\Sys\Sys;
 use function addslashes;
@@ -18,7 +18,7 @@ use function unlink;
  *
  * @package Inhere\Console\Component\Interact
  */
-class Password extends InteractMessage
+class Password extends InteractiveHandle
 {
     /**
      * Interactively prompts for input without echoing to the terminal.
