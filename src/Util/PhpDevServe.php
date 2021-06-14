@@ -177,7 +177,11 @@ class PhpDevServe
         // $version = PHP_VERSION;
         $workDir = (string)getcwd();
         $svrAddr = $this->getServerAddr();
-        $docRoot = $this->docRoot ? $workDir . '/' . $this->docRoot : $workDir;
+        $docRoot = $workDir;
+        if ($this->docRoot) {
+            $docRoot = $this->docRoot;
+            $docRoot = Helper::isAbsPath($docRoot) ? $docRoot : $workDir . '/' . $docRoot;
+        }
 
         Cli::writeln([
             "PHP Development Server start listening on <info>http://$svrAddr</info>",
