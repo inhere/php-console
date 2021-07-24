@@ -566,7 +566,7 @@ abstract class AbstractHandler implements CommandHandlerInterface
 
         $help = [];
         $doc  = $ref->getMethod($method)->getDocComment();
-        $tags = PhpDoc::getTags($this->parseCommentsVars($doc));
+        $tags = PhpDoc::getTags($this->parseCommentsVars((string)$doc));
 
         if ($aliases) {
             $realName = $action ?: static::getName();
