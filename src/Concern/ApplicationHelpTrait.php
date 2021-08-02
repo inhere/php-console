@@ -9,7 +9,6 @@
 namespace Inhere\Console\Concern;
 
 use Inhere\Console\AbstractHandler;
-use Toolkit\Cli\Style;
 use Inhere\Console\Console;
 use Inhere\Console\Contract\CommandInterface;
 use Inhere\Console\IO\Input;
@@ -18,7 +17,9 @@ use Inhere\Console\Router;
 use Inhere\Console\Util\FormatUtil;
 use Inhere\Console\Util\Show;
 use Toolkit\Cli\ColorTag;
+use Toolkit\Cli\Style;
 use function array_merge;
+use function basename;
 use function date;
 use function dirname;
 use function file_get_contents;
@@ -68,7 +69,7 @@ trait ApplicationHelpTrait
         /** @var Output $out */
         $out = $this->output;
         $out->aList([
-            "$logo\n  <info>{$name}</info>, Version <comment>$version</comment>\n",
+            "$logo\n  <info>$name</info>, Version <comment>$version</comment>\n",
             'System Info'      => "PHP version <info>$phpVersion</info>, on <info>$os</info> system",
             'Application Info' => "Update at <info>$updateAt</info>, publish at <info>$publishAt</info>(current $date)",
         ], '', [
@@ -100,14 +101,24 @@ trait ApplicationHelpTrait
         $binName   = $in->getScriptName();
 
         // built in options
-        $globalOptions = FormatUtil::alignOptions(self::$globalOptions);
+        $globalOptions = self::$globalOptions;
+        // append generate options:
+        // php examples/app --auto-completion --shell-env zsh --gen-file
+        // php examples/app --auto-completion --shell-env zsh --gen-file stdout
+        if ($this->isDebug()) {
+            $globalOptions['--auto-completion'] = 'Open generate auto completion script';
+            $globalOptions['--shell-env']       = 'The shell env name for generate auto completion script';
+            $globalOptions['--gen-file']        = 'The output file for generate auto completion script';
+        }
+
+        $globalOptions = FormatUtil::alignOptions($globalOptions);
 
         /** @var Output $out */
         $out = $this->output;
         $out->helpPanel([
-            'Usage'    => "$binName <info>{command}</info> [--opt -v -h ...] [arg0 arg1 arg2=value2 ...]",
+            'Usage'   => "$binName <info>{command}</info> [--opt -v -h ...] [arg0 arg1 arg2=value2 ...]",
             'Options' => $globalOptions,
-            'Example'  => [
+            'Example' => [
                 "$binName test                     run a independent command",
                 "$binName home index               run a sub-command of the group",
                 sprintf("$binName home%sindex               run a sub-command of the group", $delimiter),
@@ -115,11 +126,12 @@ trait ApplicationHelpTrait
                 "$binName home index -h            see a sub-command help of the group",
                 sprintf("$binName home%sindex -h            see a sub-command help of the group", $delimiter),
             ],
-            'Help' => [
+            'Help'    => [
                 'Generate shell auto completion scripts:',
                 "  <info>$binName --auto-completion --shell-env [zsh|bash] [--gen-file stdout]</info>",
                 ' eg:',
                 "  $binName --auto-completion --shell-env bash --gen-file stdout",
+                "  $binName --auto-completion --shell-env zsh --gen-file stdout",
                 "  $binName --auto-completion --shell-env bash --gen-file myapp.sh",
             ],
         ]);
@@ -139,7 +151,7 @@ trait ApplicationHelpTrait
 
         // php bin/app list --only-name
         if ($autoComp && $shellEnv === 'bash') {
-            $this->dumpAutoCompletion($shellEnv, []);
+            $this->dumpAutoCompletion('bash', []);
             return;
         }
 
@@ -233,11 +245,11 @@ trait ApplicationHelpTrait
         $scriptName = $this->getScriptName();
 
         // built in options
-        $internalOptions = FormatUtil::alignOptions(self::$globalOptions);
+        $globOpts = self::$globalOptions;
 
         Show::mList([
             'Usage:'              => "$scriptName <info>{COMMAND}</info> [--opt -v -h ...] [arg0 arg1 arg2=value2 ...]",
-            'Options:'            => $internalOptions,
+            'Options:'            => FormatUtil::alignOptions($globOpts),
             'Internal Commands:'  => $internalCommands,
             'Available Commands:' => array_merge($groupArr, $commandArr),
         ], [
@@ -273,18 +285,22 @@ trait ApplicationHelpTrait
 
         // info
         $glue     = ' ';
-        $genFile  = $input->getStringOpt('gen-file');
-        $filename = 'auto-completion.' . $shellEnv;
+        $genFile  = $input->getStringOpt('gen-file', 'none');
         $tplDir   = dirname(__DIR__, 2) . '/resource/templates';
 
         if ($shellEnv === 'bash') {
             $tplFile = $tplDir . '/bash-completion.tpl';
-            $list    = array_merge($router->getCommandNames(), $router->getControllerNames(),
-                $this->getInternalCommands());
+
+            $list = array_merge(
+                $router->getCommandNames(),
+                $router->getControllerNames(),
+                $this->getInternalCommands()
+            );
         } else {
-            $glue    = PHP_EOL;
-            $list    = [];
             $tplFile = $tplDir . '/zsh-completion.tpl';
+
+            $glue = PHP_EOL;
+            $list = [];
             foreach ($data as $name => $desc) {
                 $list[] = $name . ':' . str_replace(':', '\:', $desc);
             }
@@ -292,8 +308,8 @@ trait ApplicationHelpTrait
 
         $commands = implode($glue, $list);
 
-        // dump to stdout.
-        if (!$genFile) {
+        // only dump commands to stdout.
+        if ($genFile === 'none') {
             $output->write($commands, true, false, ['color' => false]);
             return;
         }
@@ -303,7 +319,19 @@ trait ApplicationHelpTrait
             $commands = Style::stripColor($commands);
         }
 
-        // dump at script file
+        $toStdout = $genFile === 'stdout';
+        $filename = 'auto-completion.' . $shellEnv;
+        if (!$toStdout) {
+            if ($genFile === 'true') {
+                $targetFile = $input->getPwd() . '/' . $filename;
+            } else {
+                $filename = basename($genFile);
+                // $targetDir = dirname($genFile);
+                $targetFile = $genFile;
+            }
+        }
+
+        // dump to script file
         $binName = $input->getBinName();
         $tplText = file_get_contents($tplFile);
         $content = strtr($tplText, [
@@ -315,19 +343,18 @@ trait ApplicationHelpTrait
             '{{fmtBinName}}' => str_replace('/', '_', $binName),
         ]);
 
-        // dump to stdout
-        if ($genFile === 'stdout') {
+        // dump script contents to stdout
+        if ($toStdout) {
             file_put_contents('php://stdout', $content);
             return;
         }
 
-        $targetFile = $input->getPwd() . '/' . $filename;
         $output->write(['Target File:', $targetFile, '']);
 
         if (file_put_contents($targetFile, $content) > 10) {
-            $output->success("O_O! Generate $filename successful!");
+            $output->success("O_O! Generate file:$filename successful!");
         } else {
-            $output->error("O^O! Generate $filename failure!");
+            $output->error("O^O! Generate file:$filename failure!");
         }
     }
 }
