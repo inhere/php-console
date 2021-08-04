@@ -1,7 +1,7 @@
 #compdef {{binName}}
 # ------------------------------------------------------------------------------
 #          DATE:  {{datetime}}
-#          FILE:  auto-completion.zsh
+#          FILE:  {{filename}}
 #        AUTHOR:  inhere (https://github.com/inhere)
 #       VERSION:  {{version}}
 #   DESCRIPTION:  zsh shell complete for console app: {{binName}}
@@ -11,7 +11,7 @@
 _complete_for_{{fmtBinName}} () {
     local -a commands
     IFS=$'\n'
-    commands=(
+    commands+=(
 {{commands}}
     )
 
