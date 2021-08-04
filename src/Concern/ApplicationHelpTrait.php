@@ -322,7 +322,7 @@ trait ApplicationHelpTrait
         $toStdout = $genFile === 'stdout';
         $filename = 'auto-completion.' . $shellEnv;
         if (!$toStdout) {
-            if ($genFile === 'true') {
+            if ($genFile === '1') {
                 $targetFile = $input->getPwd() . '/' . $filename;
             } else {
                 $filename = basename($genFile);
