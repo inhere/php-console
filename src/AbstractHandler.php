@@ -22,10 +22,10 @@ use Inhere\Console\Util\Helper;
 use InvalidArgumentException;
 use LogicException;
 use ReflectionClass;
-use ReflectionException;
 use RuntimeException;
 use Swoole\Coroutine;
 use Swoole\Event;
+use Toolkit\Stdlib\Obj\ConfigObject;
 use Toolkit\Stdlib\Util\PhpDoc;
 use function array_diff_key;
 use function array_filter;
@@ -104,6 +104,11 @@ abstract class AbstractHandler implements CommandHandlerInterface
      * @var string
      */
     protected $processTitle = '';
+
+    /**
+     * @var ConfigObject
+     */
+    protected $params;
 
     /**
      * Whether enabled
@@ -453,7 +458,6 @@ abstract class AbstractHandler implements CommandHandlerInterface
             $errMsg = sprintf('Input option is not exists (unknown: "%s").', (isset($first[1]) ? '--' : '-') . $first);
             throw new InvalidArgumentException($errMsg);
         }
-
     }
 
     /**************************************************************************
@@ -466,6 +470,29 @@ abstract class AbstractHandler implements CommandHandlerInterface
     public function isAlone(): bool
     {
         return $this instanceof CommandInterface;
+    }
+
+    /**
+     * @return ConfigObject
+     */
+    public function getParams(): ConfigObject
+    {
+        if (!$this->params) {
+            $this->initParams([]);
+        }
+
+        return $this->params;
+    }
+
+    /**
+     * @param array $params
+     *
+     * @return ConfigObject
+     */
+    public function initParams(array $params): ConfigObject
+    {
+        $this->params = ConfigObject::new($params);
+        return $this->params;
     }
 
     /**********************************************************
