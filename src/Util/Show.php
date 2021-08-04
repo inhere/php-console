@@ -16,16 +16,16 @@ use Inhere\Console\Component\Progress\CounterText;
 use Inhere\Console\Component\Progress\DynamicText;
 use Inhere\Console\Component\Progress\SimpleBar;
 use Inhere\Console\Component\Progress\SimpleTextBar;
-use Toolkit\Cli\Style;
 use Inhere\Console\Console;
 use LogicException;
 use Toolkit\Cli\Cli;
 use Toolkit\Cli\ColorTag;
+use Toolkit\Cli\Style;
+use Toolkit\Stdlib\Math;
 use Toolkit\Stdlib\Str;
 use Toolkit\Sys\Sys;
 use function array_keys;
 use function array_values;
-use function ceil;
 use function count;
 use function implode;
 use function is_array;
@@ -33,7 +33,6 @@ use function is_string;
 use function json_encode;
 use function microtime;
 use function sprintf;
-use function str_repeat;
 use function strlen;
 use function strpos;
 use function strtoupper;
@@ -182,7 +181,7 @@ class Show
      * @return int
      * @throws LogicException
      */
-    public static function __callStatic($method, array $args = [])
+    public static function __callStatic(string $method, array $args = [])
     {
         if (isset(self::$blockMethods[$method])) {
             $msg   = $args[0];
@@ -237,11 +236,11 @@ class Show
         }
 
         if (!$title) {
-            return self::write(str_repeat($char, $width));
+            return self::write(Str::repeat($char, $width));
         }
 
-        $strLen = ceil(($width - Str::len($title) - 2) / 2);
-        $padStr = $strLen > 0 ? str_repeat($char, $strLen) : '';
+        $strLen = Math::ceil(($width - Str::len($title) - 2) / 2);
+        $padStr = $strLen > 0 ? Str::repeat($char, $strLen) : '';
 
         return self::write($padStr . ' ' . ucwords($title) . ' ' . $padStr);
     }

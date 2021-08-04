@@ -581,7 +581,7 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
         $this->output->write(ucfirst($classDes) . PHP_EOL);
 
         if ($aliases = $this->getAliases()) {
-            $this->output->writef('<comment>Alias:</comment> %s', implode(',', $aliases));
+            $this->output->writef("<comment>Alias:</comment> %s\n", implode(',', $aliases));
         }
 
         $this->output->mList([
