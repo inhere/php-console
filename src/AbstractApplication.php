@@ -590,7 +590,7 @@ abstract class AbstractApplication implements ApplicationInterface
     }
 
     /**
-     * @param $name
+     * @param string $name
      *
      * @return bool
      */
@@ -645,7 +645,7 @@ abstract class AbstractApplication implements ApplicationInterface
      * Get config param value
      *
      * @param string $name
-     * @param null|string $default
+     * @param null|string|mixed $default
      *
      * @return array|string
      */
