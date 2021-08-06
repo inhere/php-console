@@ -71,7 +71,7 @@ trait FormatOutputAwareTrait
      *
      * @return int
      */
-    public function println($text, $quit = false, array $opts = []): int
+    public function println($text, bool $quit = false, array $opts = []): int
     {
         return Console::writeln($text, $quit, $opts);
     }
@@ -79,7 +79,7 @@ trait FormatOutputAwareTrait
     /**
      * @param string|mixed $text
      * @param bool         $nl
-     * @param bool         $quit
+     * @param bool|int     $quit
      * @param array        $opts
      *
      * @return int

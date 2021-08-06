@@ -2,6 +2,7 @@
 
 namespace Inhere\Console\Component;
 
+use Inhere\Console\Application;
 use Toolkit\Stdlib\Obj;
 
 /**
@@ -12,4 +13,9 @@ use Toolkit\Stdlib\Obj;
  */
 class CompletionDumper extends Obj\AbstractObj
 {
+    /**
+     * @var Application
+     */
+    public $app;
+
 }

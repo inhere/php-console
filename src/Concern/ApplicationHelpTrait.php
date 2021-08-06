@@ -93,6 +93,7 @@ trait ApplicationHelpTrait
 
         // display help for a special command
         if ($command) {
+            $this->debugf('display command help by use help: help COMMAND');
             $in->setCommand($command);
             $in->setSOpt('h', true);
             $in->clearArgs();
@@ -100,6 +101,7 @@ trait ApplicationHelpTrait
             return;
         }
 
+        $this->debugf('display application help by input -h, --help');
         $delimiter = $this->delimiter;
         $binName   = $in->getScriptName();
 

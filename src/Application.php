@@ -355,11 +355,12 @@ class Application extends AbstractApplication
     /**
      * Execute an action in a group command(controller)
      *
-     * @param array  $info Matched route info
-     * @param array  $options
-     * @param bool   $detachedRun
+     * @param array $info Matched route info
+     * @param array $options
+     * @param bool  $detachedRun
      *
      * @return mixed
+     * @throws ReflectionException
      */
     protected function runAction(array $info,  array $options, bool $detachedRun = false)
     {

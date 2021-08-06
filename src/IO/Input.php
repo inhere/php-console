@@ -16,6 +16,7 @@ use function basename;
 use function fgets;
 use function fwrite;
 use function implode;
+use function is_string;
 use function preg_match;
 use function trim;
 
@@ -67,13 +68,21 @@ class Input extends AbstractInput
     protected function collectInfo(array $args): void
     {
         $this->getPwd();
+        if (!$args) {
+            return;
+        }
 
         $this->tokens = $args;
-        $this->script = array_shift($args);
-        $this->flags  = $args; // no script
 
-        // bin name
-        $this->scriptName = basename($this->script);
+        // first is bin file
+        if (isset($args[0]) && is_string($args[0])) {
+            $this->script = array_shift($args);
+
+            // bin name
+            $this->scriptName = basename($this->script);
+        }
+
+        $this->flags = $args; // no script
 
         // full script
         $this->fullScript = implode(' ', $args);

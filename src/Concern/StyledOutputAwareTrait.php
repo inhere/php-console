@@ -205,7 +205,7 @@ trait StyledOutputAwareTrait
      * @return int
      * @throws LogicException
      */
-    public function __call($method, array $args = [])
+    public function __call(string $method, array $args = [])
     {
         $map = Show::getBlockMethods(false);
 

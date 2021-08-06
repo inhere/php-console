@@ -293,11 +293,39 @@ abstract class AbstractApplication implements ApplicationInterface
      */
     public function subRun(string $command, InputInterface $input, OutputInterface $output)
     {
-        $app = clone $this;
+        $app = $this->copy();
         $app->setInput($input);
         $app->setOutput($output);
 
+        $this->debugf('copy application and run command(%s) with new input, output', $command);
+
         return $app->dispatch($command);
+    }
+
+    /**
+     * @param InputInterface  $input
+     * @param OutputInterface $output
+     */
+    public function runWithIO(InputInterface $input, OutputInterface $output): void
+    {
+        $app = $this->copy();
+        $app->setInput($input);
+        $app->setOutput($output);
+
+        $this->debugf('copy application and run with new input, output');
+        $app->run(false);
+    }
+
+    /**
+     * @return $this
+     */
+    public function copy(): self
+    {
+        $app = clone $this;
+        // reset something
+        $app->groupObjects = [];
+
+        return $app;
     }
 
     /**********************************************************

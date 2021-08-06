@@ -27,7 +27,7 @@ abstract class AbstractInput implements InputInterface
     /**
      * @var string
      */
-    protected $pwd;
+    protected $pwd = '';
 
     /**
      * The script path
@@ -35,7 +35,7 @@ abstract class AbstractInput implements InputInterface
      *
      * @var string
      */
-    protected $script;
+    protected $script = '';
 
     /**
      * The script name
@@ -43,7 +43,7 @@ abstract class AbstractInput implements InputInterface
      *
      * @var string
      */
-    protected $scriptName;
+    protected $scriptName = '';
 
     /**
      * the command name(Is first argument)

@@ -37,7 +37,6 @@ class Confirm extends InteractiveHandle
 
         while (true) {
             $answer = Console::readChar($message);
-
             if ('' === $answer) {
                 return $default;
             }
@@ -50,7 +49,5 @@ class Confirm extends InteractiveHandle
                 return false;
             }
         }
-
-        return false;
     }
 }
