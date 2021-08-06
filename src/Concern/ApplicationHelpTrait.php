@@ -22,6 +22,7 @@ use function array_merge;
 use function basename;
 use function date;
 use function dirname;
+use function file_exists;
 use function file_get_contents;
 use function file_put_contents;
 use function get_class;
@@ -32,7 +33,9 @@ use function is_subclass_of;
 use function ksort;
 use function sprintf;
 use function str_replace;
+use function strpos;
 use function strtr;
+use function vdump;
 use const PHP_EOL;
 use const PHP_OS;
 use const PHP_VERSION;
@@ -128,7 +131,7 @@ trait ApplicationHelpTrait
             ],
             'Help'    => [
                 'Generate shell auto completion scripts:',
-                "  <info>$binName --auto-completion --shell-env [zsh|bash] [--gen-file stdout]</info>",
+                "  <info>$binName --auto-completion --shell-env [zsh|bash] [--gen-file stdout] [--tpl-file filepath]</info>",
                 ' eg:',
                 "  $binName --auto-completion --shell-env bash --gen-file stdout",
                 "  $binName --auto-completion --shell-env zsh --gen-file stdout",
@@ -148,6 +151,10 @@ trait ApplicationHelpTrait
         $autoComp = $input->getBoolOpt('auto-completion');
         // has option: --shell-env
         $shellEnv = (string)$input->getLongOpt('shell-env', '');
+        // input is an path: /bin/bash
+        if ($shellEnv && strpos($shellEnv, '/') !== false) {
+            $shellEnv = basename($shellEnv);
+        }
 
         // php bin/app list --only-name
         if ($autoComp && $shellEnv === 'bash') {
@@ -306,6 +313,12 @@ trait ApplicationHelpTrait
             }
         }
 
+        // new: support custom tpl file for gen completion script
+        $userTplFile = $input->getStringOpt('tpl-file');
+        if ($userTplFile && file_exists($userTplFile)) {
+            $tplFile = $userTplFile;
+        }
+
         $commands = implode($glue, $list);
 
         // only dump commands to stdout.
@@ -352,9 +365,9 @@ trait ApplicationHelpTrait
         $output->write(['Target File:', $targetFile, '']);
 
         if (file_put_contents($targetFile, $content) > 10) {
-            $output->success("O_O! Generate file:$filename successful!");
+            $output->success("O_O! Generate completion file '$filename' successful!");
         } else {
-            $output->error("O^O! Generate file:$filename failure!");
+            $output->error("O^O! Generate completion file '$filename' failure!");
         }
     }
 }

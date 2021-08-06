@@ -236,6 +236,22 @@ abstract class AbstractInput implements InputInterface
     /**
      * @return array
      */
+    public function getFlags(): array
+    {
+        return $this->flags;
+    }
+
+    /**
+     * @return array
+     */
+    public function getRawArgs(): array
+    {
+        return $this->tokens;
+    }
+
+    /**
+     * @return array
+     */
     public function getTokens(): array
     {
         return $this->tokens;

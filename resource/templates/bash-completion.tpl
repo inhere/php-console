@@ -1,12 +1,17 @@
 #!/usr/bin/env bash
 # ------------------------------------------------------------------------------
 #          DATE:  {{datetime}}
-#          FILE:  auto-completion.bash
+#          FILE:  {{filename}}
 #        AUTHOR:  inhere (https://github.com/inhere)
 #       VERSION:  {{version}}
+#      HOMEPAGE:  https://github.com/inhere/php-console
 #   DESCRIPTION:  bash shell complete for console app: {{binName}}
 # ------------------------------------------------------------------------------
-# usage: source auto-completion.bash
+#
+# temp usage:
+#   source {{filename}}
+# add to ~/.bashrc:
+#   source path/to/{{filename}}
 # run 'complete' to see registered complete function.
 
 _complete_for_{{fmtBinName}} () {

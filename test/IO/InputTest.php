@@ -4,6 +4,7 @@ namespace Inhere\ConsoleTest\IO;
 
 use Inhere\Console\IO\Input;
 use PHPUnit\Framework\TestCase;
+use function vdump;
 
 /**
  * Class InputTest
@@ -28,6 +29,11 @@ class InputTest extends TestCase
         $this->assertTrue($in->hasArg(0));
         $this->assertSame('val0', $in->getArgument(0));
         $this->assertSame('val1', $in->getArgument(1));
+
+        $in = new Input(["bin/kite", "jump", "get", "-"]);
+        $this->assertTrue($in->hasArg(0));
+        $this->assertSame('get', $in->getArgument(0));
+        $this->assertSame('-', $in->getArgument(1));
     }
 
     public function testBindArgument(): void

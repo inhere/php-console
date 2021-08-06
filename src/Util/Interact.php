@@ -20,7 +20,6 @@ use RuntimeException;
 use Toolkit\Cli\Cli;
 use function sprintf;
 use function strtolower;
-use function trim;
 
 /**
  * Class Interact
@@ -41,15 +40,9 @@ class Interact extends Show
      *
      * @return string
      */
-    public static function readln($message = null, $nl = false, array $opts = []): string
+    public static function readln($message = null, bool $nl = false, array $opts = []): string
     {
-        if ($message) {
-            Console::write($message, $nl);
-        }
-
-        $stream = $opts['stream'] ?? Cli::getInputStream();
-
-        return trim((string)fgets($stream));
+        return Cli::readln($message, $nl, $opts);
     }
 
     /**
@@ -60,9 +53,9 @@ class Interact extends Show
      *
      * @return string
      */
-    public static function readRow($message = null, $nl = false): string
+    public static function readRow($message = null, bool $nl = false): string
     {
-        return self::readln($message, $nl);
+        return Cli::readln($message, $nl);
     }
 
     /**
@@ -71,15 +64,9 @@ class Interact extends Show
      *
      * @return string
      */
-    public static function readFirst($message = null, $nl = false): string
+    public static function readFirst($message = null, bool $nl = false): string
     {
-        $input = self::readln($message, $nl);
-
-        if ($input && ($f = $input[0])) {
-            return $f;
-        }
-
-        return '';
+        return Cli::readFirst($message, $nl);
     }
 
     /**************************************************************************************************

@@ -16,6 +16,7 @@ use RuntimeException;
 use Seld\PharUtils\Timestamps;
 use SplFileInfo;
 use SplQueue;
+use Toolkit\FsUtil\File;
 use Toolkit\Sys\Sys;
 use UnexpectedValueException;
 use function array_merge;
@@ -26,8 +27,6 @@ use function explode;
 use function file_exists;
 use function file_get_contents;
 use function file_put_contents;
-use function function_exists;
-use function in_array;
 use function ini_get;
 use function is_dir;
 use function is_file;
@@ -41,35 +40,32 @@ use function strlen;
 use function strpos;
 use function substr;
 use function substr_replace;
-use function token_get_all;
 use function trim;
 use function unlink;
 use const DIRECTORY_SEPARATOR;
 use const PHP_EOL;
-use const T_COMMENT;
-use const T_DOC_COMMENT;
-use const T_WHITESPACE;
 
 /**
  * Class PharCompiler
+ *
  * @since 1.0
  */
 class PharCompiler
 {
-    public const ON_ADD   = 'add';
+    public const ON_ADD = 'add';
 
-    public const ADD_CLI_INDEX = 'add.index.cli';
-    public const ADD_WEB_INDEX = 'add.index.web';
-
-    public const ON_SKIP  = 'skip';
+    public const ON_SKIP = 'skip';
 
     public const ON_ERROR = 'error';
 
-    public const ON_MESSAGE   = 'message';
+    public const ON_MESSAGE = 'message';
 
     public const ON_COLLECTED = 'collected';
 
     public const FILE_EXT = '.phar';
+
+    public const ADD_CLI_INDEX = 'add.index.cli';
+    public const ADD_WEB_INDEX = 'add.index.web';
 
     /** @var array */
     private static $supportedSignatureTypes = [
@@ -177,6 +173,7 @@ class PharCompiler
      *  'lastVersion' => '{@package_last_version}',
      *  'releaseDate' => '{@release_date}',
      * ]
+     *
      * @var string
      */
     private $versionFile = '';
@@ -218,6 +215,7 @@ class PharCompiler
      * @param string            $extractTo
      * @param string|array|null $files Only fetch the listed files
      * @param bool              $overwrite
+     *
      * @return bool
      * @throws BadMethodCallException
      * @throws RuntimeException
@@ -249,7 +247,9 @@ class PharCompiler
 
     /**
      * PharCompiler constructor.
+     *
      * @param string $basePath
+     *
      * @throws RuntimeException
      */
     public function __construct(string $basePath)
@@ -266,6 +266,7 @@ class PharCompiler
 
     /**
      * @param string|array $files
+     *
      * @return $this
      */
     public function addFile($files): self
@@ -276,6 +277,7 @@ class PharCompiler
 
     /**
      * @param array $files
+     *
      * @return PharCompiler
      */
     public function setFiles(array $files): self
@@ -286,6 +288,7 @@ class PharCompiler
 
     /**
      * @param string|array $suffixes
+     *
      * @return $this
      */
     public function addSuffix($suffixes): self
@@ -296,6 +299,7 @@ class PharCompiler
 
     /**
      * @param string|array $patterns
+     *
      * @return $this
      */
     public function addExclude($patterns): self
@@ -306,6 +310,7 @@ class PharCompiler
 
     /**
      * @param string|array $patterns
+     *
      * @return $this
      */
     public function addExcludeDir($patterns): self
@@ -321,6 +326,7 @@ class PharCompiler
 
     /**
      * @param string|array $patterns
+     *
      * @return $this
      */
     public function addExcludeFile($patterns): self
@@ -336,6 +342,7 @@ class PharCompiler
 
     /**
      * @param array $excludes
+     *
      * @return PharCompiler
      */
     public function setExcludes(array $excludes): self
@@ -346,6 +353,7 @@ class PharCompiler
 
     /**
      * @param bool $value
+     *
      * @return PharCompiler
      */
     public function stripComments($value): self
@@ -356,6 +364,7 @@ class PharCompiler
 
     /**
      * @param bool $value
+     *
      * @return PharCompiler
      */
     public function collectVersion($value): self
@@ -366,6 +375,7 @@ class PharCompiler
 
     /**
      * @param Closure $stripFilter
+     *
      * @return PharCompiler
      */
     public function setStripFilter(Closure $stripFilter): self
@@ -376,6 +386,7 @@ class PharCompiler
 
     /**
      * @param bool|string $shebang
+     *
      * @return PharCompiler
      */
     public function setShebang($shebang): self
@@ -386,6 +397,7 @@ class PharCompiler
 
     /**
      * @param string|array $dirs
+     *
      * @return PharCompiler
      */
     public function in($dirs): self
@@ -407,8 +419,10 @@ class PharCompiler
 
     /**
      * Compiles composer into a single phar file
-     * @param  string $pharFile The full path to the file to create
-     * @param bool    $refresh
+     *
+     * @param string $pharFile The full path to the file to create
+     * @param bool   $refresh
+     *
      * @return string
      * @throws UnexpectedValueException
      * @throws BadMethodCallException
@@ -561,6 +575,7 @@ class PharCompiler
 
     /**
      * find changed or new created files by git status.
+     *
      * @throws RuntimeException
      */
     public function findChangedByGit()
@@ -763,40 +778,19 @@ EOF;
 
     /**
      * Removes whitespace from a PHP source string while preserving line numbers.
-     * @param  string $source A PHP string
+     *
+     * @param string $source A PHP string
+     *
      * @return string The PHP string with the whitespace removed
      */
     private function stripWhitespace(string $source): string
     {
-        if (!function_exists('token_get_all')) {
-            return $source;
-        }
-
-        $output = '';
-        foreach (token_get_all($source) as $token) {
-            if (is_string($token)) {
-                $output .= $token;
-            } elseif (in_array($token[0], [T_COMMENT, T_DOC_COMMENT], true)) {
-                $output .= str_repeat("\n", substr_count($token[1], "\n"));
-            } elseif (T_WHITESPACE === $token[0]) {
-                // reduce wide spaces
-                $whitespace = preg_replace('{[ \t]+}', ' ', $token[1]);
-                // normalize newlines to \n
-                $whitespace = preg_replace('{(?:\r\n|\r|\n)}', "\n", $whitespace);
-                // trim leading spaces
-                $whitespace = preg_replace('{\n +}', "\n", $whitespace);
-                // append
-                $output .= $whitespace;
-            } else {
-                $output .= $token[1];
-            }
-        }
-
-        return $output;
+        return File::stripPhpCode($source);
     }
 
     /**
      * Auto collect project information by git log
+     *
      * @throws RuntimeException
      * @throws Exception
      */
@@ -839,7 +833,8 @@ EOF;
     }
 
     /**
-     * @param  SplFileInfo $file
+     * @param SplFileInfo $file
+     *
      * @return string
      */
     private function getRelativeFilePath(SplFileInfo $file): string
@@ -871,7 +866,8 @@ EOF;
 
     /**
      * add event handler
-     * @param string   $event
+     *
+     * @param string  $event
      * @param Closure $closure
      */
     public function on(string $event, Closure $closure): void
@@ -937,6 +933,7 @@ EOF;
 
     /**
      * @param string $cliIndex
+     *
      * @return $this
      */
     public function setCliIndex(string $cliIndex): self
@@ -955,6 +952,7 @@ EOF;
 
     /**
      * @param null|string $webIndex
+     *
      * @return PharCompiler
      */
     public function setWebIndex(string $webIndex): self
@@ -981,6 +979,7 @@ EOF;
 
     /**
      * @param string $versionFile
+     *
      * @return PharCompiler
      */
     public function setVersionFile(string $versionFile): PharCompiler
@@ -999,6 +998,7 @@ EOF;
 
     /**
      * @param null|string $lastCommit
+     *
      * @return PharCompiler
      */
     public function setLastCommit(string $lastCommit): PharCompiler
@@ -1017,6 +1017,7 @@ EOF;
 
     /**
      * @param null|string $lastVersion
+     *
      * @return PharCompiler
      */
     public function setLastVersion(string $lastVersion): PharCompiler

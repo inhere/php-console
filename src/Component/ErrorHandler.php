@@ -50,7 +50,7 @@ ERR;
             $line = $e->getLine();
             $file = $e->getFile();
 
-            $snippet = Highlighter::create()->highlightSnippet(file_get_contents($file), $line, 3, 3);
+            $snippet = Highlighter::create()->snippet(file_get_contents($file), $line, 3, 3);
             $message = sprintf(
                 $tpl, // $e->getCode(),
                 $e->getMessage(),

@@ -5,6 +5,7 @@ namespace Inhere\Console\Component\Interact;
 use Inhere\Console\Component\InteractiveHandle;
 use RuntimeException;
 use Toolkit\Sys\Sys;
+use Toolkit\Sys\Util\ShellUtil;
 use function addslashes;
 use function escapeshellarg;
 use function file_put_contents;
@@ -40,7 +41,7 @@ class Password extends InteractiveHandle
         // $shell = 'echo $0';
 
         // linux, unix, git-bash
-        if (Sys::shIsAvailable()) {
+        if (ShellUtil::shIsAvailable()) {
             // COMMAND: sh -c 'read -p "Enter Password:" -s user_input && echo $user_input'
             $command  = sprintf('sh -c "read -p \'%s\' -s user_input && echo $user_input"', $prompt);
             $password = Sys::execute($command, false);
