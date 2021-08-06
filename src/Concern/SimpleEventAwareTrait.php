@@ -49,17 +49,17 @@ trait SimpleEventAwareTrait
     /**
      * register a event handler
      *
-     * @param          $event
+     * @param string   $event
      * @param callable $handler
      * @param bool     $once
      */
-    public function on(string $event, callable $handler, $once = false): void
+    public function on(string $event, callable $handler, bool $once = false): void
     {
         if (self::isSupportedEvent($event)) {
             self::$eventHandlers[$event][] = $handler;
 
             if (!isset(self::$events[$event])) {
-                self::$events[$event] = (bool)$once;
+                self::$events[$event] = $once;
             }
         }
     }
@@ -67,7 +67,7 @@ trait SimpleEventAwareTrait
     /**
      * register a once event handler
      *
-     * @param          $event
+     * @param string   $event
      * @param callable $handler
      */
     public function once(string $event, callable $handler): void
@@ -111,7 +111,7 @@ trait SimpleEventAwareTrait
     /**
      * remove event and it's handlers
      *
-     * @param $event
+     * @param string $event
      *
      * @return bool
      */
@@ -127,7 +127,7 @@ trait SimpleEventAwareTrait
     }
 
     /**
-     * @param $event
+     * @param string $event
      *
      * @return bool
      */
@@ -137,7 +137,7 @@ trait SimpleEventAwareTrait
     }
 
     /**
-     * @param $event
+     * @param string $event
      *
      * @return bool
      */
