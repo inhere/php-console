@@ -11,7 +11,7 @@
 
 ## 命令行预览
 
-![app-command-list](https://raw.githubusercontent.com/inhere/php-console/master/docs/screenshots/app-command-list.png)
+![app-command-list](https://raw.githubusercontent.com/inhere/php-console/3.x/docs/screenshots/app-command-list.png)
 
 ## 功能概览
 

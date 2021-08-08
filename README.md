@@ -13,7 +13,7 @@ Provide console parameter parsing, command run, color style output, user informa
 
 ## Command line preview
 
-![app-command-list](https://raw.githubusercontent.com/inhere/php-console/master/docs/screenshots/app-command-list.png)
+![app-command-list](https://raw.githubusercontent.com/inhere/php-console/3.x/docs/screenshots/app-command-list.png)
 
 ## Features
 
