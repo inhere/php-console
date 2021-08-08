@@ -27,6 +27,7 @@ use Throwable;
 use Toolkit\Cli\Style;
 use Toolkit\Cli\Util\LineParser;
 use Toolkit\Stdlib\Helper\PhpHelper;
+use Toolkit\Stdlib\OS;
 use Toolkit\Sys\Proc\ProcessUtil;
 use Toolkit\Sys\Proc\Signal;
 use function array_keys;
@@ -42,6 +43,7 @@ use function register_shutdown_function;
 use function set_error_handler;
 use function set_exception_handler;
 use function trim;
+use function vdump;
 use const PHP_SAPI;
 
 /**
@@ -711,7 +713,15 @@ abstract class AbstractApplication implements ApplicationInterface
     {
         $key = GlobalOption::DEBUG;
 
-        return (int)$this->input->getLongOpt($key, (int)$this->config[$key]);
+        // feat: support set debug level by ENV var: CONSOLE_DEBUG
+        $envVal = OS::getEnvVal(Console::DEBUG_ENV_KEY);
+        if ($envVal !== '') {
+            $setVal = (int)$envVal;
+        } else {
+            $setVal = (int)$this->config[$key];
+        }
+
+        return (int)$this->input->getLongOpt($key, $setVal);
     }
 
     /**

@@ -79,6 +79,18 @@ phpunit
 phpdbg -dauto_globals_jit=Off -qrr /usr/local/bin/phpunit --coverage-text
 ```
 
+## 开发调试
+
+你可以通过环境变量 `CONSOLE_DEBUG=level`, 全局选项 `--debug level` 设置debug级别
+
+```bash
+# by ENV
+$ CONSOLE_DEBUG=4 php examples/app
+$ CONSOLE_DEBUG=5 php examples/app
+# by global options
+$ php examples/app --debug 4
+```
+
 ## 使用console的项目
 
 看看这些使用了 https://github.com/inhere/php-console 的项目:

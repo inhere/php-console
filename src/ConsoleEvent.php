@@ -29,17 +29,24 @@ final class ConsoleEvent
 
     public const BEFORE_RENDER_APP_COMMANDS_LIST = 'app.commands.list.render.before';
 
-    // ----- group/sub-command
+    // group command and subcommand
+    public const COMMAND_RUN_BEFORE = 'each.command.run.before';
 
-    public const SUB_COMMAND_NOT_FOUND = 'group.command.notFound';
+    public const ALONE_COMMAND_RUN_BEFORE = 'alone.command.run.before';
+
+    public const SUBCOMMAND_RUN_BEFORE = 'group.subcommand.run.before';
+
+    // ----- group/subcommand
+
+    public const SUBCOMMAND_NOT_FOUND = 'group.subcommand.not.found';
 
     public const BEFORE_RENDER_GROUP_HELP = 'group.help.render.before';
 
     public const AFTER_RENDER_GROUP_HELP  = 'group.help.render.after';
 
-    public const BEFORE_RENDER_SUB_COMMAND_HELP = 'group.command.help.render.before';
+    public const BEFORE_RENDER_SUBCOMMAND_HELP = 'group.command.help.render.before';
 
-    public const AFTER_RENDER_SUB_COMMAND_HELP  = 'group.command.help.render.after';
+    public const AFTER_RENDER_SUBCOMMAND_HELP  = 'group.command.help.render.after';
 
     // ----- command
 

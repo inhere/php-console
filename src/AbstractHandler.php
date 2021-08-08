@@ -260,6 +260,13 @@ abstract class AbstractHandler implements CommandHandlerInterface
             return -1;
         }
 
+        // trigger event
+        $this->fire(ConsoleEvent::COMMAND_RUN_BEFORE, $this);
+
+        if ($this->isAlone()) {
+            $this->fire(ConsoleEvent::ALONE_COMMAND_RUN_BEFORE, $this);
+        }
+
         // if enable swoole coroutine
         if (static::isCoroutine() && Helper::isSupportCoroutine()) {
             $result = $this->coExecute();
@@ -583,7 +590,7 @@ abstract class AbstractHandler implements CommandHandlerInterface
             return 0;
         }
 
-        // is a console controller command
+        // subcommand: is a console controller subcommand
         if ($action && !$ref->getMethod($method)->isPublic()) {
             $this->write("The command [<info>$name</info>] don't allow access in the class.");
             return 0;

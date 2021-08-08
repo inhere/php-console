@@ -83,6 +83,18 @@ phpunit
 phpdbg -dauto_globals_jit=Off -qrr /usr/local/bin/phpunit --coverage-text
 ```
 
+## Debuging
+
+You can set debug level by ENV `CONSOLE_DEBUG=level`, global option `--debug level`
+
+```bash
+# by ENV
+$ CONSOLE_DEBUG=4 php examples/app
+$ CONSOLE_DEBUG=5 php examples/app
+# by global options
+$ php examples/app --debug 4
+```
+
 ## Project use
 
 Check out these projects, which use https://github.com/inhere/php-console :

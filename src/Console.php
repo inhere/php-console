@@ -57,6 +57,9 @@ class Console extends Cli
         self::VERB_CRAZY => 'magenta',
     ];
 
+    // eg: CONSOLE_DEBUG=4 php my-console
+    public const DEBUG_ENV_KEY = 'CONSOLE_DEBUG';
+
     /**
      * @var Application
      */

@@ -334,6 +334,9 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
 
         $method = $this->getMethodName($action);
 
+        // trigger event
+        $this->fire(ConsoleEvent::SUBCOMMAND_RUN_BEFORE, $this);
+
         // the action method exists and only allow access public method.
         // if (method_exists($this, $method)) {
         // before run action

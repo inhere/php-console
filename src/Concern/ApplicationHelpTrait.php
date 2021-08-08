@@ -10,6 +10,7 @@ namespace Inhere\Console\Concern;
 
 use Inhere\Console\AbstractHandler;
 use Inhere\Console\Console;
+use Inhere\Console\ConsoleEvent;
 use Inhere\Console\Contract\CommandInterface;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
@@ -70,6 +71,8 @@ trait ApplicationHelpTrait
         $updateAt   = $this->getParam('updateAt', 'Unknown');
         $phpVersion = PHP_VERSION;
 
+        $this->fire(ConsoleEvent::BEFORE_RENDER_APP_VERSION, $this);
+
         if ($logoTxt = $this->getLogoText()) {
             $logo = ColorTag::wrap($logoTxt, $this->getLogoStyle());
         }
@@ -107,6 +110,7 @@ trait ApplicationHelpTrait
         }
 
         $this->debugf('display application help by input -h, --help');
+        $this->fire(ConsoleEvent::BEFORE_RENDER_APP_HELP, $this);
         $delimiter = $this->delimiter;
         $binName   = $in->getScriptName();
 
