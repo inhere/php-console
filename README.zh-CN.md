@@ -79,6 +79,13 @@ phpunit
 phpdbg -dauto_globals_jit=Off -qrr /usr/local/bin/phpunit --coverage-text
 ```
 
+## 使用console的项目
+
+看看这些使用了 https://github.com/inhere/php-console 的项目:
+
+- [kite](https://github.com/inhere/kite) PHP编写的，方便本地开发和使用的一些CLI工具应用
+- More, please see [github used by](https://github.com/inhere/php-console/network/dependents?package_id=UGFja2FnZS01NDI5NzMxOTI%3D)
+
 ## License
 
 [MIT](LICENSE)

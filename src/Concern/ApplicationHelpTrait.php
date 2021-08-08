@@ -46,6 +46,11 @@ use const PHP_VERSION;
  */
 trait ApplicationHelpTrait
 {
+    /**
+     * @var string|array
+     */
+    protected $moreHelpInfo = '';
+
     /***************************************************************************
      * Show information for the application
      ***************************************************************************/
@@ -55,10 +60,11 @@ trait ApplicationHelpTrait
      */
     public function showVersionInfo(): void
     {
-        $os         = PHP_OS;
-        $date       = date('Y.m.d');
-        $logo       = '';
-        $name       = $this->getParam('name', 'Console Application');
+        $os   = PHP_OS;
+        $date = date('Y.m.d');
+        $logo = '';
+        $name = $this->getParam('name', 'Console Application');
+
         $version    = $this->getParam('version', 'Unknown');
         $publishAt  = $this->getParam('publishAt', 'Unknown');
         $updateAt   = $this->getParam('updateAt', 'Unknown');
@@ -115,20 +121,19 @@ trait ApplicationHelpTrait
             $globalOptions['--gen-file']        = 'The output file for generate auto completion script';
         }
 
-        $globalOptions = FormatUtil::alignOptions($globalOptions);
-
-        /** @var Output $out */
-        $out = $this->output;
-        $out->helpPanel([
+        $helpInfo = [
             'Usage'   => "$binName <info>{command}</info> [--opt -v -h ...] [arg0 arg1 arg2=value2 ...]",
-            'Options' => $globalOptions,
+            'Options' => FormatUtil::alignOptions($globalOptions),
             'Example' => [
+                '- run a command/subcommand:',
                 "$binName test                     run a independent command",
-                "$binName home index               run a sub-command of the group",
-                sprintf("$binName home%sindex               run a sub-command of the group", $delimiter),
-                "$binName help {command}           see a command help information",
-                "$binName home index -h            see a sub-command help of the group",
-                sprintf("$binName home%sindex -h            see a sub-command help of the group", $delimiter),
+                "$binName home index               run a subcommand of the group",
+                sprintf("$binName home%sindex               run a subcommand of the group", $delimiter),
+                '',
+                '- display help for command:',
+                "$binName help COMMAND             see a command help information",
+                "$binName home index -h            see a subcommand help of the group",
+                sprintf("$binName home%sindex -h            see a subcommand help of the group", $delimiter),
             ],
             'Help'    => [
                 'Generate shell auto completion scripts:',
@@ -138,7 +143,16 @@ trait ApplicationHelpTrait
                 "  $binName --auto-completion --shell-env zsh --gen-file stdout",
                 "  $binName --auto-completion --shell-env bash --gen-file myapp.sh",
             ],
-        ]);
+        ];
+
+        // custom more help info
+        if ($this->moreHelpInfo) {
+            $helpInfo['More Information'] = $this->moreHelpInfo;
+        }
+
+        /** @var Output $out */
+        $out = $this->output;
+        $out->helpPanel($helpInfo);
     }
 
     /**
@@ -224,7 +238,7 @@ trait ApplicationHelpTrait
             }
 
             $aliases = $options['aliases'];
-            $extra   = $aliases ? ColorTag::wrap(' [alias: ' . implode(',', $aliases) . ']', 'info') : '';
+            $extra   = $aliases ? ColorTag::wrap(' (alias: ' . implode(',', $aliases) . ')', 'info') : '';
 
             $commandArr[$name] = $desc . $extra;
         }
@@ -265,7 +279,7 @@ trait ApplicationHelpTrait
         ]);
 
         unset($groupArr, $commandArr, $internalCommands);
-        Console::write("More command information, please use: <cyan>$scriptName {command} -h</cyan>");
+        Console::write("More command information, please use: <cyan>$scriptName COMMAND -h</cyan>");
         Console::flushBuffer();
     }
 
@@ -292,9 +306,9 @@ trait ApplicationHelpTrait
         $router = $this->getRouter();
 
         // info
-        $glue     = ' ';
-        $genFile  = $input->getStringOpt('gen-file', 'none');
-        $tplDir   = dirname(__DIR__, 2) . '/resource/templates';
+        $glue    = ' ';
+        $genFile = $input->getStringOpt('gen-file', 'none');
+        $tplDir  = dirname(__DIR__, 2) . '/resource/templates';
 
         if ($shellEnv === 'bash') {
             $tplFile = $tplDir . '/bash-completion.tpl';

@@ -48,6 +48,8 @@ class HelpPanel extends MessageFormatter
      * Show console help message
      *
      * There are config structure. you can setting some or ignore some. will only render it when value is not empty.
+     *
+     * ```
      * [
      *  description string         The description text. e.g 'Composer version 1.3.2'
      *  usage       string         The usage message text. e.g 'command [options] [arguments]'
@@ -73,6 +75,7 @@ class HelpPanel extends MessageFormatter
      *      ]
      *  examples    array|string  The command usage example. e.g 'php server.php {start|reload|restart|stop} [-d]'
      * ]
+     * ```
      *
      * @param array $config The config data
      */
@@ -135,7 +138,7 @@ class HelpPanel extends MessageFormatter
             if (is_string($value)) {
                 $value   = trim($value);
                 $section = ucfirst($section);
-                $parts[] = "<comment>$section</comment>:\n  {$value}\n";
+                $parts[] = "<comment>$section</comment>:\n  $value\n";
             }
         }
 

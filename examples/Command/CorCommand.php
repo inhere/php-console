@@ -30,7 +30,7 @@ class CorCommand extends Command
      */
     public static function aliases(): array
     {
-        return ['coro'];
+        return ['co', 'coro'];
     }
 
     /**
