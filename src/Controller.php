@@ -229,7 +229,7 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
     {
         $command = $this->findCommandName($command);
 
-        // if not input sub-command, render group help.
+        // if not input subcommand, render group help.
         if (!$command) {
             $this->debugf('not input subcommand, display help for the group: %s', self::getName());
             return $this->showHelp();
@@ -249,8 +249,10 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
 
         // convert 'boo-foo' to 'booFoo'
         $this->action = $action = Str::camelCase($command);
-        $this->debugf("will run the '%s' group action: %s, sub-command: %s", static::getName(), $this->action, $command);
+        $this->debugf("will run the '%s' group action: %s, subcommand: %s", static::getName(), $this->action, $command);
 
+        // fire event
+        $this->fire(ConsoleEvent::COMMAND_RUN_BEFORE, $this);
         $this->beforeRun();
 
         // check method not exist

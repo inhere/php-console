@@ -260,11 +260,9 @@ abstract class AbstractHandler implements CommandHandlerInterface
             return -1;
         }
 
-        // trigger event
-        $this->fire(ConsoleEvent::COMMAND_RUN_BEFORE, $this);
-
+        // only fire for alone command run.
         if ($this->isAlone()) {
-            $this->fire(ConsoleEvent::ALONE_COMMAND_RUN_BEFORE, $this);
+            $this->fire(ConsoleEvent::COMMAND_RUN_BEFORE, $this);
         }
 
         // if enable swoole coroutine
@@ -315,6 +313,9 @@ abstract class AbstractHandler implements CommandHandlerInterface
      */
     protected function beforeExecute(): bool
     {
+        // trigger event
+        $this->fire(ConsoleEvent::COMMAND_EXEC_BEFORE, $this);
+
         return true;
     }
 
@@ -333,6 +334,8 @@ abstract class AbstractHandler implements CommandHandlerInterface
      */
     protected function afterExecute(): void
     {
+        // trigger event
+        $this->fire(ConsoleEvent::COMMAND_EXEC_AFTER, $this);
     }
 
     /**
