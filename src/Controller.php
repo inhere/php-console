@@ -204,12 +204,6 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
             // try use next arg as sub-command name.
             if (!$command) {
                 $command = $this->input->findCommandName();
-
-                // update the command id.
-                if ($command) {
-                    $group = $this->input->getCommand();
-                    $this->input->setCommandId("$group:$command");
-                }
             }
         }
 
@@ -246,6 +240,9 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
 
         // get real sub-command name
         $command = $this->resolveAlias($command);
+
+        // update the command id.
+        $this->input->setCommandId(static::getName() . ":$command");
 
         // convert 'boo-foo' to 'booFoo'
         $this->action = $action = Str::camelCase($command);
