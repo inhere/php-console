@@ -14,7 +14,7 @@ namespace Inhere\Console\Flag;
  *
  * @package Inhere\Console\Flag
  */
-class InputArguments
+class Arguments
 {
     /**
      * @var array

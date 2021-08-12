@@ -17,7 +17,7 @@ use function implode;
  *
  * @package Inhere\Console\Flag
  */
-class InputOption extends InputFlag
+class Option extends Flag
 {
     /**
      * alias name

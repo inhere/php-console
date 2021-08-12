@@ -16,7 +16,7 @@ use Inhere\Console\IO\Input;
  *
  * @package Inhere\Console\IO\Input
  */
-class InputArgument extends InputFlag
+class Argument extends Flag
 {
     /**
      * The argument position

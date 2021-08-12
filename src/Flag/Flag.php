@@ -16,7 +16,7 @@ use Inhere\Console\Contract\InputFlagInterface;
  *
  * @package Inhere\Console\IO\Input
  */
-abstract class InputFlag implements InputFlagInterface
+abstract class Flag implements InputFlagInterface
 {
     /**
      * @var string

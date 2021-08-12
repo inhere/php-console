@@ -14,6 +14,6 @@ namespace Inhere\Console\Flag;
  *
  * @package Inhere\Console\Flag
  */
-class InputOptions
+class Options
 {
 }
