@@ -6,7 +6,7 @@
  * Time: 10:28
  */
 
-namespace Inhere\Console\IO\Input;
+namespace Inhere\Console\Flag;
 
 use Inhere\Console\IO\Input;
 use function implode;
@@ -15,7 +15,7 @@ use function implode;
  * Class InputOption
  * - definition a input option
  *
- * @package Inhere\Console\IO\Input
+ * @package Inhere\Console\Flag
  */
 class InputOption extends InputFlag
 {

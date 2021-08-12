@@ -6,14 +6,13 @@
  * Time: 10:28
  */
 
-namespace Inhere\Console\IO\Input;
+namespace Inhere\Console\Flag;
 
 use Inhere\Console\Contract\InputFlagInterface;
-use Inhere\Console\IO\Input;
 
 /**
- * Class InputFlag
- * - definition a input item(option|argument)
+ * Class Flag
+ * - - definition a input flag item(option|argument)
  *
  * @package Inhere\Console\IO\Input
  */
@@ -27,7 +26,7 @@ abstract class InputFlag implements InputFlagInterface
     /**
      * @var string
      */
-    private $description;
+    private $desc;
 
     /**
      * @var int
@@ -51,14 +50,14 @@ abstract class InputFlag implements InputFlagInterface
     /**
      * @param string $name
      * @param int    $mode see Input::ARG_* or Input::OPT_*
-     * @param string $description
-     * @param null   $default
+     * @param string $desc
+     * @param mixed|null   $default
      *
      * @return static
      */
-    public static function make(string $name, int $mode = 0, string $description = '', $default = null)
+    public static function make(string $name, int $mode = 0, string $desc = '', $default = null)
     {
-        return new static($name, $mode, $description, $default);
+        return new static($name, $mode, $desc, $default);
     }
 
     /**
@@ -66,18 +65,18 @@ abstract class InputFlag implements InputFlagInterface
      *
      * @param string $name
      * @param int    $mode      see Input::ARG_* or Input::OPT_*
-     * @param string $description
+     * @param string $desc
      * @param mixed  $default   The default value
      *                          - for Input::ARG_OPTIONAL mode only
      *                          - must be null for InputOption::OPT_BOOL
      */
-    public function __construct(string $name, int $mode = 0, string $description = '', $default = null)
+    public function __construct(string $name, int $mode = 0, string $desc = '', $default = null)
     {
         $this->name = $name;
         $this->mode = $mode;
 
         $this->default = $default;
-        $this->setDescription($description);
+        $this->setDesc($desc);
     }
 
     /******************************************************************
@@ -166,17 +165,17 @@ abstract class InputFlag implements InputFlagInterface
     /**
      * @return string
      */
-    public function getDescription(): string
+    public function getDesc(): string
     {
-        return $this->description;
+        return $this->desc;
     }
 
     /**
-     * @param string $description
+     * @param string $desc
      */
-    public function setDescription(string $description): void
+    public function setDesc(string $desc): void
     {
-        $this->description = $description;
+        $this->desc = $desc;
     }
 
     /**
@@ -192,7 +191,7 @@ abstract class InputFlag implements InputFlagInterface
             'isArray'     => $this->isArray(),
             'isOptional'  => $this->isOptional(),
             'isRequired'  => $this->isRequired(),
-            'description' => $this->description,
+            'description' => $this->desc,
         ];
     }
 }

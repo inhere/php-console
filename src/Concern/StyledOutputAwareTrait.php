@@ -64,7 +64,7 @@ trait StyledOutputAwareTrait
 {
     /**
      * @param string $text
-     * @param string $tag
+     * @param string $tag all tag please {@see Color::STYLES}
      *
      * @return int
      */

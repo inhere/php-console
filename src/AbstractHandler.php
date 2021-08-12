@@ -96,6 +96,11 @@ abstract class AbstractHandler implements CommandHandlerInterface
     ];
 
     /**
+     * @var bool
+     */
+    private $initialized = false;
+
+    /**
      * @var InputDefinition|null
      */
     protected $definition;
@@ -134,10 +139,11 @@ abstract class AbstractHandler implements CommandHandlerInterface
     /**
      * Command constructor.
      *
-     * @param Input                $input
-     * @param Output               $output
+     * @param Input           $input
+     * @param Output          $output
      * @param InputDefinition|null $definition
      */
+    // TODO public function __construct(Input $input = null, Output $output = null, InputDefinition $definition = null)
     public function __construct(Input $input, Output $output, InputDefinition $definition = null)
     {
         $this->input  = $input;
@@ -147,15 +153,14 @@ abstract class AbstractHandler implements CommandHandlerInterface
             $this->definition = $definition;
         }
 
-        $this->commentsVars = $this->annotationVars();
-
         $this->init();
-
-        $this->afterInit();
     }
 
     protected function init(): void
     {
+        $this->commentsVars = $this->annotationVars();
+
+        $this->afterInit();
     }
 
     protected function afterInit(): void

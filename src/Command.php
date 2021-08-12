@@ -27,6 +27,8 @@ use Inhere\Console\Contract\CommandInterface;
  */
 abstract class Command extends AbstractHandler implements CommandInterface
 {
+    public const METHOD = 'execute';
+
     /**
      * @var Command
      */
@@ -73,7 +75,7 @@ abstract class Command extends AbstractHandler implements CommandInterface
             return true;
         }
 
-        $execMethod = 'execute';
+        $execMethod = self::METHOD;
 
         $this->logf(Console::VERB_CRAZY, "display help info for the command: %s", self::getName());
 

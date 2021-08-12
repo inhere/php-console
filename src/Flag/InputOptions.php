@@ -6,13 +6,13 @@
  * Time: 10:10
  */
 
-namespace Inhere\Console\IO\Input;
+namespace Inhere\Console\Flag;
 
 /**
  * Class InputOptions
  * - input options builder
  *
- * @package Inhere\Console\IO\Input
+ * @package Inhere\Console\Flag
  */
 class InputOptions
 {
