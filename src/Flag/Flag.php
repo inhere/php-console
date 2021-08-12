@@ -18,6 +18,28 @@ use Inhere\Console\Contract\InputFlagInterface;
  */
 abstract class Flag implements InputFlagInterface
 {
+    public const TYPE_INT = 'int';
+
+    public const TYPE_BOOL = 'bool';
+
+    public const TYPE_FLOAT = 'float';
+
+    public const TYPE_STRING = 'string';
+
+    public const TYPE_ARRAY = 'array';
+
+    // extend types
+
+    public const TYPE_INTS = 'int[]';
+
+    public const TYPE_STRINGS = 'string[]';
+
+    public const TYPE_MIXED = 'mixed';
+
+    public const TYPE_CUSTOM = 'custom';
+
+    public const TYPE_UNKNOWN = '';
+
     /**
      * @var string
      */
@@ -34,11 +56,11 @@ abstract class Flag implements InputFlagInterface
     private $mode;
 
     /**
-     * The argument data type. (eg: 'int', 'bool', 'string', 'array', 'mixed')
+     * The flag data type. (eg: 'int', 'bool', 'string', 'array', 'mixed')
      *
      * @var string
      */
-    private $type = '';
+    private $type = self::TYPE_UNKNOWN;
 
     /**
      * The default value
@@ -48,35 +70,57 @@ abstract class Flag implements InputFlagInterface
     private $default;
 
     /**
+     * The flag value
+     *
+     * @var mixed
+     */
+    private $value;
+
+    /**
+     * The flag value validator
+     * - if validate fail, please throw FlagException
+     *
+     * @var callable
+     */
+    private $validator;
+
+    /**
      * @param string $name
-     * @param int    $mode see Input::ARG_* or Input::OPT_*
      * @param string $desc
+     * @param int    $mode see Flag::ARG_* or Flag::OPT_*
      * @param mixed|null   $default
      *
-     * @return static
+     * @return static|Argument|Option
      */
-    public static function make(string $name, int $mode = 0, string $desc = '', $default = null)
+    public static function new(string $name, string $desc = '', int $mode = 0, $default = null): Flag
     {
-        return new static($name, $mode, $desc, $default);
+        return new static($name, $desc, $mode, $default);
     }
 
     /**
      * Class constructor.
      *
      * @param string $name
-     * @param int    $mode      see Input::ARG_* or Input::OPT_*
      * @param string $desc
+     * @param int    $mode      see Flag::ARG_* or Flag::OPT_*
      * @param mixed  $default   The default value
-     *                          - for Input::ARG_OPTIONAL mode only
-     *                          - must be null for InputOption::OPT_BOOL
+     *                          - for Flag::ARG_OPTIONAL mode only
+     *                          - must be null for Flag::OPT_BOOLEAN
      */
-    public function __construct(string $name, int $mode = 0, string $desc = '', $default = null)
+    public function __construct(string $name, string $desc = '', int $mode = 0, $default = null)
     {
         $this->name = $name;
         $this->mode = $mode;
 
         $this->default = $default;
         $this->setDesc($desc);
+    }
+
+    public function init(): void
+    {
+        if ($this->isArray()) {
+            $this->type = self::TYPE_ARRAY;
+        }
     }
 
     /******************************************************************
@@ -93,6 +137,63 @@ abstract class Flag implements InputFlagInterface
         return ($this->mode & $mode) > 0;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getValue()
+    {
+        return $this->value;
+    }
+
+    /**
+     * @param mixed $value
+     */
+    public function setValue($value): void
+    {
+        // filter value by type
+        switch ($this->type) {
+            case self::TYPE_INT:
+                $value = (int)$value;
+                break;
+            case self::TYPE_BOOL:
+                $value = (bool)$value;
+                break;
+            case self::TYPE_FLOAT:
+                $value = (float)$value;
+                break;
+            case self::TYPE_STRING:
+                $value = (string)$value;
+                break;
+            // case self::TYPE_ARRAY:
+            //     $value = (string)$value;
+            //     break;
+            default:
+                // nothing
+                break;
+        }
+
+        // has validator
+        if ($cb = $this->validator) {
+            $value = $cb($value);
+            // if (false === $ok) {
+            //     throw new FlagException('');
+            // }
+        }
+
+        if ($this->isArray()) {
+            $this->value[] = $value;
+        } else {
+            $this->value = $value;
+        }
+    }
+
+    /**
+     * @param callable $validator
+     */
+    public function setValidator(callable $validator): void
+    {
+        $this->validator = $validator;
+    }
 
     /******************************************************************
      *

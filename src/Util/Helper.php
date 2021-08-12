@@ -81,6 +81,23 @@ class Helper
     }
 
     /**
+     * @param string $name
+     *
+     * @return bool
+     */
+    public static function validName(string $name): bool
+    {
+        // '/^[a-z][\w-]*:?([a-z][\w-]+)?$/'
+        $pattern = '/^[a-z][\w:-]+$/';
+
+        if (1 !== preg_match($pattern, $name)) {
+            throw new InvalidArgumentException("The command name '$name' is must match: $pattern");
+        }
+
+        return true;
+    }
+
+    /**
      * @param string $dir
      * @param int    $mode
      *

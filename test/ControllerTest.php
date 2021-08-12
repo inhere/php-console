@@ -4,15 +4,14 @@ namespace Inhere\ConsoleTest;
 
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
-use PHPUnit\Framework\TestCase;
 
 /**
  * Class ControllerTest
  * @package Inhere\ConsoleTest
  */
-class ControllerTest extends TestCase
+class ControllerTest extends BaseTestCase
 {
-    public function testBasic()
+    public function testBasic(): void
     {
         $c = new TestController(new Input(), new Output());
 

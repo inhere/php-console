@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Inhere\ConsoleTest;
+namespace Inhere\Console\IO;
 
 use RuntimeException;
 use function fclose;
@@ -13,7 +13,7 @@ use function strlen;
 /**
  * Class TempStream
  *
- * @package Inhere\ConsoleTest
+ * @package Inhere\Console\IO
  */
 class TempStream
 {
@@ -59,7 +59,7 @@ class TempStream
     }
 
     /**
-     * @param string $string
+     * @param string|int $string
      */
     public static function write($string): void
     {
