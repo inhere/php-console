@@ -9,6 +9,7 @@
 namespace Inhere\Console\Concern;
 
 use Inhere\Console\Console;
+use Toolkit\Stdlib\Helper\JsonHelper;
 use Toolkit\Stdlib\Php;
 use function array_merge;
 use function json_encode;
@@ -108,6 +109,19 @@ trait FormatOutputAwareTrait
         }
 
         return $string;
+    }
+
+    /**
+     * @param mixed $data
+     * @param string $title
+     */
+    public function prettyJSON($data, string $title = 'JSON:'): void
+    {
+        if ($title) {
+            Console::colored($title, 'ylw0');
+        }
+
+        Console::write(JsonHelper::prettyJSON($data));
     }
 
     /**
