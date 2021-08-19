@@ -10,6 +10,7 @@ namespace Inhere\Console\Util;
 
 use Toolkit\Cli\ColorTag;
 use Toolkit\Stdlib\Helper\JsonHelper;
+use Toolkit\Stdlib\Str;
 use Toolkit\Sys\Sys;
 use function array_keys;
 use function array_merge;
@@ -17,7 +18,6 @@ use function count;
 use function date;
 use function explode;
 use function floor;
-use function gettype;
 use function implode;
 use function is_array;
 use function is_bool;
@@ -26,13 +26,13 @@ use function is_numeric;
 use function is_scalar;
 use function rtrim;
 use function sprintf;
-use function str_pad;
 use function str_repeat;
 use function str_replace;
 use function strpos;
 use function trim;
 use function ucfirst;
 use function wordwrap;
+use const STR_PAD_RIGHT;
 
 /**
  * Class FormatUtil
@@ -232,7 +232,7 @@ final class FormatUtil
     }
 
     /**
-     * splice Array
+     * Splice array
      *
      * @param array $data
      *     e.g [
@@ -251,12 +251,13 @@ final class FormatUtil
             'sepChar'     => ' ',  // e.g ' | ' OUT: key | value
             'keyStyle'    => '',   // e.g 'info','comment'
             'valStyle'    => '',   // e.g 'info','comment'
+            'keyPadPos'   => STR_PAD_RIGHT,
             'keyMinWidth' => 8,
-            'keyMaxWidth' => null, // if not set, will automatic calculation
+            'keyMaxWidth' => 0, // if not set, will automatic calculation
             'ucFirst'     => true,  // upper first char for value
         ], $opts);
 
-        if (!is_numeric($opts['keyMaxWidth'])) {
+        if ($opts['keyMaxWidth'] < 1) {
             $opts['keyMaxWidth'] = Helper::getKeyMaxWidth($data);
         }
 
@@ -265,14 +266,15 @@ final class FormatUtil
             $opts['keyMaxWidth'] = $opts['keyMinWidth'];
         }
 
-        $keyStyle = trim($opts['keyStyle']);
+        $keyStyle  = trim($opts['keyStyle']);
+        $keyPadPos = (int)$opts['keyPadPos'];
 
         foreach ($data as $key => $value) {
             $hasKey = !is_int($key);
             $text   .= $opts['leftChar'];
 
             if ($hasKey && $opts['keyMaxWidth']) {
-                $key  = str_pad((string)$key, $opts['keyMaxWidth'], ' ');
+                $key  = Str::pad((string)$key, $opts['keyMaxWidth'], ' ', $keyPadPos);
                 $text .= ColorTag::wrap($key, $keyStyle) . $opts['sepChar'];
             }
 

@@ -288,7 +288,7 @@ class Show
      * ];
      * ```
      *
-     * @param array  $data
+     * @param array|object  $data
      * @param string $title
      * @param array  $opts More {@see FormatUtil::spliceKeyValue()}
      *

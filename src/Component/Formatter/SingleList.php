@@ -29,9 +29,9 @@ class SingleList extends MessageFormatter
      * ];
      * ```
      *
-     * @param array  $data
-     * @param string $title
-     * @param array  $opts More {@see FormatUtil::spliceKeyValue()}
+     * @param array|mixed $data
+     * @param string      $title
+     * @param array       $opts More {@see FormatUtil::spliceKeyValue()}
      *
      * @return int|string
      */
@@ -52,7 +52,7 @@ class SingleList extends MessageFormatter
 
         // title
         if ($title) {
-            $title  =  $opts['ucTitleWords'] ? Str::ucwords(trim($title)) : $title;
+            $title  = $opts['ucTitleWords'] ? Str::ucwords(trim($title)) : $title;
             $string .= ColorTag::wrap($title, $opts['titleStyle']) . PHP_EOL;
         }
 

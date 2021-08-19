@@ -90,6 +90,7 @@ abstract class AbstractApplication implements ApplicationInterface
         'debug'          => Console::VERB_ERROR,
         'profile'        => false,
         'version'        => '0.5.1',
+        'homepage'       => '', // can provide you app homepage url
         'publishAt'      => '2017.03.24',
         'updateAt'       => '2019.01.01',
         'rootPath'       => '',
@@ -384,7 +385,7 @@ abstract class AbstractApplication implements ApplicationInterface
      *
      * @throws InvalidArgumentException
      */
-    public function handleException($e): void
+    public function handleException(Throwable $e): void
     {
         // you can log error on sub class ...
         $this->errorHandler->handle($e, $this);
@@ -501,7 +502,6 @@ abstract class AbstractApplication implements ApplicationInterface
             $in->parse($args);
             $in->setFullScript($line);
 
-            // \vdump($in);
             $this->run(false);
             $out->println('');
         }

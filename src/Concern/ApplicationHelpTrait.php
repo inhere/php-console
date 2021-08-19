@@ -14,7 +14,6 @@ use Inhere\Console\ConsoleEvent;
 use Inhere\Console\Contract\CommandInterface;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
-use Inhere\Console\Router;
 use Inhere\Console\Util\FormatUtil;
 use Inhere\Console\Util\Show;
 use Toolkit\Cli\ColorTag;
@@ -39,6 +38,7 @@ use function strtr;
 use const PHP_EOL;
 use const PHP_OS;
 use const PHP_VERSION;
+use const STR_PAD_LEFT;
 
 /**
  * Trait ApplicationHelpTrait
@@ -61,32 +61,46 @@ trait ApplicationHelpTrait
      */
     public function showVersionInfo(): void
     {
-        $os   = PHP_OS;
-        $date = date('Y.m.d');
+        $this->fire(ConsoleEvent::BEFORE_RENDER_APP_VERSION, $this);
+
+        Show::aList($this->buildVersionInfo(), '', [
+            'leftChar'  => '',
+            'sepChar'   => ' :  ',
+            'keyPadPos' => STR_PAD_LEFT,
+        ]);
+    }
+
+    /**
+     * @return string[]
+     */
+    protected function buildVersionInfo(): array
+    {
         $logo = '';
+        $date = date('Y.m.d');
         $name = $this->getParam('name', 'Console Application');
 
-        $version    = $this->getParam('version', 'Unknown');
-        $publishAt  = $this->getParam('publishAt', 'Unknown');
-        $updateAt   = $this->getParam('updateAt', 'Unknown');
-        $phpVersion = PHP_VERSION;
+        $osName  = PHP_OS;
+        $phpVer  = PHP_VERSION;
+        $version = $this->getParam('version', 'Unknown');
 
-        $this->fire(ConsoleEvent::BEFORE_RENDER_APP_VERSION, $this);
+        $updateAt  = $this->getParam('updateAt', 'Unknown');
+        $publishAt = $this->getParam('publishAt', 'Unknown');
 
         if ($logoTxt = $this->getLogoText()) {
             $logo = ColorTag::wrap($logoTxt, $this->getLogoStyle());
         }
 
-        /** @var Output $out */
-        $out = $this->output;
-        $out->aList([
+        $info = [
             "$logo\n  <info>$name</info>, Version <comment>$version</comment>\n",
-            'System Info'      => "PHP version <info>$phpVersion</info>, on <info>$os</info> system",
+            'System Info'      => "PHP version <info>$phpVer</info>, on <info>$osName</info> system",
             'Application Info' => "Update at <info>$updateAt</info>, publish at <info>$publishAt</info>(current $date)",
-        ], '', [
-            'leftChar' => '',
-            'sepChar'  => ' :  '
-        ]);
+        ];
+
+        if ($hUrl = $this->getParam('homepage')) {
+            $info['Homepage URL'] = $hUrl;
+        }
+
+        return $info;
     }
 
     /**
@@ -183,8 +197,6 @@ trait ApplicationHelpTrait
 
         $this->logf(Console::VERB_DEBUG, 'Display the application commands list');
 
-        /** @var Output $output */ // $output = $this->output;
-        /** @var Router $router */
         $router = $this->getRouter();
 
         $hasGroup    = $hasCommand = false;
@@ -306,7 +318,6 @@ trait ApplicationHelpTrait
         $input = $this->input;
         /** @var Output $output */
         $output = $this->output;
-        /** @var Router $router */
         $router = $this->getRouter();
 
         // info
