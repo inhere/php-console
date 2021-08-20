@@ -14,7 +14,6 @@ use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
 use Inhere\Console\Util\Helper;
 use InvalidArgumentException;
-use ReflectionException;
 use RuntimeException;
 use SplFileInfo;
 use function class_exists;
@@ -285,7 +284,7 @@ class Application extends AbstractApplication
             }
 
             $commands = $this->router->getAllNames();
-            $this->output->error("The command '{$name}' is not exists!");
+            $this->output->error("The command '$name' is not exists!");
 
             // find similar command names by similar_text()
             if ($similar = Helper::findSimilar($name, $commands)) {
@@ -360,7 +359,6 @@ class Application extends AbstractApplication
      * @param bool  $detachedRun
      *
      * @return mixed
-     * @throws ReflectionException
      */
     protected function runAction(array $info,  array $options, bool $detachedRun = false)
     {

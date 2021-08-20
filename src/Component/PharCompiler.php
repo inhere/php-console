@@ -8,6 +8,7 @@ use DateTime;
 use DateTimeZone;
 use Exception;
 use FilesystemIterator;
+use Generator;
 use Inhere\Console\Util\Helper;
 use InvalidArgumentException;
 use Iterator;
@@ -116,20 +117,29 @@ class PharCompiler
     private $suffixes = ['.php'];
 
     /**
-     * @var array Want to exclude directory/file name list
+     * Want to exclude directory/file name list
+     *
+     * ```php
      * [
      *  '/test/', // exclude all contains '/test/' path
      * ]
+     * ```
+     *
+     * @var array
      */
     private $excludes = [];
 
     /**
-     * @var array The directory paths, will collect files in there.
+     * The directory paths, will collect files in there.
+     *
+     * @var array
      */
     private $directories = [];
 
     /**
-     * @var Closure[] Some events. if you want to get some info on packing.
+     * Some events. if you want to get some info on packing.
+     *
+     * @var Closure[]
      */
     private $events = [];
 
@@ -178,6 +188,9 @@ class PharCompiler
      */
     private $versionFile = '';
 
+    /**
+     * @var string
+     */
     private $versionFileContent = '';
 
     // -------------------- internal properties --------------------
@@ -211,25 +224,6 @@ class PharCompiler
     private $fileQueue;
 
     /**
-     * @param string            $pharFile
-     * @param string            $extractTo
-     * @param string|array|null $files Only fetch the listed files
-     * @param bool              $overwrite
-     *
-     * @return bool
-     * @throws BadMethodCallException
-     * @throws RuntimeException
-     */
-    public static function unpack(string $pharFile, string $extractTo, $files = null, $overwrite = false): bool
-    {
-        self::checkEnv();
-
-        $phar = new Phar($pharFile);
-
-        return $phar->extractTo($extractTo, $files, $overwrite);
-    }
-
-    /**
      * @throws RuntimeException
      */
     private static function checkEnv(): void
@@ -246,6 +240,25 @@ class PharCompiler
     }
 
     /**
+     * @param string            $pharFile
+     * @param string            $extractTo
+     * @param string|array|null $files Only fetch the listed files
+     * @param bool              $overwrite
+     *
+     * @return bool
+     * @throws BadMethodCallException
+     * @throws RuntimeException
+     */
+    public static function unpack(string $pharFile, string $extractTo, $files = null, bool $overwrite = false): bool
+    {
+        self::checkEnv();
+
+        $phar = new Phar($pharFile);
+
+        return $phar->extractTo($extractTo, $files, $overwrite);
+    }
+
+    /**
      * PharCompiler constructor.
      *
      * @param string $basePath
@@ -256,7 +269,7 @@ class PharCompiler
     {
         self::checkEnv();
 
-        $this->basePath  = realpath($basePath);
+        $this->basePath  = File::realpath($basePath);
         $this->fileQueue = new SplQueue();
 
         if (!is_dir($this->basePath)) {
@@ -352,7 +365,7 @@ class PharCompiler
     }
 
     /**
-     * @param bool $value
+     * @param bool|string|int $value
      *
      * @return PharCompiler
      */
@@ -363,7 +376,7 @@ class PharCompiler
     }
 
     /**
-     * @param bool $value
+     * @param bool|string|int $value
      *
      * @return PharCompiler
      */
@@ -578,9 +591,9 @@ class PharCompiler
      *
      * @throws RuntimeException
      */
-    public function findChangedByGit()
+    public function findChangedByGit(): ?Generator
     {
-        // -u expand dir's files
+        // -u expand dir files
         [, $output,] = Sys::run('git status -s -u', $this->basePath);
 
         // 'D some.file'    deleted
@@ -608,10 +621,10 @@ class PharCompiler
     /**
      * @param string $directory
      *
-     * @return Iterator|SplFileInfo[]
+     * @return Iterator
      * @throws InvalidArgumentException
      */
-    protected function findFiles(string $directory)
+    protected function findFiles(string $directory): Iterator
     {
         return Helper::directoryIterator(
             $directory,
@@ -711,19 +724,21 @@ EOF;
             $stub    = "$shebang\n$stub";
         }
 
-        if ($this->cliIndex && $this->webIndex) {
+        $cliIndex = $this->cliIndex;
+        $webIndex = $this->webIndex;
+        if ($cliIndex && $webIndex) {
             $stub .= <<<EOF
 // for command line            
 if (PHP_SAPI === 'cli') {
-    require 'phar://$pharName/{$this->cliIndex}';
+    require 'phar://$pharName/$cliIndex';
 } else {
-    require 'phar://$pharName/{$this->webIndex}';
+    require 'phar://$pharName/$webIndex';
 }
 EOF;
-        } elseif ($this->cliIndex) {
-            $stub .= "\nrequire 'phar://$pharName/{$this->cliIndex}';\n";
-        } elseif ($this->webIndex) {
-            $stub .= "\nrequire 'phar://$pharName/{$this->webIndex}';\n";
+        } elseif ($cliIndex) {
+            $stub .= "\nrequire 'phar://$pharName/$cliIndex';\n";
+        } elseif ($webIndex) {
+            $stub .= "\nrequire 'phar://$pharName/$webIndex';\n";
         } else {
             throw new RuntimeException("'cliIndex' and 'webIndex', please set at least one");
         }
@@ -989,11 +1004,13 @@ EOF;
     }
 
     /**
+     * @param bool $abbrev
+     *
      * @return string
      */
-    public function getLastCommit(): string
+    public function getLastCommit(bool $abbrev = true): string
     {
-        return $this->lastCommit;
+        return $abbrev ? substr($this->lastCommit, 0, 7) : $this->lastCommit;
     }
 
     /**
