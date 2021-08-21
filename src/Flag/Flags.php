@@ -91,7 +91,7 @@ class Flags extends AbstractObj
         }
 
         $this->parsed  = true;
-        $this->rawArgs = $this->args = $args;
+        $this->rawFlags = $this->args = $args;
 
         while (true) {
             [$goon, $status] = $this->parseOne();

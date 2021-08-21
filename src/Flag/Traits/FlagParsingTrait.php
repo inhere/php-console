@@ -23,26 +23,19 @@ trait FlagParsingTrait
     private $stopOnArg = true;
 
     /**
-     * The remaining args on option parsed
+     * The raw input flags
      *
      * @var array
      */
-    private $args = [];
+    protected $rawFlags = [];
 
     /**
-     * The raw input args
+     * The remaining args.
+     * After on option parsed from {@see $rawFlags}
      *
      * @var array
      */
-    private $rawArgs = [];
-
-    /**
-     * @return array
-     */
-    public function getArgs(): array
-    {
-        return $this->args;
-    }
+    protected $rawArgs = [];
 
     /**
      * @return array
@@ -50,6 +43,14 @@ trait FlagParsingTrait
     public function getRawArgs(): array
     {
         return $this->rawArgs;
+    }
+
+    /**
+     * @return array
+     */
+    public function getRawFlags(): array
+    {
+        return $this->rawFlags;
     }
 
     /**
