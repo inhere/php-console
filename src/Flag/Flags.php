@@ -6,6 +6,8 @@ use Inhere\Console\Concern\NameAliasTrait;
 use Inhere\Console\Exception\FlagException;
 use Inhere\Console\Flag\Traits\FlagArgumentsTrait;
 use Inhere\Console\Flag\Traits\FlagOptionsTrait;
+use Inhere\Console\Flag\Traits\FlagParsingTrait;
+use Toolkit\Stdlib\Obj\AbstractObj;
 use function array_shift;
 use function count;
 use function ltrim;
@@ -17,10 +19,11 @@ use function substr;
  *
  * @package Inhere\Console\Flag
  */
-class Flags
+class Flags extends AbstractObj
 {
     use FlagArgumentsTrait;
     use FlagOptionsTrait;
+    use FlagParsingTrait;
     use NameAliasTrait;
 
     /**
@@ -36,34 +39,7 @@ class Flags
     /**
      * @var bool
      */
-    private $parsed = false;
-
-    /**
-     * @var bool
-     */
     private $autoBindArgs = false;
-
-    /**
-     * The raw input args
-     *
-     * @var array
-     */
-    private $rawArgs = [];
-
-    /**
-     * The remaining args on parsed
-     *
-     * @var array
-     */
-    private $args = [];
-
-    /**
-     * @return $this
-     */
-    public static function new(): self
-    {
-        return new self();
-    }
 
     /**
      * @return $this
@@ -143,7 +119,7 @@ class Flags
      * - found `-h|--help` flag
      * - found first arg(not an option)
      *
-     * @return array [bool, status]
+     * @return array [goon: bool, status: int]
      */
     protected function parseOne(): array
     {
@@ -163,6 +139,11 @@ class Flags
         // is not an option flag. exit.
         if ($arg[0] !== '-') {
             $this->args = $args; // revert args on exit
+            return [false, self::STATUS_OK];
+        }
+
+        // NOTICE: will stop parse option on found '--'
+        if ($arg === '--') {
             return [false, self::STATUS_OK];
         }
 
@@ -209,7 +190,7 @@ class Flags
             if (!$hasVal && count($this->args) > 0) {
                 // value is next arg
                 $hasVal = true;
-                $ntArg = $this->args[0];
+                $ntArg  = $this->args[0];
 
                 // is not an option value.
                 if ($ntArg[0] === '-') {
@@ -242,7 +223,7 @@ class Flags
         }
 
         // clear match results
-        $this->parsed = false;
+        $this->parsed  = false;
         $this->matched = [];
         $this->rawArgs = $this->args = [];
     }
@@ -317,22 +298,6 @@ class Flags
     }
 
     /**
-     * @return array
-     */
-    public function getRawArgs(): array
-    {
-        return $this->rawArgs;
-    }
-
-    /**
-     * @return array
-     */
-    public function getArgs(): array
-    {
-        return $this->args;
-    }
-
-    /**
      * @return bool
      */
     public function isAutoBindArgs(): bool
@@ -348,11 +313,4 @@ class Flags
         $this->autoBindArgs = $autoBindArgs;
     }
 
-    /**
-     * @return bool
-     */
-    public function isParsed(): bool
-    {
-        return $this->parsed;
-    }
 }
