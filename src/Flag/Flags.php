@@ -91,7 +91,7 @@ class Flags extends AbstractObj
         }
 
         $this->parsed  = true;
-        $this->rawFlags = $this->args = $args;
+        $this->rawFlags = $this->rawArgs = $args;
 
         while (true) {
             [$goon, $status] = $this->parseOne();
@@ -105,7 +105,7 @@ class Flags extends AbstractObj
         }
 
         // binding remaining args.
-        if ($this->autoBindArgs && $this->args) {
+        if ($this->autoBindArgs && $this->rawArgs) {
             $this->bindingArguments();
         }
 
@@ -123,13 +123,13 @@ class Flags extends AbstractObj
      */
     protected function parseOne(): array
     {
-        $count = count($this->args);
+        $count = count($this->rawArgs);
         if ($count === 0) {
             return [false, self::STATUS_OK];
         }
 
-        $args = $this->args;
-        $arg  = array_shift($this->args);
+        $args = $this->rawArgs;
+        $arg  = array_shift($this->rawArgs);
 
         // empty, continue.
         if ('' === $arg) {
@@ -138,7 +138,7 @@ class Flags extends AbstractObj
 
         // is not an option flag. exit.
         if ($arg[0] !== '-') {
-            $this->args = $args; // revert args on exit
+            $this->rawArgs = $args; // revert args on exit
             return [false, self::STATUS_OK];
         }
 
@@ -187,16 +187,16 @@ class Flags extends AbstractObj
 
             $opt->setValue($boolVal);
         } else {
-            if (!$hasVal && count($this->args) > 0) {
+            if (!$hasVal && count($this->rawArgs) > 0) {
                 // value is next arg
                 $hasVal = true;
-                $ntArg  = $this->args[0];
+                $ntArg  = $this->rawArgs[0];
 
                 // is not an option value.
                 if ($ntArg[0] === '-') {
                     $hasVal = false;
                 } else {
-                    $value = array_shift($this->args);
+                    $value = array_shift($this->rawArgs);
                 }
             }
 
@@ -225,7 +225,7 @@ class Flags extends AbstractObj
         // clear match results
         $this->parsed  = false;
         $this->matched = [];
-        $this->rawArgs = $this->args = [];
+        $this->rawArgs = $this->rawArgs = [];
     }
 
     // These words will be as a Boolean value
@@ -274,7 +274,7 @@ class Flags extends AbstractObj
      */
     public function bindingArguments(): void
     {
-        if (!$this->args) {
+        if (!$this->rawArgs) {
             return;
         }
 

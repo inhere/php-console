@@ -14,13 +14,29 @@ trait FlagParsingTrait
     private $parsed = false;
 
     /**
+     * Special short style
+     *  gnu: `-abc` will expand: `-a -b -c`
+     *  posix: `-abc`  will expand: `-a=bc`
+     *
+     * @var string
+     */
+    private $shortStyle = 'posix';
+
+    /**
      * Whether stop parse option on first argument
      *
      * @var bool
      */
     // private $stopOnNoOption = true;
     // private $stopOnNoOpt = true;
-    private $stopOnArg = true;
+    private $stopOnFistArg = true;
+
+    /**
+     * Whether stop parse option on found undefined option
+     *
+     * @var bool
+     */
+    private $stopOnUndefined = true;
 
     /**
      * The raw input flags
@@ -64,19 +80,32 @@ trait FlagParsingTrait
     /**
      * @return bool
      */
-    public function isStopOnArg(): bool
+    public function isStopOnFistArg(): bool
     {
-        return $this->stopOnArg;
+        return $this->stopOnFistArg;
     }
 
     /**
-     * @param bool $stopOnArg
-     *
-     * @return static
+     * @param bool $stopOnFistArg
      */
-    public function setStopOnArg(bool $stopOnArg): self
+    public function setStopOnFistArg(bool $stopOnFistArg): void
     {
-        $this->stopOnArg = $stopOnArg;
-        return $this;
+        $this->stopOnFistArg = $stopOnFistArg;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isStopOnUndefined(): bool
+    {
+        return $this->stopOnUndefined;
+    }
+
+    /**
+     * @param bool $stopOnUndefined
+     */
+    public function setStopOnUndefined(bool $stopOnUndefined): void
+    {
+        $this->stopOnUndefined = $stopOnUndefined;
     }
 }

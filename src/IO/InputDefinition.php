@@ -597,7 +597,7 @@ class InputDefinition
     }
 
     /**
-     * @param string $name
+     * @param string|int $name
      *
      * @return bool
      */

@@ -60,7 +60,7 @@ abstract class Flag implements InputFlagInterface
      *
      * @var string
      */
-    private $type = self::TYPE_UNKNOWN;
+    private $type = FlagType::UNKNOWN;
 
     /**
      * The default value
@@ -119,7 +119,7 @@ abstract class Flag implements InputFlagInterface
     public function init(): void
     {
         if ($this->isArray()) {
-            $this->type = self::TYPE_ARRAY;
+            $this->type = FlagType::ARRAY;
         }
     }
 
@@ -152,19 +152,19 @@ abstract class Flag implements InputFlagInterface
     {
         // filter value by type
         switch ($this->type) {
-            case self::TYPE_INT:
+            case FlagType::INT:
                 $value = (int)$value;
                 break;
-            case self::TYPE_BOOL:
+            case FlagType::BOOL:
                 $value = (bool)$value;
                 break;
-            case self::TYPE_FLOAT:
+            case FlagType::FLOAT:
                 $value = (float)$value;
                 break;
-            case self::TYPE_STRING:
+            case FlagType::STRING:
                 $value = (string)$value;
                 break;
-            // case self::TYPE_ARRAY:
+            // case FlagType::ARRAY:
             //     $value = (string)$value;
             //     break;
             default:
