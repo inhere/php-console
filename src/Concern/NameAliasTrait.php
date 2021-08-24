@@ -36,7 +36,9 @@ trait NameAliasTrait
                 $this->aliases[$aliasName] = $name;
             } elseif ($validate) {
                 $oldName = $this->aliases[$aliasName];
-                throw new InvalidArgumentException("Alias '{$aliasName}' has been registered by '{$oldName}', cannot assign to the '{$name}'");
+                throw new InvalidArgumentException(
+                    "Alias '$aliasName' has been registered by '$oldName', cannot assign to the '$name'"
+                );
             }
         }
     }

@@ -11,10 +11,10 @@ spl_autoload_register(function ($class) {
 
     if (0 === strpos($class, 'Inhere\Console\Examples\\')) {
         $path = str_replace('\\', '/', substr($class, strlen('Inhere\Console\Examples\\')));
-        $file = dirname(__DIR__) . "/examples/{$path}.php";
+        $file = dirname(__DIR__) . "/examples/$path.php";
     } elseif (0 === strpos($class, 'Inhere\ConsoleTest\\')) {
         $path = str_replace('\\', '/', substr($class, strlen('Inhere\ConsoleTest\\')));
-        $file = __DIR__ . "/{$path}.php";
+        $file = __DIR__ . "/$path.php";
     } elseif (0 === strpos($class, 'Inhere\Console\\')) {
         $path = str_replace('\\', '/', substr($class, strlen('Inhere\Console\\')));
         $file = dirname(__DIR__) . "/src/{$path}.php";
