@@ -10,6 +10,7 @@ namespace Inhere\Console\IO;
 
 use Toolkit\Cli\Cli;
 use Toolkit\Cli\Flags;
+use Toolkit\Cli\Helper\FlagHelper;
 use function array_map;
 use function array_shift;
 use function basename;
@@ -136,11 +137,11 @@ class Input extends AbstractInput
     protected function tokenEscape(string $token): string
     {
         if (preg_match('{^(-[^=]+=)(.+)}', $token, $match)) {
-            return $match[1] . Flags::escapeToken($match[2]);
+            return $match[1] . FlagHelper::escapeToken($match[2]);
         }
 
         if ($token && $token[0] !== '-') {
-            return Flags::escapeToken($token);
+            return FlagHelper::escapeToken($token);
         }
 
         return $token;
