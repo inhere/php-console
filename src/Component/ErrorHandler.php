@@ -10,7 +10,7 @@ namespace Inhere\Console\Component;
 
 use Inhere\Console\AbstractApplication;
 use Inhere\Console\Contract\ErrorHandlerInterface;
-use Inhere\Console\Exception\PromptException;
+use InvalidArgumentException;
 use Throwable;
 use Toolkit\Cli\Util\Highlighter;
 use function file_get_contents;
@@ -30,7 +30,7 @@ class ErrorHandler implements ErrorHandlerInterface
      */
     public function handle(Throwable $e, AbstractApplication $app): void
     {
-        if ($e instanceof PromptException) {
+        if ($e instanceof InvalidArgumentException) {
             $app->getOutput()->error($e->getMessage());
             return;
         }
@@ -69,7 +69,7 @@ ERR;
         }
 
         // simple output
-        $app->getOutput()->error('An error occurred! - ' . $e->getMessage());
+        $app->getOutput()->error($e->getMessage() ?: 'unknown error');
         $app->write("\nYou can use '--debug 4' to see error details.");
     }
 }
