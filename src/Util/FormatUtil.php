@@ -9,15 +9,13 @@
 namespace Inhere\Console\Util;
 
 use Toolkit\Cli\ColorTag;
+use Toolkit\Stdlib\Helper\Format;
 use Toolkit\Stdlib\Helper\JsonHelper;
 use Toolkit\Stdlib\Str;
 use Toolkit\Sys\Sys;
 use function array_keys;
 use function array_merge;
-use function count;
-use function date;
 use function explode;
-use function floor;
 use function implode;
 use function is_array;
 use function is_bool;
@@ -25,7 +23,6 @@ use function is_int;
 use function is_numeric;
 use function is_scalar;
 use function rtrim;
-use function sprintf;
 use function str_repeat;
 use function str_replace;
 use function strpos;
@@ -169,28 +166,18 @@ final class FormatUtil
     }
 
     /**
-     * @param float $memory
-     *
-     * @return string
      * ```
      * FormatUtil::memoryUsage(memory_get_usage(true));
      * ```
+     *
+     * @param float|int $memory
+     *
+     * @return string
+     * @deprecated use Format::memory($secs);
      */
     public static function memoryUsage($memory): string
     {
-        if ($memory >= 1024 * 1024 * 1024) {
-            return sprintf('%.2f Gb', $memory / 1024 / 1024 / 1024);
-        }
-
-        if ($memory >= 1024 * 1024) {
-            return sprintf('%.2f Mb', $memory / 1024 / 1024);
-        }
-
-        if ($memory >= 1024) {
-            return sprintf('%.2f Kb', $memory / 1024);
-        }
-
-        return sprintf('%d B', $memory);
+        return Format::memory($memory);
     }
 
     /**
@@ -199,36 +186,11 @@ final class FormatUtil
      * @param int $secs
      *
      * @return string
+     * @deprecated use Format::howLongAgo($secs);
      */
     public static function howLongAgo(int $secs): string
     {
-        static $timeFormats = [
-            [0, '< 1 sec'],
-            [1, '1 sec'],
-            [2, 'secs', 1],
-            [60, '1 min'],
-            [120, 'mins', 60],
-            [3600, '1 hr'],
-            [7200, 'hrs', 3600],
-            [86400, '1 day'],
-            [172800, 'days', 86400],
-        ];
-
-        foreach ($timeFormats as $index => $format) {
-            if ($secs >= $format[0]) {
-                $next = $timeFormats[$index + 1] ?? false;
-
-                if (($next && $secs < $next[0]) || $index === count($timeFormats) - 1) {
-                    if (2 === count($format)) {
-                        return $format[1];
-                    }
-
-                    return floor($secs / $format[2]) . ' ' . $format[1];
-                }
-            }
-        }
-
-        return date('Y-m-d H:i:s', $secs);
+        return Format::howLongAgo($secs);
     }
 
     /**

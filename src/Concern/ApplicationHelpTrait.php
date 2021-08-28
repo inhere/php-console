@@ -35,6 +35,7 @@ use function sprintf;
 use function str_replace;
 use function strpos;
 use function strtr;
+use function vdump;
 use const PHP_EOL;
 use const PHP_OS;
 use const PHP_VERSION;

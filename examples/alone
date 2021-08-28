@@ -11,7 +11,7 @@ use Toolkit\Cli\Color;
 
 define('BASE_PATH', dirname(__DIR__));
 
-require dirname(__DIR__) . '/test/boot.php';
+require dirname(__DIR__) . '/test/bootstrap.php';
 
 $input = new Input();
 $ctrl  = new HomeController($input, new Output());
