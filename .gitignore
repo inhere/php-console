@@ -4,6 +4,8 @@
 
 .idea/
 .phpintel/
+.phpdoc/
+docs/api/
 caches/
 vendor/
 !README.md

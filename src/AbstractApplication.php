@@ -671,6 +671,21 @@ abstract class AbstractApplication implements ApplicationInterface
     }
 
     /**
+     * @param string $name
+     * @param array  $default
+     *
+     * @return array
+     */
+    public function getArrayParam(string $name, array $default = []): array
+    {
+        if (isset($this->config[$name])) {
+            return (array)$this->config[$name];
+        }
+
+        return $default;
+    }
+
+    /**
      * Get config param value
      *
      * @param string $name
