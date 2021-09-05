@@ -72,10 +72,10 @@ class PharController extends Controller
      *                          default is current work-dir(default: <cyan>{workDir}</cyan>)
      *  -c, --config STRING     Use the custom config file for build phar(default: <cyan>./phar.build.inc</cyan>)
      *  -o, --output STRING     Setting the output file name(<cyan>{defaultPkgName}</cyan>)
-     *  --fast                  Fast build. only add modified files by <cyan>git status -s</cyan>
-     *  --refresh               Whether build vendor folder files on phar file exists(<cyan>False</cyan>)
-     *  --files  STRING         Only pack the list files to the exist phar, multi use ',' split
-     *  --no-progress           Disable output progress on the runtime
+     *      --fast              Fast build. only add modified files by <cyan>git status -s</cyan>
+     *      --refresh           Whether build vendor folder files on phar file exists(<cyan>False</cyan>)
+     *      --files  STRING     Only pack the list files to the exist phar, multi use ',' split
+     *      --no-progress       Disable output progress on the runtime
      *
      * @param Input  $input
      * @param Output $output
@@ -92,7 +92,7 @@ class PharController extends Controller
      * only update the input files:
      *   php -d phar.readonly=0 {binFile} phar:pack -o=mycli.phar --debug --files app/Command/ServeCommand.php
      */
-    public function packCommand($input, $output): int
+    public function packCommand(Input $input, Output $output): int
     {
         $startAt = microtime(true);
         $workDir = $input->getPwd();
@@ -169,7 +169,6 @@ class PharController extends Controller
         $configFile = $this->input->getSameOpt(['c', 'config']) ?: $dir . '/phar.build.inc';
 
         if ($configFile && is_file($configFile)) {
-            /** @noinspection PhpIncludeInspection */
             require $configFile;
             return $compiler->in($dir);
         }

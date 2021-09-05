@@ -6,9 +6,9 @@ use Inhere\Console\Component\MessageFormatter;
 use Inhere\Console\Console;
 use Inhere\Console\Util\FormatUtil;
 use Toolkit\Cli\ColorTag;
+use Toolkit\Stdlib\Str;
 use function array_merge;
 use function trim;
-use function ucwords;
 use const PHP_EOL;
 
 /**
@@ -29,9 +29,9 @@ class SingleList extends MessageFormatter
      * ];
      * ```
      *
-     * @param array  $data
-     * @param string $title
-     * @param array  $opts More {@see FormatUtil::spliceKeyValue()}
+     * @param array|mixed $data
+     * @param string      $title
+     * @param array       $opts More {@see FormatUtil::spliceKeyValue()}
      *
      * @return int|string
      */
@@ -39,18 +39,20 @@ class SingleList extends MessageFormatter
     {
         $string = '';
         $opts   = array_merge([
-            'leftChar'    => '  ',
+            'leftChar'     => '  ',
             // 'sepChar' => '  ',
-            'keyStyle'    => 'info',
-            'keyMinWidth' => 8,
-            'titleStyle'  => 'comment',
-            'returned'    => false,
-            'lastNewline' => true,
+            'keyStyle'     => 'info',
+            'keyMinWidth'  => 8,
+            'titleStyle'   => 'comment',
+            'ucFirst'      => false,
+            'returned'     => false,
+            'ucTitleWords' => true,
+            'lastNewline'  => true,
         ], $opts);
 
         // title
         if ($title) {
-            $title  = ucwords(trim($title));
+            $title  = $opts['ucTitleWords'] ? Str::ucwords(trim($title)) : $title;
             $string .= ColorTag::wrap($title, $opts['titleStyle']) . PHP_EOL;
         }
 

@@ -59,6 +59,7 @@ use function substr;
  * @method checkbox(string $description, $options, $default = null, bool $allowExit = true): array
  * @method ask(string $question, string $default = '', Closure $validator = null): string
  * @method askPassword(string $prompt = 'Enter Password:'): string
+ * @see Interact
  */
 trait StyledOutputAwareTrait
 {
@@ -205,7 +206,7 @@ trait StyledOutputAwareTrait
      * @return int
      * @throws LogicException
      */
-    public function __call($method, array $args = [])
+    public function __call(string $method, array $args = [])
     {
         $map = Show::getBlockMethods(false);
 

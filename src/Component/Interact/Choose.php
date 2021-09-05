@@ -2,7 +2,7 @@
 
 namespace Inhere\Console\Component\Interact;
 
-use Inhere\Console\Component\InteractMessage;
+use Inhere\Console\Component\InteractiveHandle;
 use Inhere\Console\Console;
 use Inhere\Console\Util\Show;
 use function array_key_exists;
@@ -15,7 +15,7 @@ use function trim;
  *
  * @package Inhere\Console\Component\Interact
  */
-class Choose extends InteractMessage
+class Choose extends InteractiveHandle
 {
     /**
      * Choose one of several options
@@ -55,11 +55,11 @@ class Choose extends InteractMessage
             $text .= "\n  <info>$key</info>) $value";
         }
 
-        $defaultText = $default ? "[default:<comment>{$default}</comment>]" : '';
+        $defaultText = $default ? "[default:<comment>$default</comment>]" : '';
         Console::write($text);
 
         beginChoice:
-        $r = Console::readln("Your choice{$defaultText} : ");
+        $r = Console::readln("Your choice$defaultText : ");
 
         // error, allow try again once.
         if (!array_key_exists($r, $options)) {

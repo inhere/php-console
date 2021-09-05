@@ -5,7 +5,7 @@
 [![Latest Stable Version](http://img.shields.io/packagist/v/inhere/console.svg)](https://packagist.org/packages/inhere/console)
 [![Github Actions Status](https://github.com/inhere/php-console/workflows/Unit-tests/badge.svg)](https://github.com/inhere/php-console/actions)
 
-A simple, full-featured php command line application library. 
+Full-featured php command line application library. 
 
 Provide console parameter parsing, command run, color style output, user information interaction, and special format information display.
 
@@ -13,14 +13,15 @@ Provide console parameter parsing, command run, color style output, user informa
 
 ## Command line preview
 
-![app-command-list](https://raw.githubusercontent.com/inhere/php-console/master/docs/screenshots/app-command-list.png)
+![app-command-list](https://raw.githubusercontent.com/inhere/php-console/3.x/docs/screenshots/app-command-list.png)
 
 ## Features
 
 > Easy to use. Can be easily integrated into any existing project.
 
 - Command line application, `controller`, `command` parsing run on the command line
-- Support for setting aliases for commands. A command can have multiple aliases. Support command display/hide, enable/disable
+- Support for setting aliases for commands. A command can have multiple aliases. 
+- Support command display/hide, enable/disable.
 - Full-featured command line option parameter parsing (named parameters, short options `-s`, long options `--long`). 
 - The `input`, `output` of the command line, management, use
 - Command method comments are automatically parsed as help information (by default, `@usage` `@arguments` `@options` `@example`)
@@ -82,11 +83,30 @@ phpunit
 phpdbg -dauto_globals_jit=Off -qrr /usr/local/bin/phpunit --coverage-text
 ```
 
+## Debuging
+
+You can set debug level by ENV `CONSOLE_DEBUG=level`, global option `--debug level`
+
+```bash
+# by ENV
+$ CONSOLE_DEBUG=4 php examples/app
+$ CONSOLE_DEBUG=5 php examples/app
+# by global options
+$ php examples/app --debug 4
+```
+
+## Project use
+
+Check out these projects, which use https://github.com/inhere/php-console :
+
+- [kite](https://github.com/inhere/kite) Kite is a tool for help development.
+- More, please see [github used by](https://github.com/inhere/php-console/network/dependents?package_id=UGFja2FnZS01NDI5NzMxOTI%3D)
+
 ## License
 
 [MIT](LICENSE)
 
-## My other projects
+## My projects
 
 - [inhere/php-validate](https://github.com/inhere/php-validate) A compact and full-featured php verification library
 - [inhere/sroute](https://github.com/inhere/php-srouter) Lightweight and fast HTTP request routing library

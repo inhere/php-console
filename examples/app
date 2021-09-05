@@ -10,12 +10,13 @@ use Inhere\Console\Application;
 
 define('BASE_PATH', dirname(__DIR__));
 
-require dirname(__DIR__) . '/test/boot.php';
+require dirname(__DIR__) . '/test/bootstrap.php';
 
 // create app instance
 $app = new Application([
-    'debug' => true,
-    'rootPath' => dirname(__DIR__),
+    'debug'       => true,
+    'rootPath'    => dirname(__DIR__),
+    'description' => 'This is demo console application',
 ]);
 
 $app->setLogo("

@@ -23,10 +23,10 @@ use Inhere\Console\Util\Helper;
 use InvalidArgumentException;
 use LogicException;
 use ReflectionClass;
-use ReflectionException;
 use RuntimeException;
 use Swoole\Coroutine;
 use Swoole\Event;
+use Toolkit\Stdlib\Obj\ConfigObject;
 use Toolkit\Stdlib\Util\PhpDoc;
 use function array_diff_key;
 use function array_filter;
@@ -98,6 +98,11 @@ abstract class AbstractHandler implements CommandHandlerInterface
     ];
 
     /**
+     * @var bool
+     */
+    private $initialized = false;
+
+    /**
      * @var InputDefinition|null
      */
     protected $definition;
@@ -106,6 +111,11 @@ abstract class AbstractHandler implements CommandHandlerInterface
      * @var string
      */
     protected $processTitle = '';
+
+    /**
+     * @var ConfigObject
+     */
+    protected $params;
 
     /**
      * Whether enabled
@@ -131,10 +141,11 @@ abstract class AbstractHandler implements CommandHandlerInterface
     /**
      * Command constructor.
      *
-     * @param Input                $input
-     * @param Output               $output
+     * @param Input           $input
+     * @param Output          $output
      * @param InputDefinition|null $definition
      */
+    // TODO public function __construct(Input $input = null, Output $output = null, InputDefinition $definition = null)
     public function __construct(Input $input, Output $output, InputDefinition $definition = null)
     {
         $this->input  = $input;
@@ -144,15 +155,14 @@ abstract class AbstractHandler implements CommandHandlerInterface
             $this->definition = $definition;
         }
 
-        $this->commentsVars = $this->annotationVars();
-
         $this->init();
-
-        $this->afterInit();
     }
 
     protected function init(): void
     {
+        $this->commentsVars = $this->annotationVars();
+
+        $this->afterInit();
         $this->debugf('attach inner sub-commands to "%s"', self::getName());
         $this->addCommands($this->commands());
     }
@@ -270,9 +280,14 @@ abstract class AbstractHandler implements CommandHandlerInterface
             return -1;
         }
 
+        // only fire for alone command run.
+        if ($this->isAlone()) {
+            $this->fire(ConsoleEvent::COMMAND_RUN_BEFORE, $this);
+        }
+
         // if enable swoole coroutine
         if (static::isCoroutine() && Helper::isSupportCoroutine()) {
-            $result = $this->coroutineRun();
+            $result = $this->coExecute();
         } else { // when not enable coroutine
             $result = $this->execute($this->input, $this->output);
         }
@@ -287,7 +302,7 @@ abstract class AbstractHandler implements CommandHandlerInterface
      *
      * @return bool
      */
-    public function coroutineRun(): bool
+    public function coExecute(): bool
     {
         // $ch = new Coroutine\Channel(1);
         $ok = Coroutine::create(function () {
@@ -318,6 +333,9 @@ abstract class AbstractHandler implements CommandHandlerInterface
      */
     protected function beforeExecute(): bool
     {
+        // trigger event
+        $this->fire(ConsoleEvent::COMMAND_EXEC_BEFORE, $this);
+
         return true;
     }
 
@@ -336,6 +354,8 @@ abstract class AbstractHandler implements CommandHandlerInterface
      */
     protected function afterExecute(): void
     {
+        // trigger event
+        $this->fire(ConsoleEvent::COMMAND_EXEC_AFTER, $this);
     }
 
     /**
@@ -468,7 +488,6 @@ abstract class AbstractHandler implements CommandHandlerInterface
             $errMsg = sprintf('Input option is not exists (unknown: "%s").', (isset($first[1]) ? '--' : '-') . $first);
             throw new InvalidArgumentException($errMsg);
         }
-
     }
 
     /**************************************************************************
@@ -481,6 +500,29 @@ abstract class AbstractHandler implements CommandHandlerInterface
     public function isAlone(): bool
     {
         return $this instanceof CommandInterface;
+    }
+
+    /**
+     * @return ConfigObject
+     */
+    public function getParams(): ConfigObject
+    {
+        if (!$this->params) {
+            $this->initParams([]);
+        }
+
+        return $this->params;
+    }
+
+    /**
+     * @param array $params
+     *
+     * @return ConfigObject
+     */
+    public function initParams(array $params): ConfigObject
+    {
+        $this->params = ConfigObject::new($params);
+        return $this->params;
     }
 
     /**********************************************************
@@ -548,7 +590,6 @@ abstract class AbstractHandler implements CommandHandlerInterface
         }
 
         unset($help[0]);
-
         $this->output->mList($help, ['sepChar' => '  ']);
     }
 
@@ -560,7 +601,6 @@ abstract class AbstractHandler implements CommandHandlerInterface
      * @param array  $aliases
      *
      * @return int
-     * @throws ReflectionException
      */
     protected function showHelpByMethodAnnotations(string $method, string $action = '', array $aliases = []): int
     {
@@ -573,7 +613,7 @@ abstract class AbstractHandler implements CommandHandlerInterface
             return 0;
         }
 
-        // is a console controller command
+        // subcommand: is a console controller subcommand
         if ($action && !$ref->getMethod($method)->isPublic()) {
             $this->write("The command [<info>$name</info>] don't allow access in the class.");
             return 0;
@@ -583,7 +623,7 @@ abstract class AbstractHandler implements CommandHandlerInterface
 
         $help = [];
         $doc  = $ref->getMethod($method)->getDocComment();
-        $tags = PhpDoc::getTags($this->parseCommentsVars($doc));
+        $tags = PhpDoc::getTags($this->parseCommentsVars((string)$doc));
 
         if ($aliases) {
             $realName = $action ?: static::getName();
@@ -640,7 +680,6 @@ abstract class AbstractHandler implements CommandHandlerInterface
         $help['Global Options:'] = FormatUtil::alignOptions(Application::getGlobalOptions());
 
         $this->beforeRenderCommandHelp($help);
-
 
         $this->output->mList($help, [
             'sepChar'     => '  ',

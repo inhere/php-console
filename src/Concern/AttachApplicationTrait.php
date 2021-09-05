@@ -154,6 +154,8 @@ trait AttachApplicationTrait
      */
     public function fire(string $event, ...$args): bool
     {
+        $this->debugf("fire event: $event");
+
         // if has application instance
         if ($this->attached) {
             $stop = $this->app->fire($event, ...$args);

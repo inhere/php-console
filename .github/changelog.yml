@@ -1,0 +1,27 @@
+options:
+  title: '## Change Log'
+  style: gh-release
+filters:
+  # message length >= 12
+  - name: msgLen
+    minLen: 12
+  # message words >= 3
+  - name: wordsLen
+    minLen: 3
+  - name: keywords
+    keywords: ['format code']
+    exclude: true
+
+# not matched will use 'Other' group.
+groups:
+  - name: New
+    keywords: [add, new]
+  - name: Fixed
+    startWiths: [add, new]
+    keywords: [add, new]
+  - name: Feat
+    startWiths: [feat]
+    keywords: [feature]
+  - name: Update
+    startWiths: [update, 'up:']
+    keywords: [update]

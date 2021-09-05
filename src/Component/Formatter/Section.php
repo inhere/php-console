@@ -11,7 +11,6 @@ use function ceil;
 use function implode;
 use function is_array;
 use function trim;
-use function ucwords;
 use const PHP_EOL;
 
 /**
@@ -43,7 +42,7 @@ class Section extends MessageFormatter
         $indent    = (int)$opts['indent'] >= 0 ? $opts['indent'] : 2;
         $indentStr = Str::pad(self::CHAR_SPACE, $indent, self::CHAR_SPACE);
 
-        $title   = ucwords(trim($title));
+        $title   = Str::ucwords(trim($title));
         $tLength = Str::len($title);
         $width   = $width > 10 ? $width : 80;
 

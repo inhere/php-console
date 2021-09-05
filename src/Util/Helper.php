@@ -19,6 +19,7 @@ use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use RuntimeException;
 use Swoole\Coroutine;
+use Toolkit\Stdlib\Arr\ArrayHelper;
 use function class_exists;
 use function file_exists;
 use function is_dir;
@@ -173,29 +174,19 @@ class Helper
     /**
      * get key Max Width
      *
-     * @param array $data
-     *     [
+     * [
      *     'key1'      => 'value1',
      *     'key2-test' => 'value2',
-     *     ]
-     * @param bool  $expectInt
+     * ]
+     *
+     * @param array $data
+     * @param bool  $excludeInt
      *
      * @return int
      */
-    public static function getKeyMaxWidth(array $data, bool $expectInt = false): int
+    public static function getKeyMaxWidth(array $data, bool $excludeInt = true): int
     {
-        $keyMaxWidth = 0;
-
-        foreach ($data as $key => $value) {
-            // key is not a integer
-            if (!$expectInt || !is_numeric($key)) {
-                $width = mb_strlen((string)$key, 'UTF-8');
-
-                $keyMaxWidth = $width > $keyMaxWidth ? $width : $keyMaxWidth;
-            }
-        }
-
-        return $keyMaxWidth;
+        return ArrayHelper::getKeyMaxWidth($data, $excludeInt);
     }
 
     /**
@@ -205,12 +196,5 @@ class Helper
     public static function throwInvalidArgument(string $format, ...$args): void
     {
         throw new InvalidArgumentException(sprintf($format, ...$args));
-    }
-
-    /**
-     * @param string $optsStr
-     */
-    public static function formatOptions(string $optsStr): void
-    {
     }
 }

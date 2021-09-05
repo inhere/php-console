@@ -8,11 +8,11 @@
 
 namespace Inhere\Console\Concern;
 
-use Inhere\Console\Console;
 use Inhere\Console\IO\Input;
 use Inhere\Console\Contract\InputInterface;
 use Inhere\Console\IO\Output;
 use Inhere\Console\Contract\OutputInterface;
+use Toolkit\PFlag\SFlags;
 
 /**
  * Class InputOutputAwareTrait
@@ -21,6 +21,11 @@ use Inhere\Console\Contract\OutputInterface;
  */
 trait InputOutputAwareTrait
 {
+    /**
+     * @var SFlags
+     */
+    // protected $flags;
+
     /**
      * @var Input|InputInterface
      */
@@ -140,9 +145,9 @@ trait InputOutputAwareTrait
      *
      * @return string
      */
-    public function read(string $question = '', bool $nl = false): string
+    public function readln(string $question = '', bool $nl = false): string
     {
-        return $this->input->read($question, $nl);
+        return $this->input->readln($question, $nl);
     }
 
     /**
@@ -152,7 +157,7 @@ trait InputOutputAwareTrait
      *
      * @return int
      */
-    public function write($message, $nl = true, $quit = false): int
+    public function write($message, bool $nl = true, $quit = false): int
     {
         return $this->output->write($message, $nl, $quit);
     }

@@ -3,7 +3,7 @@
 namespace Inhere\Console\Component\Interact;
 
 use Closure;
-use Inhere\Console\Component\InteractMessage;
+use Inhere\Console\Component\InteractiveHandle;
 use Inhere\Console\Console;
 use Inhere\Console\Util\Show;
 use function trim;
@@ -14,7 +14,7 @@ use function ucfirst;
  *
  * @package Inhere\Console\Component\Interact
  */
-class Question extends InteractMessage
+class Question extends InteractiveHandle
 {
     /**
      * Ask a question, ask for results; return the result of the input

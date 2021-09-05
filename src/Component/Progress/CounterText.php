@@ -35,7 +35,7 @@ class CounterText extends NotifyMessage
      *
      * @return Generator
      */
-    public static function gen(string $msg, $doneMsg = ''): Generator
+    public static function gen(string $msg, string $doneMsg = ''): Generator
     {
         $counter  = 0;
         $finished = false;

@@ -2,7 +2,7 @@
 
 namespace Inhere\Console\Component\Interact;
 
-use Inhere\Console\Component\InteractMessage;
+use Inhere\Console\Component\InteractiveHandle;
 use Inhere\Console\Console;
 use Inhere\Console\Util\Show;
 use function array_filter;
@@ -17,7 +17,7 @@ use function trim;
  *
  * @package Inhere\Console\Component\Interact
  */
-class Checkbox extends InteractMessage
+class Checkbox extends InteractiveHandle
 {
     /**
      * List multiple options and allow multiple selections
@@ -29,7 +29,7 @@ class Checkbox extends InteractMessage
      *
      * @return array
      */
-    public static function select(string $description, $options, $default = null, $allowExit = true): array
+    public static function select(string $description, $options, $default = null, bool $allowExit = true): array
     {
         if (!$description = trim($description)) {
             Show::error('Please provide a description text!', 1);

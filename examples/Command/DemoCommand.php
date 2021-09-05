@@ -21,7 +21,7 @@ class DemoCommand extends Command
 {
     protected static $name = 'demo';
 
-    protected static $description = 'this is a demo alone command. but config use configure(), like symfony console: argument define by position';
+    protected static $description = 'this is a demo alone command. but use Definition instead of annotations';
 
     /**
      * {@inheritDoc}

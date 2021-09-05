@@ -28,6 +28,8 @@ class ArrayInput extends Input
     {
         parent::__construct([], false);
 
+        $this->collectInfo($args);
+
         if ($parsing && $args) {
             $this->doParse($this->flags);
         }

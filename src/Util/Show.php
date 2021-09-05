@@ -16,32 +16,28 @@ use Inhere\Console\Component\Progress\CounterText;
 use Inhere\Console\Component\Progress\DynamicText;
 use Inhere\Console\Component\Progress\SimpleBar;
 use Inhere\Console\Component\Progress\SimpleTextBar;
-use Toolkit\Cli\Style;
 use Inhere\Console\Console;
 use LogicException;
 use Toolkit\Cli\Cli;
 use Toolkit\Cli\ColorTag;
+use Toolkit\Cli\Style;
+use Toolkit\Stdlib\Helper\JsonHelper;
+use Toolkit\Stdlib\Math;
 use Toolkit\Stdlib\Str;
 use Toolkit\Sys\Sys;
 use function array_keys;
 use function array_values;
-use function ceil;
 use function count;
 use function implode;
 use function is_array;
 use function is_string;
-use function json_encode;
 use function microtime;
 use function sprintf;
-use function str_repeat;
 use function strlen;
 use function strpos;
 use function strtoupper;
 use function substr;
 use function ucwords;
-use const JSON_PRETTY_PRINT;
-use const JSON_UNESCAPED_SLASHES;
-use const JSON_UNESCAPED_UNICODE;
 use const PHP_EOL;
 
 /**
@@ -182,7 +178,7 @@ class Show
      * @return int
      * @throws LogicException
      */
-    public static function __callStatic($method, array $args = [])
+    public static function __callStatic(string $method, array $args = [])
     {
         if (isset(self::$blockMethods[$method])) {
             $msg   = $args[0];
@@ -209,17 +205,15 @@ class Show
      * Print JSON
      *
      * @param mixed $data
-     * @param int   $flags
-     *
-     * @return int
+     * @param string $title
      */
-    public static function prettyJSON(
-        $data,
-        int $flags = JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
-    ): int {
-        $string = (string)json_encode($data, $flags);
+    public static function prettyJSON($data, string $title = 'JSON:'): void
+    {
+        if ($title) {
+            Console::colored($title, 'ylw0');
+        }
 
-        return Console::write($string);
+        Console::write(JsonHelper::prettyJSON($data));
     }
 
     /**
@@ -237,11 +231,11 @@ class Show
         }
 
         if (!$title) {
-            return self::write(str_repeat($char, $width));
+            return self::write(Str::repeat($char, $width));
         }
 
-        $strLen = ceil(($width - Str::len($title) - 2) / 2);
-        $padStr = $strLen > 0 ? str_repeat($char, $strLen) : '';
+        $strLen = Math::ceil(($width - Str::len($title) - 2) / 2);
+        $padStr = $strLen > 0 ? Str::repeat($char, $strLen) : '';
 
         return self::write($padStr . ' ' . ucwords($title) . ' ' . $padStr);
     }
@@ -294,7 +288,7 @@ class Show
      * ];
      * ```
      *
-     * @param array  $data
+     * @param array|object  $data
      * @param string $title
      * @param array  $opts More {@see FormatUtil::spliceKeyValue()}
      *
@@ -425,7 +419,7 @@ class Show
      * @param string $msg
      * @param bool   $ended
      */
-    public static function spinner(string $msg = '', $ended = false): void
+    public static function spinner(string $msg = '', bool $ended = false): void
     {
         static $chars = '-\|/';
         static $counter = 0;
@@ -458,7 +452,7 @@ class Show
      * @param string $msg
      * @param bool   $ended
      */
-    public static function loading(string $msg = 'Loading ', $ended = false): void
+    public static function loading(string $msg = 'Loading ', bool $ended = false): void
     {
         self::pending($msg, $ended);
     }
@@ -477,7 +471,7 @@ class Show
      * @param string $msg
      * @param bool   $ended
      */
-    public static function pending(string $msg = 'Pending ', $ended = false): void
+    public static function pending(string $msg = 'Pending ', bool $ended = false): void
     {
         static $counter = 0;
         static $lastTime = null;
@@ -517,9 +511,9 @@ class Show
      * @param string $msg
      * @param bool   $ended
      *
-     * @return int|mixed
+     * @return int
      */
-    public static function pointing(string $msg = 'handling ', $ended = false)
+    public static function pointing(string $msg = 'handling ', bool $ended = false): int
     {
         static $counter = 0;
 
@@ -533,40 +527,41 @@ class Show
 
         $counter++;
 
-        return print '.';
+        print '.';
+        return 0;
     }
 
     /**
      * 与文本进度条相比，没有 total
      *
      * @param string      $msg
-     * @param string|null $doneMsg
+     * @param string $doneMsg
      *
      * @return Generator
      */
-    public static function counterTxt(string $msg, $doneMsg = ''): Generator
+    public static function counterTxt(string $msg, string $doneMsg = ''): Generator
     {
         return CounterText::gen($msg, $doneMsg);
     }
 
     /**
      * @param string      $doneMsg
-     * @param string|null $fixMsg
+     * @param string $fixMsg
      *
      * @return Generator
      */
-    public static function dynamicTxt(string $doneMsg, string $fixMsg = null): Generator
+    public static function dynamicTxt(string $doneMsg, string $fixMsg = ''): Generator
     {
         return self::dynamicText($doneMsg, $fixMsg);
     }
 
     /**
      * @param string      $doneMsg
-     * @param string|null $fixedMsg
+     * @param string $fixedMsg
      *
      * @return Generator
      */
-    public static function dynamicText(string $doneMsg, string $fixedMsg = null): Generator
+    public static function dynamicText(string $doneMsg, string $fixedMsg = ''): Generator
     {
         return DynamicText::gen($doneMsg, $fixedMsg);
     }
@@ -686,14 +681,14 @@ class Show
      *
      * @param bool  $flush Whether flush buffer to output stream
      * @param bool  $nl    Default is False, because the last write() have been added "\n"
-     * @param bool  $quit
+     * @param bool|int  $quit
      * @param array $opts
      *
      * @return null|string If flush = False, will return all buffer text.
      * @see        Show::write()
      * @deprecated Please use \Inhere\Console\Console method instead it.
      */
-    public static function stopBuffer($flush = true, $nl = false, $quit = false, array $opts = []): ?string
+    public static function stopBuffer(bool $flush = true, bool $nl = false, $quit = false, array $opts = []): ?string
     {
         self::$buffering = false;
 
@@ -721,7 +716,7 @@ class Show
      * @see        Show::write()
      * @deprecated Please use \Inhere\Console\Console method instead it.
      */
-    public static function flushBuffer($nl = false, $quit = false, array $opts = []): void
+    public static function flushBuffer(bool $nl = false, $quit = false, array $opts = []): void
     {
         self::stopBuffer(true, $nl, $quit, $opts);
     }
@@ -748,7 +743,7 @@ class Show
      *
      * @param string|array $messages Output message
      * @param boolean      $nl       True 会添加换行符, False 原样输出，不添加换行符
-     * @param int|boolean  $quit     If is int, setting it is exit code. 'True' translate as code 0 and exit, 'False' will not exit.
+     * @param int|bool     $quit     If is int, setting it is exit code. 'True' translate as code 0 and exit, 'False' will not exit.
      * @param array        $opts     Some options for write
      *                               refer:
      *                               [
@@ -759,7 +754,7 @@ class Show
      *
      * @return int
      */
-    public static function write($messages, $nl = true, $quit = false, array $opts = []): int
+    public static function write($messages, bool $nl = true, $quit = false, array $opts = []): int
     {
         return Console::write($messages, $nl, $quit, $opts);
     }
@@ -802,7 +797,7 @@ class Show
      *
      * @return int
      */
-    public static function colored($message, string $style = 'info', $nl = true, array $opts = []): int
+    public static function colored($message, string $style = 'info', bool $nl = true, array $opts = []): int
     {
         $quit = isset($opts['quit']) ? (bool)$opts['quit'] : false;
 
@@ -818,7 +813,7 @@ class Show
      *
      * @return array
      */
-    public static function getBlockMethods($onlyKey = true): array
+    public static function getBlockMethods(bool $onlyKey = true): array
     {
         return $onlyKey ? array_keys(self::$blockMethods) : self::$blockMethods;
     }

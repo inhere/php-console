@@ -32,7 +32,8 @@ class StringInput extends Input
         if ($parsing && $line) {
             $flags = LineParser::parseIt($line);
 
-            $this->doParse($flags);
+            $this->collectInfo($flags);
+            $this->doParse($this->flags);
         }
     }
 

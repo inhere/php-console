@@ -27,6 +27,7 @@ use Throwable;
 use Toolkit\Cli\Style;
 use Toolkit\Cli\Util\LineParser;
 use Toolkit\Stdlib\Helper\PhpHelper;
+use Toolkit\Stdlib\OS;
 use Toolkit\Sys\Proc\ProcessUtil;
 use Toolkit\Sys\Proc\Signal;
 use function array_keys;
@@ -89,6 +90,7 @@ abstract class AbstractApplication implements ApplicationInterface
         'debug'          => Console::VERB_ERROR,
         'profile'        => false,
         'version'        => '0.5.1',
+        'homepage'       => '', // can provide you app homepage url
         'publishAt'      => '2017.03.24',
         'updateAt'       => '2019.01.01',
         'rootPath'       => '',
@@ -120,6 +122,11 @@ abstract class AbstractApplication implements ApplicationInterface
      * @var ErrorHandlerInterface Can custom error handler
      */
     protected $errorHandler;
+
+    /**
+     * @var Controller[]
+     */
+    protected $groupObjects = [];
 
     /**
      * Class constructor.
@@ -288,11 +295,39 @@ abstract class AbstractApplication implements ApplicationInterface
      */
     public function subRun(string $command, InputInterface $input, OutputInterface $output)
     {
-        $app = clone $this;
+        $app = $this->copy();
         $app->setInput($input);
         $app->setOutput($output);
 
+        $this->debugf('copy application and run command(%s) with new input, output', $command);
+
         return $app->dispatch($command);
+    }
+
+    /**
+     * @param InputInterface  $input
+     * @param OutputInterface $output
+     */
+    public function runWithIO(InputInterface $input, OutputInterface $output): void
+    {
+        $app = $this->copy();
+        $app->setInput($input);
+        $app->setOutput($output);
+
+        $this->debugf('copy application and run with new input, output');
+        $app->run(false);
+    }
+
+    /**
+     * @return $this
+     */
+    public function copy(): self
+    {
+        $app = clone $this;
+        // reset something
+        $app->groupObjects = [];
+
+        return $app;
     }
 
     /**********************************************************
@@ -350,7 +385,7 @@ abstract class AbstractApplication implements ApplicationInterface
      *
      * @throws InvalidArgumentException
      */
-    public function handleException($e): void
+    public function handleException(Throwable $e): void
     {
         // you can log error on sub class ...
         $this->errorHandler->handle($e, $this);
@@ -423,8 +458,8 @@ abstract class AbstractApplication implements ApplicationInterface
             $this->debugf('php is not enable "pcntl" extension, cannot listen CTRL+C signal');
         }
 
+        // register signal.
         if ($hasPcntl) {
-            // register signal.
             ProcessUtil::installSignal(Signal::INT, static function () use ($out) {
                 $out->colored("\nQuit by CTRL+C");
                 exit(0);
@@ -455,8 +490,8 @@ abstract class AbstractApplication implements ApplicationInterface
                 }
             }
 
+            // listen signal.
             if ($hasPcntl) {
-                // listen signal.
                 ProcessUtil::dispatchSignal();
             }
 
@@ -467,7 +502,6 @@ abstract class AbstractApplication implements ApplicationInterface
             $in->parse($args);
             $in->setFullScript($line);
 
-            // \vdump($in);
             $this->run(false);
             $out->println('');
         }
@@ -585,7 +619,7 @@ abstract class AbstractApplication implements ApplicationInterface
     }
 
     /**
-     * @param $name
+     * @param string $name
      *
      * @return bool
      */
@@ -637,10 +671,25 @@ abstract class AbstractApplication implements ApplicationInterface
     }
 
     /**
+     * @param string $name
+     * @param array  $default
+     *
+     * @return array
+     */
+    public function getArrayParam(string $name, array $default = []): array
+    {
+        if (isset($this->config[$name])) {
+            return (array)$this->config[$name];
+        }
+
+        return $default;
+    }
+
+    /**
      * Get config param value
      *
      * @param string $name
-     * @param null|string $default
+     * @param null|string|mixed $default
      *
      * @return array|string
      */
@@ -678,7 +727,15 @@ abstract class AbstractApplication implements ApplicationInterface
     {
         $key = GlobalOption::DEBUG;
 
-        return (int)$this->input->getLongOpt($key, (int)$this->config[$key]);
+        // feat: support set debug level by ENV var: CONSOLE_DEBUG
+        $envVal = OS::getEnvStrVal(Console::DEBUG_ENV_KEY);
+        if ($envVal !== '') {
+            $setVal = (int)$envVal;
+        } else {
+            $setVal = (int)$this->config[$key];
+        }
+
+        return (int)$this->input->getLongOpt($key, $setVal);
     }
 
     /**

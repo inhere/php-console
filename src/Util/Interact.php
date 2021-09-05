@@ -20,7 +20,6 @@ use RuntimeException;
 use Toolkit\Cli\Cli;
 use function sprintf;
 use function strtolower;
-use function trim;
 
 /**
  * Class Interact
@@ -41,15 +40,9 @@ class Interact extends Show
      *
      * @return string
      */
-    public static function readln($message = null, $nl = false, array $opts = []): string
+    public static function readln($message = null, bool $nl = false, array $opts = []): string
     {
-        if ($message) {
-            Console::write($message, $nl);
-        }
-
-        $stream = $opts['stream'] ?? Cli::getInputStream();
-
-        return trim((string)fgets($stream));
+        return Cli::readln($message, $nl, $opts);
     }
 
     /**
@@ -60,9 +53,9 @@ class Interact extends Show
      *
      * @return string
      */
-    public static function readRow($message = null, $nl = false): string
+    public static function readRow($message = null, bool $nl = false): string
     {
-        return self::readln($message, $nl);
+        return Cli::readln($message, $nl);
     }
 
     /**
@@ -71,15 +64,9 @@ class Interact extends Show
      *
      * @return string
      */
-    public static function readFirst($message = null, $nl = false): string
+    public static function readFirst($message = null, bool $nl = false): string
     {
-        $input = self::readln($message, $nl);
-
-        if ($input && ($f = $input[0])) {
-            return $f;
-        }
-
-        return '';
+        return Cli::readFirst($message, $nl);
     }
 
     /**************************************************************************************************
@@ -220,9 +207,9 @@ class Interact extends Show
     /**
      * alias of the `question()`
      *
-     * @param string  $question  question message
-     * @param string  $default   default value
-     * @param Closure $validator The validate callback. It must return bool.
+     * @param string       $question  question message
+     * @param string       $default   default value
+     * @param Closure|null $validator The validate callback. It must return bool.
      *
      * @return string|null
      */
@@ -249,10 +236,10 @@ class Interact extends Show
     /**
      * Ask a question, ask for a limited number of times
      *
-     * @param string  $question  问题
-     * @param string  $default   默认值
-     * @param Closure $validator (默认验证输入是否为空)自定义回调验证输入是否符合要求; 验证成功返回true 否则 可返回错误消息
-     * @param int     $times     Allow input times
+     * @param string       $question  问题
+     * @param string       $default   默认值
+     * @param Closure|null $validator (默认验证输入是否为空)自定义回调验证输入是否符合要求; 验证成功返回true 否则 可返回错误消息
+     * @param int          $times     Allow input times
      *
      * @return string
      * @see LimitedAsk::ask()

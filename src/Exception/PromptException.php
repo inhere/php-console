@@ -17,4 +17,14 @@ use InvalidArgumentException;
  */
 class PromptException extends InvalidArgumentException
 {
+    /**
+     * @param string $msg
+     * @param int    $code
+     *
+     * @return static
+     */
+    public static function new(string $msg, int $code = 0): self
+    {
+        return new self($msg, $code);
+    }
 }

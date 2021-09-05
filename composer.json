@@ -24,11 +24,12 @@
   "require": {
     "php": ">7.2.0",
     "toolkit/cli-utils": "~1.0",
+    "toolkit/pflag": "~1.0",
     "toolkit/stdlib": "~1.0",
     "toolkit/sys-utils": "~1.0"
   },
   "require-dev": {
-    "phpunit/phpunit": "~9.1"
+    "phpunit/phpunit": "^8.5 || ^9.1"
   },
   "autoload": {
     "psr-4": {

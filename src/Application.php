@@ -14,7 +14,7 @@ use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
 use Inhere\Console\Util\Helper;
 use InvalidArgumentException;
-use ReflectionException;
+use RuntimeException;
 use SplFileInfo;
 use function class_exists;
 use function implode;
@@ -257,7 +257,6 @@ class Application extends AbstractApplication
 
     /**
      * @inheritdoc
-     * @throws ReflectionException
      */
     public function dispatch(string $name, bool $detachedRun = false)
     {
@@ -266,7 +265,7 @@ class Application extends AbstractApplication
         }
 
         $cmdId = $name;
-        $this->debugf( 'begin dispatch the input command: %s', $name);
+        $this->debugf('begin dispatch the input command: %s', $name);
 
         // format is: `group action`
         if (strpos($name, ' ') > 0) {
@@ -285,7 +284,7 @@ class Application extends AbstractApplication
             }
 
             $commands = $this->router->getAllNames();
-            $this->output->error("The command '{$name}' is not exists!");
+            $this->output->error("The command '$name' is not exists!");
 
             // find similar command names by similar_text()
             if ($similar = Helper::findSimilar($name, $commands)) {
@@ -309,7 +308,7 @@ class Application extends AbstractApplication
         }
 
         // is controller/group
-        return $this->runAction($info['group'], $info['action'], $info['handler'], $cmdOptions, $detachedRun);
+        return $this->runAction($info, $cmdOptions, $detachedRun);
     }
 
     /**
@@ -355,21 +354,63 @@ class Application extends AbstractApplication
     /**
      * Execute an action in a group command(controller)
      *
-     * @param string $group   The group name
-     * @param string $action  Command method, no suffix
-     * @param mixed  $handler The controller class or object
-     * @param array  $options
-     * @param bool   $detachedRun
+     * @param array $info Matched route info
+     * @param array $options
+     * @param bool  $detachedRun
      *
      * @return mixed
-     * @throws ReflectionException
      */
-    protected function runAction(string $group, string $action, $handler, array $options, bool $detachedRun = false)
+    protected function runAction(array $info,  array $options, bool $detachedRun = false)
     {
+        $controller = $this->createController($info);
+
+        if ($desc = $options['description'] ?? '') {
+            $controller::setDescription($desc);
+        }
+
+        if ($detachedRun) {
+            $controller->setDetached();
+        }
+
+        // Command method, no suffix
+        return $controller->run($info['action']);
+    }
+
+    /**
+     * @param string $name
+     *
+     * @return Controller
+     */
+    public function getController(string $name): Controller
+    {
+        $info = $this->router->getControllerInfo($name);
+        if (!$info) {
+            throw new RuntimeException('the group controller not exist. name: ' . $name);
+        }
+
+        $info['group'] = $name;
+        return $this->createController($info);
+    }
+
+    /**
+     * @param array $info
+     *
+     * @return Controller
+     */
+    protected function createController(array $info): Controller
+    {
+        $group = $info['group']; // The group name
+        if (isset($this->groupObjects[$group])) {
+            $this->debugf('load the "%s" controller object form cache', $group);
+            return $this->groupObjects[$group];
+        }
+
+        $this->debugf('create the "%s" controller object and cache it', $group);
+
         /** @var Controller $handler */
+        $handler = $info['handler']; // The controller class or object
         if (is_string($handler)) {
             $class = $handler;
-
             if (!class_exists($class)) {
                 Helper::throwInvalidArgument('The console controller class [%s] not exists!', $class);
             }
@@ -387,17 +428,11 @@ class Application extends AbstractApplication
 
         // force set name and description
         $handler::setName($group);
-        if ($desc = $options['description'] ?? '') {
-            $handler::setDescription($desc);
-        }
-
         $handler->setApp($this);
         $handler->setDelimiter($this->delimiter);
 
-        if ($detachedRun) {
-            $handler->setDetached();
-        }
-
-        return $handler->run([$action]);
+        // cache object
+        $this->groupObjects[$group] = $handler;
+        return $handler;
     }
 }

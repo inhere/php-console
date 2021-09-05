@@ -9,7 +9,6 @@
 namespace Inhere\Console;
 
 use Inhere\Console\Contract\CommandInterface;
-use ReflectionException;
 
 /**
  * Class Command
@@ -48,10 +47,10 @@ abstract class Command extends AbstractHandler implements CommandInterface
      */
     // protected function configure()
     // {
-    // $this
-    //     ->createDefinition()
-    //     ->addArgument('test')
-    //     ->addOption('test');
+    //     $this
+    //      ->createDefinition()
+    //      ->addArgument('test')
+    //      ->addOption('test');
     // }
 
     /**
@@ -86,7 +85,6 @@ abstract class Command extends AbstractHandler implements CommandInterface
      * Show help information
      *
      * @return bool
-     * @throws ReflectionException
      */
     protected function showHelp(): bool
     {

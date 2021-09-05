@@ -82,7 +82,7 @@ trait InputOptionsTrait
             return $val;
         }
 
-        $errMsg = $errMsg ?: "The option '{$name}' is required";
+        $errMsg = $errMsg ?: "The option '$name' is required";
         throw new PromptException($errMsg);
     }
 
@@ -103,7 +103,7 @@ trait InputOptionsTrait
      * Get an string option(long/short) value
      *
      * @param string|string[] $names eg 'n,name' OR ['n', 'name']
-     * @param string $default
+     * @param string          $default
      *
      * @return string
      */
@@ -126,6 +126,19 @@ trait InputOptionsTrait
     }
 
     /**
+     * Get an int option(long/short) value
+     *
+     * @param string|string[] $names eg 'l,length' OR ['l', 'length']
+     * @param int             $default
+     *
+     * @return int
+     */
+    public function getSameIntOpt($names, int $default = 0): int
+    {
+        return (int)$this->getSameOpt($names, $default);
+    }
+
+    /**
      * Get (long/short)option value(bool)
      * eg: -h --help
      *
@@ -144,7 +157,7 @@ trait InputOptionsTrait
      * eg: -h --help
      *
      * @param string|string[] $names eg 'n,name' OR ['n', 'name']
-     * @param bool     $default
+     * @param bool            $default
      *
      * @return bool
      */
@@ -169,13 +182,42 @@ trait InputOptionsTrait
     /**
      * check option exists
      *
-     * @param $name
+     * @param string $name
      *
      * @return bool
      */
     public function hasOpt(string $name): bool
     {
         return isset($this->sOpts[$name]) || isset($this->lOpts[$name]);
+    }
+
+    /**
+     * The give options exists
+     *
+     * ```php
+     * $input->hasOneOpt('h,help');
+     * $input->hasOneOpt(['h','help']);
+     * ```
+     *
+     * @param string|array $names
+     *
+     * @return bool
+     */
+    public function hasOneOpt($names): bool
+    {
+        if (is_string($names)) {
+            $names = array_map('trim', explode(',', $names));
+        } elseif (!is_array($names)) {
+            $names = (array)$names;
+        }
+
+        foreach ($names as $name) {
+            if ($this->hasOpt($name)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -188,7 +230,7 @@ trait InputOptionsTrait
      * ```
      *
      * @param string|string[] $names eg 'n,name' OR ['n', 'name']
-     * @param mixed $default
+     * @param mixed           $default
      *
      * @return bool|mixed|null
      */
@@ -213,7 +255,7 @@ trait InputOptionsTrait
      * Alias of the getSameOpt()
      *
      * @param string|array $names
-     * @param mixed  $default
+     * @param mixed        $default
      *
      * @return bool|mixed|null
      */
@@ -320,8 +362,8 @@ trait InputOptionsTrait
     /**
      * get short-opt value(bool)
      *
-     * @param string $name
-     * @param bool   $default
+     * @param string     $name
+     * @param bool|mixed $default
      *
      * @return bool
      */
@@ -430,8 +472,8 @@ trait InputOptionsTrait
     /**
      * get long-opt value(bool)
      *
-     * @param string $name
-     * @param bool   $default
+     * @param string     $name
+     * @param bool|mixed $default
      *
      * @return bool
      */
@@ -452,7 +494,7 @@ trait InputOptionsTrait
 
     /**
      * @param string $name
-     * @param        $value
+     * @param mixed  $value
      */
     public function setLOpt(string $name, $value): void
     {

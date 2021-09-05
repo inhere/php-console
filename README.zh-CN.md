@@ -11,7 +11,7 @@
 
 ## 命令行预览
 
-![app-command-list](https://raw.githubusercontent.com/inhere/php-console/master/docs/screenshots/app-command-list.png)
+![app-command-list](https://raw.githubusercontent.com/inhere/php-console/3.x/docs/screenshots/app-command-list.png)
 
 ## 功能概览
 
@@ -78,6 +78,25 @@ phpunit
 // 没有xdebug时输出覆盖率
 phpdbg -dauto_globals_jit=Off -qrr /usr/local/bin/phpunit --coverage-text
 ```
+
+## 开发调试
+
+你可以通过环境变量 `CONSOLE_DEBUG=level`, 全局选项 `--debug level` 设置debug级别
+
+```bash
+# by ENV
+$ CONSOLE_DEBUG=4 php examples/app
+$ CONSOLE_DEBUG=5 php examples/app
+# by global options
+$ php examples/app --debug 4
+```
+
+## 使用console的项目
+
+看看这些使用了 https://github.com/inhere/php-console 的项目:
+
+- [kite](https://github.com/inhere/kite) PHP编写的，方便本地开发和使用的一些CLI工具应用
+- More, please see [github used by](https://github.com/inhere/php-console/network/dependents?package_id=UGFja2FnZS01NDI5NzMxOTI%3D)
 
 ## License
 

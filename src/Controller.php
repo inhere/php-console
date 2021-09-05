@@ -17,27 +17,19 @@ use Inhere\Console\IO\Output;
 use Inhere\Console\Util\FormatUtil;
 use Inhere\Console\Util\Helper;
 use ReflectionClass;
-use ReflectionException;
 use ReflectionObject;
 use RuntimeException;
-use Toolkit\Cli\ColorTag;
 use Toolkit\Stdlib\Str;
-use Toolkit\Stdlib\Util\PhpDoc;
 use function array_flip;
 use function array_keys;
-use function array_merge;
 use function implode;
 use function is_array;
 use function is_string;
-use function ksort;
-use function lcfirst;
 use function method_exists;
 use function sprintf;
-use function strpos;
 use function substr;
 use function trim;
 use function ucfirst;
-use const PHP_EOL;
 
 /**
  * Class Controller
@@ -102,6 +94,13 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
      * @var array From disabledCommands()
      */
     private $disabledCommands = [];
+
+    /**
+     * TODO ...
+     *
+     * @var array
+     */
+    private $attachedCommands = [];
 
     /**
      * Metadata for sub-commands. such as: desc, alias
@@ -193,44 +192,74 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
     }
 
     /**
-     * @param array $args
+     * @param string $command
      *
-     * @return int|mixed
-     * @throws ReflectionException
+     * @return string
      */
-    public function run(array $args)
+    protected function findCommandName(string $command): string
     {
-        $command = $args[0];
-
         if (!$command = trim($command, $this->delimiter)) {
             $command = $this->defaultAction;
 
             // try use next arg as sub-command name.
             if (!$command) {
                 $command = $this->input->findCommandName();
-
-                // update the command id.
-                if ($command) {
-                    $group = $this->input->getCommand();
-                    $this->input->setCommandId("$group:$command");
-                }
             }
         }
 
-        // if not input sub-command, render group help.
+        return $command;
+    }
+
+    protected function beforeRun(): void
+    {
+    }
+
+    /**
+     * @param array $args
+     *
+     * @return int|mixed
+     */
+    public function run(array $args)
+    {
+        $command = $args[0];
+        $command = $this->findCommandName($command);
+
+        // if not input subcommand, render group help.
         if (!$command) {
-            $this->debugf('sub-command is empty, display help for the group: %s', self::getName());
+            $this->debugf('not input subcommand, display help for the group: %s', self::getName());
             return $this->showHelp();
         }
 
+        // update subcommand
         $this->input->setSubCommand($command);
 
+        // update some comment vars
+        $fullCmd = $this->input->getFullCommand();
+        $this->setCommentsVar('fullCmd', $fullCmd);
+        $this->setCommentsVar('fullCommand', $fullCmd);
+        $this->setCommentsVar('binWithCmd', $this->input->getBinWithCommand());
+
         // get real sub-command name
-        $command = $this->getRealCommandName($command);
+        $command = $this->resolveAlias($command);
+
+        // update the command id.
+        $this->input->setCommandId(static::getName() . ":$command");
 
         // convert 'boo-foo' to 'booFoo'
-        $this->action = Str::camelCase($command);
-        $this->debugf('will run the group action: %s, sub-command: %s', $this->action, $command);
+        $this->action = $action = Str::camelCase($command);
+        $this->debugf("will run the '%s' group action: %s, subcommand: %s", static::getName(), $this->action, $command);
+
+        // fire event
+        $this->fire(ConsoleEvent::COMMAND_RUN_BEFORE, $this);
+        $this->beforeRun();
+
+        // check method not exist
+        $method = $this->getMethodName($action);
+
+        // if command method not exists.
+        if (!method_exists($this, $method)) {
+            return $this->handleNotFound(static::getName(), $action);
+        }
 
         // do running
         return parent::run([$command]);
@@ -268,13 +297,29 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
     }
 
     /**
+     * Before controller method execute
+     *
+     * @return boolean It MUST return TRUE to continue execute. if return False, will stop run.
+     */
+    protected function beforeAction(): bool
+    {
+        return true;
+    }
+
+    /**
+     * After controller method execute
+     */
+    protected function afterAction(): void
+    {
+    }
+
+    /**
      * Run command action in the group
      *
      * @param Input  $input
      * @param Output $output
      *
      * @return mixed
-     * @throws ReflectionException
      */
     final public function execute($input, $output)
     {
@@ -287,50 +332,66 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
             return -1;
         }
 
-        $method = $this->actionSuffix ? $action . ucfirst($this->actionSuffix) : $action;
+        $method = $this->getMethodName($action);
+
+        // trigger event
+        $this->fire(ConsoleEvent::SUBCOMMAND_RUN_BEFORE, $this);
 
         // the action method exists and only allow access public method.
-        // if (method_exists($this, $method) && (($rfm = new ReflectionMethod($this, $method)) && $rfm->isPublic())) {
-        if (method_exists($this, $method)) {
-            // before run action
-            if (method_exists($this, $beforeFunc = 'before' . ucfirst($action))) {
-                $beforeOk = $this->$beforeFunc($input, $output);
-                if ($beforeOk === false) {
-                    $this->debugf('%s() returns FALSE, interrupt processing continues', $beforeFunc);
-                    return 0;
-                }
-            }
-
-            // run action
-            $result = $this->$method($input, $output);
-
-            // after run action
-            if (method_exists($this, $after = 'after' . ucfirst($action))) {
-                $this->$after($input, $output);
-            }
-
-            return $result;
-        }
-
-        // if user custom handle not found logic.
-        if ($this->onNotFound($action)) {
-            $this->debugf('user custom handle the action "%s" not found logic', $action);
+        // if (method_exists($this, $method)) {
+        // before run action
+        if (!$this->beforeAction()) {
+            $this->debugf('beforeAction() returns FALSE, interrupt processing continues');
             return 0;
         }
 
-        $this->debugf('action "%s" not found on the group controller', $action);
+        if (method_exists($this, $beforeFunc = 'before' . ucfirst($action))) {
+            $beforeOk = $this->$beforeFunc($input, $output);
+            if ($beforeOk === false) {
+                $this->debugf('%s() returns FALSE, interrupt processing continues', $beforeFunc);
+                return 0;
+            }
+        }
+
+        // run action
+        $result = $this->$method($input, $output);
+
+        // after run action
+        if (method_exists($this, $after = 'after' . ucfirst($action))) {
+            $this->$after($input, $output);
+        }
+
+        $this->afterAction();
+        return $result;
+    }
+
+    /**
+     * @param string $group
+     * @param string $action
+     *
+     * @return int
+     */
+    protected function handleNotFound(string $group, string $action): int
+    {
+        // if user custom handle not found logic.
+        if ($this->onNotFound($action)) {
+            $this->debugf('user custom handle the "%s" action "%s" not found', $group, $action);
+            return 0;
+        }
+
+        $this->debugf('action "%s" not found on the group controller "%s"', $action, $group);
 
         // if you defined the method '$this->notFoundCallback' , will call it
         // if (($notFoundCallback = $this->notFoundCallback) && method_exists($this, $notFoundCallback)) {
         //     $result = $this->{$notFoundCallback}($action);
         // } else {
-        $output->liteError("Sorry, The command '$action' not exist of the group '{$group}'!");
+        $this->output->liteError("Sorry, The command '$action' not exist of the group '$group'!");
 
         // find similar command names
         $similar = Helper::findSimilar($action, $this->getAllCommandMethods(null, true));
 
         if ($similar) {
-            $output->write(sprintf("\nMaybe what you mean is:\n    <info>%s</info>", implode(', ', $similar)));
+            $this->output->writef("\nMaybe what you mean is:\n    <info>%s</info>", implode(', ', $similar));
         } else {
             $this->showCommandList();
         }
@@ -339,8 +400,17 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
     }
 
     /**
+     * @param string $action
+     *
+     * @return string
+     */
+    protected function getMethodName(string $action): string
+    {
+        return $this->actionSuffix ? $action . ucfirst($this->actionSuffix) : $action;
+    }
+
+    /**
      * @return bool
-     * @throws ReflectionException
      */
     protected function showHelp(): bool
     {
@@ -376,162 +446,6 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
     }
 
     /**
-     * Show help of the controller command group or specified command action
-     * @usage <info>{name}:[command] -h</info> OR <info>{command} [command]</info> OR <info>{name} [command] -h</info>
-     *
-     * @options
-     *  -s, --search  Search command by input keywords
-     *  --format      Set the help information dump format(raw, xml, json, markdown)
-     * @return int
-     * @throws ReflectionException
-     * @example
-     *  {script} {name} -h
-     *  {script} {name}:help
-     *  {script} {name}:help index
-     *  {script} {name}:index -h
-     *  {script} {name} index
-     *
-     */
-    final public function helpCommand(): int
-    {
-        $action = $this->action;
-
-        // Not input action, for all sub-commands of the controller
-        if (!$action) {
-            $this->showCommandList();
-            return 0;
-        }
-
-        $action  = Str::camelCase($action);
-        $method  = $this->actionSuffix ? $action . ucfirst($this->actionSuffix) : $action;
-        $aliases = $this->getCommandAliases($action);
-
-        // up: find global aliases from app
-        if ($this->app) {
-            $commandId = $this->input->getCommandId();
-            $gAliases  = $this->app->getAliases($commandId);
-
-            if ($gAliases) {
-                $aliases = array_merge($aliases, $gAliases);
-            }
-        }
-
-        $this->log(Console::VERB_DEBUG, "display help for the controller method: $method", [
-            'group'  => static::$name,
-            'action' => $action,
-        ]);
-
-        // For a specified sub-command.
-        return $this->showHelpByMethodAnnotations($method, $action, $aliases);
-    }
-
-    protected function beforeShowCommandList(): void
-    {
-        // do something ...
-    }
-
-    /**
-     * Display all sub-commands list of the controller class
-     *
-     * @throws ReflectionException
-     */
-    final public function showCommandList(): void
-    {
-        $this->logf(Console::VERB_DEBUG, 'display all sub-commands list of the group: %s', static::$name);
-
-        $this->beforeShowCommandList();
-
-        $ref   = new ReflectionClass($this);
-        $sName = lcfirst(self::getName() ?: $ref->getShortName());
-
-        if (!($classDes = self::getDescription())) {
-            $classDes = PhpDoc::description($ref->getDocComment()) ?: 'No description for the command group';
-        }
-
-        $commands     = [];
-        $showDisabled = (bool)$this->getOpt('show-disabled', false);
-        $defaultDes   = 'No description message';
-
-        /**
-         * @var $cmd string The command name.
-         */
-        foreach ($this->getAllCommandMethods($ref) as $cmd => $m) {
-            if (!$cmd) {
-                continue;
-            }
-
-            $desc = $this->getCommandMeta('desc', $defaultDes, $cmd);
-            if ($phpDoc = $m->getDocComment()) {
-                $desc = PhpDoc::firstLine($phpDoc);
-            }
-
-            // is a annotation tag
-            if (strpos($desc, '@') === 0) {
-                $desc = $defaultDes;
-            }
-
-            if ($this->isDisabled($cmd)) {
-                if (!$showDisabled) {
-                    continue;
-                }
-
-                $desc .= '[<red>DISABLED</red>]';
-            }
-
-            $aliases = $this->getCommandAliases($cmd);
-            $desc    .= $aliases ? ColorTag::wrap(' [alias: ' . implode(',', $aliases) . ']', 'info') : '';
-
-            $commands[$cmd] = $desc;
-        }
-
-        // sort commands
-        ksort($commands);
-
-        // move 'help' to last.
-        if ($helpCmd = $commands['help'] ?? null) {
-            unset($commands['help']);
-            $commands['help'] = $helpCmd;
-        }
-
-        $script = $this->getScriptName();
-
-        // if is alone running.
-        if ($detached = $this->isDetached()) {
-            $name  = $sName . ' ';
-            $usage = "$script <info>{command}</info> [--options ...] [arguments ...]";
-        } else {
-            $name  = $sName . $this->delimiter;
-            // $usage = "$script {$name}<info>{command}</info> [--options ...] [arguments ...]";
-            $usage = [
-                "$script {$name}<info>{command}</info> [--options ...] [arguments ...]",
-                "$script {$sName} <info>{command}</info> [--options ...] [arguments ...]",
-            ];
-        }
-
-        $globalOptions = array_merge(Application::getGlobalOptions(), static::$globalOptions);
-
-        $this->output->startBuffer();
-        $this->output->write(ucfirst($classDes) . PHP_EOL);
-
-        if ($aliases = $this->getAliases()) {
-            $this->output->writef('<comment>Alias:</comment> %s', implode(',', $aliases));
-        }
-
-        $this->output->mList([
-            'Usage:'              => $usage,
-            //'Group Name:' => "<info>$sName</info>",
-            'Global Options:'     => FormatUtil::alignOptions($globalOptions),
-            'Available Commands:' => $commands,
-        ], [
-            'sepChar' => '  ',
-        ]);
-
-        $msgTpl = 'More information about a command, please see: <cyan>%s %s {command} -h</cyan>';
-        $this->output->write(sprintf($msgTpl, $script, $detached ? '' : $sName));
-        $this->output->flush();
-    }
-
-    /**
      * @param ReflectionClass|null $ref
      * @param bool                 $onlyName
      *
@@ -564,8 +478,19 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
      * @param string $name
      *
      * @return string
+     * @description please use resolveAlias()
      */
-    protected function getRealCommandName(string $name): string
+    public function getRealCommandName(string $name): string
+    {
+        return $this->resolveAlias($name);
+    }
+
+    /**
+     * @param string $name
+     *
+     * @return string
+     */
+    public function resolveAlias(string $name): string
     {
         if (!$name) {
             return '';
@@ -693,6 +618,7 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
 
     /**
      * @return bool
+     * @deprecated
      */
     public function isExecutionAlone(): bool
     {
@@ -700,11 +626,9 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
     }
 
     /**
-     * @param bool $executionAlone
-     *
      * @deprecated
      */
-    public function setExecutionAlone($executionAlone = true): void
+    public function setExecutionAlone(): void
     {
         throw new RuntimeException('please call setAttached() instead');
     }
@@ -735,7 +659,7 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
 
     /**
      * @param string $command
-     * @param array  $meta  eg: ['desc' => '', 'alias' => []]
+     * @param array  $meta eg: ['desc' => '', 'alias' => []]
      */
     public function setCommandMeta(string $command, array $meta): void
     {

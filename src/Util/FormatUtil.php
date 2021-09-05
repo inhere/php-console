@@ -9,15 +9,13 @@
 namespace Inhere\Console\Util;
 
 use Toolkit\Cli\ColorTag;
+use Toolkit\Stdlib\Helper\Format;
 use Toolkit\Stdlib\Helper\JsonHelper;
+use Toolkit\Stdlib\Str;
 use Toolkit\Sys\Sys;
 use function array_keys;
 use function array_merge;
-use function count;
-use function date;
 use function explode;
-use function floor;
-use function gettype;
 use function implode;
 use function is_array;
 use function is_bool;
@@ -25,14 +23,13 @@ use function is_int;
 use function is_numeric;
 use function is_scalar;
 use function rtrim;
-use function sprintf;
-use function str_pad;
 use function str_repeat;
 use function str_replace;
 use function strpos;
 use function trim;
 use function ucfirst;
 use function wordwrap;
+use const STR_PAD_RIGHT;
 
 /**
  * Class FormatUtil
@@ -169,28 +166,18 @@ final class FormatUtil
     }
 
     /**
-     * @param float $memory
-     *
-     * @return string
      * ```
      * FormatUtil::memoryUsage(memory_get_usage(true));
      * ```
+     *
+     * @param float|int $memory
+     *
+     * @return string
+     * @deprecated use Format::memory($secs);
      */
     public static function memoryUsage($memory): string
     {
-        if ($memory >= 1024 * 1024 * 1024) {
-            return sprintf('%.2f Gb', $memory / 1024 / 1024 / 1024);
-        }
-
-        if ($memory >= 1024 * 1024) {
-            return sprintf('%.2f Mb', $memory / 1024 / 1024);
-        }
-
-        if ($memory >= 1024) {
-            return sprintf('%.2f Kb', $memory / 1024);
-        }
-
-        return sprintf('%d B', $memory);
+        return Format::memory($memory);
     }
 
     /**
@@ -199,40 +186,15 @@ final class FormatUtil
      * @param int $secs
      *
      * @return string
+     * @deprecated use Format::howLongAgo($secs);
      */
     public static function howLongAgo(int $secs): string
     {
-        static $timeFormats = [
-            [0, '< 1 sec'],
-            [1, '1 sec'],
-            [2, 'secs', 1],
-            [60, '1 min'],
-            [120, 'mins', 60],
-            [3600, '1 hr'],
-            [7200, 'hrs', 3600],
-            [86400, '1 day'],
-            [172800, 'days', 86400],
-        ];
-
-        foreach ($timeFormats as $index => $format) {
-            if ($secs >= $format[0]) {
-                $next = $timeFormats[$index + 1] ?? false;
-
-                if (($next && $secs < $next[0]) || $index === count($timeFormats) - 1) {
-                    if (2 === count($format)) {
-                        return $format[1];
-                    }
-
-                    return floor($secs / $format[2]) . ' ' . $format[1];
-                }
-            }
-        }
-
-        return date('Y-m-d H:i:s', $secs);
+        return Format::howLongAgo($secs);
     }
 
     /**
-     * splice Array
+     * Splice array
      *
      * @param array $data
      *     e.g [
@@ -251,12 +213,13 @@ final class FormatUtil
             'sepChar'     => ' ',  // e.g ' | ' OUT: key | value
             'keyStyle'    => '',   // e.g 'info','comment'
             'valStyle'    => '',   // e.g 'info','comment'
+            'keyPadPos'   => STR_PAD_RIGHT,
             'keyMinWidth' => 8,
-            'keyMaxWidth' => null, // if not set, will automatic calculation
+            'keyMaxWidth' => 0, // if not set, will automatic calculation
             'ucFirst'     => true,  // upper first char for value
         ], $opts);
 
-        if (!is_numeric($opts['keyMaxWidth'])) {
+        if ($opts['keyMaxWidth'] < 1) {
             $opts['keyMaxWidth'] = Helper::getKeyMaxWidth($data);
         }
 
@@ -265,14 +228,15 @@ final class FormatUtil
             $opts['keyMaxWidth'] = $opts['keyMinWidth'];
         }
 
-        $keyStyle = trim($opts['keyStyle']);
+        $keyStyle  = trim($opts['keyStyle']);
+        $keyPadPos = (int)$opts['keyPadPos'];
 
         foreach ($data as $key => $value) {
             $hasKey = !is_int($key);
             $text   .= $opts['leftChar'];
 
             if ($hasKey && $opts['keyMaxWidth']) {
-                $key  = str_pad((string)$key, $opts['keyMaxWidth'], ' ');
+                $key  = Str::pad((string)$key, $opts['keyMaxWidth'], ' ', $keyPadPos);
                 $text .= ColorTag::wrap($key, $keyStyle) . $opts['sepChar'];
             }
 

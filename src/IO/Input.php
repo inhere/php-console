@@ -10,12 +10,15 @@ namespace Inhere\Console\IO;
 
 use Toolkit\Cli\Cli;
 use Toolkit\Cli\Flags;
+use Toolkit\Cli\Helper\FlagHelper;
+use Toolkit\FsUtil\File;
 use function array_map;
 use function array_shift;
 use function basename;
 use function fgets;
 use function fwrite;
 use function implode;
+use function is_string;
 use function preg_match;
 use function trim;
 
@@ -62,21 +65,29 @@ class Input extends AbstractInput
     }
 
     /**
-     * @param array $args
+     * @param array $rawFlags
      */
-    protected function collectInfo(array $args): void
+    protected function collectInfo(array $rawFlags): void
     {
         $this->getPwd();
+        if (!$rawFlags) {
+            return;
+        }
 
-        $this->tokens = $args;
+        $this->tokens = $rawFlags;
 
-        $script = array_shift($args);
-        $this->setScript($script);
+        // first is bin file
+        if (isset($rawFlags[0]) && is_string($rawFlags[0])) {
+            $this->script = array_shift($rawFlags);
 
-        $this->flags = $args; // no script
+            // bin name
+            $this->scriptName = basename($this->script);
+        }
+
+        $this->flags = $rawFlags; // no script
 
         // full script
-        $this->fullScript = implode(' ', $args);
+        $this->fullScript = implode(' ', $rawFlags);
     }
 
     /**
@@ -127,11 +138,11 @@ class Input extends AbstractInput
     protected function tokenEscape(string $token): string
     {
         if (preg_match('{^(-[^=]+=)(.+)}', $token, $match)) {
-            return $match[1] . Flags::escapeToken($match[2]);
+            return $match[1] . FlagHelper::escapeToken($match[2]);
         }
 
         if ($token && $token[0] !== '-') {
-            return Flags::escapeToken($token);
+            return FlagHelper::escapeToken($token);
         }
 
         return $token;
@@ -145,13 +156,13 @@ class Input extends AbstractInput
      *
      * @return string
      */
-    public function read(string $question = '', bool $nl = false): string
+    public function readln(string $question = '', bool $nl = false): string
     {
         if ($question) {
-            fwrite(Cli::getOutputStream(), $question . ($nl ? "\n" : ''));
+            fwrite($this->inputStream, $question . ($nl ? "\n" : ''));
         }
 
-        return trim((string)fgets($this->inputStream));
+        return File::streamFgets($this->inputStream);
     }
 
     /***********************************************************************************
@@ -161,9 +172,17 @@ class Input extends AbstractInput
     /**
      * @return string
      */
+    public function getBinWithCommand(): string
+    {
+        return $this->scriptName . ' ' . $this->getCommandPath();
+    }
+
+    /**
+     * @return string
+     */
     public function getFullCommand(): string
     {
-        return $this->script . ' ' . $this->command;
+        return $this->script . ' ' . $this->getCommandPath();
     }
 
     /**

@@ -378,6 +378,16 @@ class Router implements RouterInterface
     /**
      * @param $name
      *
+     * @return array
+     */
+    public function getControllerInfo(string $name): array
+    {
+        return $this->controllers[$name] ?? [];
+    }
+
+    /**
+     * @param $name
+     *
      * @return bool
      */
     public function isController(string $name): bool

@@ -23,7 +23,6 @@ use function mb_strlen;
 use function rtrim;
 use function strip_tags;
 use function trim;
-use function ucwords;
 use const PHP_EOL;
 
 /**
@@ -159,7 +158,7 @@ EOF;
 
         // output title
         if ($title) {
-            $title = ucwords($title);
+            $title = Str::ucwords($title);
 
             $titleLength = mb_strlen($title, 'UTF-8');
             $panelWidth  = $panelWidth > $titleLength ? $panelWidth : $titleLength;
@@ -257,7 +256,8 @@ EOF;
 
         // output title
         if ($title) {
-            $title       = ucwords($title);
+            $title = Str::ucwords($title);
+
             $titleLength = mb_strlen($title, 'UTF-8');
             $panelWidth  = $panelWidth > $titleLength ? $panelWidth : $titleLength;
             $indentSpace = Str::pad(' ', ceil($panelWidth / 2) - ceil($titleLength / 2) + 2 * 2, ' ');

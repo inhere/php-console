@@ -2,8 +2,24 @@
 
 ## v4.0.x
 
-> begin at: 2020.08.21
+> begin at: 2020.08.21, branch `master`
 
+## v3.1.21
+
+## v3.1.20
+
+**update**
+
+- update some for error tips and single list
+- add before/after methods on run controller method.
+- support controller object cache on repeat fetch
+- enhance built in php serve util logic
+
+## v3.1.19
+
+> publish at 2021.04.20
+
+- up: use `Str::padByWidth` support zh-CN words on render table/list/panel
 
 ## v3.0.x
 

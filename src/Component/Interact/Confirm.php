@@ -2,7 +2,7 @@
 
 namespace Inhere\Console\Component\Interact;
 
-use Inhere\Console\Component\InteractMessage;
+use Inhere\Console\Component\InteractiveHandle;
 use Inhere\Console\Console;
 use Inhere\Console\Util\Show;
 use function stripos;
@@ -14,7 +14,7 @@ use function ucfirst;
  *
  * @package Inhere\Console\Component\Interact
  */
-class Confirm extends InteractMessage
+class Confirm extends InteractiveHandle
 {
     /**
      * Send a message request confirmation
@@ -37,7 +37,6 @@ class Confirm extends InteractMessage
 
         while (true) {
             $answer = Console::readChar($message);
-
             if ('' === $answer) {
                 return $default;
             }
@@ -50,7 +49,5 @@ class Confirm extends InteractMessage
                 return false;
             }
         }
-
-        return false;
     }
 }

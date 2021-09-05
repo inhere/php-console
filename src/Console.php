@@ -16,6 +16,7 @@ use function strpos;
 use function trim;
 use const DEBUG_BACKTRACE_IGNORE_ARGS;
 use const JSON_UNESCAPED_SLASHES;
+use const PHP_EOL;
 
 /**
  * Class Console
@@ -57,8 +58,10 @@ class Console extends Cli
     ];
 
     public const CMD_GROUP  = 1;
-
     public const CMD_SINGLE = 2;
+
+    // eg: CONSOLE_DEBUG=4 php my-console
+    public const DEBUG_ENV_KEY = 'CONSOLE_DEBUG';
 
     /**
      * @var Application
@@ -134,7 +137,7 @@ class Console extends Cli
         $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, self::$traceIndex + 2);
         $position  = self::formatBacktrace($backtrace, self::$traceIndex);
 
-        self::writef('%s [%s] [%s] %s', $datetime, $tagName, $position, $message);
+        self::writef('%s [%s] [%s] %s' . PHP_EOL, $datetime, $tagName, $position, $message);
     }
 
     /**
@@ -173,7 +176,7 @@ class Console extends Cli
         $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, self::$traceIndex + 2);
         $position  = self::formatBacktrace($backtrace, self::$traceIndex);
 
-        self::writef('%s [%s] [%s]%s %s %s', $datetime, $taggedName, $position, $optString, trim($msg), $dataString);
+        self::writef('%s [%s] [%s]%s %s %s' . PHP_EOL, $datetime, $taggedName, $position, $optString, trim($msg), $dataString);
     }
 
     /**

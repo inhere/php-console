@@ -1,17 +1,22 @@
 #compdef {{binName}}
 # ------------------------------------------------------------------------------
 #          DATE:  {{datetime}}
-#          FILE:  auto-completion.zsh
+#          FILE:  {{filename}}
 #        AUTHOR:  inhere (https://github.com/inhere)
 #       VERSION:  {{version}}
+#      HOMEPAGE:  https://github.com/inhere/php-console
 #   DESCRIPTION:  zsh shell complete for console app: {{binName}}
 # ------------------------------------------------------------------------------
-# usage: source auto-completion.zsh
+#
+# temp usage:
+#   source {{filename}}
+# add to ~/.zshrc:
+#   source path/to/{{filename}}
 
 _complete_for_{{fmtBinName}} () {
     local -a commands
     IFS=$'\n'
-    commands=(
+    commands+=(
 {{commands}}
     )
 
