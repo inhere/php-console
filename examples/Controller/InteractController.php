@@ -11,7 +11,7 @@ namespace Inhere\Console\Examples\Controller;
 use Inhere\Console\Controller;
 use Inhere\Console\Util\Interact;
 use Inhere\Console\Util\Show;
-use Toolkit\Cli\Terminal;
+use Toolkit\Cli\Util\Terminal;
 use function preg_match;
 
 /**
@@ -141,28 +141,28 @@ class InteractController extends Controller
         $this->write('this is a message text.', false);
 
         sleep(1);
-        Terminal::make()->cursor(Terminal::CUR_BACKWARD, 6);
+        Terminal::instance()->cursor(Terminal::CURSOR_BACKWARD, 6);
 
         sleep(1);
-        Terminal::make()->cursor(Terminal::CUR_FORWARD, 3);
+        Terminal::instance()->cursor(Terminal::CURSOR_FORWARD, 3);
 
         sleep(1);
-        Terminal::make()->cursor(Terminal::CUR_BACKWARD, 2);
+        Terminal::instance()->cursor(Terminal::CURSOR_BACKWARD, 2);
 
         sleep(2);
 
-        Terminal::make()->screen(Terminal::CLEAR_LINE, 3);
+        Terminal::instance()->screen(Terminal::CLEAR_LINE, 3);
 
         $this->write('after 2s scroll down 3 row.');
 
         sleep(2);
 
-        Terminal::make()->screen(Terminal::SCROLL_DOWN, 3);
+        Terminal::instance()->screen(Terminal::SCROLL_DOWN, 3);
 
         $this->write('after 3s clear screen.');
 
         sleep(3);
 
-        Terminal::make()->screen(Terminal::CLEAR);
+        Terminal::instance()->screen(Terminal::CLEAR);
     }
 }
