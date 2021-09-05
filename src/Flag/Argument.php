@@ -6,9 +6,7 @@
  * Time: 10:33
  */
 
-namespace Inhere\Console\IO\Input;
-
-use Inhere\Console\IO\Input;
+namespace Inhere\Console\Flag;
 
 /**
  * Class InputArgument
@@ -16,7 +14,7 @@ use Inhere\Console\IO\Input;
  *
  * @package Inhere\Console\IO\Input
  */
-class InputArgument extends InputFlag
+class Argument extends Flag
 {
     /**
      * The argument position
@@ -30,7 +28,7 @@ class InputArgument extends InputFlag
      */
     public function isArray(): bool
     {
-        return $this->hasMode(Input::ARG_IS_ARRAY);
+        return $this->hasMode(Flag::ARG_IS_ARRAY);
     }
 
     /**
@@ -38,7 +36,7 @@ class InputArgument extends InputFlag
      */
     public function isOptional(): bool
     {
-        return $this->hasMode(Input::ARG_OPTIONAL);
+        return $this->hasMode(Flag::ARG_OPTIONAL);
     }
 
     /**
@@ -46,7 +44,7 @@ class InputArgument extends InputFlag
      */
     public function isRequired(): bool
     {
-        return $this->hasMode(Input::ARG_REQUIRED);
+        return $this->hasMode(Flag::ARG_REQUIRED);
     }
 
     /**

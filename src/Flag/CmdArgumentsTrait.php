@@ -6,7 +6,7 @@
  * Time: 10:11
  */
 
-namespace Inhere\Console\IO\Input;
+namespace Inhere\Console\Flag;
 
 /**
  * Class InputArguments
@@ -14,12 +14,25 @@ namespace Inhere\Console\IO\Input;
  *
  * @package Inhere\Console\IO\Input
  */
-class InputArguments
+trait CmdArgumentsTrait
 {
     /**
-     * @var array
+     * @var array [name => index]
+     */
+    private $name2index = [];
+
+    /**
+     * @var Argument[]
      */
     private $arguments = [];
+
+    /**
+     * @param Argument $argument
+     */
+    public function addArgument(Argument $argument): void
+    {
+        $this->arguments[] = $argument;
+    }
 
     /**
      * @param string      $name

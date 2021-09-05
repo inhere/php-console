@@ -6,18 +6,17 @@
  * Time: 10:28
  */
 
-namespace Inhere\Console\IO\Input;
+namespace Inhere\Console\Flag;
 
-use Inhere\Console\IO\Input;
 use function implode;
 
 /**
- * Class InputOption
- * - definition a input option
+ * Class Option
+ * - definition a input flag option
  *
  * @package Inhere\Console\IO\Input
  */
-class InputOption extends InputFlag
+class Option extends Flag
 {
     /**
      * alias name
@@ -31,10 +30,10 @@ class InputOption extends InputFlag
      *
      * @var array
      */
-    private $shortcuts = [];
+    private $shorts = [];
 
     /**
-     * eg: 'a|b'
+     * Shortcuts of the option, string format. eg: 'a|b'
      *
      * @var string
      */
@@ -45,7 +44,7 @@ class InputOption extends InputFlag
      */
     public function isArray(): bool
     {
-        return $this->hasMode(Input::OPT_IS_ARRAY);
+        return $this->hasMode(Flag::OPT_IS_ARRAY);
     }
 
     /**
@@ -53,7 +52,7 @@ class InputOption extends InputFlag
      */
     public function isOptional(): bool
     {
-        return $this->hasMode(Input::OPT_OPTIONAL);
+        return $this->hasMode(Flag::OPT_OPTIONAL);
     }
 
     /**
@@ -61,7 +60,7 @@ class InputOption extends InputFlag
      */
     public function isRequired(): bool
     {
-        return $this->hasMode(Input::OPT_REQUIRED);
+        return $this->hasMode(Flag::OPT_REQUIRED);
     }
 
     /**
@@ -69,7 +68,7 @@ class InputOption extends InputFlag
      */
     public function isBoolean(): bool
     {
-        return $this->hasMode(Input::OPT_BOOLEAN);
+        return $this->hasMode(Flag::OPT_BOOLEAN);
     }
 
     /**
@@ -97,31 +96,30 @@ class InputOption extends InputFlag
     }
 
     /**
-     * @param string $shortcut
+     * @param string $shortcut eg: 'a|b'
      */
-    public function setShortcutsByString(string $shortcut): void
+    public function setShortcut(string $shortcut): void
     {
         $shortcuts = preg_split('{(\|)-?}', ltrim($shortcut, '-'));
         $shortcuts = array_filter($shortcuts);
 
-        $this->setShortcuts($shortcuts);
+        $this->setShorts($shortcuts);
     }
 
     /**
      * @return array
      */
-    public function getShortcuts(): array
+    public function getShorts(): array
     {
-        return $this->shortcuts;
+        return $this->shorts;
     }
 
     /**
-     * @param array $shortcuts
+     * @param array $shorts
      */
-    public function setShortcuts(array $shortcuts): void
+    public function setShorts(array $shorts): void
     {
-        $this->shortcuts = $shortcuts;
-        $this->shortcut  = implode('|', $shortcuts);
+        $this->shorts   = $shorts;
+        $this->shortcut = implode('|', $shorts);
     }
-
 }

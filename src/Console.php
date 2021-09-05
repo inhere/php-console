@@ -56,6 +56,10 @@ class Console extends Cli
         self::VERB_CRAZY => 'magenta',
     ];
 
+    public const CMD_GROUP  = 1;
+
+    public const CMD_SINGLE = 2;
+
     /**
      * @var Application
      */
@@ -75,6 +79,22 @@ class Console extends Cli
     public static function setApp(Application $app): void
     {
         self::$app = $app;
+    }
+
+    /**
+     * @return Input
+     */
+    public static function getInput(): Input
+    {
+        return self::$app->getInput();
+    }
+
+    /**
+     * @return Output
+     */
+    public static function getOutput(): Output
+    {
+        return self::$app->getOutput();
     }
 
     /**

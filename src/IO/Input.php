@@ -69,11 +69,11 @@ class Input extends AbstractInput
         $this->getPwd();
 
         $this->tokens = $args;
-        $this->script = array_shift($args);
-        $this->flags  = $args; // no script
 
-        // bin name
-        $this->scriptName = basename($this->script);
+        $script = array_shift($args);
+        $this->setScript($script);
+
+        $this->flags = $args; // no script
 
         // full script
         $this->fullScript = implode(' ', $args);

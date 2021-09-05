@@ -346,7 +346,7 @@ class Application extends AbstractApplication
 
             $object::setName($name);
             $object->setApp($this);
-            $result = $object->run();
+            $result = $object->run([]);
         }
 
         return $result;
@@ -398,6 +398,6 @@ class Application extends AbstractApplication
             $handler->setDetached();
         }
 
-        return $handler->run($action);
+        return $handler->run([$action]);
     }
 }

@@ -28,17 +28,12 @@ use ReflectionException;
  */
 abstract class Command extends AbstractHandler implements CommandInterface
 {
+    public const METHOD = 'execute';
+
     /**
      * @var Command
      */
     protected $parent;
-
-    /**
-     * sub-commands of the command
-     *
-     * @var Command[]
-     */
-    protected $commands = [];
 
     /*
      * Do execute command
@@ -60,6 +55,34 @@ abstract class Command extends AbstractHandler implements CommandInterface
     // }
 
     /**
+     * @param Command $parent
+     */
+    public function setParent(Command $parent): void
+    {
+        $this->parent = $parent;
+    }
+
+    /**
+     * @return $this
+     */
+    public function getRootCommand(): Command
+    {
+        if ($this->parent) {
+            return $this->parent->getRootCommand();
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Command|null
+     */
+    public function getParent(): ?Command
+    {
+        return $this->parent;
+    }
+
+    /**
      * Show help information
      *
      * @return bool
@@ -75,7 +98,7 @@ abstract class Command extends AbstractHandler implements CommandInterface
             return true;
         }
 
-        $execMethod = 'execute';
+        $execMethod = self::METHOD;
 
         $this->logf(Console::VERB_CRAZY, "display help info for the command: %s", self::getName());
 

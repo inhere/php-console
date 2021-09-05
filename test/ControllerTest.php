@@ -12,7 +12,7 @@ use PHPUnit\Framework\TestCase;
  */
 class ControllerTest extends TestCase
 {
-    public function testBasic()
+    public function testBasic(): void
     {
         $c = new TestController(new Input(), new Output());
 

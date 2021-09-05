@@ -21,6 +21,15 @@ class TestCommand extends Command
 
     protected static $description = 'this is a test independent command';
 
+    protected function commands(): array
+    {
+        return [
+            'sub' => static function($in, $out) {
+                $out->println('hello, this is an sub command of test.');
+            },
+        ];
+    }
+
     /**
      * test text
      * @usage {name} test message

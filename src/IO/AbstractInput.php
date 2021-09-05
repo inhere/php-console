@@ -11,6 +11,7 @@ namespace Inhere\Console\IO;
 use Inhere\Console\Concern\InputArgumentsTrait;
 use Inhere\Console\Concern\InputOptionsTrait;
 use Inhere\Console\Contract\InputInterface;
+use function basename;
 use function getcwd;
 use function is_int;
 use function trim;
@@ -30,7 +31,7 @@ abstract class AbstractInput implements InputInterface
     protected $pwd;
 
     /**
-     * The script path
+     * The bin script path
      * e.g `./bin/app` OR `bin/cli.php`
      *
      * @var string
@@ -38,7 +39,7 @@ abstract class AbstractInput implements InputInterface
     protected $script;
 
     /**
-     * The script name
+     * The bin script name
      * e.g `app` OR `cli.php`
      *
      * @var string
@@ -165,11 +166,23 @@ abstract class AbstractInput implements InputInterface
     }
 
     /**
+     * @return string
+     */
+    public function getScriptPath(): string
+    {
+        return $this->script;
+    }
+
+    /**
      * @param string $script
      */
     public function setScript(string $script): void
     {
-        $this->script = $script;
+        if ($script) {
+            $this->script = $script;
+            // update scriptName
+            $this->scriptName = basename($script);
+        }
     }
 
     /**
