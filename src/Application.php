@@ -373,7 +373,7 @@ class Application extends AbstractApplication
         }
 
         // Command method, no suffix
-        return $controller->run($info['action']);
+        return $controller->run([$info['action']]);
     }
 
     /**
