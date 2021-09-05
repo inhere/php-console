@@ -66,12 +66,19 @@ abstract class AbstractApplication implements ApplicationInterface
 
     /** @var array */
     protected static $globalOptions = [
+        // '--debug'          => 'int;no;1;Setting the runtime log debug level(quiet 0 - 5 crazy)',
         '--debug'          => 'Setting the runtime log debug level(quiet 0 - 5 crazy)',
+        // '--ishell'         => 'bool;no;false;Run application an interactive shell environment',
         '--ishell'         => 'Run application an interactive shell environment',
+        // '--profile'        => 'bool;no;false;Display timing and memory usage information',
         '--profile'        => 'Display timing and memory usage information',
+        // '--no-color'       => 'bool;no;false;Disable color/ANSI for message output',
         '--no-color'       => 'Disable color/ANSI for message output',
+        // '-h, --help'       => 'bool;no;false;Display this help message',
         '-h, --help'       => 'Display this help message',
+        // '-V, --version'    => 'bool;no;false;Show application version information',
         '-V, --version'    => 'Show application version information',
+        // '--no-interactive' => 'bool;no;false;Run commands in a non-interactive environment',
         '--no-interactive' => 'Run commands in a non-interactive environment',
     ];
 
