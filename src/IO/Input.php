@@ -11,6 +11,7 @@ namespace Inhere\Console\IO;
 use Toolkit\Cli\Cli;
 use Toolkit\Cli\Flags;
 use Toolkit\Cli\Helper\FlagHelper;
+use Toolkit\FsUtil\File;
 use function array_map;
 use function array_shift;
 use function basename;
@@ -64,29 +65,29 @@ class Input extends AbstractInput
     }
 
     /**
-     * @param array $args
+     * @param array $rawFlags
      */
-    protected function collectInfo(array $args): void
+    protected function collectInfo(array $rawFlags): void
     {
         $this->getPwd();
-        if (!$args) {
+        if (!$rawFlags) {
             return;
         }
 
-        $this->tokens = $args;
+        $this->tokens = $rawFlags;
 
         // first is bin file
-        if (isset($args[0]) && is_string($args[0])) {
-            $this->script = array_shift($args);
+        if (isset($rawFlags[0]) && is_string($rawFlags[0])) {
+            $this->script = array_shift($rawFlags);
 
             // bin name
             $this->scriptName = basename($this->script);
         }
 
-        $this->flags = $args; // no script
+        $this->flags = $rawFlags; // no script
 
         // full script
-        $this->fullScript = implode(' ', $args);
+        $this->fullScript = implode(' ', $rawFlags);
     }
 
     /**
@@ -155,13 +156,13 @@ class Input extends AbstractInput
      *
      * @return string
      */
-    public function read(string $question = '', bool $nl = false): string
+    public function readln(string $question = '', bool $nl = false): string
     {
         if ($question) {
-            fwrite(Cli::getOutputStream(), $question . ($nl ? "\n" : ''));
+            fwrite($this->inputStream, $question . ($nl ? "\n" : ''));
         }
 
-        return trim((string)fgets($this->inputStream));
+        return File::streamFgets($this->inputStream);
     }
 
     /***********************************************************************************

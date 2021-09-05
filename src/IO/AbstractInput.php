@@ -11,6 +11,8 @@ namespace Inhere\Console\IO;
 use Inhere\Console\Concern\InputArgumentsTrait;
 use Inhere\Console\Concern\InputOptionsTrait;
 use Inhere\Console\Contract\InputInterface;
+use Toolkit\PFlag\AbstractFlags;
+use Toolkit\PFlag\SFlags;
 use function getcwd;
 use function is_int;
 use function trim;
@@ -23,6 +25,20 @@ use function trim;
 abstract class AbstractInput implements InputInterface
 {
     use InputArgumentsTrait, InputOptionsTrait;
+
+    /**
+     * Global flags parser
+     *
+     * @var AbstractFlags|SFlags
+     */
+    protected $gfs;
+
+    /**
+     * Command flags parser
+     *
+     * @var AbstractFlags|SFlags
+     */
+    protected $fs;
 
     /**
      * @var string
@@ -69,7 +85,8 @@ abstract class AbstractInput implements InputInterface
     protected $fullScript;
 
     /**
-     * Raw argv data.
+     * Raw input argv data.
+     * - first element is script file
      *
      * @var array
      */
@@ -135,6 +152,14 @@ abstract class AbstractInput implements InputInterface
         }
 
         return $path;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isInteractive(): bool
+    {
+        return false;
     }
 
     /***********************************************************************************
@@ -264,14 +289,6 @@ abstract class AbstractInput implements InputInterface
     /**
      * @return array
      */
-    public function getRawArgs(): array
-    {
-        return $this->tokens;
-    }
-
-    /**
-     * @return array
-     */
     public function getTokens(): array
     {
         return $this->tokens;
@@ -299,5 +316,37 @@ abstract class AbstractInput implements InputInterface
     public function setSubCommand(string $subCommand): void
     {
         $this->subCommand = $subCommand;
+    }
+
+    /**
+     * @return AbstractFlags
+     */
+    public function getGfs(): AbstractFlags
+    {
+        return $this->gfs;
+    }
+
+    /**
+     * @param AbstractFlags $gfs
+     */
+    public function setGfs(AbstractFlags $gfs): void
+    {
+        $this->gfs = $gfs;
+    }
+
+    /**
+     * @return AbstractFlags
+     */
+    public function getFs(): AbstractFlags
+    {
+        return $this->fs;
+    }
+
+    /**
+     * @param AbstractFlags $fs
+     */
+    public function setFs(AbstractFlags $fs): void
+    {
+        $this->fs = $fs;
     }
 }

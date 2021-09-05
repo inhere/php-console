@@ -38,7 +38,7 @@ interface InputInterface
      *
      * @return string
      */
-    public function read(string $question = '', bool $nl = false): string;
+    public function readln(string $question = '', bool $nl = false): string;
 
     /**
      * @return string
@@ -77,4 +77,9 @@ interface InputInterface
      * @return bool|mixed|null
      */
     public function getOpt(string $name, $default = null);
+
+    /**
+     * Whether the stream is an interactive terminal
+     */
+    public function isInteractive() : bool;
 }

@@ -2,7 +2,6 @@
 
 namespace Inhere\Console\IO\Output;
 
-use Inhere\Console\IO\Output;
 use function fopen;
 
 /**
@@ -10,7 +9,7 @@ use function fopen;
  *
  * @package Inhere\Console\IO\Output
  */
-class BufferOutput extends Output
+class MemoryOutput extends StreamOutput
 {
     public function __construct()
     {
