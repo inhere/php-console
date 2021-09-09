@@ -18,22 +18,53 @@ use function trim;
 class Choose extends InteractiveHandle
 {
     /**
+     * @var array
+     */
+    protected $data = [];
+
+    /**
+     * @var bool
+     */
+    protected $allowExit = true;
+
+    /**
+     * The default selected key
+     *
+     * @var string
+     */
+    protected $default;
+
+    /**
+     * The selected key
+     *
+     * @var string
+     */
+    protected $selected;
+
+    /**
+     * @var string
+     */
+    protected $selectedVal;
+
+    /**
      * Choose one of several options
      *
-     * @param string       $description
-     * @param string|array $options Option data
-     *                              e.g
-     *                              [
-     *                              // option => value
-     *                              '1' => 'chengdu',
-     *                              '2' => 'beijing'
-     *                              ]
-     * @param string|int   $default Default option
-     * @param bool         $allowExit
+     * @param string          $description
+     * @param string|array    $options Option data
+     *                                 e.g
+     *                                 [
+     *                                 // option => value
+     *                                 '1' => 'chengdu',
+     *                                 '2' => 'beijing'
+     *                                 ]
+     * @param null|int|string $default Default option
+     * @param bool            $allowExit
+     * @param array           $opts
+     * @psalm-param array{returnVal: bool, retFilter: callable}  $opts
      *
      * @return string
      */
-    public static function one(string $description, $options, $default = null, bool $allowExit = true): string
+    public static function one(string $description, $options, $default = null, bool $allowExit = true, array $opts = []): string
     {
         if (!$description = trim($description)) {
             Show::error('Please provide a description text!', 1);
@@ -69,6 +100,15 @@ class Choose extends InteractiveHandle
         // exit
         if ($r === 'q') {
             Console::write("\n  Quit,ByeBye.", true, true);
+        }
+
+        // return value
+        if ($opts['returnVal'] ?? false) {
+            $r = $options[$r];
+        }
+
+        if ($retFn = $opts['retFilter'] ?? null) {
+            $r = $retFn($r);
         }
 
         return $r;

@@ -29,6 +29,11 @@ abstract class InteractiveHandle
     protected $validator;
 
     /**
+     * @var callable
+     */
+    protected $ansFilter;
+
+    /**
      * Class constructor.
      *
      * @param array $options
@@ -47,5 +52,21 @@ abstract class InteractiveHandle
     {
         $this->validator = $validator;
         return $this;
+    }
+
+    /**
+     * @return callable
+     */
+    public function getAnsFilter(): callable
+    {
+        return $this->ansFilter;
+    }
+
+    /**
+     * @param callable $ansFilter
+     */
+    public function setAnsFilter(callable $ansFilter): void
+    {
+        $this->ansFilter = $ansFilter;
     }
 }

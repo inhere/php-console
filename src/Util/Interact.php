@@ -78,14 +78,15 @@ class Interact extends Show
      *
      * @param string       $description 说明
      * @param string|array $options     选项数据
-     * @param int|string   $default     默认选项
+     * @param null         $default     默认选项
      * @param bool         $allowExit   有退出选项 默认 true
+     * @param array        $opts
      *
      * @return string
      */
-    public static function select(string $description, $options, $default = null, bool $allowExit = true): string
+    public static function select(string $description, $options, $default = null, bool $allowExit = true, array $opts = []): string
     {
-        return self::choice($description, $options, $default, $allowExit);
+        return self::choice($description, $options, $default, $allowExit, $opts);
     }
 
     /**
@@ -99,14 +100,15 @@ class Interact extends Show
      *                              '1' => 'chengdu',
      *                              '2' => 'beijing'
      *                              ]
-     * @param string|int   $default Default option
+     * @param null         $default Default option
      * @param bool         $allowExit
+     * @param array        $opts
      *
      * @return string
      */
-    public static function choice(string $description, $options, $default = null, bool $allowExit = true): string
+    public static function choice(string $description, $options, $default = null, bool $allowExit = true, array $opts = []): string
     {
-        return Choose::one($description, $options, $default, $allowExit);
+        return Choose::one($description, $options, $default, $allowExit, $opts);
     }
 
     /**

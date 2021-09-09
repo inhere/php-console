@@ -55,7 +55,7 @@ use function substr;
  *
  * @method confirm(string $question, bool $default = true): bool
  * @method unConfirm(string $question, bool $default = true): bool
- * @method select(string $description, $options, $default = null, bool $allowExit = true): string
+ * @method string select(string $description, $options, $default = null, bool $allowExit = true, array $opts = [])
  * @method checkbox(string $description, $options, $default = null, bool $allowExit = true): array
  * @method ask(string $question, string $default = '', Closure $validator = null): string
  * @method askPassword(string $prompt = 'Enter Password:'): string
