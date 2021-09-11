@@ -11,6 +11,7 @@ namespace Inhere\Console;
 use Generator;
 use Inhere\Console\Concern\ControllerHelpTrait;
 use Inhere\Console\Contract\ControllerInterface;
+use Inhere\Console\Exception\ConsoleException;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\InputDefinition;
 use Inhere\Console\IO\Output;
@@ -19,6 +20,9 @@ use Inhere\Console\Util\Helper;
 use ReflectionClass;
 use ReflectionObject;
 use RuntimeException;
+use Toolkit\Cli\Helper\FlagHelper;
+use Toolkit\PFlag\AbstractFlags;
+use Toolkit\PFlag\SFlags;
 use Toolkit\Stdlib\Str;
 use function array_flip;
 use function array_keys;
@@ -86,9 +90,24 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
     private $actionSuffix = self::COMMAND_SUFFIX;
 
     /**
-     * @var array Common options for all sub-commands in the group
+     * @var string
      */
-    private $groupOptions = [];
+    private $commandName = '';
+
+    /**
+     * Flags for all action commands
+     *
+     * ```php
+     * [
+     *  action => AbstractFlags,
+     *  action2 => AbstractFlags2,
+     * ]
+     * ```
+     *
+     * @var AbstractFlags[]
+     * @psalm-var array<string, AbstractFlags>
+     */
+    private $subFss = [];
 
     /**
      * @var array From disabledCommands()
@@ -142,29 +161,18 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
 
     protected function init(): void
     {
+        parent::init();
+
         self::loadCommandAliases();
 
         $list = $this->disabledCommands();
 
         // save to property
         $this->disabledCommands = $list ? array_flip($list) : [];
-        $this->groupOptions     = $this->groupOptions();
 
         if (!$this->actionSuffix) {
             $this->actionSuffix = self::COMMAND_SUFFIX;
         }
-    }
-
-    /**
-     * Options for the group all commands.
-     * you can set common options for all sub-commands
-     *
-     * @return array
-     */
-    protected function groupOptions(): array
-    {
-        // ['--skip-invalid' => 'Whether ignore invalid arguments and options, when use input definition',]
-        return [];
     }
 
     /**
@@ -191,25 +199,6 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
         return false;
     }
 
-    /**
-     * @param string $command
-     *
-     * @return string
-     */
-    protected function findCommandName(string $command): string
-    {
-        if (!$command = trim($command, $this->delimiter)) {
-            $command = $this->defaultAction;
-
-            // try use next arg as sub-command name.
-            if (!$command) {
-                $command = $this->input->findCommandName();
-            }
-        }
-
-        return $command;
-    }
-
     protected function beforeRun(): void
     {
     }
@@ -218,16 +207,27 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
      * @param array $args
      *
      * @return int|mixed
+     * @throws \Throwable
      */
-    public function run(array $args)
+    public function doRun(array $args)
     {
-        $command = $args[0];
-        $command = $this->findCommandName($command);
+        $name = self::getName();
+        if (!$args) {
+            $command = $this->defaultAction;
 
-        // if not input subcommand, render group help.
-        if (!$command) {
-            $this->debugf('not input subcommand, display help for the group: %s', self::getName());
-            return $this->showHelp();
+            // and not default command
+            if (!$command) {
+                $this->debugf('run args is empty, display help for the group: %s', $name);
+                return $this->showHelp();
+            }
+        } else {
+            $first = $args[0];
+            if (!FlagHelper::isValidName($first)) {
+                $this->debugf('not input subcommand, display help for the group: %s', self::getName());
+                return $this->showHelp();
+            }
+
+            $command = $first;
         }
 
         // update subcommand
@@ -262,7 +262,7 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
         }
 
         // do running
-        return parent::run([$command]);
+        return parent::doRun([$command]);
     }
 
     /**
@@ -276,6 +276,18 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
         if (method_exists($this, $method)) {
             $this->$method($this->input);
         }
+    }
+
+    /**
+     * @return AbstractFlags
+     */
+    protected function createSubFlags(): AbstractFlags
+    {
+        $fs = new SFlags();
+
+        $this->subFss[$this->action] = $fs;
+
+        return $fs;
     }
 
     /**
@@ -434,15 +446,7 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
      */
     protected function beforeRenderCommandHelp(array &$help): void
     {
-        $help['Group Options:'] = FormatUtil::alignOptions($this->groupOptions);
-    }
-
-    /**
-     * @return array
-     */
-    public function getGroupOptions(): array
-    {
-        return $this->groupOptions;
+        $help['Group Options:'] = FormatUtil::alignOptions($this->commandOptions);
     }
 
     /**
@@ -680,5 +684,33 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
         $action = $command ?: $this->action;
 
         return $this->commandMetas[$action][$key] ?? $default;
+    }
+
+    /**
+     * @param string $action
+     *
+     * @return AbstractFlags|null
+     */
+    public function getActionFlags(string $action): ?AbstractFlags
+    {
+        $action = $action ?: $this->action;
+
+        return $this->subFss[$action] ?? null;
+    }
+
+    /**
+     * @param string $action
+     *
+     * @return AbstractFlags
+     */
+    public function actionFlags(string $action): AbstractFlags
+    {
+        $action = $action ?: $this->action;
+
+        if (!isset($this->subFss[$action])) {
+            throw new ConsoleException("not found flags parser for the action: $action");
+        }
+
+        return $this->subFss[$action];
     }
 }

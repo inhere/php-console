@@ -12,6 +12,7 @@ namespace Inhere\Console\Util;
 
 use FilesystemIterator;
 use Inhere\Console\Concern\RuntimeProfileTrait;
+use Inhere\Console\ConsoleConst;
 use InvalidArgumentException;
 use Iterator;
 use RecursiveCallbackFilterIterator;
@@ -23,12 +24,11 @@ use Toolkit\Stdlib\Arr\ArrayHelper;
 use function class_exists;
 use function file_exists;
 use function is_dir;
-use function is_numeric;
-use function mb_strlen;
 use function mkdir;
 use function preg_match;
 use function similar_text;
 use function sprintf;
+use function strlen;
 use function strpos;
 
 /**
@@ -83,19 +83,32 @@ class Helper
 
     /**
      * @param string $name
+     */
+    public static function checkCmdPath(string $name): void
+    {
+        if (!self::isValidCmdPath($name)) {
+            throw new InvalidArgumentException("The command name '$name' is invalid");
+        }
+    }
+
+    /**
+     * @param string $name
      *
      * @return bool
      */
-    public static function validName(string $name): bool
+    public static function isValidCmdPath(string $name): bool
     {
-        // '/^[a-z][\w-]*:?([a-z][\w-]+)?$/'
-        $pattern = '/^[a-z][\w:-]+$/';
+        return strlen($name) < ConsoleConst::CMD_PATH_MAX_LEN && preg_match(ConsoleConst::REGEX_CMD_PATH, $name) === 1;
+    }
 
-        if (1 !== preg_match($pattern, $name)) {
-            throw new InvalidArgumentException("The command name '$name' is must match: $pattern");
-        }
-
-        return true;
+    /**
+     * @param string $name
+     *
+     * @return bool
+     */
+    public static function isValidCmdName(string $name): bool
+    {
+        return strlen($name) < ConsoleConst::CMD_NAME_MAX_LEN && preg_match(ConsoleConst::REGEX_CMD_NAME, $name) === 1;
     }
 
     /**

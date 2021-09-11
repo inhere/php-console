@@ -19,6 +19,15 @@ class CallableCommand extends Command
      */
     private $callable;
 
+    // public function new(callable $callable): self
+    // {
+    // }
+
+    // public function __construct(Input $input, Output $output, InputDefinition $definition = null)
+    // {
+    //     parent::__construct($input, $output, $definition);
+    // }
+
     // /**
     //  * @param callable $cb
     //  *

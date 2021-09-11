@@ -15,12 +15,10 @@ use Toolkit\FsUtil\File;
 use function array_map;
 use function array_shift;
 use function basename;
-use function fgets;
 use function fwrite;
 use function implode;
 use function is_string;
 use function preg_match;
-use function trim;
 
 /**
  * Class Input - The input information. by parse global var $argv.
@@ -78,10 +76,10 @@ class Input extends AbstractInput
 
         // first is bin file
         if (isset($rawFlags[0]) && is_string($rawFlags[0])) {
-            $this->script = array_shift($rawFlags);
+            $this->scriptFile = array_shift($rawFlags);
 
             // bin name
-            $this->scriptName = basename($this->script);
+            $this->scriptName = basename($this->scriptFile);
         }
 
         $this->flags = $rawFlags; // no script
@@ -182,7 +180,7 @@ class Input extends AbstractInput
      */
     public function getFullCommand(): string
     {
-        return $this->script . ' ' . $this->getCommandPath();
+        return $this->scriptFile . ' ' . $this->getCommandPath();
     }
 
     /**

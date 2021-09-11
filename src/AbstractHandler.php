@@ -26,6 +26,7 @@ use ReflectionClass;
 use RuntimeException;
 use Swoole\Coroutine;
 use Swoole\Event;
+use Toolkit\PFlag\SFlags;
 use Toolkit\Stdlib\Obj\ConfigObject;
 use Toolkit\Stdlib\Util\PhpDoc;
 use function array_diff_key;
@@ -118,6 +119,11 @@ abstract class AbstractHandler implements CommandHandlerInterface
     protected $params;
 
     /**
+     * @var array Command options
+     */
+    protected $commandOptions = [];
+
+    /**
      * Whether enabled
      *
      * @return bool
@@ -143,17 +149,15 @@ abstract class AbstractHandler implements CommandHandlerInterface
      *
      * @param Input           $input
      * @param Output          $output
-     * @param InputDefinition|null $definition
      */
     // TODO public function __construct(Input $input = null, Output $output = null, InputDefinition $definition = null)
-    public function __construct(Input $input, Output $output, InputDefinition $definition = null)
+    public function __construct(Input $input, Output $output)
     {
         $this->input  = $input;
         $this->output = $output;
 
-        if ($definition) {
-            $this->definition = $definition;
-        }
+        // init an flags object
+        $this->flags = new SFlags();
 
         $this->init();
     }
@@ -167,13 +171,33 @@ abstract class AbstractHandler implements CommandHandlerInterface
         $this->addCommands($this->commands());
     }
 
+    /**
+     * command options
+     *
+     * **Alone Command**
+     *
+     * - set options for command
+     *
+     * **Group Controller**
+     *
+     * - set options for the group.
+     * you can set common options for all sub-commands
+     *
+     * @return array
+     */
+    protected function options(): array
+    {
+        // ['--skip-invalid' => 'Whether ignore invalid arguments and options, when use input definition',]
+        return [];
+    }
+
     protected function afterInit(): void
     {
         // do something...
     }
 
     /**
-     * Configure input definition for command, like symfony console.
+     * Configure for the command/controller.
      */
     protected function configure(): void
     {
@@ -214,7 +238,7 @@ abstract class AbstractHandler implements CommandHandlerInterface
     protected function annotationVars(): array
     {
         $fullCmd = $this->input->getFullCommand();
-        $binFile = $this->input->getScript(); // bin/app
+        $binFile = $this->input->getScriptFile(); // bin/app
         $binName = $this->input->getScriptName();
         $command = $this->input->getCommand();
 
@@ -238,6 +262,54 @@ abstract class AbstractHandler implements CommandHandlerInterface
      * running a command
      **************************************************************************/
 
+    protected function initForRun(Input $input, array $args): void
+    {
+        $input->setFs($this->flags);
+
+        // set options by options()
+        $optRules = $this->options();
+        // TODO merge static::$globalOptions
+
+        $this->flags->addOptsByRules($optRules);
+        $this->flags->setHelpRenderer(function () {
+            $this->showHelp();
+        });
+
+    }
+
+    /**
+     * @param array $args
+     *
+     * @return bool|int|mixed
+     */
+    public function run(array $args)
+    {
+        try {
+            $this->initForRun($this->input, $args);
+
+            $this->logf(Console::VERB_DEBUG, 'init run - begin parse options');
+
+            // parse options
+            if (!$this->flags->parse($args)) {
+                return -1; // on error, help
+            }
+
+            $args = $this->flags->getRawArgs();
+
+            return $this->doRun($args);
+        } catch (\Throwable $e) {
+            if ($this->isDetached()) {
+                // TODO exception handle
+            } else {
+                // throw $e;
+            }
+
+            throw $e;
+        }
+
+        return -1;
+    }
+
     /**
      * run command
      *
@@ -245,7 +317,7 @@ abstract class AbstractHandler implements CommandHandlerInterface
      *
      * @return int|mixed
      */
-    public function run(array $args)
+    public function doRun(array $args)
     {
         if (isset($args[0])) {
             $first = $args[0];
@@ -475,7 +547,7 @@ abstract class AbstractHandler implements CommandHandlerInterface
             // $first = array_shift($names);
             $first = '';
             foreach ($names as $name) {
-                if (!Application::isGlobalOption($name)) {
+                if (!GlobalOption::isExists($name)) {
                     $first = $name;
                     break;
                 }
@@ -571,7 +643,7 @@ abstract class AbstractHandler implements CommandHandlerInterface
         }
 
         // align global options
-        $help['global options:'] = FormatUtil::alignOptions(Application::getGlobalOptions());
+        $help['global options:'] = FormatUtil::alignOptions(GlobalOption::getOptions());
 
         $isAlone = $this->isAlone();
         if ($isAlone && empty($help[0])) {
@@ -677,7 +749,7 @@ abstract class AbstractHandler implements CommandHandlerInterface
         }
 
         $help['Group Options:']  = null;
-        $help['Global Options:'] = FormatUtil::alignOptions(Application::getGlobalOptions());
+        $help['Global Options:'] = FormatUtil::alignOptions(GlobalOption::getOptions());
 
         $this->beforeRenderCommandHelp($help);
 
@@ -735,11 +807,21 @@ abstract class AbstractHandler implements CommandHandlerInterface
     }
 
     /**
+     * @param string $desc
+     */
+    public static function setDesc(string $desc): void
+    {
+        self::setDescription($desc);
+    }
+
+    /**
      * @param string $description
      */
     public static function setDescription(string $description): void
     {
-        static::$description = $description;
+        if ($description) {
+            static::$description = $description;
+        }
     }
 
     /**
@@ -751,7 +833,7 @@ abstract class AbstractHandler implements CommandHandlerInterface
     }
 
     /**
-     * @param bool $coroutine
+     * @param bool|mixed $coroutine
      */
     public static function setCoroutine($coroutine): void
     {

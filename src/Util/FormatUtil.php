@@ -139,6 +139,10 @@ final class FormatUtil
      */
     public static function alignOptions(array $options): array
     {
+        if (!$options) {
+            return [];
+        }
+
         // e.g '-h, --help'
         $hasShort = (bool)strpos(implode('', array_keys($options)), ',');
 

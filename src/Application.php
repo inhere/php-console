@@ -16,6 +16,7 @@ use Inhere\Console\Util\Helper;
 use InvalidArgumentException;
 use RuntimeException;
 use SplFileInfo;
+use function array_unshift;
 use function class_exists;
 use function implode;
 use function is_object;
@@ -256,9 +257,12 @@ class Application extends AbstractApplication
      ****************************************************************************/
 
     /**
-     * @inheritdoc
+     * @param string $name
+     * @param array  $args
+     *
+     * @return int|mixed
      */
-    public function dispatch(string $name, bool $detachedRun = false)
+    public function dispatch(string $name, array $args = [])
     {
         if (!$name = trim($name)) {
             throw new InvalidArgumentException('cannot dispatch an empty command');
@@ -300,6 +304,7 @@ class Application extends AbstractApplication
 
         // save command ID
         $cmdOptions = $info['options'];
+        unset($info['options']);
         $this->input->setCommandId($info['cmdId']);
 
         // is command
@@ -308,7 +313,7 @@ class Application extends AbstractApplication
         }
 
         // is controller/group
-        return $this->runAction($info, $cmdOptions, $detachedRun);
+        return $this->runAction($info, $cmdOptions, $args);
     }
 
     /**
@@ -355,25 +360,27 @@ class Application extends AbstractApplication
      * Execute an action in a group command(controller)
      *
      * @param array $info Matched route info
+     * @psalm-param array{action: string} $info Matched route info
      * @param array $options
      * @param bool  $detachedRun
      *
      * @return mixed
      */
-    protected function runAction(array $info,  array $options, bool $detachedRun = false)
+    protected function runAction(array $info, array $options, array $args, bool $detachedRun = false)
     {
         $controller = $this->createController($info);
-
-        if ($desc = $options['description'] ?? '') {
-            $controller::setDescription($desc);
-        }
+        $controller::setDesc($options['description'] ?? '');
 
         if ($detachedRun) {
             $controller->setDetached();
         }
 
+        if ($info['action']) {
+            array_unshift($args, $info['action']);
+        }
+
         // Command method, no suffix
-        return $controller->run([$info['action']]);
+        return $controller->run($args);
     }
 
     /**

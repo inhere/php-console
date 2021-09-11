@@ -43,7 +43,7 @@ interface InputInterface
     /**
      * @return string
      */
-    public function getScript(): string;
+    public function getScriptFile(): string;
 
     /**
      * @return string

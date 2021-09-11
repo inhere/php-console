@@ -61,7 +61,7 @@ class HomeController extends Controller
     /**
      * @return array
      */
-    protected function groupOptions(): array
+    protected function options(): array
     {
         return [
             '-c, --common' => 'This is a common option for all sub-commands',

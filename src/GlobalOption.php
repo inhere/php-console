@@ -2,6 +2,8 @@
 
 namespace Inhere\Console;
 
+use function array_merge;
+
 /**
  * Class GlobalOption
  *
@@ -32,10 +34,84 @@ class GlobalOption
         'ishell'         => 1,
         'profile'        => 1,
         'no-color'       => 1,
-        'h'              => 1,
+        // 'h'              => 1,
         'help'           => 1,
-        'V'              => 1,
+        // 'V'              => 1,
         'version'        => 1,
         'no-interactive' => 1,
     ];
+
+    /**
+     * @var array
+     * @psalm-var array<string, string>
+     */
+    private static $options = [
+        '--debug'          => 'int;Setting the runtime log debug level(quiet 0 - 5 crazy);no;1',
+        // '--debug'          => 'Setting the runtime log debug level(quiet 0 - 5 crazy)',
+        '--ishell'         => 'bool;Run application an interactive shell environment',
+        // '--ishell'         => 'Run application an interactive shell environment',
+        '--profile'        => 'bool;Display timing and memory usage information',
+        // '--profile'        => 'Display timing and memory usage information',
+        '--no-color'       => 'bool;Disable color/ANSI for message output',
+        // '--no-color'       => 'Disable color/ANSI for message output',
+        '--help'       => 'bool;Display this help message;;;h',
+        // '-h, --help'       => 'Display this help message',
+        '--version'    => 'bool;Show application version information;;;V',
+        // '-V, --version'    => 'Show application version information',
+        '--no-interactive' => 'bool;Run commands in a non-interactive environment',
+        // '--no-interactive' => 'Run commands in a non-interactive environment',
+    ];
+
+    /**
+     * @var array global options for the group command
+     */
+    protected static $groupOptions = [
+        '--show-disabled' => 'string;Whether display disabled commands',
+    ];
+
+    /**
+     * @param string $name
+     *
+     * @return bool
+     */
+    public static function isExists(string $name): bool
+    {
+        return isset(self::KEY_MAP[$name]);
+    }
+
+    /**
+     * @param array $options
+     */
+    public function setOptions(array $options): void
+    {
+        if ($options) {
+            self::$options = $options;
+        }
+    }
+
+    /**
+     * @param array $options
+     */
+    public function addOptions(array $options): void
+    {
+        if ($options) {
+            self::$options = array_merge(self::$options, $options);
+        }
+    }
+
+    /**
+     * @return array
+     */
+    public static function getOptions(): array
+    {
+        return self::$options;
+    }
+
+    /**
+     * @return array
+     */
+    public static function getGroupOptions(): array
+    {
+        return self::$groupOptions;
+    }
 }

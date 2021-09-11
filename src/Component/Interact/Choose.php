@@ -15,37 +15,8 @@ use function trim;
  *
  * @package Inhere\Console\Component\Interact
  */
-class Choose extends InteractiveHandle
+class Choose extends SingleSelect
 {
-    /**
-     * @var array
-     */
-    protected $data = [];
-
-    /**
-     * @var bool
-     */
-    protected $allowExit = true;
-
-    /**
-     * The default selected key
-     *
-     * @var string
-     */
-    protected $default;
-
-    /**
-     * The selected key
-     *
-     * @var string
-     */
-    protected $selected;
-
-    /**
-     * @var string
-     */
-    protected $selectedVal;
-
     /**
      * Choose one of several options
      *

@@ -43,11 +43,11 @@ interface ApplicationInterface
      *                            - 'command'
      *                            - 'group:action'
      *                            - 'group action'
-     * @param bool   $detachedRun Use for an group commands execution alone
+     * @param array  $args
      *
      * @return int|mixed
      */
-    public function dispatch(string $name, bool $detachedRun = false);
+    public function dispatch(string $name, array $args = []);
 
     /**
      * @param int $code

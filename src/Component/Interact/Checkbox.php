@@ -2,7 +2,6 @@
 
 namespace Inhere\Console\Component\Interact;
 
-use Inhere\Console\Component\InteractiveHandle;
 use Inhere\Console\Console;
 use Inhere\Console\Util\Show;
 use function array_filter;
@@ -17,7 +16,7 @@ use function trim;
  *
  * @package Inhere\Console\Component\Interact
  */
-class Checkbox extends InteractiveHandle
+class Checkbox extends MultiSelect
 {
     /**
      * List multiple options and allow multiple selections
@@ -40,7 +39,7 @@ class Checkbox extends InteractiveHandle
 
         // If default option is error
         if (null !== $default && !isset($options[$default])) {
-            Show::error("The default option [{$default}] don't exists.", true);
+            Show::error("The default option [$default] don't exists.", true);
         }
 
         if ($allowExit) {

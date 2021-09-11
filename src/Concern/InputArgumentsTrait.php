@@ -115,7 +115,7 @@ trait InputArgumentsTrait
     }
 
     /**
-     * get Argument
+     * get argument
      *
      * @param null|int|string $name
      * @param mixed           $default

@@ -12,6 +12,7 @@ use Inhere\Console\IO\Input;
 use Inhere\Console\Contract\InputInterface;
 use Inhere\Console\IO\Output;
 use Inhere\Console\Contract\OutputInterface;
+use Toolkit\PFlag\AbstractFlags;
 use Toolkit\PFlag\SFlags;
 
 /**
@@ -22,9 +23,9 @@ use Toolkit\PFlag\SFlags;
 trait InputOutputAwareTrait
 {
     /**
-     * @var SFlags
+     * @var SFlags|AbstractFlags
      */
-    // protected $flags;
+    protected $flags;
 
     /**
      * @var Input|InputInterface
@@ -41,7 +42,7 @@ trait InputOutputAwareTrait
      */
     public function getScript(): string
     {
-        return $this->input->getScript();
+        return $this->input->getScriptFile();
     }
 
     /**
@@ -50,14 +51,6 @@ trait InputOutputAwareTrait
     public function getScriptName(): string
     {
         return $this->input->getScriptName();
-    }
-
-    /**
-     * @return string
-     */
-    public function getCommandName(): string
-    {
-        return $this->input->getCommand();
     }
 
     /**
@@ -203,5 +196,21 @@ trait InputOutputAwareTrait
     public function setOutput(OutputInterface $output): void
     {
         $this->output = $output;
+    }
+
+    /**
+     * @return AbstractFlags|SFlags
+     */
+    public function getFlags(): AbstractFlags
+    {
+        return $this->flags;
+    }
+
+    /**
+     * @param AbstractFlags|SFlags $flags
+     */
+    public function setFlags(AbstractFlags $flags): void
+    {
+        $this->flags = $flags;
     }
 }

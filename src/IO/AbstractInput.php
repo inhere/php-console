@@ -47,12 +47,12 @@ abstract class AbstractInput implements InputInterface
     protected $pwd = '';
 
     /**
-     * The bin script path
+     * The bin script file
      * e.g `./bin/app` OR `bin/cli.php`
      *
      * @var string
      */
-    protected $script = '';
+    protected $scriptFile = '';
 
     /**
      * The bin script name
@@ -198,9 +198,9 @@ abstract class AbstractInput implements InputInterface
     /**
      * @return string
      */
-    public function getScript(): string
+    public function getScriptFile(): string
     {
-        return $this->script;
+        return $this->scriptFile;
     }
 
     /**
@@ -208,18 +208,18 @@ abstract class AbstractInput implements InputInterface
      */
     public function getScriptPath(): string
     {
-        return $this->script;
+        return $this->scriptFile;
     }
 
     /**
-     * @param string $script
+     * @param string $scriptFile
      */
-    public function setScript(string $script): void
+    public function setScriptFile(string $scriptFile): void
     {
-        if ($script) {
-            $this->script = $script;
+        if ($scriptFile) {
+            $this->scriptFile = $scriptFile;
             // update scriptName
-            $this->scriptName = basename($script);
+            $this->scriptName = basename($scriptFile);
         }
     }
 

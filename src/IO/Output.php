@@ -137,7 +137,7 @@ class Output extends AbstractOutput
      *
      * @return int
      */
-    public function stderr(string $text = '', $nl = true): int
+    public function stderr(string $text = '', bool $nl = true): int
     {
         return Console::write($text, $nl, [
             'steam' => $this->errorStream,

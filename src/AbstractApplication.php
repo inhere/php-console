@@ -11,27 +11,30 @@ namespace Inhere\Console;
 use ErrorException;
 use Inhere\Console\Component\ErrorHandler;
 use Inhere\Console\Component\Formatter\Title;
+use Inhere\Console\Concern\ApplicationHelpTrait;
+use Inhere\Console\Concern\InputOutputAwareTrait;
+use Inhere\Console\Concern\SimpleEventAwareTrait;
 use Inhere\Console\Concern\StyledOutputAwareTrait;
 use Inhere\Console\Contract\ApplicationInterface;
 use Inhere\Console\Contract\ErrorHandlerInterface;
 use Inhere\Console\Contract\InputInterface;
+use Inhere\Console\Contract\OutputInterface;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
-use Inhere\Console\Contract\OutputInterface;
-use Inhere\Console\Concern\ApplicationHelpTrait;
-use Inhere\Console\Concern\InputOutputAwareTrait;
-use Inhere\Console\Concern\SimpleEventAwareTrait;
+use Inhere\Console\Util\Helper;
 use Inhere\Console\Util\Interact;
 use InvalidArgumentException;
 use Throwable;
 use Toolkit\Cli\Style;
 use Toolkit\Cli\Util\LineParser;
+use Toolkit\PFlag\SFlags;
 use Toolkit\Stdlib\Helper\PhpHelper;
 use Toolkit\Stdlib\OS;
 use Toolkit\Sys\Proc\ProcessUtil;
 use Toolkit\Sys\Proc\Signal;
 use function array_keys;
 use function array_merge;
+use function array_shift;
 use function error_get_last;
 use function header;
 use function in_array;
@@ -64,24 +67,6 @@ abstract class AbstractApplication implements ApplicationInterface
         'list'    => 'List all group and alone commands',
     ];
 
-    /** @var array */
-    protected static $globalOptions = [
-        // '--debug'          => 'int;no;1;Setting the runtime log debug level(quiet 0 - 5 crazy)',
-        '--debug'          => 'Setting the runtime log debug level(quiet 0 - 5 crazy)',
-        // '--ishell'         => 'bool;no;false;Run application an interactive shell environment',
-        '--ishell'         => 'Run application an interactive shell environment',
-        // '--profile'        => 'bool;no;false;Display timing and memory usage information',
-        '--profile'        => 'Display timing and memory usage information',
-        // '--no-color'       => 'bool;no;false;Disable color/ANSI for message output',
-        '--no-color'       => 'Disable color/ANSI for message output',
-        // '-h, --help'       => 'bool;no;false;Display this help message',
-        '-h, --help'       => 'Display this help message',
-        // '-V, --version'    => 'bool;no;false;Show application version information',
-        '-V, --version'    => 'Show application version information',
-        // '--no-interactive' => 'bool;no;false;Run commands in a non-interactive environment',
-        '--no-interactive' => 'Run commands in a non-interactive environment',
-    ];
-
     /** @var array Application runtime stats */
     protected $stats = [
         'startTime'   => 0,
@@ -90,12 +75,23 @@ abstract class AbstractApplication implements ApplicationInterface
         'endMemory'   => 0,
     ];
 
+    /**
+     * @var string
+     */
+    public $delimiter = ':'; // '/' ':'
+
+    /**
+     * @var string
+     */
+    protected $commandName = '';
+
+    /**
+     * @var string Command delimiter char. e.g dev:serve
+     */
     /** @var array Application config data */
     protected $config = [
         'name'           => 'My Console Application',
         'description'    => 'This is my console application',
-        'debug'          => Console::VERB_ERROR,
-        'profile'        => false,
         'version'        => '0.5.1',
         'homepage'       => '', // can provide you app homepage url
         'publishAt'      => '2017.03.24',
@@ -103,22 +99,21 @@ abstract class AbstractApplication implements ApplicationInterface
         'rootPath'       => '',
         'ishellName'     => '', // name prefix on i-shell env.
         'strictMode'     => false,
+        // hide root path on dump error stack
         'hideRootPath'   => true,
-        // global options
-        'no-interactive' => true,
+        // ---- global options
+        'no-interactive' => false,
+        'debug'          => Console::VERB_ERROR,
+        'profile'        => false,
 
         // 'timeZone' => 'Asia/Shanghai',
         // 'env' => 'prod', // dev test prod
         // 'charset' => 'UTF-8',
 
-        'logoText'  => '',
-        'logoStyle' => 'info',
+        // other settings.
+        'logoText'       => '',
+        'logoStyle'      => 'info',
     ];
-
-    /**
-     * @var string Command delimiter char. e.g dev:serve
-     */
-    public $delimiter = ':'; // '/' ':'
 
     /**
      * @var Router
@@ -149,6 +144,8 @@ abstract class AbstractApplication implements ApplicationInterface
 
         $this->input  = $input ?: new Input();
         $this->output = $output ?: new Output();
+
+        $this->flags  = new SFlags();
         $this->router = new Router();
 
         $this->init();
@@ -175,41 +172,37 @@ abstract class AbstractApplication implements ApplicationInterface
         $this->logf(Console::VERB_DEBUG, 'console application init completed');
     }
 
-    /**
-     * @param string $name
-     *
-     * @return bool
-     */
-    public static function isGlobalOption(string $name): bool
-    {
-        return isset(GlobalOption::KEY_MAP[$name]);
-    }
-
-    /**
-     * @return array
-     */
-    public static function getGlobalOptions(): array
-    {
-        return self::$globalOptions;
-    }
-
-    /**
-     * @param array $options
-     */
-    public function addGlobalOptions(array $options): void
-    {
-        if ($options) {
-            self::$globalOptions = array_merge(self::$globalOptions, $options);
-        }
-    }
-
     /**********************************************************
      * app run
      **********************************************************/
 
+    protected function initForRun(Input $input): void
+    {
+        $input->setGfs($this->flags);
+
+        // binding global options
+        $this->logf(Console::VERB_DEBUG, 'init - add and binding global options');
+        $this->flags->addOptsByRules(GlobalOption::getOptions());
+        $this->flags->setScriptFile($input->getScriptFile());
+        $this->flags->setAutoBindArgs(false);
+
+        // set helper render
+        $this->flags->setHelpRenderer(function () {
+            $this->showHelpInfo();
+            $this->stop();
+        });
+
+        // parse options
+        $this->logf(Console::VERB_DEBUG, 'init - begin parse global options');
+        $this->flags->parse($input->getFlags());
+
+    }
+
     protected function prepareRun(): void
     {
-        if ($this->input->getSameOpt(['no-color'])) {
+        // if ($this->input->getSameOpt(['no-color'])) {
+        // if disable color
+        if ($this->flags->getOpt(GlobalOption::NO_COLOR)) {
             Style::setNoColor();
         }
 
@@ -217,8 +210,66 @@ abstract class AbstractApplication implements ApplicationInterface
         // new AutoCompletion(array_merge($this->getCommandNames(), $this->getControllerNames()));
     }
 
-    protected function beforeRun(): void
+    /**
+     * @return bool Return true for continue handle.
+     */
+    protected function handleGlobalOption(): bool
     {
+        // TIP help option has been handled by `initGlobalFlags.setHelpRenderer`
+
+        // if ($this->input->getSameBoolOpt(GlobalOption::VERSION_OPTS)) {
+        if ($this->flags->getOpt(GlobalOption::VERSION)) {
+            $this->showVersionInfo();
+            return false;
+        }
+
+        // if ($this->input->getBoolOpt(GlobalOption::ISHELL)) {
+        if ($this->flags->getOpt(GlobalOption::ISHELL)) {
+            $this->startInteractiveShell();
+            return false;
+        }
+
+        return true;
+    }
+
+    protected function beforeRun(): bool
+    {
+        // eg: --version, --help
+        if (!$this->handleGlobalOption()) {
+            return false;
+        }
+
+        $remainArgs = $this->flags->getRawArgs();
+
+        // not input command
+        if (!$remainArgs) {
+            $this->showCommandList();
+            return false;
+        }
+
+        // remain first arg as command name.
+        $firstArg = array_shift($remainArgs);
+
+        if (!Helper::isValidCmdPath($firstArg)) {
+            $this->output->liteError('input an invalid command name');
+            $this->showCommandList();
+            return false;
+        }
+
+        $command = trim($firstArg, $this->delimiter);
+        // save name.
+        $this->commandName = $command;
+        $this->flags->popFirstRawArg();
+        $this->input->setCommand($command);
+        $this->logf(Console::VERB_DEBUG, 'found the application command: %s', $command);
+
+        // like: help, version, list
+        if (!$this->handleGlobalCommand($command)) {
+            return false;
+        }
+
+        // continue
+        return true;
     }
 
     /**
@@ -231,24 +282,22 @@ abstract class AbstractApplication implements ApplicationInterface
      */
     public function run(bool $exit = true)
     {
-        $command = trim($this->input->getCommand(), $this->delimiter);
-
-        $this->logf(Console::VERB_DEBUG, 'begin run the application, command is: %s', $command);
-
         try {
+            // init
+            $this->initForRun($this->input);
+
             $this->prepareRun();
 
-            // like: help, version, list
-            if ($this->filterSpecialCommand($command)) {
+            // fire event ON_BEFORE_RUN, if it is registered.
+            $this->fire(ConsoleEvent::ON_BEFORE_RUN, $this);
+            if (!$this->beforeRun()) {
                 return 0;
             }
 
-            // call 'onBeforeRun' service, if it is registered.
-            $this->fire(ConsoleEvent::ON_BEFORE_RUN, $this);
-            $this->beforeRun();
-
             // do run ...
-            $result = $this->dispatch($command);
+            $command = $this->commandName;
+            $result  = $this->dispatch($command, $this->flags->getRawArgs());
+
         } catch (Throwable $e) {
             $this->fire(ConsoleEvent::ON_RUN_ERROR, $e, $this);
             $result = $e->getCode() === 0 ? $e->getLine() : $e->getCode();
@@ -293,6 +342,27 @@ abstract class AbstractApplication implements ApplicationInterface
         exit($code);
     }
 
+    public function runWithArgs(array $args)
+    {
+        $this->input->setArgs($args);
+
+        return $this->run(false);
+    }
+
+    /**
+     * @param InputInterface  $input
+     * @param OutputInterface $output
+     */
+    public function runWithIO(InputInterface $input, OutputInterface $output): void
+    {
+        $app = $this->copy();
+        $app->setInput($input);
+        $app->setOutput($output);
+
+        $this->debugf('copy application and run with new input, output');
+        $app->run(false);
+    }
+
     /**
      * @param string          $command
      * @param InputInterface  $input
@@ -309,20 +379,6 @@ abstract class AbstractApplication implements ApplicationInterface
         $this->debugf('copy application and run command(%s) with new input, output', $command);
 
         return $app->dispatch($command);
-    }
-
-    /**
-     * @param InputInterface  $input
-     * @param OutputInterface $output
-     */
-    public function runWithIO(InputInterface $input, OutputInterface $output): void
-    {
-        $app = $this->copy();
-        $app->setInput($input);
-        $app->setOutput($output);
-
-        $this->debugf('copy application and run with new input, output');
-        $app->run(false);
     }
 
     /**
@@ -401,34 +457,15 @@ abstract class AbstractApplication implements ApplicationInterface
     /**
      * @param string $command
      *
-     * @return bool True will stop run, False will goon run give command.
+     * @return bool False will stop run
      */
-    protected function filterSpecialCommand(string $command): bool
+    protected function handleGlobalCommand(string $command): bool
     {
-        if (!$command) {
-            if ($this->input->getSameBoolOpt(GlobalOption::VERSION_OPTS)) {
-                $this->showVersionInfo();
-                return true;
-            }
-
-            if ($this->input->getSameBoolOpt(GlobalOption::HELP_OPTS)) {
-                $this->showHelpInfo();
-                return true;
-            }
-
-            if ($this->input->getBoolOpt(GlobalOption::ISHELL)) {
-                $this->startInteractiveShell();
-                return true;
-            }
-
-            // default run list command
-            // $command = $this->defaultCommand ? 'list';
-            $command = 'list';
-            // is user command
-        } elseif (!$this->isInternalCommand($command)) {
-            return false;
+        if (!$this->isInternalCommand($command)) {
+            return true;
         }
 
+        $this->logf(Console::VERB_DEBUG, 'run the global command: %s', $command);
         switch ($command) {
             case 'help':
                 $this->showHelpInfo($this->input->getFirstArg());
@@ -439,10 +476,8 @@ abstract class AbstractApplication implements ApplicationInterface
             case 'version':
                 $this->showVersionInfo();
                 break;
-            default:
-                return false;
         }
-        return true;
+        return false;
     }
 
     /**********************************************************
@@ -454,7 +489,7 @@ abstract class AbstractApplication implements ApplicationInterface
      */
     protected function startInteractiveShell(): void
     {
-        $in = $this->input;
+        $in  = $this->input;
         $out = $this->output;
 
         $out->title("Welcome interactive shell for run application", [
@@ -695,7 +730,7 @@ abstract class AbstractApplication implements ApplicationInterface
     /**
      * Get config param value
      *
-     * @param string $name
+     * @param string            $name
      * @param null|string|mixed $default
      *
      * @return array|string
@@ -732,17 +767,22 @@ abstract class AbstractApplication implements ApplicationInterface
      */
     public function getVerbLevel(): int
     {
-        $key = GlobalOption::DEBUG;
+        $optKey = GlobalOption::DEBUG;
 
         // feat: support set debug level by ENV var: CONSOLE_DEBUG
         $envVal = OS::getEnvStrVal(Console::DEBUG_ENV_KEY);
         if ($envVal !== '') {
             $setVal = (int)$envVal;
         } else {
-            $setVal = (int)$this->config[$key];
+            $setVal = (int)$this->config[$optKey];
         }
 
-        return (int)$this->input->getLongOpt($key, $setVal);
+        if (!$this->flags->hasOpt($optKey)) {
+            return $setVal;
+        }
+
+        // return (int)$this->input->getLongOpt($key, $setVal);
+        return $this->flags->getOpt($optKey, $setVal);
     }
 
     /**
@@ -752,10 +792,11 @@ abstract class AbstractApplication implements ApplicationInterface
      */
     public function isProfile(): bool
     {
-        $key = GlobalOption::PROFILE;
-        $def = (bool)$this->getParam($key, false);
+        $optKey  = GlobalOption::PROFILE;
+        $default = (bool)$this->getParam($optKey, false);
 
-        return $this->input->getBoolOpt($key, $def);
+        // return $this->input->getBoolOpt($key, $def);
+        return $this->flags->getOpt($optKey, $default);
     }
 
     /**
@@ -765,11 +806,11 @@ abstract class AbstractApplication implements ApplicationInterface
      */
     public function isInteractive(): bool
     {
-        $key = GlobalOption::NO_INTERACTIVE;
-        $def = (bool)$this->getParam($key, true);
-        $val = $this->input->getBoolOpt($key, $def);
+        $optKey  = GlobalOption::NO_INTERACTIVE;
+        $default = (bool)$this->getParam($optKey, false);
 
-        return $val === false;
+        // $value = $this->input->getBoolOpt($optKey, $default);
+        return $this->flags->getOpt($optKey, $default) === false;
     }
 
     /**
@@ -786,5 +827,13 @@ abstract class AbstractApplication implements ApplicationInterface
     public function setErrorHandler(ErrorHandlerInterface $errorHandler): void
     {
         $this->errorHandler = $errorHandler;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCommandName(): string
+    {
+        return $this->commandName;
     }
 }

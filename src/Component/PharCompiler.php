@@ -59,6 +59,8 @@ class PharCompiler
 
     public const ON_ERROR = 'error';
 
+    public const ON_BEFORE_PACK = 'before_pack';
+
     public const ON_MESSAGE = 'message';
 
     public const ON_COLLECTED = 'collected';
@@ -459,6 +461,7 @@ class PharCompiler
         // $this->excludes = \array_flip($this->excludes);
 
         $this->collectInformation();
+        $this->fire(self::ON_BEFORE_PACK, $this);
 
         $phar = new Phar($pharFile, 0, $pharName);
 

@@ -130,7 +130,8 @@ trait ApplicationHelpTrait
         $binName   = $in->getScriptName();
 
         // built in options
-        $globalOptions = self::$globalOptions;
+        // $globalOptions = self::$globalOptions;
+        $globalOptions = $this->flags->getOptSimpleDefines();
         // append generate options:
         // php examples/app --auto-completion --shell-env zsh --gen-file
         // php examples/app --auto-completion --shell-env zsh --gen-file stdout
@@ -284,7 +285,8 @@ trait ApplicationHelpTrait
         $scriptName = $this->getScriptName();
 
         // built in options
-        $globOpts = self::$globalOptions;
+        // $globOpts = self::$globalOptions;
+        $globOpts = $this->flags->getOptSimpleDefines();
 
         Show::mList([
             'Usage:'              => "$scriptName <info>{COMMAND}</info> [--opt -v -h ...] [arg0 arg1 arg2=value2 ...]",

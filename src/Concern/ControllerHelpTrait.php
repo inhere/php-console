@@ -2,8 +2,8 @@
 
 namespace Inhere\Console\Concern;
 
-use Inhere\Console\Application;
 use Inhere\Console\Console;
+use Inhere\Console\GlobalOption;
 use Inhere\Console\Util\FormatUtil;
 use ReflectionClass;
 use Toolkit\Cli\ColorTag;
@@ -144,17 +144,23 @@ trait ControllerHelpTrait
         // if is alone running.
         if ($detached = $this->isDetached()) {
             $name  = $sName . ' ';
-            $usage = "$script <info>{command}</info> [--options ...] [arguments ...]";
+            $usage = "$script <info>COMMAND</info> [--options ...] [arguments ...]";
         } else {
-            $name  = $sName . $this->delimiter;
+            $name = $sName . $this->delimiter;
             // $usage = "$script {$name}<info>{command}</info> [--options ...] [arguments ...]";
             $usage = [
-                "$script $name<info>{command}</info> [--options ...] [arguments ...]",
-                "$script $sName <info>{command}</info> [--options ...] [arguments ...]",
+                "$script $name<info>COMMAND</info> [--options ...] [arguments ...]",
+                "$script $sName <info>COMMAND</info> [--options ...] [arguments ...]",
             ];
         }
 
-        $globalOptions = array_merge(Application::getGlobalOptions(), static::$globalOptions);
+        $globalOptions = static::$globalOptions;
+        if ($app = $this->getApp()) {
+            $globalOptions = array_merge(
+                $app->getFlags()->getOptSimpleDefines(),
+                static::$globalOptions
+            );
+        }
 
         $this->output->startBuffer();
         $this->output->write(ucfirst($classDes) . PHP_EOL);
