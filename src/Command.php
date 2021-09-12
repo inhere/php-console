@@ -100,6 +100,6 @@ abstract class Command extends AbstractHandler implements CommandInterface
 
         $this->logf(Console::VERB_CRAZY, "display help info for the command: %s", self::getName());
 
-        return $this->showHelpByMethodAnnotations($execMethod, '', $aliases) !== 0;
+        return $this->showHelpByAnnotations($execMethod, '', $aliases) !== 0;
     }
 }

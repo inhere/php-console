@@ -114,17 +114,28 @@ class HomeController extends Controller
      */
     protected function defArgConfigure(): void
     {
-        $this->createDefinition()
-            // ->setDescription('the command args and opts config use defined configure, it like symfony console, please see defArgConfigure()')
-            ->addArgument('name', Input::ARG_REQUIRED, "description for the argument 'name'")
-            ->addOption('yes', 'y', Input::OPT_BOOLEAN, "description for the option 'yes'")
-            ->addOption('opt1', null, Input::OPT_REQUIRED, "description for the option 'opt1'");
-    }
+        $fs = $this->newActionFlags();
+        $fs->addOptByRule('yes,y', "bool;description for the option 'yes'");
+        $fs->addOptByRule('opt1', "bool;description for the option 'opt1'");
+
+        $fs->addArgByRule('name', "string;description for the argument 'name';true");
+  }
 
     // desc set at $this->commandMetas.
     public function defArgCommand(): void
     {
-        $this->output->dump($this->input->getArgs(), $this->input->getOpts(), $this->input->getBoolOpt('y'));
+        $this->output->dump(
+            $this->input->getArgs(),
+            $this->input->getOpts(),
+            $this->input->getBoolOpt('y')
+        );
+
+        $fs = $this->curActionFlags();
+        $this->output->dump(
+            $fs->getArgs(),
+            $fs->getOpts(),
+            $fs->getOpt('yes')
+        );
     }
 
     /**

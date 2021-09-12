@@ -23,6 +23,7 @@
   ],
   "require": {
     "php": ">7.2.0",
+    "symfony/polyfill-php80": "~1.0",
     "toolkit/cli-utils": "~1.0",
     "toolkit/pflag": "~1.0",
     "toolkit/stdlib": "~1.0",

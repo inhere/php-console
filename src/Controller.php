@@ -13,7 +13,6 @@ use Inhere\Console\Concern\ControllerHelpTrait;
 use Inhere\Console\Contract\ControllerInterface;
 use Inhere\Console\Exception\ConsoleException;
 use Inhere\Console\IO\Input;
-use Inhere\Console\IO\InputDefinition;
 use Inhere\Console\IO\Output;
 use Inhere\Console\Util\FormatUtil;
 use Inhere\Console\Util\Helper;
@@ -65,12 +64,20 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
     ];
 
     /**
-     * Action name, no suffix.
+     * Action name - real subcommand name, no suffix 'Command'.
+     *
      * eg: updateCommand() -> action: 'update'
      *
      * @var string
      */
-    private $action;
+    private $action = '';
+
+    /**
+     * Input subcommand name.
+     *
+     * @var string
+     */
+    private $commandName = '';
 
     /**
      * eg: '/' ':'
@@ -88,11 +95,6 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
      * @var string
      */
     private $actionSuffix = self::COMMAND_SUFFIX;
-
-    /**
-     * @var string
-     */
-    private $commandName = '';
 
     /**
      * Flags for all action commands
@@ -199,6 +201,11 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
         return false;
     }
 
+    protected function getBuiltInOptions(): array
+    {
+        return GlobalOption::getGroupOptions();
+    }
+
     protected function beforeRun(): void
     {
     }
@@ -228,9 +235,11 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
             }
 
             $command = $first;
+            $this->input->popFirstArg();
         }
 
         // update subcommand
+        $this->commandName = $command;
         $this->input->setSubCommand($command);
 
         // update some comment vars
@@ -262,6 +271,7 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
         }
 
         // do running
+        $this->newActionFlags();
         return parent::doRun([$command]);
     }
 
@@ -281,31 +291,15 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
     /**
      * @return AbstractFlags
      */
-    protected function createSubFlags(): AbstractFlags
+    protected function newActionFlags(): AbstractFlags
     {
-        $fs = new SFlags();
-
-        $this->subFss[$this->action] = $fs;
-
-        return $fs;
-    }
-
-    /**
-     * @return InputDefinition
-     */
-    protected function createDefinition(): InputDefinition
-    {
-        if (!$this->definition) {
-            $this->definition = new InputDefinition();
-
-            // if have been set desc for the sub-command
-            $cmdDesc = $this->commandMetas[$this->action]['desc'] ?? '';
-            if ($cmdDesc) {
-                $this->definition->setDescription($cmdDesc);
-            }
+        if (!$fs = $this->getActionFlags($this->action)) {
+            $fs = new SFlags();
+            // save
+            $this->subFss[$this->action] = $fs;
         }
 
-        return $this->definition;
+        return $fs;
     }
 
     /**
@@ -366,7 +360,8 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
         }
 
         // run action
-        $result = $this->$method($input, $output);
+        $flags  = $this->actionFlags($action);
+        $result = $this->$method($input, $output, $flags);
 
         // after run action
         if (method_exists($this, $after = 'after' . ucfirst($action))) {
@@ -446,7 +441,7 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
      */
     protected function beforeRenderCommandHelp(array &$help): void
     {
-        $help['Group Options:'] = FormatUtil::alignOptions($this->commandOptions);
+        $help['Group Options:'] = FormatUtil::alignOptions($this->flags->getOptSimpleDefines());
     }
 
     /**
@@ -575,6 +570,14 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
     }
 
     /**
+     * @return string
+     */
+    public function getCommandName(): string
+    {
+        return $this->commandName;
+    }
+
+    /**
      * @param string $action
      *
      * @return $this
@@ -597,11 +600,11 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
     }
 
     /**
-     * @param string $defaultAction
+     * @param string $action
      */
-    public function setDefaultAction(string $defaultAction): void
+    public function setDefaultAction(string $action): void
     {
-        $this->defaultAction = trim($defaultAction, $this->delimiter);
+        $this->defaultAction = trim($action, $this->delimiter);
     }
 
     /**
@@ -696,6 +699,14 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
         $action = $action ?: $this->action;
 
         return $this->subFss[$action] ?? null;
+    }
+
+    /**
+     * @return AbstractFlags
+     */
+    public function curActionFlags(): AbstractFlags
+    {
+        return $this->actionFlags($this->action);
     }
 
     /**

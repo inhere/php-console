@@ -54,19 +54,35 @@ class GlobalOption
         // '--profile'        => 'Display timing and memory usage information',
         '--no-color'       => 'bool;Disable color/ANSI for message output',
         // '--no-color'       => 'Disable color/ANSI for message output',
-        '--help'       => 'bool;Display this help message;;;h',
+        '--help'           => 'bool;Display this help message;;;h',
         // '-h, --help'       => 'Display this help message',
-        '--version'    => 'bool;Show application version information;;;V',
+        '--version'        => 'bool;Show application version information;;;V',
         // '-V, --version'    => 'Show application version information',
         '--no-interactive' => 'bool;Run commands in a non-interactive environment',
         // '--no-interactive' => 'Run commands in a non-interactive environment',
     ];
 
     /**
-     * @var array global options for the group command
+     * @var array built-in options for the alone command
+     */
+    protected static $aloneOptions = [
+        // '--help'          => 'bool;Display this help message;;;h',
+        // '--show-disabled' => 'string;Whether display disabled commands',
+    ];
+
+    /**
+     * @var array built-in options for the group command
      */
     protected static $groupOptions = [
+        // '--help'          => 'bool;Display this help message;;;h',
         '--show-disabled' => 'string;Whether display disabled commands',
+    ];
+
+    /**
+     * @var array common options for the group/command
+     */
+    protected static $commonOptions = [
+        '--help' => 'bool;Display this help message;;;h',
     ];
 
     /**
@@ -110,8 +126,36 @@ class GlobalOption
     /**
      * @return array
      */
-    public static function getGroupOptions(): array
+    public static function getCommonOptions(): array
     {
+        return self::$commonOptions;
+    }
+
+    /**
+     * @param bool $withCommon
+     *
+     * @return array
+     */
+    public static function getAloneOptions(bool $withCommon = true): array
+    {
+        if ($withCommon) {
+            return array_merge(self::$commonOptions, self::$aloneOptions);
+        }
+
+        return self::$aloneOptions;
+    }
+
+    /**
+     * @param bool $withCommon
+     *
+     * @return array
+     */
+    public static function getGroupOptions(bool $withCommon = true): array
+    {
+        if ($withCommon) {
+            return array_merge(self::$commonOptions, self::$groupOptions);
+        }
+
         return self::$groupOptions;
     }
 }

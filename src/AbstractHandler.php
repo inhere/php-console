@@ -10,14 +10,14 @@ namespace Inhere\Console;
 
 use Inhere\Console\Concern\AttachApplicationTrait;
 use Inhere\Console\Concern\CommandHelpTrait;
+use Inhere\Console\Concern\InputOutputAwareTrait;
 use Inhere\Console\Concern\SubCommandsWareTrait;
+use Inhere\Console\Concern\UserInteractAwareTrait;
 use Inhere\Console\Contract\CommandHandlerInterface;
 use Inhere\Console\Contract\CommandInterface;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\InputDefinition;
 use Inhere\Console\IO\Output;
-use Inhere\Console\Concern\InputOutputAwareTrait;
-use Inhere\Console\Concern\UserInteractAwareTrait;
 use Inhere\Console\Util\FormatUtil;
 use Inhere\Console\Util\Helper;
 use InvalidArgumentException;
@@ -26,27 +26,21 @@ use ReflectionClass;
 use RuntimeException;
 use Swoole\Coroutine;
 use Swoole\Event;
+use Throwable;
 use Toolkit\PFlag\SFlags;
 use Toolkit\Stdlib\Obj\ConfigObject;
 use Toolkit\Stdlib\Util\PhpDoc;
-use function array_diff_key;
-use function array_filter;
-use function array_key_exists;
 use function array_keys;
 use function array_merge;
 use function cli_set_process_title;
-use function count;
 use function error_get_last;
-use function explode;
 use function function_exists;
 use function implode;
 use function is_array;
-use function is_int;
 use function is_string;
 use function preg_replace;
 use function sprintf;
 use function ucfirst;
-use const ARRAY_FILTER_USE_BOTH;
 use const PHP_EOL;
 use const PHP_OS;
 
@@ -58,7 +52,7 @@ use const PHP_OS;
 abstract class AbstractHandler implements CommandHandlerInterface
 {
     use AttachApplicationTrait;
-    Use CommandHelpTrait;
+    use CommandHelpTrait;
     use InputOutputAwareTrait;
     use UserInteractAwareTrait;
     use SubCommandsWareTrait;
@@ -104,6 +98,13 @@ abstract class AbstractHandler implements CommandHandlerInterface
     private $initialized = false;
 
     /**
+     * Compatible mode run command.
+     *
+     * @var bool
+     */
+    private $compatible = true;
+
+    /**
      * @var InputDefinition|null
      */
     protected $definition;
@@ -147,8 +148,8 @@ abstract class AbstractHandler implements CommandHandlerInterface
     /**
      * Command constructor.
      *
-     * @param Input           $input
-     * @param Output          $output
+     * @param Input  $input
+     * @param Output $output
      */
     // TODO public function __construct(Input $input = null, Output $output = null, InputDefinition $definition = null)
     public function __construct(Input $input, Output $output)
@@ -171,6 +172,11 @@ abstract class AbstractHandler implements CommandHandlerInterface
         $this->addCommands($this->commands());
     }
 
+    protected function afterInit(): void
+    {
+        // do something...
+    }
+
     /**
      * command options
      *
@@ -189,11 +195,6 @@ abstract class AbstractHandler implements CommandHandlerInterface
     {
         // ['--skip-invalid' => 'Whether ignore invalid arguments and options, when use input definition',]
         return [];
-    }
-
-    protected function afterInit(): void
-    {
-        // do something...
     }
 
     /**
@@ -262,30 +263,46 @@ abstract class AbstractHandler implements CommandHandlerInterface
      * running a command
      **************************************************************************/
 
-    protected function initForRun(Input $input, array $args): void
+    protected function initForRun(Input $input): void
     {
         $input->setFs($this->flags);
+        $this->flags->setScriptName(self::getName());
+        $this->flags->setDesc(self::getDescription());
+
+        // load built in options
+        // $builtInOpts = GlobalOption::getAloneOptions();
+        $builtInOpts = $this->getBuiltInOptions();
+        $this->flags->addOptsByRules($builtInOpts);
 
         // set options by options()
         $optRules = $this->options();
-        // TODO merge static::$globalOptions
-
         $this->flags->addOptsByRules($optRules);
         $this->flags->setHelpRenderer(function () {
+            $this->logf(Console::VERB_DEBUG, 'show help message by input flags: -h, --help');
             $this->showHelp();
         });
 
+        // old mode: options and arguments at method annotations
+        if ($this->compatible) {
+            $this->flags->setSkipOnUndefined(true);
+        }
+    }
+
+    protected function getBuiltInOptions(): array
+    {
+        return GlobalOption::getAloneOptions();
     }
 
     /**
      * @param array $args
      *
      * @return bool|int|mixed
+     * @throws Throwable
      */
     public function run(array $args)
     {
         try {
-            $this->initForRun($this->input, $args);
+            $this->initForRun($this->input);
 
             $this->logf(Console::VERB_DEBUG, 'init run - begin parse options');
 
@@ -297,7 +314,7 @@ abstract class AbstractHandler implements CommandHandlerInterface
             $args = $this->flags->getRawArgs();
 
             return $this->doRun($args);
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             if ($this->isDetached()) {
                 // TODO exception handle
             } else {
@@ -326,18 +343,17 @@ abstract class AbstractHandler implements CommandHandlerInterface
             if ($this->isSubCommand($rName)) {
 
             }
-
         }
 
-        $this->debugf('begin run command. load input definition configure');
+        $this->debugf('begin run command. load configure for command');
         // load input definition configure
         $this->configure();
 
         // if with option: -h|--help
-        if ($this->input->getSameBoolOpt(['h', 'help'])) {
-            $this->showHelp();
-            return 0;
-        }
+        // if ($this->input->getSameBoolOpt(['h', 'help'])) {
+        //     $this->showHelp();
+        //     return 0;
+        // }
 
         // some prepare check
         // - validate input arguments
@@ -450,116 +466,8 @@ abstract class AbstractHandler implements CommandHandlerInterface
             }
         }
 
-        return $this->validateInput();
-    }
-
-    /**
-     * validate input arguments and options
-     *
-     * @return bool
-     * @throws InvalidArgumentException
-     */
-    public function validateInput(): bool
-    {
-        if (!$def = $this->definition) {
-            return true;
-        }
-
-        $this->logf(Console::VERB_DEBUG, 'validate the input arguments and options by Definition');
-
-        $in  = $this->input;
-        $out = $this->output;
-
-        $givenArgs = $errArgs = [];
-        foreach ($in->getArgs() as $key => $value) {
-            if (is_int($key)) {
-                $givenArgs[$key] = $value;
-            } else {
-                $errArgs[] = $key;
-            }
-        }
-
-        if (count($errArgs) > 0) {
-            $out->liteError(sprintf('Unknown arguments (error: "%s").', implode(', ', $errArgs)));
-            return false;
-        }
-
-        $defArgs     = $def->getArguments();
-        $missingArgs = array_filter(array_keys($defArgs), static function ($name, $key) use ($def, $givenArgs) {
-            return !array_key_exists($key, $givenArgs) && $def->argumentIsRequired($name);
-        }, ARRAY_FILTER_USE_BOTH);
-
-        if (count($missingArgs) > 0) {
-            $out->liteError(sprintf('Not enough arguments (missing: "%s").', implode(', ', $missingArgs)));
-            return false;
-        }
-
-        $index = 0;
-        $args  = [];
-
-        foreach ($defArgs as $name => $conf) {
-            $args[$name] = $givenArgs[$index] ?? $conf['default'];
-            $index++;
-        }
-
-        $in->setArgs($args);
-        $this->checkNotExistsOptions($def);
-
-        // check options
-        $opts = $missingOpts = [];
-
-        $defOpts = $def->getOptions();
-        foreach ($defOpts as $name => $conf) {
-            if (!$in->hasLOpt($name)) {
-                // support multi short: 'a|b|c'
-                $shortNames = $conf['shortcut'] ? explode('|', $conf['shortcut']) : [];
-                if ($srt = $in->findOneShortOpts($shortNames)) {
-                    $opts[$name] = $in->sOpt($srt);
-                } elseif ($conf['default'] !== null) {
-                    $opts[$name] = $conf['default'];
-                } elseif ($conf['required']) {
-                    $missingOpts[] = "--{$name}" . ($srt ? "|-{$srt}" : '');
-                }
-            }
-        }
-
-        if (count($missingOpts) > 0) {
-            $out->liteError(sprintf('Not enough options parameters (missing: "%s").', implode(', ', $missingOpts)));
-            return false;
-        }
-
-        if ($opts) {
-            $in->setLOpts($opts);
-        }
-
+        // return $this->validateInput();
         return true;
-    }
-
-    private function checkNotExistsOptions(InputDefinition $def): void
-    {
-        $givenOpts  = $this->input->getOptions();
-        $allDefOpts = $def->getAllOptionNames();
-
-        // check unknown options
-        if ($unknown = array_diff_key($givenOpts, $allDefOpts)) {
-            $names = array_keys($unknown);
-
-            // $first = array_shift($names);
-            $first = '';
-            foreach ($names as $name) {
-                if (!GlobalOption::isExists($name)) {
-                    $first = $name;
-                    break;
-                }
-            }
-
-            if (!$first) {
-                return;
-            }
-
-            $errMsg = sprintf('Input option is not exists (unknown: "%s").', (isset($first[1]) ? '--' : '-') . $first);
-            throw new InvalidArgumentException($errMsg);
-        }
     }
 
     /**************************************************************************
@@ -674,7 +582,7 @@ abstract class AbstractHandler implements CommandHandlerInterface
      *
      * @return int
      */
-    protected function showHelpByMethodAnnotations(string $method, string $action = '', array $aliases = []): int
+    protected function showHelpByAnnotations(string $method, string $action = '', array $aliases = []): int
     {
         $ref  = new ReflectionClass($this);
         $name = $this->input->getCommand();
@@ -708,7 +616,7 @@ abstract class AbstractHandler implements CommandHandlerInterface
         $path = $binName . ' ' . $name;
         if ($action) {
             $group = static::getName();
-            $path = "$binName $group $action";
+            $path  = "$binName $group $action";
         }
 
         // is an command object
@@ -748,10 +656,13 @@ abstract class AbstractHandler implements CommandHandlerInterface
             unset($help['Description:']);
         }
 
-        $help['Group Options:']  = null;
-        $help['Global Options:'] = FormatUtil::alignOptions(GlobalOption::getOptions());
+        $help['Group Options:'] = null;
 
         $this->beforeRenderCommandHelp($help);
+
+        if ($app = $this->getApp()) {
+            $help['Global Options:'] = FormatUtil::alignOptions($app->getFlags()->getOptSimpleDefines());
+        }
 
         $this->output->mList($help, [
             'sepChar'     => '  ',

@@ -13,6 +13,7 @@ use Inhere\Console\Concern\InputOptionsTrait;
 use Inhere\Console\Contract\InputInterface;
 use Toolkit\PFlag\AbstractFlags;
 use Toolkit\PFlag\SFlags;
+use function array_shift;
 use function basename;
 use function getcwd;
 use function is_int;
@@ -140,6 +141,11 @@ abstract class AbstractInput implements InputInterface
         }
 
         return $command;
+    }
+
+    public function popFirstArg()
+    {
+        return array_shift($this->args);
     }
 
     /**

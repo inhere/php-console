@@ -2,10 +2,25 @@
 
 namespace Inhere\Console\Attr;
 
+use Attribute;
+use Toolkit\PFlag\Flag\Argument;
+
 /**
  * class CmdArgument
  */
-class CmdArgument
+#[Attribute(Attribute::TARGET_CLASS|Attribute::TARGET_METHOD)]
+class CmdArgument extends Argument
 {
+    public function __construct(
+        string $name,
+        string $desc = '',
+        string $type = 'string',
+        bool $required = false,
+        $default = null,
+        string $envVar = ''
+    ) {
+        parent::__construct($name, $desc, $type, $required, $default);
 
+        $this->setEnvVar($envVar);
+    }
 }

@@ -9,6 +9,7 @@
 namespace Inhere\Console\BuiltIn;
 
 use Exception;
+use Inhere\Console\Attr\CmdOption;
 use Inhere\Console\Command;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
@@ -55,6 +56,7 @@ class DevServerCommand extends Command
      * @example
      *  {command} -S 127.0.0.1:8552 web/index.php
      */
+    #[CmdOption('dev-serve', 'start a php built-in http server for developmentd')]
     public function execute($input, $output)
     {
         $serveAddr = $input->getSameStringOpt('s,S,addr');

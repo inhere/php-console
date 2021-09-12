@@ -309,7 +309,7 @@ class Application extends AbstractApplication
 
         // is command
         if ($info['type'] === Router::TYPE_SINGLE) {
-            return $this->runCommand($info['name'], $info['handler'], $cmdOptions);
+            return $this->runCommand($info['name'], $info['handler'], $cmdOptions, $args);
         }
 
         // is controller/group
@@ -326,7 +326,7 @@ class Application extends AbstractApplication
      * @return mixed
      * @throws InvalidArgumentException
      */
-    protected function runCommand(string $name, $handler, array $options)
+    protected function runCommand(string $name, $handler, array $options, array $args)
     {
         if (is_object($handler) && method_exists($handler, '__invoke')) {
             if ($this->input->getSameOpt(['h', 'help'])) {
@@ -350,7 +350,7 @@ class Application extends AbstractApplication
 
             $object::setName($name);
             $object->setApp($this);
-            $result = $object->run([]);
+            $result = $object->run($args);
         }
 
         return $result;

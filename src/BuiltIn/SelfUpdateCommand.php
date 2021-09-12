@@ -16,6 +16,7 @@ use Humbug\SelfUpdate\VersionParser;
 use Inhere\Console\Command;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
+use Toolkit\PFlag\FlagType;
 use function strlen;
 
 /**
@@ -270,7 +271,7 @@ class SelfUpdateCommand extends Command
         if ($updater->getStrategy() instanceof ShaStrategy) {
             $stability = 'development';
         } elseif ($updater->getStrategy() instanceof GithubStrategy && $updater->getStrategy()
-                                                                               ->getStability() === GithubStrategy::UNSTABLE
+                ->getStability() === GithubStrategy::UNSTABLE
         ) {
             $stability = 'pre-release';
         }
@@ -294,39 +295,42 @@ class SelfUpdateCommand extends Command
 
     protected function configure(): void
     {
-        $this->createDefinition()
-            // ->setName('self-update')
-            // ->setDescription(self::$description)
-             ->addOption(
-                 'dev',
-                 'd',
-                 Input::OPT_BOOLEAN,
-                 'Update to most recent <cyan>development build</cyan> of package.'
-             )
-             ->addOption(
-                 'non-dev',
-                 'N',
-                 Input::OPT_BOOLEAN,
-                 'Update to most recent non-development (alpha/beta/stable) build of package tagged on Github.'
-             )
-             ->addOption(
-                 'pre',
-                 'p',
-                 Input::OPT_BOOLEAN,
-                 'Update to most recent pre-release version of package (alpha/beta/rc) tagged on Github.'
-             )
-             ->addOption('stable', 's', Input::OPT_BOOLEAN, 'Update to most recent stable version tagged on Github.')
-             ->addOption(
-                 'rollback',
-                 'r',
-                 Input::OPT_BOOLEAN,
-                 'Rollback to previous version of package if available on filesystem.'
-             )
-             ->addOption(
-                 'check',
-                 'c',
-                 Input::OPT_BOOLEAN,
-                 'Checks what updates are available across all possible stability tracks.'
-             );
+        $this->flags
+            ->addOpt(
+                'dev',
+                'd',
+                'Update to most recent <cyan>development build</cyan> of package.',
+                FlagType::BOOL
+            )
+            ->addOpt(
+                'non-dev',
+                'N',
+                'Update to most recent non-development (alpha/beta/stable) build of package tagged on Github.',
+                FlagType::BOOL
+            )
+            ->addOpt(
+                'pre',
+                'p',
+                'Update to most recent pre-release version of package (alpha/beta/rc) tagged on Github.',
+                FlagType::BOOL
+            )
+            ->addOpt(
+                'stable',
+                's',
+                'Update to most recent stable version tagged on Github.',
+                FlagType::BOOL
+            )
+            ->addOpt(
+                'rollback',
+                'r',
+                'Rollback to previous version of package if available on filesystem.',
+                FlagType::BOOL
+            )
+            ->addOpt(
+                'check',
+                'c',
+                'Checks what updates are available across all possible stability tracks.',
+                FlagType::BOOL
+            );
     }
 }

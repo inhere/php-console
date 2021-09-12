@@ -70,7 +70,7 @@ trait ControllerHelpTrait
         ]);
 
         // For a specified sub-command.
-        return $this->showHelpByMethodAnnotations($method, $action, $aliases);
+        return $this->showHelpByAnnotations($method, $action, $aliases);
     }
 
     protected function beforeShowCommandList(): void
