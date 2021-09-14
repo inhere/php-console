@@ -72,7 +72,7 @@ trait CommandHelpTrait
      *
      * @return string
      */
-    protected function parseCommentsVars(string $str): string
+    public function parseCommentsVars(string $str): string
     {
         // not use vars
         if (false === strpos($str, self::HELP_VAR_LEFT)) {

@@ -12,6 +12,7 @@ use Inhere\Console\Command;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
 use LogicException;
+use Toolkit\PFlag\FlagType;
 
 /**
  * Class DemoCommand
@@ -29,14 +30,14 @@ class DemoCommand extends Command
      */
     protected function configure(): void
     {
-        $this->createDefinition()
+        $this->getFlags()
+            ->addArg('name', 'description for the argument [name], is required', FlagType::STRING, true)
+            ->addArg('sex', 'description for the argument [sex], is optional')
+            ->addArg('age', 'description for the argument [age], is optional', FlagType::INT)
+            ->addOpt('yes', 'y', 'description for the option [yes], is boolean', FlagType::BOOL)
+            ->addOpt('opt1', '', 'description for the option [opt1], is required', FlagType::STRING, true)
+            ->addOpt('opt2', '', 'description for the option [opt2], is optional')
             ->setExample($this->parseCommentsVars('{script} {command} john male 43 --opt1 value1'))
-            ->addArgument('name', Input::ARG_REQUIRED, 'description for the argument [name], is required')
-            ->addArgument('sex', Input::ARG_OPTIONAL, 'description for the argument [sex], is optional')
-            ->addArgument('age', Input::ARG_OPTIONAL, 'description for the argument [age], is optional')
-            ->addOption('yes', 'y', Input::OPT_BOOLEAN, 'description for the option [yes], is boolean')
-            ->addOption('opt1', null, Input::OPT_REQUIRED, 'description for the option [opt1], is required')
-            ->addOption('opt2', null, Input::OPT_OPTIONAL, 'description for the option [opt2], is optional')
             ;
     }
 

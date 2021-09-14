@@ -12,7 +12,7 @@ use Inhere\Console\IO\Input;
 use Inhere\Console\Contract\InputInterface;
 use Inhere\Console\IO\Output;
 use Inhere\Console\Contract\OutputInterface;
-use Toolkit\PFlag\AbstractFlags;
+use Toolkit\PFlag\FlagsParser;
 use Toolkit\PFlag\SFlags;
 
 /**
@@ -23,7 +23,7 @@ use Toolkit\PFlag\SFlags;
 trait InputOutputAwareTrait
 {
     /**
-     * @var SFlags|AbstractFlags
+     * @var SFlags|FlagsParser
      */
     protected $flags;
 
@@ -199,17 +199,17 @@ trait InputOutputAwareTrait
     }
 
     /**
-     * @return AbstractFlags|SFlags
+     * @return FlagsParser|SFlags
      */
-    public function getFlags(): AbstractFlags
+    public function getFlags(): FlagsParser
     {
         return $this->flags;
     }
 
     /**
-     * @param AbstractFlags|SFlags $flags
+     * @param FlagsParser|SFlags $flags
      */
-    public function setFlags(AbstractFlags $flags): void
+    public function setFlags(FlagsParser $flags): void
     {
         $this->flags = $flags;
     }

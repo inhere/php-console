@@ -40,11 +40,6 @@ interface CommandHandlerInterface
     public function run(array $args);
 
     /**
-     * @return InputDefinition|null
-     */
-    public function getDefinition(): ?InputDefinition;
-
-    /**
      * @return AbstractApplication|ApplicationInterface
      */
     public function getApp(): AbstractApplication;
@@ -57,5 +52,5 @@ interface CommandHandlerInterface
     /**
      * @return string
      */
-    public static function getDescription(): string;
+    public static function getDesc(): string;
 }

@@ -16,6 +16,7 @@ use Inhere\Console\Util\Helper;
 use InvalidArgumentException;
 use RuntimeException;
 use SplFileInfo;
+use Throwable;
 use function array_unshift;
 use function class_exists;
 use function implode;
@@ -261,6 +262,7 @@ class Application extends AbstractApplication
      * @param array  $args
      *
      * @return int|mixed
+     * @throws Throwable
      */
     public function dispatch(string $name, array $args = [])
     {
@@ -322,9 +324,10 @@ class Application extends AbstractApplication
      * @param string         $name    Command name
      * @param Closure|string $handler Command class or handler func
      * @param array          $options
+     * @param array          $args
      *
      * @return mixed
-     * @throws InvalidArgumentException
+     * @throws Throwable
      */
     protected function runCommand(string $name, $handler, array $options, array $args)
     {
@@ -362,9 +365,11 @@ class Application extends AbstractApplication
      * @param array $info Matched route info
      * @psalm-param array{action: string} $info Matched route info
      * @param array $options
+     * @param array $args
      * @param bool  $detachedRun
      *
      * @return mixed
+     * @throws Throwable
      */
     protected function runAction(array $info, array $options, array $args, bool $detachedRun = false)
     {

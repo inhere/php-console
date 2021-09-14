@@ -17,14 +17,19 @@ use Inhere\Console\IO\Output;
 use Inhere\Console\Util\FormatUtil;
 use Inhere\Console\Util\Helper;
 use ReflectionClass;
+use ReflectionException;
+use ReflectionMethod;
 use ReflectionObject;
 use RuntimeException;
+use Throwable;
 use Toolkit\Cli\Helper\FlagHelper;
-use Toolkit\PFlag\AbstractFlags;
+use Toolkit\PFlag\FlagsParser;
 use Toolkit\PFlag\SFlags;
+use Toolkit\Stdlib\Obj\ObjectHelper;
 use Toolkit\Stdlib\Str;
 use function array_flip;
 use function array_keys;
+use function array_shift;
 use function implode;
 use function is_array;
 use function is_string;
@@ -73,6 +78,11 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
     private $action = '';
 
     /**
+     * @var string
+     */
+    private $actionMethod = '';
+
+    /**
      * Input subcommand name.
      *
      * @var string
@@ -106,8 +116,8 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
      * ]
      * ```
      *
-     * @var AbstractFlags[]
-     * @psalm-var array<string, AbstractFlags>
+     * @var FlagsParser[]
+     * @psalm-var array<string, FlagsParser>
      */
     private $subFss = [];
 
@@ -214,7 +224,7 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
      * @param array $args
      *
      * @return int|mixed
-     * @throws \Throwable
+     * @throws Throwable
      */
     public function doRun(array $args)
     {
@@ -230,11 +240,12 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
         } else {
             $first = $args[0];
             if (!FlagHelper::isValidName($first)) {
-                $this->debugf('not input subcommand, display help for the group: %s', self::getName());
+                $this->debugf('not input subcommand, display help for the group: %s', $name);
                 return $this->showHelp();
             }
 
             $command = $first;
+            array_shift($args);
             $this->input->popFirstArg();
         }
 
@@ -256,23 +267,38 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
 
         // convert 'boo-foo' to 'booFoo'
         $this->action = $action = Str::camelCase($command);
-        $this->debugf("will run the '%s' group action: %s, subcommand: %s", static::getName(), $this->action, $command);
+        $this->debugf("will run the '%s' group action: %s, subcommand: %s", $name, $action, $command);
+        $this->actionMethod = $method = $this->getMethodName($action);
 
         // fire event
         $this->fire(ConsoleEvent::COMMAND_RUN_BEFORE, $this);
         $this->beforeRun();
 
         // check method not exist
-        $method = $this->getMethodName($action);
-
-        // if command method not exists.
+        // - if command method not exists.
         if (!method_exists($this, $method)) {
-            return $this->handleNotFound(static::getName(), $action);
+            return $this->handleNotFound($name, $action);
+        }
+
+        // init flags for subcommand
+        $fs = $this->newActionFlags();
+        if (!$this->compatible) {
+            $this->input->setFs($fs);
+        }
+
+        $this->debugf('load configure for subcommand: %s', $command);
+        // load input definition configure
+        $this->configure();
+
+        $this->log(Console::VERB_DEBUG, "run subcommand '$command' - parse options", ['args' => $args]);
+
+        // parse subcommand flags.
+        if (!$fs->parse($args)) {
+            return 0;
         }
 
         // do running
-        $this->newActionFlags();
-        return parent::doRun([$command]);
+        return parent::doRun($args);
     }
 
     /**
@@ -286,20 +312,6 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
         if (method_exists($this, $method)) {
             $this->$method($this->input);
         }
-    }
-
-    /**
-     * @return AbstractFlags
-     */
-    protected function newActionFlags(): AbstractFlags
-    {
-        if (!$fs = $this->getActionFlags($this->action)) {
-            $fs = new SFlags();
-            // save
-            $this->subFss[$this->action] = $fs;
-        }
-
-        return $fs;
     }
 
     /**
@@ -326,6 +338,7 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
      * @param Output $output
      *
      * @return mixed
+     * @throws ReflectionException
      */
     final public function execute($input, $output)
     {
@@ -359,9 +372,21 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
             }
         }
 
-        // run action
-        $flags  = $this->actionFlags($action);
-        $result = $this->$method($input, $output, $flags);
+        // current action flags
+        $flags = $this->actionFlags($action);
+
+        $rftMethod = new ReflectionMethod($this, $method);
+        $callArgs  = ObjectHelper::buildReflectCallArgs($rftMethod, [
+            Input::class       => $this->input,
+            Output::class      => $this->output,
+            FlagsParser::class => $flags,
+            // 'args' => $args,
+        ]);
+
+        // call action method
+        $result = $rftMethod->invokeArgs($this, $callArgs);
+        // call action method
+        // $result = $this->$method($input, $output, $flags);
 
         // after run action
         if (method_exists($this, $after = 'after' . ucfirst($action))) {
@@ -409,6 +434,37 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
     /**
      * @param string $action
      *
+     * @return FlagsParser
+     */
+    protected function newActionFlags(string $action = ''): FlagsParser
+    {
+        $action = $action ?: $this->action;
+        if (!$fs = $this->getActionFlags($action)) {
+            $fs = new SFlags(['name' => $action]);
+            // $fs->setStopOnFistArg(false);
+            $fs->setBeforePrintHelp(function (string $text) {
+                return $this->parseCommentsVars($text);
+            });
+            $fs->setHelpRenderer(function () {
+                $this->logf(Console::VERB_DEBUG, 'show subcommand help by input flags: -h, --help');
+                $this->showHelp();
+            });
+
+            // old mode: options and arguments at method annotations
+            if ($this->compatible) {
+                $fs->setSkipOnUndefined(true);
+            }
+
+            // save
+            $this->subFss[$action] = $fs;
+        }
+
+        return $fs;
+    }
+
+    /**
+     * @param string $action
+     *
      * @return string
      */
     protected function getMethodName(string $action): string
@@ -422,16 +478,18 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
     protected function showHelp(): bool
     {
         // render help by Definition
-        if ($definition = $this->getDefinition()) {
-            if ($action = $this->action) {
-                $aliases = $this->getCommandAliases($action);
-            } else {
-                $aliases = $this->getAliases();
-            }
+        // if ($definition = $this->getDefinition()) {
+        //     if ($action = $this->action) {
+        //         $aliases = $this->getCommandAliases($action);
+        //     } else {
+        //         $aliases = $this->getAliases();
+        //     }
+        //
+        //     $this->showHelpByDefinition($definition, $aliases);
+        //     return true;
+        // }
 
-            $this->showHelpByDefinition($definition, $aliases);
-            return true;
-        }
+        // TODO show help by flags
 
         return $this->helpCommand() === 0;
     }
@@ -485,18 +543,18 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
     }
 
     /**
-     * @param string $name
+     * @param string $alias
      *
      * @return string
      */
-    public function resolveAlias(string $name): string
+    public function resolveAlias(string $alias): string
     {
-        if (!$name) {
+        if (!$alias) {
             return '';
         }
 
         $map = $this->getCommandAliases();
-        return $map[$name] ?? $name;
+        return $map[$alias] ?? $alias;
     }
 
     /**
@@ -692,9 +750,9 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
     /**
      * @param string $action
      *
-     * @return AbstractFlags|null
+     * @return FlagsParser|null
      */
-    public function getActionFlags(string $action): ?AbstractFlags
+    public function getActionFlags(string $action): ?FlagsParser
     {
         $action = $action ?: $this->action;
 
@@ -702,9 +760,9 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
     }
 
     /**
-     * @return AbstractFlags
+     * @return FlagsParser
      */
-    public function curActionFlags(): AbstractFlags
+    public function curActionFlags(): FlagsParser
     {
         return $this->actionFlags($this->action);
     }
@@ -712,9 +770,9 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
     /**
      * @param string $action
      *
-     * @return AbstractFlags
+     * @return FlagsParser
      */
-    public function actionFlags(string $action): AbstractFlags
+    public function actionFlags(string $action): FlagsParser
     {
         $action = $action ?: $this->action;
 

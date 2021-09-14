@@ -42,6 +42,15 @@ abstract class Command extends AbstractHandler implements CommandInterface
     //      // something logic ...
     // }
 
+    protected function doRun(array $args)
+    {
+        $this->debugf('load configure for command: %s', self::getName());
+        // load input definition configure
+        $this->configure();
+
+        parent::doRun($args);
+    }
+
     /*
      * Configure command
      */
@@ -91,10 +100,13 @@ abstract class Command extends AbstractHandler implements CommandInterface
         $aliases = $this->getAliases();
 
         // render help by input definition.
-        if ($definition = $this->getDefinition()) {
-            $this->showHelpByDefinition($definition, $aliases);
-            return true;
-        }
+        // if ($definition = $this->getDefinition()) {
+        //     $this->showHelpByDefinition($definition, $aliases);
+        //     return true;
+        // }
+
+        // TODO show help by flags
+
 
         $execMethod = self::METHOD;
 

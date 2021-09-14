@@ -11,7 +11,7 @@ namespace Inhere\Console\IO;
 use Inhere\Console\Concern\InputArgumentsTrait;
 use Inhere\Console\Concern\InputOptionsTrait;
 use Inhere\Console\Contract\InputInterface;
-use Toolkit\PFlag\AbstractFlags;
+use Toolkit\PFlag\FlagsParser;
 use Toolkit\PFlag\SFlags;
 use function array_shift;
 use function basename;
@@ -31,14 +31,14 @@ abstract class AbstractInput implements InputInterface
     /**
      * Global flags parser
      *
-     * @var AbstractFlags|SFlags
+     * @var FlagsParser|SFlags
      */
     protected $gfs;
 
     /**
      * Command flags parser
      *
-     * @var AbstractFlags|SFlags
+     * @var FlagsParser|SFlags
      */
     protected $fs;
 
@@ -326,33 +326,33 @@ abstract class AbstractInput implements InputInterface
     }
 
     /**
-     * @return AbstractFlags
+     * @return FlagsParser
      */
-    public function getGfs(): AbstractFlags
+    public function getGfs(): FlagsParser
     {
         return $this->gfs;
     }
 
     /**
-     * @param AbstractFlags $gfs
+     * @param FlagsParser $gfs
      */
-    public function setGfs(AbstractFlags $gfs): void
+    public function setGfs(FlagsParser $gfs): void
     {
         $this->gfs = $gfs;
     }
 
     /**
-     * @return AbstractFlags
+     * @return FlagsParser
      */
-    public function getFs(): AbstractFlags
+    public function getFs(): FlagsParser
     {
         return $this->fs;
     }
 
     /**
-     * @param AbstractFlags $fs
+     * @param FlagsParser $fs
      */
-    public function setFs(AbstractFlags $fs): void
+    public function setFs(FlagsParser $fs): void
     {
         $this->fs = $fs;
     }

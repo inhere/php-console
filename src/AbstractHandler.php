@@ -21,7 +21,6 @@ use Inhere\Console\IO\Output;
 use Inhere\Console\Util\FormatUtil;
 use Inhere\Console\Util\Helper;
 use InvalidArgumentException;
-use LogicException;
 use ReflectionClass;
 use RuntimeException;
 use Swoole\Coroutine;
@@ -41,6 +40,7 @@ use function is_string;
 use function preg_replace;
 use function sprintf;
 use function ucfirst;
+use function vdump;
 use const PHP_EOL;
 use const PHP_OS;
 
@@ -102,7 +102,7 @@ abstract class AbstractHandler implements CommandHandlerInterface
      *
      * @var bool
      */
-    private $compatible = true;
+    protected $compatible = true;
 
     /**
      * @var InputDefinition|null
@@ -168,7 +168,7 @@ abstract class AbstractHandler implements CommandHandlerInterface
         $this->commentsVars = $this->annotationVars();
 
         $this->afterInit();
-        $this->debugf('attach inner sub-commands to "%s"', self::getName());
+        $this->debugf('attach inner subcommands to "%s"', self::getName());
         $this->addCommands($this->commands());
     }
 
@@ -202,21 +202,6 @@ abstract class AbstractHandler implements CommandHandlerInterface
      */
     protected function configure(): void
     {
-    }
-
-    /**
-     * @return InputDefinition
-     * @throws LogicException
-     * @throws InvalidArgumentException
-     */
-    protected function createDefinition(): InputDefinition
-    {
-        if (!$this->definition) {
-            $this->definition = new InputDefinition();
-            $this->definition->setDescription(self::getDescription());
-        }
-
-        return $this->definition;
     }
 
     /**
@@ -277,6 +262,9 @@ abstract class AbstractHandler implements CommandHandlerInterface
         // set options by options()
         $optRules = $this->options();
         $this->flags->addOptsByRules($optRules);
+        $this->flags->setBeforePrintHelp(function (string $text) {
+            return $this->parseCommentsVars($text);
+        });
         $this->flags->setHelpRenderer(function () {
             $this->logf(Console::VERB_DEBUG, 'show help message by input flags: -h, --help');
             $this->showHelp();
@@ -301,14 +289,16 @@ abstract class AbstractHandler implements CommandHandlerInterface
      */
     public function run(array $args)
     {
+        $name = self::getName();
+
         try {
             $this->initForRun($this->input);
 
-            $this->logf(Console::VERB_DEBUG, 'init run - begin parse options');
+            $this->log(Console::VERB_DEBUG, "begin run '$name' - parse options", ['args' => $args]);
 
             // parse options
             if (!$this->flags->parse($args)) {
-                return -1; // on error, help
+                return 0; // on error, help
             }
 
             $args = $this->flags->getRawArgs();
@@ -334,7 +324,7 @@ abstract class AbstractHandler implements CommandHandlerInterface
      *
      * @return int|mixed
      */
-    public function doRun(array $args)
+    protected function doRun(array $args)
     {
         if (isset($args[0])) {
             $first = $args[0];
@@ -345,15 +335,9 @@ abstract class AbstractHandler implements CommandHandlerInterface
             }
         }
 
-        $this->debugf('begin run command. load configure for command');
-        // load input definition configure
-        $this->configure();
-
-        // if with option: -h|--help
-        // if ($this->input->getSameBoolOpt(['h', 'help'])) {
-        //     $this->showHelp();
-        //     return 0;
-        // }
+        // $this->debugf('begin run command. load configure for command');
+        // // load input definition configure
+        // $this->configure();
 
         // some prepare check
         // - validate input arguments
@@ -712,6 +696,14 @@ abstract class AbstractHandler implements CommandHandlerInterface
     /**
      * @return string
      */
+    public static function getDesc(): string
+    {
+        return static::$description;
+    }
+
+    /**
+     * @return string
+     */
     public static function getDescription(): string
     {
         return static::$description;
@@ -776,22 +768,6 @@ abstract class AbstractHandler implements CommandHandlerInterface
     public static function setAnnotationTags(array $annotationTags, $replace = false): void
     {
         self::$annotationTags = $replace ? $annotationTags : array_merge(self::$annotationTags, $annotationTags);
-    }
-
-    /**
-     * @return InputDefinition|null
-     */
-    public function getDefinition(): ?InputDefinition
-    {
-        return $this->definition;
-    }
-
-    /**
-     * @param InputDefinition $definition
-     */
-    public function setDefinition(InputDefinition $definition): void
-    {
-        $this->definition = $definition;
     }
 
     /**

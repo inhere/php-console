@@ -85,10 +85,8 @@ trait SubCommandsWareTrait
      */
     public function addCommand(string $name, $handler = null, array $options = []): void
     {
-        /**
-         * @var Command $name name is an command class
-         */
         if (!$handler && class_exists($name)) {
+            /** @var Command $name name is an command class */
             $handler = $name;
             $name    = $name::getName();
         }
@@ -107,11 +105,11 @@ trait SubCommandsWareTrait
 
         if (is_string($handler)) {
             if (!class_exists($handler)) {
-                Helper::throwInvalidArgument("The console command class [$handler] not exists!");
+                Helper::throwInvalidArgument("The command handler class [$handler] not exists!");
             }
 
             if (!is_subclass_of($handler, Command::class)) {
-                Helper::throwInvalidArgument('The console command class must is subclass of the: ' . Command::class);
+                Helper::throwInvalidArgument('The command handler class must is subclass of the: ' . Command::class);
             }
 
             // not enable
@@ -175,7 +173,7 @@ trait SubCommandsWareTrait
     }
 
     /**
-     * @param      $name
+     * @param string $name
      *
      * @throws InvalidArgumentException
      */

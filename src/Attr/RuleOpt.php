@@ -3,7 +3,7 @@
 namespace Inhere\Console\Attr;
 
 use Attribute;
-use Toolkit\PFlag\AbstractFlags;
+use Toolkit\PFlag\FlagsParser;
 
 /**
  * class RuleOpt
@@ -18,7 +18,7 @@ class RuleOpt
 
     /**
      * @var string
-     * @see AbstractFlags::$optRules
+     * @see FlagsParser::$optRules
      */
     public $rule;
 }
