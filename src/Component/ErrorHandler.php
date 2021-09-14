@@ -12,7 +12,9 @@ use Inhere\Console\AbstractApplication;
 use Inhere\Console\Contract\ErrorHandlerInterface;
 use InvalidArgumentException;
 use Throwable;
+use Toolkit\Cli\Cli;
 use Toolkit\Cli\Util\Highlighter;
+use Toolkit\Stdlib\Obj\ObjectHelper;
 use function file_get_contents;
 use function get_class;
 use function sprintf;
@@ -26,19 +28,54 @@ use function str_replace;
 class ErrorHandler implements ErrorHandlerInterface
 {
     /**
+     * @var bool
+     */
+    protected $debug = false;
+
+    /**
+     * @var string
+     */
+    protected $rootPath = '';
+
+    /**
+     * @var bool
+     */
+    protected $hideRootPath = false;
+
+    /**
+     * @param array $config
+     *
+     * @return static
+     */
+    public static function new(array $config = []): self
+    {
+        return new self($config);
+    }
+
+    /**
+     * Class constructor.
+     *
+     * @param array $config
+     */
+    public function __construct(array $config = [])
+    {
+        ObjectHelper::init($this, $config);
+    }
+
+    /**
      * @inheritdoc
      */
-    public function handle(Throwable $e, AbstractApplication $app): void
+    public function handle(Throwable $e): void
     {
         if ($e instanceof InvalidArgumentException) {
-            $app->getOutput()->error($e->getMessage());
+            Cli::error($e->getMessage());
             return;
         }
 
         $class = get_class($e);
 
         // open debug, throw exception
-        if ($app->isDebug()) {
+        if ($this->isDebug()) {
             $tpl  = <<<ERR
 \n<error> Error </error> <mga>%s</mga>
 
@@ -60,16 +97,64 @@ ERR;
                 $e->getTraceAsString()// \str_replace('):', '): -', $e->getTraceAsString())
             );
 
-            if ($app->getParam('hideRootPath') && ($rootPath = $app->getParam('rootPath'))) {
+            if ($this->hideRootPath && ($rootPath = $this->rootPath)) {
                 $message = str_replace($rootPath, '{ROOT}', $message);
             }
 
-            $app->write($message, false);
+            Cli::write($message, false);
             return;
         }
 
         // simple output
-        $app->getOutput()->error($e->getMessage() ?: 'unknown error');
-        $app->write("\nYou can use '--debug 4' to see error details.");
+        Cli::error($e->getMessage() ?: 'unknown error');
+        Cli::write("\nYou can use '--debug 4' to see error details.");
+    }
+
+    /**
+     * @return bool
+     */
+    public function isDebug(): bool
+    {
+        return $this->debug;
+    }
+
+    /**
+     * @param bool $debug
+     */
+    public function setDebug(bool $debug): void
+    {
+        $this->debug = $debug;
+    }
+
+    /**
+     * @return string
+     */
+    public function getRootPath(): string
+    {
+        return $this->rootPath;
+    }
+
+    /**
+     * @param string $rootPath
+     */
+    public function setRootPath(string $rootPath): void
+    {
+        $this->rootPath = $rootPath;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isHideRootPath(): bool
+    {
+        return $this->hideRootPath;
+    }
+
+    /**
+     * @param bool $hideRootPath
+     */
+    public function setHideRootPath(bool $hideRootPath): void
+    {
+        $this->hideRootPath = $hideRootPath;
     }
 }

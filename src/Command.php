@@ -9,6 +9,7 @@
 namespace Inhere\Console;
 
 use Inhere\Console\Contract\CommandInterface;
+use Inhere\Console\IO\Input;
 
 /**
  * Class Command
@@ -34,13 +35,15 @@ abstract class Command extends AbstractHandler implements CommandInterface
      */
     protected $parent;
 
-    /*
-     * Do execute command
-     */
-    // protected function execute($input, $output)
-    // {
-    //      // something logic ...
-    // }
+    protected function initForRun(Input $input): void
+    {
+        parent::initForRun($input);
+
+        // old mode: options and arguments at method annotations
+        if ($this->compatible) {
+            $this->flags->setSkipOnUndefined(true);
+        }
+    }
 
     protected function doRun(array $args)
     {

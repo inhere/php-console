@@ -2,6 +2,7 @@
 
 namespace Inhere\Console;
 
+use Toolkit\PFlag\FlagType;
 use function array_merge;
 
 /**
@@ -46,7 +47,12 @@ class GlobalOption
      * @psalm-var array<string, string>
      */
     private static $options = [
-        '--debug'          => 'int;Setting the runtime log debug level(quiet 0 - 5 crazy);no;1',
+        // '--debug'          => 'int;Setting the runtime log debug level(quiet 0 - 5 crazy);no;1',
+        '--debug'          => [
+            'type'   => FlagType::INT,
+            'desc'   => 'Setting the runtime log debug level(quiet 0 - 5 crazy)',
+            'envVar' => Console::DEBUG_ENV_KEY,
+        ],
         // '--debug'          => 'Setting the runtime log debug level(quiet 0 - 5 crazy)',
         '--ishell'         => 'bool;Run application an interactive shell environment',
         // '--ishell'         => 'Run application an interactive shell environment',

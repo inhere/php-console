@@ -202,10 +202,11 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
      * Will call it on action(sub-command) not found on the group.
      *
      * @param string $action
+     * @param array  $args
      *
      * @return bool if return True, will stop goon render group help.
      */
-    protected function onNotFound(string $action): bool
+    protected function onNotFound(string $action, array $args): bool
     {
         // you can add custom logic on sub-command not found.
         return false;
@@ -277,7 +278,7 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
         // check method not exist
         // - if command method not exists.
         if (!method_exists($this, $method)) {
-            return $this->handleNotFound($name, $action);
+            return $this->handleNotFound($name, $action, $args);
         }
 
         // init flags for subcommand
@@ -290,7 +291,7 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
         // load input definition configure
         $this->configure();
 
-        $this->log(Console::VERB_DEBUG, "run subcommand '$command' - parse options", ['args' => $args]);
+        $this->log(Console::VERB_DEBUG, "run subcommand '$name.$command' - parse options", ['args' => $args]);
 
         // parse subcommand flags.
         if (!$fs->parse($args)) {
@@ -400,13 +401,14 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
     /**
      * @param string $group
      * @param string $action
+     * @param array  $args
      *
      * @return int
      */
-    protected function handleNotFound(string $group, string $action): int
+    protected function handleNotFound(string $group, string $action, array $args): int
     {
         // if user custom handle not found logic.
-        if ($this->onNotFound($action)) {
+        if ($this->onNotFound($action, $args)) {
             $this->debugf('user custom handle the "%s" action "%s" not found', $group, $action);
             return 0;
         }

@@ -17,6 +17,7 @@ use InvalidArgumentException;
 use RuntimeException;
 use SplFileInfo;
 use Throwable;
+use Toolkit\Stdlib\Helper\DataHelper;
 use function array_unshift;
 use function class_exists;
 use function implode;
@@ -271,7 +272,7 @@ class Application extends AbstractApplication
         }
 
         $cmdId = $name;
-        $this->debugf('begin dispatch the input command: %s', $name);
+        $this->debugf('begin dispatch the input command: %s, args: %s', $name, DataHelper::toString($args));
 
         // format is: `group action`
         if (strpos($name, ' ') > 0) {

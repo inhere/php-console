@@ -28,6 +28,7 @@ use Throwable;
 use Toolkit\Cli\Style;
 use Toolkit\Cli\Util\LineParser;
 use Toolkit\PFlag\SFlags;
+use Toolkit\Stdlib\Helper\DataHelper;
 use Toolkit\Stdlib\Helper\PhpHelper;
 use Toolkit\Stdlib\OS;
 use Toolkit\Sys\Proc\ProcessUtil;
@@ -39,7 +40,6 @@ use function error_get_last;
 use function header;
 use function in_array;
 use function is_int;
-use function json_encode;
 use function memory_get_usage;
 use function microtime;
 use function register_shutdown_function;
@@ -164,7 +164,10 @@ abstract class AbstractApplication implements ApplicationInterface
         ];
 
         if (!$this->errorHandler) {
-            $this->errorHandler = new ErrorHandler();
+            $this->errorHandler = new ErrorHandler([
+                'rootPath'     => $this->config['rootPath'],
+                'hideRootPath' => (bool)$this->config['hideRootPath'],
+            ]);
         }
 
         $this->registerErrorHandle();
@@ -196,6 +199,8 @@ abstract class AbstractApplication implements ApplicationInterface
         $this->logf(Console::VERB_DEBUG, 'init - begin parse global options');
         $this->flags->parse($input->getFlags());
 
+        // set debug to error handler
+        $this->errorHandler->setDebug($this->isDebug());
     }
 
     protected function prepareRun(): void
@@ -451,7 +456,7 @@ abstract class AbstractApplication implements ApplicationInterface
     public function handleException(Throwable $e): void
     {
         // you can log error on sub class ...
-        $this->errorHandler->handle($e, $this);
+        $this->errorHandler->handle($e);
     }
 
     /**
@@ -538,7 +543,7 @@ abstract class AbstractApplication implements ApplicationInterface
             }
 
             $args = LineParser::parseIt($line);
-            $this->debugf('input line: %s, parsed args: %s', $line, json_encode($args));
+            $this->debugf('input line: %s, parsed args: %s', $line, DataHelper::toString($args));
 
             // reload and parse args
             $in->parse($args);

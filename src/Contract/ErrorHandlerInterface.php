@@ -8,8 +8,6 @@
 
 namespace Inhere\Console\Contract;
 
-use Inhere\Console\AbstractApplication;
-use Inhere\Console\Application;
 use Throwable;
 
 /**
@@ -20,8 +18,7 @@ use Throwable;
 interface ErrorHandlerInterface
 {
     /**
-     * @param Throwable                       $e
-     * @param Application|AbstractApplication $app
+     * @param Throwable $e
      */
-    public function handle(Throwable $e, AbstractApplication $app): void;
+    public function handle(Throwable $e): void;
 }

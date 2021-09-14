@@ -8,6 +8,7 @@
 
 namespace Inhere\Console;
 
+use Inhere\Console\Component\ErrorHandler;
 use Inhere\Console\Concern\AttachApplicationTrait;
 use Inhere\Console\Concern\CommandHelpTrait;
 use Inhere\Console\Concern\InputOutputAwareTrait;
@@ -40,7 +41,6 @@ use function is_string;
 use function preg_replace;
 use function sprintf;
 use function ucfirst;
-use function vdump;
 use const PHP_EOL;
 use const PHP_OS;
 
@@ -269,11 +269,6 @@ abstract class AbstractHandler implements CommandHandlerInterface
             $this->logf(Console::VERB_DEBUG, 'show help message by input flags: -h, --help');
             $this->showHelp();
         });
-
-        // old mode: options and arguments at method annotations
-        if ($this->compatible) {
-            $this->flags->setSkipOnUndefined(true);
-        }
     }
 
     protected function getBuiltInOptions(): array
@@ -306,12 +301,10 @@ abstract class AbstractHandler implements CommandHandlerInterface
             return $this->doRun($args);
         } catch (Throwable $e) {
             if ($this->isDetached()) {
-                // TODO exception handle
+                ErrorHandler::new()->handle($e);
             } else {
-                // throw $e;
+                throw $e;
             }
-
-            throw $e;
         }
 
         return -1;
