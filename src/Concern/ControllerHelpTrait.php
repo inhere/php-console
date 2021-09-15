@@ -3,7 +3,6 @@
 namespace Inhere\Console\Concern;
 
 use Inhere\Console\Console;
-use Inhere\Console\GlobalOption;
 use Inhere\Console\Util\FormatUtil;
 use ReflectionClass;
 use Toolkit\Cli\ColorTag;

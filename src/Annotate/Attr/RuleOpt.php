@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Inhere\Console\Attr;
+namespace Inhere\Console\Annotate\Attr;
 
 use Attribute;
 use Toolkit\PFlag\FlagsParser;

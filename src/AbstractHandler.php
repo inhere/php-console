@@ -8,6 +8,7 @@
 
 namespace Inhere\Console;
 
+use Inhere\Console\Annotate\DocblockRules;
 use Inhere\Console\Component\ErrorHandler;
 use Inhere\Console\Concern\AttachApplicationTrait;
 use Inhere\Console\Concern\CommandHelpTrait;
@@ -23,10 +24,12 @@ use Inhere\Console\Util\FormatUtil;
 use Inhere\Console\Util\Helper;
 use InvalidArgumentException;
 use ReflectionClass;
+use ReflectionMethod;
 use RuntimeException;
 use Swoole\Coroutine;
 use Swoole\Event;
 use Throwable;
+use Toolkit\PFlag\FlagsParser;
 use Toolkit\PFlag\SFlags;
 use Toolkit\Stdlib\Obj\ConfigObject;
 use Toolkit\Stdlib\Util\PhpDoc;
@@ -460,6 +463,14 @@ abstract class AbstractHandler implements CommandHandlerInterface
     }
 
     /**
+     * @return bool
+     */
+    public function isCommand(): bool
+    {
+        return $this instanceof CommandInterface;
+    }
+
+    /**
      * @return ConfigObject
      */
     public function getParams(): ConfigObject
@@ -480,6 +491,24 @@ abstract class AbstractHandler implements CommandHandlerInterface
     {
         $this->params = ConfigObject::new($params);
         return $this->params;
+    }
+
+    /**
+     * @param string $method
+     * @param FlagsParser $fs
+     *
+     * @throws \ReflectionException
+     */
+    public function loadRulesByDocblock(string $method, FlagsParser $fs): void
+    {
+        $rftMth = new ReflectionMethod($this, $method);
+
+        // parse doc for get flag rules
+        $dr = DocblockRules::newByDocblock($rftMth->getDocComment());
+        $dr->parse();
+
+        $fs->addArgsByRules($dr->getArgRules());
+        $fs->addOptsByRules($dr->getOptRules());
     }
 
     /**********************************************************
@@ -576,11 +605,14 @@ abstract class AbstractHandler implements CommandHandlerInterface
             return 0;
         }
 
+        $allowedTags = array_keys(self::$annotationTags);
         $this->logf(Console::VERB_DEBUG, "render help for the command: %s", $this->input->getCommandId());
 
         $help = [];
         $doc  = $ref->getMethod($method)->getDocComment();
-        $tags = PhpDoc::getTags($this->parseCommentsVars((string)$doc));
+        $tags = PhpDoc::getTags($this->parseCommentsVars((string)$doc), [
+            'allow' => $allowedTags,
+        ]);
 
         if ($aliases) {
             $realName = $action ?: static::getName();
@@ -598,11 +630,11 @@ abstract class AbstractHandler implements CommandHandlerInterface
 
         // is an command object
         $isCommand = $ref->isSubclassOf(CommandInterface::class);
-        foreach (array_keys(self::$annotationTags) as $tag) {
+        foreach ($allowedTags as $tag) {
             if (empty($tags[$tag]) || !is_string($tags[$tag])) {
                 // for alone command
                 if ($tag === 'description' && $isCommand) {
-                    $help['Description:'] = static::getDescription();
+                    $help['Description:'] = static::getDesc();
                     continue;
                 }
 

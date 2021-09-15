@@ -26,7 +26,7 @@ use function preg_match;
  */
 trait SubCommandsWareTrait
 {
-    use NameAliasTrait;
+    use \Toolkit\Stdlib\Obj\Traits\NameAliasTrait;
 
     /**
      * @var array

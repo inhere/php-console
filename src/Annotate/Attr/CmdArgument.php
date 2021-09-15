@@ -1,15 +1,15 @@
 <?php declare(strict_types=1);
 
-namespace Inhere\Console\Attr;
+namespace Inhere\Console\Annotate\Attr;
 
 use Attribute;
-use Toolkit\PFlag\Flag\Option;
+use Toolkit\PFlag\Flag\Argument;
 
 /**
- * class CmdOption
+ * class CmdArgument
  */
-#[Attribute(Attribute::TARGET_CLASS | Attribute::TARGET_METHOD)]
-class CmdOption extends Option
+#[Attribute(Attribute::TARGET_CLASS|Attribute::TARGET_METHOD)]
+class CmdArgument extends Argument
 {
     public function __construct(
         string $name,
@@ -17,12 +17,10 @@ class CmdOption extends Option
         string $type = 'string',
         bool $required = false,
         $default = null,
-        string $shortcut = '',
         string $envVar = ''
     ) {
         parent::__construct($name, $desc, $type, $required, $default);
 
         $this->setEnvVar($envVar);
-        $this->setShortcut($shortcut);
     }
 }

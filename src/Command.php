@@ -109,7 +109,8 @@ abstract class Command extends AbstractHandler implements CommandInterface
         // }
 
         // TODO show help by flags
-
+        // if ($this->flags->isNotEmpty()) {
+        // }
 
         $execMethod = self::METHOD;
 
