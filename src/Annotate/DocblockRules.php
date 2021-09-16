@@ -191,11 +191,13 @@ class DocblockRules
     }
 
     /**
+     * @param bool $onlyName
+     *
      * @return array
      */
-    public static function getAllowedTags(): array
+    public static function getAllowedTags(bool $onlyName = true): array
     {
-        return array_keys(self::$allowedTags);
+        return $onlyName ? array_keys(self::$allowedTags) : self::$allowedTags;
     }
 
     /**

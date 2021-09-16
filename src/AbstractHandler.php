@@ -23,23 +23,21 @@ use Inhere\Console\IO\Output;
 use Inhere\Console\Util\FormatUtil;
 use Inhere\Console\Util\Helper;
 use InvalidArgumentException;
-use ReflectionClass;
-use ReflectionMethod;
+use ReflectionException;
 use RuntimeException;
 use Swoole\Coroutine;
 use Swoole\Event;
 use Throwable;
 use Toolkit\PFlag\FlagsParser;
 use Toolkit\PFlag\SFlags;
+use Toolkit\Stdlib\Helper\PhpHelper;
 use Toolkit\Stdlib\Obj\ConfigObject;
 use Toolkit\Stdlib\Util\PhpDoc;
-use function array_keys;
 use function array_merge;
 use function cli_set_process_title;
 use function error_get_last;
 use function function_exists;
 use function implode;
-use function is_array;
 use function is_string;
 use function preg_replace;
 use function sprintf;
@@ -151,7 +149,7 @@ abstract class AbstractHandler implements CommandHandlerInterface
     /**
      * Command constructor.
      *
-     * @param Input  $input
+     * @param Input $input
      * @param Output $output
      */
     // TODO public function __construct(Input $input = null, Output $output = null, InputDefinition $definition = null)
@@ -411,7 +409,7 @@ abstract class AbstractHandler implements CommandHandlerInterface
     /**
      * Do execute command
      *
-     * @param Input  $input
+     * @param Input $input
      * @param Output $output
      *
      * @return int|mixed
@@ -498,12 +496,12 @@ abstract class AbstractHandler implements CommandHandlerInterface
      * @param string $method
      * @param FlagsParser $fs
      *
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
     public function loadRulesByDocblock(string $method, FlagsParser $fs): void
     {
         $this->debugf('not config flags, load flag rules by docblock, method: %s', $method);
-        $rftMth = new ReflectionMethod($this, $method);
+        $rftMth = PhpHelper::reflectMethod($this, $method);
 
         // parse doc for get flag rules
         $dr = DocblockRules::newByDocblock($rftMth->getDocComment());
@@ -525,94 +523,32 @@ abstract class AbstractHandler implements CommandHandlerInterface
     abstract protected function showHelp(): bool;
 
     /**
-     * @param InputDefinition $definition
-     * @param array           $aliases
-     */
-    protected function showHelpByDefinition(InputDefinition $definition, array $aliases = []): void
-    {
-        $this->log(Console::VERB_DEBUG, 'display help information by input definition');
-
-        // if has InputDefinition object. (The comment of the command will not be parsed and used at this time.)
-        $help = $definition->getSynopsis();
-        // parse example
-        $example = $help['example:'];
-        if (!empty($example)) {
-            if (is_string($example)) {
-                $help['example:'] = $this->parseCommentsVars($example);
-            } elseif (is_array($example)) {
-                foreach ($example as &$item) {
-                    $item = $this->parseCommentsVars($item);
-                }
-                unset($item);
-            } else {
-                $help['example:'] = '';
-            }
-        }
-
-        $binName = $this->getScriptName();
-
-        // build usage
-        if ($this->isAttached()) {
-            $help['usage:'] = sprintf('%s %s %s', $binName, $this->getCommandName(), $help['usage:']);
-        } else {
-            $help['usage:'] = $binName . ' ' . $help['usage:'];
-        }
-
-        // align global options
-        $help['global options:'] = FormatUtil::alignOptions(GlobalOption::getOptions());
-
-        $isAlone = $this->isAlone();
-        if ($isAlone && empty($help[0])) {
-            $help[0] = self::getDescription();
-        }
-
-        if (empty($help[0])) {
-            $help[0] = 'No description message for the command';
-        }
-
-        // output description
-        $this->write(ucfirst($help[0]) . PHP_EOL);
-
-        if ($aliases) {
-            $this->output->writef('<comment>Alias:</comment> %s', implode(',', $aliases));
-        }
-
-        unset($help[0]);
-        $this->output->mList($help, ['sepChar' => '  ']);
-    }
-
-    /**
      * Display command/action help by parse method annotations
      *
      * @param string $method
      * @param string $action action of an group
-     * @param array  $aliases
+     * @param array $aliases
      *
      * @return int
+     * @throws ReflectionException
      */
     protected function showHelpByAnnotations(string $method, string $action = '', array $aliases = []): int
     {
-        $ref  = new ReflectionClass($this);
         $name = $this->input->getCommand();
 
-        if (!$ref->hasMethod($method)) {
-            $subCmd = $this->input->getSubCommand();
-            $this->write("The command '<info>$subCmd</info>' dont exist in the group: " . static::getName());
-            return 0;
-        }
-
         // subcommand: is a console controller subcommand
-        if ($action && !$ref->getMethod($method)->isPublic()) {
+        $rftMth = PhpHelper::reflectMethod($this, $method);
+        if ($action && !$rftMth->isPublic()) {
             $this->write("The command [<info>$name</info>] don't allow access in the class.");
             return 0;
         }
 
-        $allowedTags = array_keys(self::$annotationTags);
+        $allowedTags = DocblockRules::getAllowedTags();
         $this->logf(Console::VERB_DEBUG, "render help for the command: %s", $this->input->getCommandId());
 
         $help = [];
-        $doc  = $ref->getMethod($method)->getDocComment();
-        $tags = PhpDoc::getTags($this->parseCommentsVars((string)$doc), [
+        $doc  = $this->parseCommentsVars((string)$rftMth->getDocComment());
+        $tags = PhpDoc::getTags($doc, [
             'allow' => $allowedTags,
         ]);
 
@@ -631,7 +567,7 @@ abstract class AbstractHandler implements CommandHandlerInterface
         }
 
         // is an command object
-        $isCommand = $ref->isSubclassOf(CommandInterface::class);
+        $isCommand = $this->isCommand();
         foreach ($allowedTags as $tag) {
             if (empty($tags[$tag]) || !is_string($tags[$tag])) {
                 // for alone command
@@ -790,7 +726,7 @@ abstract class AbstractHandler implements CommandHandlerInterface
 
     /**
      * @param array $annotationTags
-     * @param bool  $replace
+     * @param bool $replace
      */
     public static function setAnnotationTags(array $annotationTags, $replace = false): void
     {
