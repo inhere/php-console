@@ -145,7 +145,7 @@ class DocblockRules
                 continue;
             }
 
-            $nodes = Str::explode($trimmed, '   ', 2);
+            $nodes = Str::explode($trimmed, '  ', 2);
             if (!isset($nodes[1])) {
                 if ($index === 0) { // invalid first line
                     continue;
@@ -156,14 +156,18 @@ class DocblockRules
                 continue;
             }
 
-            $name = $nodes[0];
+            $name = trim($nodes[0], '.');
             if (!preg_match('/^[\w ,-]{0,48}$/', $name)) {
+                if ($index === 0) { // invalid first line
+                    continue;
+                }
+
                 // multi desc message.
                 $rules[$index - 1][1] .= "\n" . $trimmed;
                 continue;
             }
 
-            $rules[$index] = $nodes;
+            $rules[$index] = [$name, $nodes[1]];
             $index++;
         }
 
