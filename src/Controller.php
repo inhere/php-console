@@ -38,6 +38,7 @@ use function sprintf;
 use function substr;
 use function trim;
 use function ucfirst;
+use function vdump;
 
 /**
  * Class Controller
@@ -264,7 +265,7 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
         $command = $this->resolveAlias($command);
 
         // update the command id.
-        $this->input->setCommandId(static::getName() . ":$command");
+        $this->input->setCommandId("$name:$command");
 
         // convert 'boo-foo' to 'booFoo'
         $this->action = $action = Str::camelCase($command);
@@ -287,12 +288,15 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
             $this->input->setFs($fs);
         }
 
-        $this->debugf('load configure for subcommand: %s', $command);
-        // load input definition configure
+        $this->debugf('load flags by configure method, subcommand: %s', $command);
         $this->configure();
 
-        $this->log(Console::VERB_DEBUG, "run subcommand '$name.$command' - parse options", ['args' => $args]);
+        // not config flags. load rules from method doc-comments
+        if ($fs->isEmpty()) {
+            $this->loadRulesByDocblock($method, $fs);
+        }
 
+        $this->log(Console::VERB_DEBUG, "run subcommand '$name.$command' - parse options", ['args' => $args]);
         // parse subcommand flags.
         if (!$fs->parse($args)) {
             return 0;

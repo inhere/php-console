@@ -295,6 +295,7 @@ abstract class AbstractHandler implements CommandHandlerInterface
             $this->log(Console::VERB_DEBUG, "begin run '$name' - parse options", ['args' => $args]);
 
             // parse options
+            $this->flags->lock();
             if (!$this->flags->parse($args)) {
                 return 0; // on error, help
             }
@@ -501,6 +502,7 @@ abstract class AbstractHandler implements CommandHandlerInterface
      */
     public function loadRulesByDocblock(string $method, FlagsParser $fs): void
     {
+        $this->debugf('not config flags, load flag rules by docblock, method: %s', $method);
         $rftMth = new ReflectionMethod($this, $method);
 
         // parse doc for get flag rules

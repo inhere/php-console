@@ -10,6 +10,7 @@ namespace Inhere\Console;
 
 use Inhere\Console\Contract\CommandInterface;
 use Inhere\Console\IO\Input;
+use ReflectionException;
 
 /**
  * Class Command
@@ -35,6 +36,9 @@ abstract class Command extends AbstractHandler implements CommandInterface
      */
     protected $parent;
 
+    /**
+     * @throws ReflectionException
+     */
     protected function initForRun(Input $input): void
     {
         parent::initForRun($input);
@@ -43,16 +47,21 @@ abstract class Command extends AbstractHandler implements CommandInterface
         if ($this->compatible) {
             $this->flags->setSkipOnUndefined(true);
         }
-    }
 
-    protected function doRun(array $args)
-    {
-        $this->debugf('load configure for command: %s', self::getName());
+        $this->debugf('load flags configure for command: %s', self::getName());
         // load input definition configure
         $this->configure();
 
-        parent::doRun($args);
+        // not config flags. load rules from method doc-comments
+        if ($this->flags->isEmpty()) {
+            $this->loadRulesByDocblock(self::METHOD, $this->flags);
+        }
     }
+
+    // protected function doRun(array $args)
+    // {
+    //     parent::doRun($args);
+    // }
 
     /*
      * Configure command
