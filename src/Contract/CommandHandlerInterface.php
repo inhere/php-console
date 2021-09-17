@@ -47,6 +47,21 @@ interface CommandHandlerInterface
     /**
      * @return string
      */
+    public function getGroupName(): string;
+
+    /**
+     * @return string
+     */
+    public function getRealName(): string;
+
+    /**
+     * @return string
+     */
+    public function getCommandName(): string;
+
+    /**
+     * @return string
+     */
     public static function getName(): string;
 
     /**

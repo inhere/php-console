@@ -131,7 +131,7 @@ trait ApplicationHelpTrait
 
         // built in options
         // $globalOptions = self::$globalOptions;
-        $globalOptions = $this->flags->getOptSimpleDefines();
+        $globalOptions = $this->flags->getOptsHelpData();
         // append generate options:
         // php examples/app --auto-completion --shell-env zsh --gen-file
         // php examples/app --auto-completion --shell-env zsh --gen-file stdout
@@ -286,7 +286,7 @@ trait ApplicationHelpTrait
 
         // built in options
         // $globOpts = self::$globalOptions;
-        $globOpts = $this->flags->getOptSimpleDefines();
+        $globOpts = $this->flags->getOptsHelpData();
 
         Show::mList([
             'Usage:'              => "$scriptName <info>{COMMAND}</info> [--opt -v -h ...] [arg0 arg1 arg2=value2 ...]",

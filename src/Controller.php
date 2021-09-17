@@ -505,7 +505,7 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
      */
     protected function beforeRenderCommandHelp(array &$help): void
     {
-        $help['Group Options:'] = FormatUtil::alignOptions($this->flags->getOptSimpleDefines());
+        $help['Group Options:'] = FormatUtil::alignOptions($this->flags->getOptsHelpData());
     }
 
     /**
@@ -561,6 +561,14 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
 
         $map = $this->getCommandAliases();
         return $map[$alias] ?? $alias;
+    }
+
+    /**
+     * @return string
+     */
+    public function getGroupName(): string
+    {
+        return self::getName();
     }
 
     /**

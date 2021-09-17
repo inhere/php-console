@@ -5,6 +5,7 @@ namespace Inhere\Console\Annotate;
 use Toolkit\Stdlib\Str;
 use Toolkit\Stdlib\Util\PhpDoc;
 use function array_keys;
+use function array_merge;
 use function explode;
 use function preg_match;
 use function trim;
@@ -198,6 +199,26 @@ class DocblockRules
     public static function getAllowedTags(bool $onlyName = true): array
     {
         return $onlyName ? array_keys(self::$allowedTags) : self::$allowedTags;
+    }
+
+
+    /**
+     * @param string $name
+     */
+    public static function addAllowedTag(string $name): void
+    {
+        if (!isset(self::$allowedTags[$name])) {
+            self::$allowedTags[$name] = true;
+        }
+    }
+
+    /**
+     * @param array $allowedTags
+     * @param bool $replace
+     */
+    public static function setAllowedTags(array $allowedTags, bool $replace = false): void
+    {
+        self::$allowedTags = $replace ? $allowedTags : array_merge(self::$allowedTags, $allowedTags);
     }
 
     /**

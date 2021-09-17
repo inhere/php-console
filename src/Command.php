@@ -37,12 +37,25 @@ abstract class Command extends AbstractHandler implements CommandInterface
     protected $parent;
 
     /**
+     * @var string
+     */
+    protected $commandName = '';
+
+    protected function init(): void
+    {
+        $this->commandName = self::getName();
+
+        parent::init();
+    }
+
+    /**
      * @throws ReflectionException
      */
     protected function initForRun(Input $input): void
     {
         parent::initForRun($input);
 
+        $this->flags->setStopOnFistArg(false);
         // old mode: options and arguments at method annotations
         if ($this->compatible) {
             $this->flags->setSkipOnUndefined(true);
@@ -111,20 +124,18 @@ abstract class Command extends AbstractHandler implements CommandInterface
     {
         $aliases = $this->getAliases();
 
-        // render help by input definition.
-        // if ($definition = $this->getDefinition()) {
-        //     $this->showHelpByDefinition($definition, $aliases);
-        //     return true;
-        // }
+        $this->logf(Console::VERB_CRAZY, "display help info for the command: %s", $this->commandName);
 
-        // TODO show help by flags
-        // if ($this->flags->isNotEmpty()) {
-        // }
+        // $execMethod = self::METHOD;
+        // return $this->showHelpByAnnotations($execMethod, '', $aliases) !== 0;
+        return $this->showHelpByFlagsParser($this->flags, $aliases) !== 0;
+    }
 
-        $execMethod = self::METHOD;
-
-        $this->logf(Console::VERB_CRAZY, "display help info for the command: %s", self::getName());
-
-        return $this->showHelpByAnnotations($execMethod, '', $aliases) !== 0;
+    /**
+     * @return string
+     */
+    public function getCommandName(): string
+    {
+        return $this->commandName;
     }
 }

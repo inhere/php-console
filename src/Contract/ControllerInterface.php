@@ -39,6 +39,11 @@ interface ControllerInterface
     /**
      * @return string
      */
+    public function getGroupName(): string;
+
+    /**
+     * @return string
+     */
     public function getDefaultAction(): string;
 
     /**

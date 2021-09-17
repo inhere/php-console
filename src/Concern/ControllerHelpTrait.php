@@ -32,6 +32,7 @@ trait ControllerHelpTrait
      *  -s, --search  Search command by input keywords
      *  --format      Set the help information dump format(raw, xml, json, markdown)
      * @return int
+     * @throws \ReflectionException
      * @example
      *  {script} {name} -h
      *  {script} {name}:help
@@ -64,12 +65,13 @@ trait ControllerHelpTrait
         }
 
         $this->log(Console::VERB_DEBUG, "display help for the controller method: $method", [
-            'group'  => static::$name,
+            'group'  => $this->getGroupName(),
             'action' => $action,
         ]);
 
         // For a specified sub-command.
-        return $this->showHelpByAnnotations($method, $action, $aliases);
+        // return $this->showHelpByAnnotations($method, $action, $aliases);
+        return $this->showHelpByFlagsParser($this->curActionFlags(), $aliases, $action);
     }
 
     protected function beforeShowCommandList(): void
@@ -156,7 +158,7 @@ trait ControllerHelpTrait
         $globalOptions = static::$globalOptions;
         if ($app = $this->getApp()) {
             $globalOptions = array_merge(
-                $app->getFlags()->getOptSimpleDefines(),
+                $app->getFlags()->getOptsHelpData(),
                 static::$globalOptions
             );
         }

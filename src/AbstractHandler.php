@@ -20,7 +20,6 @@ use Inhere\Console\Contract\CommandInterface;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\InputDefinition;
 use Inhere\Console\IO\Output;
-use Inhere\Console\Util\FormatUtil;
 use Inhere\Console\Util\Helper;
 use InvalidArgumentException;
 use ReflectionException;
@@ -32,17 +31,10 @@ use Toolkit\PFlag\FlagsParser;
 use Toolkit\PFlag\SFlags;
 use Toolkit\Stdlib\Helper\PhpHelper;
 use Toolkit\Stdlib\Obj\ConfigObject;
-use Toolkit\Stdlib\Util\PhpDoc;
 use function array_merge;
 use function cli_set_process_title;
 use function error_get_last;
 use function function_exists;
-use function implode;
-use function is_string;
-use function preg_replace;
-use function sprintf;
-use function ucfirst;
-use const PHP_EOL;
 use const PHP_OS;
 
 /**
@@ -252,8 +244,8 @@ abstract class AbstractHandler implements CommandHandlerInterface
     protected function initForRun(Input $input): void
     {
         $input->setFs($this->flags);
+        $this->flags->setDesc(self::getDesc());
         $this->flags->setScriptName(self::getName());
-        $this->flags->setDesc(self::getDescription());
 
         // load built in options
         // $builtInOpts = GlobalOption::getAloneOptions();
@@ -507,6 +499,7 @@ abstract class AbstractHandler implements CommandHandlerInterface
         $dr = DocblockRules::newByDocblock($rftMth->getDocComment());
         $dr->parse();
 
+        $fs->setDesc($dr->getTagValue('desc') ?: self::getDesc());
         $fs->addArgsByRules($dr->getArgRules());
         $fs->addOptsByRules($dr->getOptRules());
     }
@@ -522,110 +515,25 @@ abstract class AbstractHandler implements CommandHandlerInterface
      */
     abstract protected function showHelp(): bool;
 
-    /**
-     * Display command/action help by parse method annotations
-     *
-     * @param string $method
-     * @param string $action action of an group
-     * @param array $aliases
-     *
-     * @return int
-     * @throws ReflectionException
-     */
-    protected function showHelpByAnnotations(string $method, string $action = '', array $aliases = []): int
-    {
-        $name = $this->input->getCommand();
-
-        // subcommand: is a console controller subcommand
-        $rftMth = PhpHelper::reflectMethod($this, $method);
-        if ($action && !$rftMth->isPublic()) {
-            $this->write("The command [<info>$name</info>] don't allow access in the class.");
-            return 0;
-        }
-
-        $allowedTags = DocblockRules::getAllowedTags();
-        $this->logf(Console::VERB_DEBUG, "render help for the command: %s", $this->input->getCommandId());
-
-        $help = [];
-        $doc  = $this->parseCommentsVars((string)$rftMth->getDocComment());
-        $tags = PhpDoc::getTags($doc, [
-            'allow' => $allowedTags,
-        ]);
-
-        if ($aliases) {
-            $realName = $action ?: static::getName();
-            // command name
-            $help['Command:'] = sprintf('%s(alias: <info>%s</info>)', $realName, implode(',', $aliases));
-        }
-
-        $binName = $this->input->getBinName();
-
-        $path = $binName . ' ' . $name;
-        if ($action) {
-            $group = static::getName();
-            $path  = "$binName $group $action";
-        }
-
-        // is an command object
-        $isCommand = $this->isCommand();
-        foreach ($allowedTags as $tag) {
-            if (empty($tags[$tag]) || !is_string($tags[$tag])) {
-                // for alone command
-                if ($tag === 'description' && $isCommand) {
-                    $help['Description:'] = static::getDesc();
-                    continue;
-                }
-
-                if ($tag === 'usage') {
-                    $help['Usage:'] = "$path [--options ...] [arguments ...]";
-                }
-
-                continue;
-            }
-
-            // $msg = trim($tags[$tag]);
-            $message   = $tags[$tag];
-            $labelName = ucfirst($tag) . ':';
-
-            // for alone command
-            if ($tag === 'description' && $isCommand) {
-                $message = static::getDescription();
-            } else {
-                $message = preg_replace('#(\n)#', '$1 ', $message);
-            }
-
-            $help[$labelName] = $message;
-        }
-
-        if (isset($help['Description:'])) {
-            $description = $help['Description:'] ?: 'No description message for the command';
-            $this->write(ucfirst($this->parseCommentsVars($description)) . PHP_EOL);
-            unset($help['Description:']);
-        }
-
-        $help['Group Options:'] = null;
-
-        $this->beforeRenderCommandHelp($help);
-
-        if ($app = $this->getApp()) {
-            $help['Global Options:'] = FormatUtil::alignOptions($app->getFlags()->getOptSimpleDefines());
-        }
-
-        $this->output->mList($help, [
-            'sepChar'     => '  ',
-            'lastNewline' => 0,
-        ]);
-
-        return 0;
-    }
-
-    protected function beforeRenderCommandHelp(array &$help): void
-    {
-    }
-
     /**************************************************************************
      * getter/setter methods
      **************************************************************************/
+
+    /**
+     * @return string
+     */
+    public function getGroupName(): string
+    {
+        return '';
+    }
+
+    /**
+     * @return string
+     */
+    public function getRealName(): string
+    {
+        return self::getName();
+    }
 
     /**
      * @return array
@@ -704,33 +612,6 @@ abstract class AbstractHandler implements CommandHandlerInterface
     public static function setCoroutine($coroutine): void
     {
         static::$coroutine = (bool)$coroutine;
-    }
-
-    /**
-     * @return array
-     */
-    final public static function getAnnotationTags(): array
-    {
-        return self::$annotationTags;
-    }
-
-    /**
-     * @param string $name
-     */
-    public static function addAnnotationTag(string $name): void
-    {
-        if (!isset(self::$annotationTags[$name])) {
-            self::$annotationTags[$name] = true;
-        }
-    }
-
-    /**
-     * @param array $annotationTags
-     * @param bool $replace
-     */
-    public static function setAnnotationTags(array $annotationTags, $replace = false): void
-    {
-        self::$annotationTags = $replace ? $annotationTags : array_merge(self::$annotationTags, $annotationTags);
     }
 
     /**

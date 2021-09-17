@@ -53,4 +53,4 @@ jobs:
       # Docs: https://getcomposer.org/doc/articles/scripts.md
 
       - name: Run unit tests
-        run: phpunit -vv
+        run: phpunit -v --debug
