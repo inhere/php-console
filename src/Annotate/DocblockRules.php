@@ -8,6 +8,8 @@ use function array_keys;
 use function array_merge;
 use function explode;
 use function preg_match;
+use function strlen;
+use function substr;
 use function trim;
 
 /**
@@ -139,7 +141,7 @@ class DocblockRules
         $index = 0;
         $rules = $kvRules = [];
 
-        // $keyWidth = 16;
+        $keyWidth = 16; // with an default value.
         foreach ($lines as $line) {
             $trimmed = trim($line);
             if (!$trimmed) {
@@ -157,6 +159,12 @@ class DocblockRules
                 continue;
             }
 
+            // TIP: special - if line indent space len gt keyWidth, is desc message of multi line.
+            if (!trim(substr($line, 0, $keyWidth))) {
+                $rules[$index - 1][1] .= "\n" . $trimmed; // multi desc message.
+                continue;
+            }
+
             $name = trim($nodes[0], '.');
             if (!preg_match('/^[\w ,-]{0,48}$/', $name)) {
                 if ($index === 0) { // invalid first line
@@ -168,10 +176,15 @@ class DocblockRules
                 continue;
             }
 
+            $nameLen  = strlen($name);
+            $keyWidth = $nameLen > $keyWidth ? $nameLen : $keyWidth;
+
+            // append
             $rules[$index] = [$name, $nodes[1]];
             $index++;
         }
 
+        // convert to k-v data.
         if ($rules) {
             foreach ($rules as [$name, $rule]) {
                 $kvRules[$name] = $rule;
