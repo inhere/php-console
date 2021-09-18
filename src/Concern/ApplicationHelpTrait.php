@@ -8,7 +8,7 @@
 
 namespace Inhere\Console\Concern;
 
-use Inhere\Console\AbstractHandler;
+use Inhere\Console\Handler\AbstractHandler;
 use Inhere\Console\Console;
 use Inhere\Console\ConsoleEvent;
 use Inhere\Console\Contract\CommandInterface;

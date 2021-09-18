@@ -12,6 +12,7 @@ use Generator;
 use Inhere\Console\Concern\ControllerHelpTrait;
 use Inhere\Console\Contract\ControllerInterface;
 use Inhere\Console\Exception\ConsoleException;
+use Inhere\Console\Handler\AbstractHandler;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
 use Inhere\Console\Util\FormatUtil;
@@ -38,7 +39,6 @@ use function sprintf;
 use function substr;
 use function trim;
 use function ucfirst;
-use function vdump;
 
 /**
  * Class Controller
@@ -213,9 +213,36 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
         return false;
     }
 
-    protected function getBuiltInOptions(): array
+    /**
+     * @param FlagsParser $fs
+     */
+    protected function afterInitFlagsParser(FlagsParser $fs): void
     {
-        return GlobalOption::getGroupOptions();
+        $fs->addOptsByRules(GlobalOption::getGroupOptions());
+    }
+
+    /**
+     * Run an action with args
+     *
+     * Usage:
+     *
+     * ```php
+     *  $args = $this->flags->getRawArgs();
+     *  // add option
+     *  $args[] = '--push';
+     *  $this->runActionWithArgs('subcmd', $args);
+     * ```
+     *
+     * @param string $cmd
+     * @param array $args
+     *
+     * @return bool|int|mixed
+     * @throws Throwable
+     */
+    public function runActionWithArgs(string $cmd, array $args)
+    {
+        $args[0] = $cmd;
+        return $this->doRun($args);
     }
 
     protected function beforeRun(): void
@@ -345,7 +372,7 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
      * @return mixed
      * @throws ReflectionException
      */
-    final public function execute($input, $output)
+    final public function execute(Input $input, Output $output)
     {
         $action = $this->action;
         $group  = static::getName();
@@ -447,7 +474,7 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
         $action = $action ?: $this->action;
         if (!$fs = $this->getActionFlags($action)) {
             $fs = new SFlags(['name' => $action]);
-            // $fs->setStopOnFistArg(false);
+            $fs->setStopOnFistArg(false);
             $fs->setBeforePrintHelp(function (string $text) {
                 return $this->parseCommentsVars($text);
             });
@@ -480,23 +507,10 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
 
     /**
      * @return bool
+     * @throws ReflectionException
      */
     protected function showHelp(): bool
     {
-        // render help by Definition
-        // if ($definition = $this->getDefinition()) {
-        //     if ($action = $this->action) {
-        //         $aliases = $this->getCommandAliases($action);
-        //     } else {
-        //         $aliases = $this->getAliases();
-        //     }
-        //
-        //     $this->showHelpByDefinition($definition, $aliases);
-        //     return true;
-        // }
-
-        // TODO show help by flags
-
         return $this->helpCommand() === 0;
     }
 

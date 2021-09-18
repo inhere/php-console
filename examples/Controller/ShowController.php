@@ -18,6 +18,7 @@ use Inhere\Console\Util\Show;
 use ReflectionException;
 use Toolkit\Cli\Color;
 use Toolkit\Cli\Highlighter;
+use Toolkit\PFlag\FlagsParser;
 use function file_get_contents;
 
 /**
@@ -61,14 +62,17 @@ class ShowController extends Controller
 
     /**
      * output format message: splitLine
+     *
      * @options
-     *  -w, --width WIDTH   The split line width. default is current screen width.
+     *  -w, --width   int;The split line width. default is current screen width.
      */
-    public function splitLineCommand(): int
+    public function splitLineCommand(FlagsParser $fs): int
     {
-        $this->output->splitLine('', '=', $this->getSameOpt(['w', 'width'], 0));
-        $this->output->splitLine('split Line', '-', $this->getSameOpt(['w', 'width'], 0));
-        $this->output->splitLine('split 中文 Line', '-', $this->getSameOpt(['w', 'width'], 0));
+        $width = $fs->getOpt('width');
+
+        $this->output->splitLine('', '=', $width);
+        $this->output->splitLine('split Line', '-', $width);
+        $this->output->splitLine('split 中文 Line', '-', $width);
 
         return 0;
     }

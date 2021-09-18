@@ -2,7 +2,7 @@
 
 namespace Inhere\Console\Concern;
 
-use Inhere\Console\AbstractHandler;
+use Inhere\Console\Handler\AbstractHandler;
 use Inhere\Console\Annotate\DocblockRules;
 use Inhere\Console\Console;
 use Inhere\Console\Util\FormatUtil;

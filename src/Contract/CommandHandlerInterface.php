@@ -9,7 +9,6 @@
 namespace Inhere\Console\Contract;
 
 use Inhere\Console\AbstractApplication;
-use Inhere\Console\IO\InputDefinition;
 
 /**
  * Interface CommandHandlerInterface
@@ -50,6 +49,8 @@ interface CommandHandlerInterface
     public function getGroupName(): string;
 
     /**
+     * Alias of the getName()
+     *
      * @return string
      */
     public function getRealName(): string;

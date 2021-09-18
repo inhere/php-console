@@ -11,7 +11,8 @@ use Inhere\Console\Util\Show;
 use LogicException;
 use RuntimeException;
 use Toolkit\Cli\Cli;
-use Toolkit\Cli\Download;
+use Toolkit\Cli\Util\Download;
+use Toolkit\PFlag\FlagsParser;
 use Toolkit\Stdlib\Php;
 use function sleep;
 use function trigger_error;
@@ -114,7 +115,7 @@ class HomeController extends Controller
      */
     protected function defArgConfigure(): void
     {
-        $fs = $this->newActionFlags();
+        $fs = $this->curActionFlags();
         $fs->addOptByRule('yes,y', "bool;description for the option 'yes'");
         $fs->addOptByRule('opt1', "bool;description for the option 'opt1'");
 
@@ -311,29 +312,29 @@ class HomeController extends Controller
      * a progress bar example show, by Show::progressBar()
      *
      * @options
-     *  --type      the progress type, allow: bar,txt. <cyan>txt</cyan>
-     *  --done-char the done show char. <info>=</info>
-     *  --wait-char the waiting show char. <info>-</info>
-     *  --sign-char the sign char show. <info>></info>
+     *  --type          the progress type, allow: bar,txt. <cyan>txt</cyan>
+     *  --done-char     the done show char. <info>=</info>
+     *  --wait-char     the waiting show char. <info>-</info>
+     *  --sign-char     the sign char show. <info>></info>
      *
-     * @param Input $input
+     * @param FlagsParser $fs
      *
      * @return int
      * @example
      *  {script} {command}
      *  {script} {command} --done-char '#' --wait-char ' '
      */
-    public function progressCommand($input): int
+    public function progressCommand(FlagsParser $fs): int
     {
         $i     = 0;
         $total = 120;
-        if ($input->getOpt('type') === 'bar') {
+        if ($fs->getOpt('type') === 'bar') {
             $bar = $this->output->progressBar($total, [
                 'msg'      => 'Msg Text',
                 'doneMsg'  => 'Done Msg Text',
-                'doneChar' => $input->getOpt('done-char', '='), // ▓
-                'waitChar' => $input->getOpt('wait-char', '-'), // ░
-                'signChar' => $input->getOpt('sign-char', '>'),
+                'doneChar' => $fs->getOpt('done-char', '='), // ▓
+                'waitChar' => $fs->getOpt('wait-char', '-'), // ░
+                'signChar' => $fs->getOpt('sign-char', '>'),
             ]);
         } else {
             $bar = $this->output->progressTxt($total, 'Doing go g...', 'Done');
@@ -496,6 +497,7 @@ class HomeController extends Controller
      * a example for use arguments on command
      *
      * @usage home:useArg [arg1=val1 arg2=arg2] [options]
+     *
      * @example
      *  home:useArg status=2 name=john arg0 -s=test --page=23 -d -rf --debug --test=false -a v1 --ab -c -g --cd val -h '' -i stat=online
      *  home:useArg status=2 name=john name=tom name=jack arg0 -s=test --page=23 --id=23 --id=154 --id=456  -d -rf --debug --test=false
@@ -533,20 +535,28 @@ class HomeController extends Controller
 
     /**
      * This is a demo for download a file to local
-     * @usage {command} url=url saveTo=[saveAs] type=[bar|text]
+     *
+     * @usage {command} url=url saveTo=[saveAs] --type=[bar|text]
+     *
+     * @options
+     * --type       The progress bar type. allow: bar, text(default)
+     *
+     * @arguments
+     * url      string;The remote file url;required
+     * saveAs   The local file path for save download file.
      *
      * @example {command} url=https://github.com/inhere/php-console/archive/master.zip type=bar
      */
-    public function downCommand(): int
+    public function downCommand(FlagsParser $fs): int
     {
-        $url = $this->input->getArg('url');
-
+        $url = $fs->getArg('url');
         if (!$url) {
-            $this->output->liteError('Please input you want to downloaded file url, use: url=[url]', 1);
+            $this->output->liteError('Please input the downloaded file url');
+            return 1;
         }
 
-        $saveAs = $this->input->getArg('saveAs');
-        $type   = $this->input->getArg('type', 'text');
+        $saveAs = $fs->getArg('saveAs');
+        $type   = $fs->getOpt('type', 'text');
 
         if (!$saveAs) {
             $saveAs = __DIR__ . '/' . basename($url);

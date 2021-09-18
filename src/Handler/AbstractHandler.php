@@ -6,7 +6,7 @@
  * Time: 11:40
  */
 
-namespace Inhere\Console;
+namespace Inhere\Console\Handler;
 
 use Inhere\Console\Annotate\DocblockRules;
 use Inhere\Console\Component\ErrorHandler;
@@ -15,6 +15,8 @@ use Inhere\Console\Concern\CommandHelpTrait;
 use Inhere\Console\Concern\InputOutputAwareTrait;
 use Inhere\Console\Concern\SubCommandsWareTrait;
 use Inhere\Console\Concern\UserInteractAwareTrait;
+use Inhere\Console\Console;
+use Inhere\Console\ConsoleEvent;
 use Inhere\Console\Contract\CommandHandlerInterface;
 use Inhere\Console\Contract\CommandInterface;
 use Inhere\Console\IO\Input;
@@ -24,14 +26,11 @@ use Inhere\Console\Util\Helper;
 use InvalidArgumentException;
 use ReflectionException;
 use RuntimeException;
-use Swoole\Coroutine;
-use Swoole\Event;
 use Throwable;
 use Toolkit\PFlag\FlagsParser;
 use Toolkit\PFlag\SFlags;
 use Toolkit\Stdlib\Helper\PhpHelper;
 use Toolkit\Stdlib\Obj\ConfigObject;
-use function array_merge;
 use function cli_set_process_title;
 use function error_get_last;
 use function function_exists;
@@ -241,20 +240,22 @@ abstract class AbstractHandler implements CommandHandlerInterface
      * running a command
      **************************************************************************/
 
-    protected function initForRun(Input $input): void
+    /**
+     * @param Input $input
+     */
+    protected function initFlagsParser(Input $input): void
     {
         $input->setFs($this->flags);
         $this->flags->setDesc(self::getDesc());
         $this->flags->setScriptName(self::getName());
 
-        // load built in options
-        // $builtInOpts = GlobalOption::getAloneOptions();
-        $builtInOpts = $this->getBuiltInOptions();
-        $this->flags->addOptsByRules($builtInOpts);
+        $this->beforeInitFlagsParser($this->flags);
 
         // set options by options()
         $optRules = $this->options();
         $this->flags->addOptsByRules($optRules);
+
+        // for render help
         $this->flags->setBeforePrintHelp(function (string $text) {
             return $this->parseCommentsVars($text);
         });
@@ -262,11 +263,24 @@ abstract class AbstractHandler implements CommandHandlerInterface
             $this->logf(Console::VERB_DEBUG, 'show help message by input flags: -h, --help');
             $this->showHelp();
         });
+
+        $this->afterInitFlagsParser($this->flags);
     }
 
-    protected function getBuiltInOptions(): array
+    /**
+     * @param FlagsParser $fs
+     */
+    protected function beforeInitFlagsParser(FlagsParser $fs): void
     {
-        return GlobalOption::getAloneOptions();
+        // $fs->addOptsByRules(GlobalOption::getAloneOptions());
+    }
+
+    /**
+     * @param FlagsParser $fs
+     */
+    protected function afterInitFlagsParser(FlagsParser $fs): void
+    {
+        // $fs->addOptsByRules(GlobalOption::getAloneOptions());
     }
 
     /**
@@ -280,7 +294,7 @@ abstract class AbstractHandler implements CommandHandlerInterface
         $name = self::getName();
 
         try {
-            $this->initForRun($this->input);
+            $this->initFlagsParser($this->input);
 
             $this->log(Console::VERB_DEBUG, "begin run '$name' - parse options", ['args' => $args]);
 
@@ -318,13 +332,9 @@ abstract class AbstractHandler implements CommandHandlerInterface
             $rName = $this->resolveAlias($first);
 
             if ($this->isSubCommand($rName)) {
-
+                // TODO
             }
         }
-
-        // $this->debugf('begin run command. load configure for command');
-        // // load input definition configure
-        // $this->configure();
 
         // some prepare check
         // - validate input arguments
@@ -352,34 +362,27 @@ abstract class AbstractHandler implements CommandHandlerInterface
         }
 
         $this->afterExecute();
-
         return $result;
     }
 
     /**
      * coroutine run by swoole go()
      *
-     * @return bool
+     * @return int
      */
-    public function coExecute(): bool
+    public function coExecute(): int
     {
-        // $ch = new Coroutine\Channel(1);
-        $ok = Coroutine::create(function () {
+        $cid = \Swoole\Coroutine\run(function () {
             $this->execute($this->input, $this->output);
-            // $ch->push($result);
         });
 
         // if create co fail
-        if ((int)$ok === 0) {
-            // if open debug, output a tips
+        if ($cid < 0) {
             $this->logf(Console::VERB_DEBUG, 'ERROR: The coroutine create failed');
-
             // exec by normal flow
-            $result = $this->execute($this->input, $this->output);
+            $result = (int)$this->execute($this->input, $this->output);
         } else { // success: wait coroutine exec.
-            Event::wait();
             $result = 0;
-            // $result = $ch->pop(10);
         }
 
         return $result;
@@ -406,7 +409,7 @@ abstract class AbstractHandler implements CommandHandlerInterface
      *
      * @return int|mixed
      */
-    abstract protected function execute($input, $output);
+    abstract protected function execute(Input $input, Output $output);
 
     /**
      * After command execute
@@ -499,9 +502,13 @@ abstract class AbstractHandler implements CommandHandlerInterface
         $dr = DocblockRules::newByDocblock($rftMth->getDocComment());
         $dr->parse();
 
-        $fs->setDesc($dr->getTagValue('desc') ?: self::getDesc());
         $fs->addArgsByRules($dr->getArgRules());
         $fs->addOptsByRules($dr->getOptRules());
+
+        // more info
+        $fs->setDesc($dr->getTagValue('desc'), true);
+        $fs->setMoreHelp($dr->getTagValue('help'));
+        $fs->setExample($dr->getTagValue('example'));
     }
 
     /**********************************************************

@@ -3,14 +3,14 @@
 namespace Inhere\Console\Component;
 
 use Inhere\Console\Application;
-use Toolkit\Stdlib\Obj\AbstractObj;
+use Inhere\Console\Component\Interact\IShell;
 
 /**
  * Class ConsoleAppIShell
  *
  * @package Inhere\Console
  */
-class ConsoleAppIShell extends AbstractObj
+class ConsoleAppIShell extends IShell
 {
     /**
      * @var Application

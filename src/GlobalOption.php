@@ -26,10 +26,6 @@ class GlobalOption
 
     public const NO_INTERACTIVE = 'no-interactive';
 
-    public const HELP_OPTS = ['h', 'help'];
-
-    public const VERSION_OPTS = ['V', 'version'];
-
     public const KEY_MAP = [
         'debug'          => 1,
         'ishell'         => 1,
@@ -47,25 +43,17 @@ class GlobalOption
      * @psalm-var array<string, string>
      */
     private static $options = [
-        // '--debug'          => 'int;Setting the runtime log debug level(quiet 0 - 5 crazy);no;1',
         '--debug'          => [
             'type'   => FlagType::INT,
             'desc'   => 'Setting the runtime log debug level(quiet 0 - 5 crazy)',
             'envVar' => Console::DEBUG_ENV_KEY,
         ],
-        // '--debug'          => 'Setting the runtime log debug level(quiet 0 - 5 crazy)',
         '--ishell'         => 'bool;Run application an interactive shell environment',
-        // '--ishell'         => 'Run application an interactive shell environment',
         '--profile'        => 'bool;Display timing and memory usage information',
-        // '--profile'        => 'Display timing and memory usage information',
         '--no-color'       => 'bool;Disable color/ANSI for message output',
-        // '--no-color'       => 'Disable color/ANSI for message output',
         '--help'           => 'bool;Display this help message;;;h',
-        // '-h, --help'       => 'Display this help message',
         '--version'        => 'bool;Show application version information;;;V',
-        // '-V, --version'    => 'Show application version information',
         '--no-interactive' => 'bool;Run commands in a non-interactive environment',
-        // '--no-interactive' => 'Run commands in a non-interactive environment',
     ];
 
     /**
@@ -76,19 +64,21 @@ class GlobalOption
         // '--show-disabled' => 'string;Whether display disabled commands',
     ];
 
+    public const SHOW_DISABLED = 'show-disabled';
+
     /**
      * @var array built-in options for the group command
      */
     protected static $groupOptions = [
         // '--help'          => 'bool;Display this help message;;;h',
-        '--show-disabled' => 'string;Whether display disabled commands',
+        self::SHOW_DISABLED => 'string;Whether display disabled commands',
     ];
 
     /**
      * @var array common options for the group/command
      */
     protected static $commonOptions = [
-        '--help' => 'bool;Display this help message;;;h',
+        self::HELP => 'bool;Display this help message;;;h',
     ];
 
     /**

@@ -38,7 +38,7 @@ class CorCommand extends Command
      * @param  Input $input
      * @param  Output $output
      */
-    protected function execute($input, $output)
+    protected function execute(Input $input, Output $output)
     {
         $output->aList([
             'support coroutine?' => Helper::isSupportCoroutine() ? 'Y' : 'N',

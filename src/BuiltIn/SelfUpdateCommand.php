@@ -49,7 +49,7 @@ class SelfUpdateCommand extends Command
      * @param Input  $input
      * @param Output $output
      */
-    protected function execute($input, $output)
+    protected function execute(Input $input, Output $output)
     {
         $this->version = $this->getApp()->getVersion();
         $parser        = new VersionParser;

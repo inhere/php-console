@@ -156,14 +156,14 @@ class Router implements RouterInterface
      */
     public function addCommand(string $name, $handler = null, array $options = []): RouterInterface
     {
-        /**
-         * @var Command $name name is an command class
-         */
         if (!$handler && class_exists($name)) {
             $handler = $name;
             $name    = $name::getName();
         }
 
+        /**
+         * @var Command $name name is an command class
+         */
         if (!$name || !$handler) {
             Helper::throwInvalidArgument("Command 'name' and 'handler' cannot be empty! name: $name");
         }
@@ -311,7 +311,7 @@ class Router implements RouterInterface
      **********************************************************/
 
     /**
-     * @param      $name
+     * @param string $name
      *
      * @throws InvalidArgumentException
      */
@@ -376,7 +376,7 @@ class Router implements RouterInterface
     }
 
     /**
-     * @param $name
+     * @param string $name
      *
      * @return array
      */
@@ -386,7 +386,7 @@ class Router implements RouterInterface
     }
 
     /**
-     * @param $name
+     * @param string $name
      *
      * @return bool
      */
@@ -404,7 +404,7 @@ class Router implements RouterInterface
     }
 
     /**
-     * @param $name
+     * @param string $name
      *
      * @return bool
      */

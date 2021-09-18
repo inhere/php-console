@@ -3,6 +3,7 @@
 namespace Inhere\Console\Concern;
 
 use Inhere\Console\Console;
+use Inhere\Console\GlobalOption;
 use Inhere\Console\Util\FormatUtil;
 use ReflectionClass;
 use Toolkit\Cli\ColorTag;
@@ -32,7 +33,6 @@ trait ControllerHelpTrait
      *  -s, --search  Search command by input keywords
      *  --format      Set the help information dump format(raw, xml, json, markdown)
      * @return int
-     * @throws \ReflectionException
      * @example
      *  {script} {name} -h
      *  {script} {name}:help
@@ -96,7 +96,7 @@ trait ControllerHelpTrait
         }
 
         $commands     = [];
-        $showDisabled = (bool)$this->getOpt('show-disabled', false);
+        $showDisabled = $this->flags->getOpt(GlobalOption::SHOW_DISABLED, false);
         $defaultDes   = 'No description message';
 
         /**
@@ -144,7 +144,7 @@ trait ControllerHelpTrait
 
         // if is alone running.
         if ($detached = $this->isDetached()) {
-            $name  = $sName . ' ';
+            // $name  = $sName . ' ';
             $usage = "$script <info>COMMAND</info> [--options ...] [arguments ...]";
         } else {
             $name = $sName . $this->delimiter;

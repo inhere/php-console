@@ -9,8 +9,9 @@
 namespace Inhere\Console;
 
 use Inhere\Console\Contract\CommandInterface;
-use Inhere\Console\IO\Input;
+use Inhere\Console\Handler\AbstractHandler;
 use ReflectionException;
+use Toolkit\PFlag\FlagsParser;
 
 /**
  * Class Command
@@ -20,7 +21,7 @@ use ReflectionException;
  * ```php
  *  class MyCommand extends Command
  *  {
- *      protected function execute($input, $output)
+ *      protected function execute(Input $input, Output $output)
  *      {
  *          // some logic ...
  *      }
@@ -49,43 +50,38 @@ abstract class Command extends AbstractHandler implements CommandInterface
     }
 
     /**
-     * @throws ReflectionException
+     * @param FlagsParser $fs
      */
-    protected function initForRun(Input $input): void
+    protected function beforeInitFlagsParser(FlagsParser $fs): void
     {
-        parent::initForRun($input);
+        $fs->setStopOnFistArg(false);
 
-        $this->flags->setStopOnFistArg(false);
         // old mode: options and arguments at method annotations
         if ($this->compatible) {
-            $this->flags->setSkipOnUndefined(true);
-        }
-
-        $this->debugf('load flags configure for command: %s', self::getName());
-        // load input definition configure
-        $this->configure();
-
-        // not config flags. load rules from method doc-comments
-        if ($this->flags->isEmpty()) {
-            $this->loadRulesByDocblock(self::METHOD, $this->flags);
+            $fs->setSkipOnUndefined(true);
         }
     }
 
-    // protected function doRun(array $args)
-    // {
-    //     parent::doRun($args);
-    // }
-
-    /*
-     * Configure command
+    /**
+     * @param FlagsParser $fs
+     *
+     * @throws ReflectionException
      */
-    // protected function configure()
-    // {
-    //     $this
-    //      ->createDefinition()
-    //      ->addArgument('test')
-    //      ->addOption('test');
-    // }
+    protected function afterInitFlagsParser(FlagsParser $fs): void
+    {
+        $this->debugf('load flags configure for command: %s', $this->getRealName());
+        $this->configure();
+
+        $isEmpty = $this->flags->isEmpty();
+
+        // load built in options
+        $fs->addOptsByRules(GlobalOption::getAloneOptions());
+
+        // not config flags. load rules from method doc-comments
+        if ($isEmpty) {
+            $this->loadRulesByDocblock(self::METHOD, $fs);
+        }
+    }
 
     /**
      * @param Command $parent
@@ -98,10 +94,10 @@ abstract class Command extends AbstractHandler implements CommandInterface
     /**
      * @return $this
      */
-    public function getRootCommand(): Command
+    public function getRoot(): Command
     {
         if ($this->parent) {
-            return $this->parent->getRootCommand();
+            return $this->parent->getRoot();
         }
 
         return $this;

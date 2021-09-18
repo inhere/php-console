@@ -31,7 +31,7 @@ class TestCommand extends Command
      *
      * @return int|mixed
      */
-    protected function execute($input, $output)
+    protected function execute(Input $input, Output $output)
     {
         return __METHOD__;
     }
