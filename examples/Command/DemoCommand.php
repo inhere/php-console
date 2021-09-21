@@ -47,7 +47,7 @@ class DemoCommand extends Command
      * @param  Output $output
      * @return int|void
      */
-    public function execute($input, $output)
+    public function execute(Input $input, Output $output)
     {
         $output->write('hello, this in ' . __METHOD__);
         // $name = $input->getArg('name');

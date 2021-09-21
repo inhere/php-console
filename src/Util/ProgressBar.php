@@ -13,6 +13,7 @@ use Inhere\Console\IO\Output;
 use Inhere\Console\Contract\OutputInterface;
 use LogicException;
 use RuntimeException;
+use Toolkit\Stdlib\Helper\Format;
 use Toolkit\Stdlib\Str;
 use function max;
 
@@ -31,16 +32,34 @@ use function max;
 class ProgressBar
 {
     // options
+    /**
+     * @var int
+     */
     private $barWidth = 30;
 
-    private $completeChar = '=';  // 已完成的显示字符
+    /**
+     * @var string 已完成的显示字符
+     */
+    private $completeChar = '=';
 
-    private $progressChar = '>';  // 当前进度的显示字符
+    /**
+     * @var string 当前进度的显示字符
+     */
+    private $progressChar = '>';
 
-    private $remainingChar = '-'; // 剩下的的显示字符
+    /**
+     * @var string 剩下的的显示字符
+     */
+    private $remainingChar = '-';
 
+    /**
+     * @var int
+     */
     private $redrawFreq = 1;
 
+    /**
+     * @var string
+     */
     private $format;
 
     /**
@@ -74,14 +93,29 @@ class ProgressBar
      */
     private $stepWidth;
 
-    private $startTime;
+    /**
+     * @var int
+     */
+    private $startTime = 0;
 
-    private $finishTime;
+    /**
+     * @var int
+     */
+    private $finishTime = 0;
 
+    /**
+     * @var bool
+     */
     private $overwrite = true;
 
+    /**
+     * @var bool
+     */
     private $started = false;
 
+    /**
+     * @var bool
+     */
     private $firstRun = true;
 
     /**
@@ -107,7 +141,7 @@ class ProgressBar
     public const DEFAULT_FORMAT = '[{@bar}] {@percent:3s}%({@current}/{@max}) {@elapsed:6s}/{@estimated:-6s} {@memory:6s}';
 
     /**
-     * @param OutputInterface $output
+     * @param OutputInterface|null $output
      * @param int             $maxSteps
      *
      * @return ProgressBar
@@ -118,8 +152,8 @@ class ProgressBar
     }
 
     /**
-     * @param OutputInterface $output
-     * @param int             $maxSteps
+     * @param OutputInterface|null $output
+     * @param int $maxSteps
      */
     public function __construct(OutputInterface $output = null, int $maxSteps = 0)
     {
@@ -594,7 +628,7 @@ class ProgressBar
                 return FormatUtil::howLongAgo($estimated);
             },
             'memory'    => static function () {
-                return FormatUtil::memoryUsage(memory_get_usage(true));
+                return Format::memory(memory_get_usage(true));
             },
             'current'   => static function (self $bar) {
                 return Str::pad($bar->getProgress(), $bar->getStepWidth(), ' ', STR_PAD_LEFT);

@@ -10,7 +10,7 @@ namespace Inhere\Console\Examples\Controller;
 
 use Inhere\Console\Controller;
 use RuntimeException;
-use Toolkit\Sys\ProcessUtil;
+use Toolkit\Sys\Proc\ProcessUtil;
 use Toolkit\Sys\Sys;
 use function is_resource;
 

@@ -13,7 +13,6 @@ use Inhere\Console\Component\Formatter\Panel;
 use Inhere\Console\Component\Symbol\Char;
 use Inhere\Console\Component\Symbol\Emoji;
 use Inhere\Console\Controller;
-use Inhere\Console\IO\Input;
 use Inhere\Console\Util\Show;
 use ReflectionException;
 use Toolkit\Cli\Color;
@@ -217,17 +216,19 @@ class ShowController extends Controller
 
     /**
      * a example for highlight code
+     *
      * @options
-     *  --ln    Display with line number
-     * @param Input $in
+     *  --ln     bool;Display with line number
+     *
+     * @param FlagsParser $fs
      */
-    public function highlightCommand($in): void
+    public function highlightCommand(FlagsParser $fs): void
     {
         // $file = $this->app->getRootPath() . '/examples/routes.php';
         $file = $this->app->getRootPath() . '/src/Utils/Show.php';
         $src  = file_get_contents($file);
 
-        $code = Highlighter::create()->highlight($src, $in->getBoolOpt('ln'));
+        $code = Highlighter::create()->highlight($src, $fs->getOpt('ln'));
 
         $this->output->writeRaw($code);
     }

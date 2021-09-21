@@ -9,6 +9,7 @@
 namespace Inhere\Console\Examples\Command;
 
 use Inhere\Console\Command;
+use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
 
 /**
@@ -32,17 +33,20 @@ class TestCommand extends Command
 
     /**
      * test text
+     *
      * @usage {name} test message
      * @arguments
      *  arg1        argument description 1
      *  arg2        argument description 2
+     *
      * @options
      *  --long,-s   option description 1
      *  --opt       option description 2
+     *
      * @param $input
      * @param Output $output
      */
-    public function execute($input, $output)
+    public function execute(Input $input, Output $output)
     {
         $output->write('hello, this in ' . __METHOD__);
     }
