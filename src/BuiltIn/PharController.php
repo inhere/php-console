@@ -17,6 +17,7 @@ use Inhere\Console\IO\Output;
 use Inhere\Console\Util\Helper;
 use Inhere\Console\Util\Show;
 use RuntimeException;
+use Toolkit\PFlag\FlagsParser;
 use Toolkit\Stdlib\Str;
 use function basename;
 use function file_exists;
@@ -77,8 +78,9 @@ class PharController extends Controller
      *      --files         Only pack the list files to the exist phar, multi use ',' split
      *      --no-progress   bool;Disable output progress on the runtime
      *
-     * @param Input  $input
+     * @param Input $input
      * @param Output $output
+     * @param FlagsParser $fs
      *
      * @return int
      * @throws Exception
@@ -92,16 +94,16 @@ class PharController extends Controller
      * only update the input files:
      *   php -d phar.readonly=0 {binFile} phar:pack -o=mycli.phar --debug --files app/Command/ServeCommand.php
      */
-    public function packCommand(Input $input, Output $output): int
+    public function packCommand(Input $input, Output $output, FlagsParser $fs): int
     {
         $startAt = microtime(true);
         $workDir = $input->getPwd();
 
-        $dir = $input->getOpt('dir') ?: $workDir;
+        $dir = $fs->getOpt('dir') ?: $workDir;
         $cpr = $this->configCompiler($dir);
 
-        $refresh  = $input->boolOpt('refresh');
-        $outFile  = $input->getSameStringOpt(['o', 'output'], $this->defPkgName);
+        $refresh  = $fs->getOpt('refresh');
+        $outFile  = $fs->getOpt('output', $this->defPkgName);
         $pharFile = $workDir . '/' . $outFile;
 
         Show::aList([
@@ -111,13 +113,13 @@ class PharController extends Controller
         ], 'Building Information');
 
         // use fast build
-        if ($this->input->boolOpt('fast')) {
+        if ($fs->getOpt('fast')) {
             $cpr->setModifies($cpr->findChangedByGit());
             $this->output->liteNote('Use fast build, will only pack changed or new files(from git status)');
         }
 
         // Manual append some files
-        if ($files = $input->getStringOpt('files')) {
+        if ($files = $fs->getOpt('files')) {
             $cpr->setModifies(Str::explode($files));
             $output->liteInfo("will only pack input files to the exists phar: $outFile");
         }
@@ -130,7 +132,10 @@ class PharController extends Controller
         });
 
         $output->colored('Collect Pack files', 'comment');
-        $this->outputProgress($cpr, $input);
+
+        if (!$fs->getOpt('no-progress')) {
+            $this->outputProgress($cpr);
+        }
 
         // packing ...
         $cpr->pack($pharFile, $refresh);
@@ -178,17 +183,12 @@ class PharController extends Controller
 
     /**
      * @param PharCompiler $cpr
-     * @param Input        $input
      *
      * @return void
      */
-    private function outputProgress(PharCompiler $cpr,Input $input): void
+    private function outputProgress(PharCompiler $cpr): void
     {
-        if ($input->getBoolOpt('no-progress')) {
-            return;
-        }
-
-        if ($input->getOpt('debug')) {
+        if ($this->isDebug()) {
             // $output->info('Pack file to Phar ... ...');
             $cpr->onAdd(function (string $path) {
                 $this->writeln(" <info>+</info> $path");
@@ -228,15 +228,16 @@ class PharController extends Controller
      *  -y, --yes       bool;Whether display goon tips message.
      *  --overwrite     bool;Whether overwrite exists files on extract phar
      *
-     * @param Input  $in
+     * @param Input $in
      * @param Output $out
+     * @param FlagsParser $fs
      *
      * @return int
      * @example {fullCommand} -f myapp.phar -d var/www/app
      */
-    public function unpackCommand($in, $out): int
+    public function unpackCommand(Input $in, Output $out, FlagsParser $fs): int
     {
-        if (!$path = $in->getSameOpt(['f', 'file'])) {
+        if (!$path = $fs->getOpt('file')) {
             return $out->error("Please input the phar file path by option '-f|--file'");
         }
 
@@ -247,8 +248,8 @@ class PharController extends Controller
             return $out->error("The phar file not exists. File: $file");
         }
 
-        $dir       = $in->getSameOpt(['d', 'dir']) ?: $basePath;
-        $overwrite = $in->getBoolOpt('overwrite');
+        $dir       = $fs->getOpt('dir') ?: $basePath;
+        $overwrite = $fs->getOpt('overwrite');
 
         if (!is_dir($dir)) {
             Helper::mkdir($dir);

@@ -6,6 +6,7 @@ use Inhere\Console\AbstractApplication;
 use Inhere\Console\Application;
 use Inhere\Console\Console;
 use Inhere\Console\GlobalOption;
+use Toolkit\Stdlib\OS;
 
 /**
  * Trait AttachApplicationTrait
@@ -99,6 +100,26 @@ trait AttachApplicationTrait
         }
 
         return (int)$this->input->getLongOpt('debug', Console::VERB_ERROR);
+    }
+
+    /**
+     * @param int $level
+     *
+     * @return bool
+     */
+    public function isDebug(int $level = Console::VERB_DEBUG): bool
+    {
+        if ($this->app) {
+            return $this->app->isDebug();
+        }
+
+        $setVal = Console::VERB_ERROR;
+        $envVal = OS::getEnvStrVal(Console::DEBUG_ENV_KEY);
+        if ($envVal !== '') {
+            $setVal = (int)$envVal;
+        }
+
+        return $level <= $setVal;
     }
 
     /**

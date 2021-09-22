@@ -9,7 +9,7 @@
 namespace Inhere\Console\BuiltIn;
 
 use Exception;
-use Inhere\Console\Attr\CmdOption;
+use Inhere\Console\Annotate\Attr\CmdOption;
 use Inhere\Console\Command;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
@@ -45,8 +45,9 @@ class DevServerCommand extends Command
      *  -H,--host           The server host address(<comment>127.0.0.1</comment>)
      *  -p,--port           The server port number(<comment>8552</comment>)
      *  -b,--php-bin        The php binary file(<comment>php</comment>)
+     *
      * @arguments
-     *  file=STRING         The entry file for server. e.g web/index.php
+     *  file         The entry file for server. e.g web/index.php
      *
      * @param Input  $input
      * @param Output $output
@@ -59,23 +60,22 @@ class DevServerCommand extends Command
     #[CmdOption('dev-serve', 'start a php built-in http server for developmentd')]
     public function execute(Input $input, Output $output)
     {
-        $serveAddr = $input->getSameStringOpt('s,S,addr');
+        $serveAddr = $this->flags->getOpt('addr');
         if (!$serveAddr) {
-            $serveAddr = $input->getSameStringOpt(['H', 'host']);
+            $serveAddr = $this->flags->getOpt('host');
         }
 
-        $port = $input->getSameStringOpt(['p', 'port']);
+        $port = $this->flags->getOpt('port');
         if ($port && strpos($serveAddr, ':') === false) {
             $serveAddr .= ':' . $port;
         }
 
-        $docRoot = $input->getSameStringOpt('t,doc-root');
-        $hceFile = $input->getStringOpt('hce-file');
-        $hceEnv  = $input->getStringOpt('hce-env');
-        $phpBin  = $input->getStringOpt('php-bin');
+        $docRoot = $this->flags->getOpt('doc-root');
+        $hceFile = $this->flags->getOpt('hce-file');
+        $hceEnv  = $this->flags->getOpt('hce-env');
+        $phpBin  = $this->flags->getOpt('php-bin');
 
-        $input->bindArgument('file', 0);
-        $entryFile = $input->getStringArg('file');
+        $entryFile = $this->flags->getArg('file');
 
         $pds = PhpDevServe::new($serveAddr, $docRoot, $entryFile);
         $pds->setPhpBin($phpBin);
