@@ -40,24 +40,24 @@ class DevServerCommand extends Command
      *  {command} [-H HOST] [-p PORT]
      *  {command} [-S HOST:PORT] [file=]web/index.php
      * @options
-     *  -s, -S, --addr STRING   The http server address. e.g 127.0.0.1:8552
-     *  -t, --doc-root STRING   The document root dir for server(<comment>public</comment>)
-     *  -H,--host STRING        The server host address(<comment>127.0.0.1</comment>)
-     *  -p,--port INTEGER       The server port number(<comment>8552</comment>)
-     *  -b,--php-bin STRING     The php binary file(<comment>php</comment>)
+     *  -s, -S, --addr      The http server address. e.g 127.0.0.1:8552
+     *  -t, --doc-root      The document root dir for server(<comment>public</comment>)
+     *  -H,--host           The server host address(<comment>127.0.0.1</comment>)
+     *  -p,--port           The server port number(<comment>8552</comment>)
+     *  -b,--php-bin        The php binary file(<comment>php</comment>)
      * @arguments
      *  file=STRING         The entry file for server. e.g web/index.php
      *
      * @param Input  $input
      * @param Output $output
      *
-     * @return int|mixed|void
+     * @return void
      * @throws Exception
      * @example
      *  {command} -S 127.0.0.1:8552 web/index.php
      */
     #[CmdOption('dev-serve', 'start a php built-in http server for developmentd')]
-    public function execute($input, $output)
+    public function execute(Input $input, Output $output)
     {
         $serveAddr = $input->getSameStringOpt('s,S,addr');
         if (!$serveAddr) {

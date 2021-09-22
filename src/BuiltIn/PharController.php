@@ -68,14 +68,14 @@ class PharController extends Controller
      * @usage {fullCommand} [--dir DIR] [--output FILE] [...]
      *
      * @options
-     *  -d, --dir STRING        Setting the project directory for packing.
-     *                          default is current work-dir(default: <cyan>{workDir}</cyan>)
-     *  -c, --config STRING     Use the custom config file for build phar(default: <cyan>./phar.build.inc</cyan>)
-     *  -o, --output STRING     Setting the output file name(<cyan>{defaultPkgName}</cyan>)
-     *      --fast              Fast build. only add modified files by <cyan>git status -s</cyan>
-     *      --refresh           Whether build vendor folder files on phar file exists(<cyan>False</cyan>)
-     *      --files  STRING     Only pack the list files to the exist phar, multi use ',' split
-     *      --no-progress       Disable output progress on the runtime
+     *  -d, --dir           Setting the project directory for packing.
+     *                       default is current work-dir(default: <cyan>{workDir}</cyan>)
+     *  -c, --config        Use the custom config file for build phar(default: <cyan>./phar.build.inc</cyan>)
+     *  -o, --output        Setting the output file name(<cyan>{defaultPkgName}</cyan>)
+     *      --fast          bool;Fast build. only add modified files by <cyan>git status -s</cyan>
+     *      --refresh       bool;Whether build vendor folder files on phar file exists(<cyan>False</cyan>)
+     *      --files         Only pack the list files to the exist phar, multi use ',' split
+     *      --no-progress   bool;Disable output progress on the runtime
      *
      * @param Input  $input
      * @param Output $output
@@ -83,8 +83,8 @@ class PharController extends Controller
      * @return int
      * @throws Exception
      * @example
-     *  {fullCommand}                               Pack current dir to a phar file.
-     *  {fullCommand} --dir vendor/swoft/devtool    Pack the specified dir to a phar file.
+     *   {fullCommand}                               Pack current dir to a phar file.
+     *   {fullCommand} --dir vendor/swoft/devtool    Pack the specified dir to a phar file.
      *
      * custom output phar file name
      *   php -d phar.readonly=0 {binFile} phar:pack -o=mycli.phar
@@ -223,10 +223,10 @@ class PharController extends Controller
      * @usage {fullCommand} -f FILE [-d DIR]
      *
      * @options
-     *  -f, --file STRING   The packed phar file path
-     *  -d, --dir STRING    The output dir on extract phar package.
-     *  -y, --yes BOOL      Whether display goon tips message.
-     *  --overwrite BOOL    Whether overwrite exists files on extract phar
+     *  -f, --file      The packed phar file path
+     *  -d, --dir       The output dir on extract phar package.
+     *  -y, --yes       bool;Whether display goon tips message.
+     *  --overwrite     bool;Whether overwrite exists files on extract phar
      *
      * @param Input  $in
      * @param Output $out
