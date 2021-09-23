@@ -68,11 +68,11 @@ class Section extends MessageFormatter
             $border = Str::pad($char, $width, $char);
 
             if ($showTBorder) {
-                $topBorder = "{$indentStr}$border\n";
+                $topBorder = "$indentStr$border\n";
             }
 
             if ($showBBorder) {
-                $bottomBorder = "{$indentStr}$border\n";
+                $bottomBorder = "$indentStr$border\n";
             }
         }
 

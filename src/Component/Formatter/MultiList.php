@@ -17,7 +17,7 @@ class MultiList extends MessageFormatter
      * Format and render multi list
      *
      * ```php
-     * [
+     * $data = [
      *   'list1 title' => [
      *      'name' => 'value text',
      *      'name2' => 'value text 2',
@@ -27,11 +27,15 @@ class MultiList extends MessageFormatter
      *      'name2' => 'value text 2',
      *   ],
      *   ... ...
-     * ]
+     * ];
+     *
+     * MultiList::show($data);
      * ```
      *
      * @param array $data
      * @param array $opts
+     *
+     * @psalm-param array{beforeWrite: callable, lastNewline: bool} $opts
      */
     public static function show(array $data, array $opts = []): void
     {
@@ -45,6 +49,12 @@ class MultiList extends MessageFormatter
             unset($opts['lastNewline']);
         }
 
+        $beforeWrite = null;
+        if (isset($opts['beforeWrite'])) {
+            $beforeWrite = $opts['beforeWrite'];
+            unset($opts['beforeWrite']);
+        }
+
         foreach ($data as $title => $list) {
             if ($ignoreEmpty && !$list) {
                 continue;
@@ -53,6 +63,13 @@ class MultiList extends MessageFormatter
             $stringList[] = SingleList::show($list, (string)$title, $opts);
         }
 
-        Console::write(implode("\n", $stringList), $lastNewline);
+        $str = implode("\n", $stringList);
+
+        // before write handler
+        if ($beforeWrite) {
+            $str = $beforeWrite($str);
+        }
+
+        Console::write($str, $lastNewline);
     }
 }

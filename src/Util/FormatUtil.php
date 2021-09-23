@@ -94,20 +94,20 @@ final class FormatUtil
      *     amet.
      * ```
      *
-     * @param string  $text   the text to be wrapped
+     * @param string $text   the text to be wrapped
      * @param integer $indent number of spaces to use for indentation.
      * @param integer $width
      *
      * @return string the wrapped text.
      * @from yii2
      */
-    public static function wrapText($text, $indent = 0, $width = 0): string
+    public static function wrapText(string $text, int $indent = 0, int $width = 0): string
     {
         if (!$text) {
             return $text;
         }
 
-        if ((int)$width <= 0) {
+        if ($width <= 0) {
             $size = Sys::getScreenSize();
 
             if ($size === false || $size[0] <= $indent) {
@@ -156,8 +156,8 @@ final class FormatUtil
                 continue;
             }
 
+            // padding length equals to '-h, '
             if (!strpos($name, ',')) {
-                // padding length equals to '-h, '
                 $name = '    ' . $name;
             } else {
                 $name = str_replace([' ', ','], ['', ', '], $name);

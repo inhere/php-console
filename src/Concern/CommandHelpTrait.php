@@ -158,6 +158,7 @@ trait CommandHelpTrait
         $this->output->mList($help, [
             'sepChar'     => '    ',
             'lastNewline' => false,
+            'beforeWrite' => [$this, 'parseCommentsVars'],
         ]);
 
         return 0;

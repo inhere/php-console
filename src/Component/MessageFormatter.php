@@ -33,6 +33,11 @@ abstract class MessageFormatter implements FormatterInterface
     protected $config = [];
 
     /**
+     * @var callable
+     */
+    protected $beforeWrite;
+
+    /**
      * @param array $config
      *
      * @return MessageFormatter
@@ -104,5 +109,21 @@ abstract class MessageFormatter implements FormatterInterface
     public function getConfig(): array
     {
         return $this->config;
+    }
+
+    /**
+     * @return callable
+     */
+    public function getBeforeWrite(): callable
+    {
+        return $this->beforeWrite;
+    }
+
+    /**
+     * @param callable $beforeWrite
+     */
+    public function setBeforeWrite(callable $beforeWrite): void
+    {
+        $this->beforeWrite = $beforeWrite;
     }
 }
