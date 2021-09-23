@@ -57,11 +57,15 @@ class Choose extends SingleSelect
             $text .= "\n  <info>$key</info>) $value";
         }
 
-        $defaultText = $default ? "[default:<comment>$default</comment>]" : '';
+        $defaultText = $default ? "[default:<info>$default</info>]" : '';
         Console::write($text);
 
         beginChoice:
         $r = Console::readln("Your choice$defaultText : ");
+
+        if ($r === '' && $default !== null) {
+            return $default;
+        }
 
         // error, allow try again once.
         if (!array_key_exists($r, $options)) {
