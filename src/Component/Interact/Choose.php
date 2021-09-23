@@ -61,7 +61,7 @@ class Choose extends InteractiveHandle
         beginChoice:
         $r = Console::readln("Your choice$defaultText : ");
 
-        if (empty($r) && $default !== null) {
+        if ($r === '' && $default !== null) {
             return $default;
         }
 
