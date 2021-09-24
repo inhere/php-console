@@ -167,7 +167,7 @@ trait SubCommandsWareTrait
      *
      * @return bool
      */
-    public function isSubCommand(string $name): bool
+    public function isSub(string $name): bool
     {
         return isset($this->commands[$name]);
     }

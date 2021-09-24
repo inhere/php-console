@@ -150,17 +150,14 @@ trait ControllerHelpTrait
             $name = $sName . $this->delimiter;
             // $usage = "$script {$name}<info>{command}</info> [--options ...] [arguments ...]";
             $usage = [
-                "$script $name<info>COMMAND</info> [--options ...] [arguments ...]",
-                "$script $sName <info>COMMAND</info> [--options ...] [arguments ...]",
+                "$script [--global options] $sName [--group options] <info>COMMAND</info> [--options ...] [arguments ...]",
+                "$script [--global options] $name<info>COMMAND</info> [--options ...] [arguments ...]",
             ];
         }
 
-        $globalOptions = static::$globalOptions;
+        $globalOptions = [];
         if ($app = $this->getApp()) {
-            $globalOptions = array_merge(
-                $app->getFlags()->getOptsHelpData(),
-                static::$globalOptions
-            );
+            $globalOptions = $app->getFlags()->getOptsHelpData();
         }
 
         $this->output->startBuffer();
@@ -170,16 +167,18 @@ trait ControllerHelpTrait
             $this->output->writef("<comment>Alias:</comment> %s\n", implode(',', $aliases));
         }
 
+        $groupOptions = $this->flags->getOptsHelpData();
         $this->output->mList([
             'Usage:'              => $usage,
             //'Group Name:' => "<info>$sName</info>",
+            'Group Options:'      => FormatUtil::alignOptions($groupOptions),
             'Global Options:'     => FormatUtil::alignOptions($globalOptions),
             'Available Commands:' => $commands,
         ], [
             'sepChar' => '  ',
         ]);
 
-        $msgTpl = 'More information about a command, please see: <cyan>%s %s {command} -h</cyan>';
+        $msgTpl = 'More information about a command, please see: <cyan>%s %s COMMAND -h</cyan>';
         $this->output->write(sprintf($msgTpl, $script, $detached ? '' : $sName));
         $this->output->flush();
     }

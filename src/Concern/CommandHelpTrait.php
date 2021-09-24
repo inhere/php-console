@@ -209,7 +209,7 @@ trait CommandHelpTrait
         }
 
         // is an command object
-        $isCommand = $this->isCommand();
+        $isCommand = $this->isAlone();
         foreach ($allowedTags as $tag) {
             if (empty($tags[$tag]) || !is_string($tags[$tag])) {
                 // for alone command

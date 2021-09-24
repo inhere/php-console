@@ -84,7 +84,6 @@ trait AttachApplicationTrait
         }
 
         $value = $this->input->getBoolOpt(GlobalOption::NO_INTERACTIVE);
-
         return $value === false;
     }
 

@@ -51,7 +51,7 @@ class GlobalOption
         '--ishell'         => 'bool;Run application an interactive shell environment',
         '--profile'        => 'bool;Display timing and memory usage information',
         '--no-color'       => 'bool;Disable color/ANSI for message output',
-        '--help'           => 'bool;Display this help message;;;h',
+        '--help'           => 'bool;Display application help message;;;h',
         '--version'        => 'bool;Show application version information;;;V',
         '--no-interactive' => 'bool;Run commands in a non-interactive environment',
     ];
@@ -78,7 +78,7 @@ class GlobalOption
      * @var array common options for the group/command
      */
     protected static $commonOptions = [
-        self::HELP => 'bool;Display this help message;;;h',
+        self::HELP => 'bool;Display command help message;;;h',
     ];
 
     /**
