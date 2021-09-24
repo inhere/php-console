@@ -4,8 +4,8 @@ namespace Inhere\Console\Component\Formatter;
 
 use Inhere\Console\Component\MessageFormatter;
 use Inhere\Console\Console;
-use Inhere\Console\Util\Helper;
 use Toolkit\Cli\ColorTag;
+use Toolkit\Stdlib\Arr\ArrayHelper;
 use Toolkit\Stdlib\Str;
 use function array_merge;
 use function trim;
@@ -45,7 +45,7 @@ class Padding extends MessageFormatter
             'valueStyle' => 'info',
         ], $opts);
 
-        $keyMaxLen  = Helper::getKeyMaxWidth($data);
+        $keyMaxLen  = ArrayHelper::getKeyMaxWidth($data);
         $paddingLen = $keyMaxLen > $opts['padding'] ? $keyMaxLen : $opts['padding'];
 
         foreach ($data as $label => $value) {

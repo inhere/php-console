@@ -259,7 +259,7 @@ class Application extends AbstractApplication
      ****************************************************************************/
 
     /**
-     * @param string $name
+     * @param string $name command name or command ID or command path.
      * @param array  $args
      *
      * @return int|mixed

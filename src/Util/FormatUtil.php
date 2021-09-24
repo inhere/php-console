@@ -9,12 +9,14 @@
 namespace Inhere\Console\Util;
 
 use Toolkit\Cli\ColorTag;
+use Toolkit\Stdlib\Arr\ArrayHelper;
 use Toolkit\Stdlib\Helper\Format;
 use Toolkit\Stdlib\Helper\JsonHelper;
 use Toolkit\Stdlib\Str;
 use Toolkit\Sys\Sys;
 use function array_keys;
 use function array_merge;
+use function array_shift;
 use function explode;
 use function implode;
 use function is_array;
@@ -200,18 +202,20 @@ final class FormatUtil
     /**
      * Splice array
      *
-     * @param array $data
-     *     e.g [
+     * ```php
+     * $data = [
      *     'system'  => 'Linux',
-     *     'version'  => '4.4.5',
-     *     ]
+     *     'version' => '4.4.5',
+     * ];
+     * ```
+     *
+     * @param array $data
      * @param array $opts
      *
      * @return string
      */
     public static function spliceKeyValue(array $data, array $opts = []): string
     {
-        $text = '';
         $opts = array_merge([
             'leftChar'    => '',   // e.g '  ', ' * '
             'sepChar'     => ' ',  // e.g ' | ' OUT: key | value
@@ -221,33 +225,37 @@ final class FormatUtil
             'keyMinWidth' => 8,
             'keyMaxWidth' => 0, // if not set, will automatic calculation
             'ucFirst'     => true,  // upper first char for value
+            'endNewline'  => true,  // with newline on end.
         ], $opts);
 
         if ($opts['keyMaxWidth'] < 1) {
-            $opts['keyMaxWidth'] = Helper::getKeyMaxWidth($data);
+            $opts['keyMaxWidth'] = ArrayHelper::getKeyMaxWidth($data);
         }
 
         // compare
-        if ((int)$opts['keyMinWidth'] > $opts['keyMaxWidth']) {
-            $opts['keyMaxWidth'] = $opts['keyMinWidth'];
+        if ($opts['keyMinWidth'] > $opts['keyMaxWidth']) {
+            $opts['keyMaxWidth'] = (int)$opts['keyMinWidth'];
         }
 
+        $keyWidth  = $opts['keyMaxWidth'];
         $keyStyle  = trim($opts['keyStyle']);
         $keyPadPos = (int)$opts['keyPadPos'];
 
+        $fmtLines = [];
         foreach ($data as $key => $value) {
-            $hasKey = !is_int($key);
-            $text   .= $opts['leftChar'];
+            $hasKey  = !is_int($key);
+            $fmtLine = $opts['leftChar'];
 
-            if ($hasKey && $opts['keyMaxWidth']) {
-                $key  = Str::pad((string)$key, $opts['keyMaxWidth'], ' ', $keyPadPos);
-                $text .= ColorTag::wrap($key, $keyStyle) . $opts['sepChar'];
+            if ($hasKey && $keyWidth) {
+                $strKey  = Str::pad((string)$key, $keyWidth, ' ', $keyPadPos);
+                $fmtLine .= ColorTag::wrap($strKey, $keyStyle) . $opts['sepChar'];
             }
+
+            $lines = [];
 
             // if value is array, translate array to string
             if (is_array($value)) {
                 $temp = '[';
-
                 foreach ($value as $k => $val) {
                     if (is_bool($val)) {
                         $val = $val ? '(True)' : '(False)';
@@ -261,14 +269,37 @@ final class FormatUtil
                 $value = rtrim($temp, ' ,') . ']';
             } elseif (is_bool($value)) {
                 $value = $value ? '(True)' : '(False)';
-            } else {
+            } else { // to string.
                 $value = (string)$value;
+
+                // multi line
+                if ($hasKey && strpos($value, "\n") > 0) {
+                    $lines = explode("\n", $value);
+                    $value = array_shift($lines);
+                }
             }
 
+            // uc-first
             $value = $hasKey && $opts['ucFirst'] ? ucfirst($value) : $value;
-            $text  .= ColorTag::wrap($value, $opts['valStyle']) . "\n";
+
+            // append value.
+            $fmtLine .= ColorTag::wrap($value, $opts['valStyle']);
+            // append fmt line.
+            $fmtLines[] = $fmtLine;
+
+            // value has multi line
+            if ($lines) {
+                $linePrefix = $opts['leftChar'] . Str::repeat(' ', $keyWidth + 1) . $opts['sepChar'];
+                foreach ($lines as $line) {
+                    $fmtLines[]  = $linePrefix . $line;
+                }
+            }
         }
 
-        return $text;
+        if ($opts['endNewline']) {
+            return implode("\n", $fmtLines) . "\n";
+        }
+
+        return implode("\n", $fmtLines);
     }
 }

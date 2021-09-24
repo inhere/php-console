@@ -196,6 +196,7 @@ class Helper
      * @param bool  $excludeInt
      *
      * @return int
+     * @deprecated please use ArrayHelper::getKeyMaxWidth($data, $excludeInt);
      */
     public static function getKeyMaxWidth(array $data, bool $excludeInt = true): int
     {

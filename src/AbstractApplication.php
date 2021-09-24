@@ -347,6 +347,11 @@ abstract class AbstractApplication implements ApplicationInterface
         exit($code);
     }
 
+    /**
+     * @param array $args
+     *
+     * @return int|mixed
+     */
     public function runWithArgs(array $args)
     {
         $this->input->setArgs($args);

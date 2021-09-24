@@ -507,7 +507,6 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
 
     /**
      * @return bool
-     * @throws ReflectionException
      */
     protected function showHelp(): bool
     {
