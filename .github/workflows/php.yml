@@ -17,10 +17,10 @@ jobs:
       matrix:
         php: [7.3, 7.4, 8.0] #
         os: [ubuntu-latest, macOS-latest] # windows-latest,
-        include:
-          - os: 'ubuntu-latest'
-            php: '7.2'
-            phpunit: '8.5.13'
+#        include:
+#          - os: 'ubuntu-latest'
+#            php: '7.2'
+#            phpunit: '8.5.13'
 
     steps:
       - name: Checkout
@@ -47,7 +47,7 @@ jobs:
           coverage: none #optional, setup coverage driver: xdebug, none
 
       - name: Install dependencies
-        run: composer install --no-progress --no-suggest
+        run: composer install --no-progress
 
       # Add a test script to composer.json, for instance: "test": "vendor/bin/phpunit"
       # Docs: https://getcomposer.org/doc/articles/scripts.md

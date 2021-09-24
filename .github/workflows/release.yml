@@ -13,7 +13,7 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        php: [7.3]
+        php: [8.0]
 
     steps:
       - name: Checkout
@@ -40,7 +40,7 @@ jobs:
         run: |
           tag1=${GITHUB_REF#refs/*/}
           echo "release tag: ${tag1}"
-          composer install --no-progress --no-suggest
+          composer install --no-progress
 
       # Add a test script to composer.json, for instance: "test": "vendor/bin/phpunit"
       # Docs: https://getcomposer.org/doc/articles/scripts.md
