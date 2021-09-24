@@ -302,7 +302,6 @@ abstract class AbstractApplication implements ApplicationInterface
             // do run ...
             $command = $this->commandName;
             $result  = $this->dispatch($command, $this->flags->getRawArgs());
-
         } catch (Throwable $e) {
             $this->fire(ConsoleEvent::ON_RUN_ERROR, $e, $this);
             $result = $e->getCode() === 0 ? $e->getLine() : $e->getCode();
@@ -355,7 +354,6 @@ abstract class AbstractApplication implements ApplicationInterface
     public function runWithArgs(array $args)
     {
         $this->input->setArgs($args);
-
         return $this->run(false);
     }
 
@@ -499,9 +497,8 @@ abstract class AbstractApplication implements ApplicationInterface
      */
     protected function startInteractiveShell(): void
     {
-        $in  = $this->input;
+        // $in  = $this->input;
         $out = $this->output;
-
         $out->title("Welcome interactive shell for run application", [
             'titlePos' => Title::POS_MIDDLE,
         ]);
@@ -529,6 +526,12 @@ abstract class AbstractApplication implements ApplicationInterface
             'exit' => 1,
         ];
 
+        // set helper render
+        $this->flags->setHelpRenderer(function () {
+            $this->showHelpInfo();
+            // $this->stop(); not exit
+        });
+
         while (true) {
             $line = Interact::readln("<comment>$prefix ></comment> ");
             if (strlen($line) < 5) {
@@ -548,13 +551,26 @@ abstract class AbstractApplication implements ApplicationInterface
             }
 
             $args = LineParser::parseIt($line);
-            $this->debugf('input line: %s, parsed args: %s', $line, DataHelper::toString($args));
+            $this->debugf('ishell - input line: %s, split args: %s', $line, DataHelper::toString($args));
 
             // reload and parse args
-            $in->parse($args);
-            $in->setFullScript($line);
+            $this->flags->resetResults();
+            // $this->flags->setTrustedOpt('debug');
+            $this->flags->parse($args);
+            // $in->parse($args);
+            // $in->setFullScript($line);
 
-            $this->run(false);
+            // fire event ON_BEFORE_RUN, if it is registered.
+            $this->fire(ConsoleEvent::ON_BEFORE_RUN, $this);
+            if (!$this->beforeRun()) {
+                continue;
+            }
+
+            // do run ...
+            $command = $this->commandName;
+            $this->dispatch($command, $this->flags->getRawArgs());
+
+            $this->debugf('ishell - the command "%s" run completed', $command);
             $out->println('');
         }
 

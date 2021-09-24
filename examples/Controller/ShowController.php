@@ -114,7 +114,7 @@ class ShowController extends Controller
             'borderChar' => '='
         ]);
 
-        Panel::create([
+        Panel::new([
             'data'        => $data,
             'title'       => 'panel show',
             'titleBorder' => '=',

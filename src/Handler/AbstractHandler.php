@@ -245,6 +245,11 @@ abstract class AbstractHandler implements CommandHandlerInterface
      */
     protected function initFlagsParser(Input $input): void
     {
+        // if on interactive shell environment(GlobalOption::ISHELL=true)
+        if ($this->flags->isLocked()) {
+            return;
+        }
+
         $input->setFs($this->flags);
         $this->flags->setDesc(self::getDesc());
         $this->flags->setScriptName(self::getName());

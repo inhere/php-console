@@ -42,7 +42,7 @@ abstract class MessageFormatter implements FormatterInterface
      *
      * @return MessageFormatter
      */
-    public static function create(array $config = []): self
+    public static function new(array $config = []): self
     {
         return new static($config);
     }
