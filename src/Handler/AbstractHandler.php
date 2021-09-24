@@ -331,7 +331,7 @@ abstract class AbstractHandler implements CommandHandlerInterface
             $first = $args[0];
             $rName = $this->resolveAlias($first);
 
-            if ($this->isSubCommand($rName)) {
+            if ($this->isSub($rName)) {
                 // TODO
             }
         }
@@ -459,7 +459,7 @@ abstract class AbstractHandler implements CommandHandlerInterface
     /**
      * @return bool
      */
-    public function isCommand(): bool
+    public function isAloneCmd(): bool
     {
         return $this instanceof CommandInterface;
     }
