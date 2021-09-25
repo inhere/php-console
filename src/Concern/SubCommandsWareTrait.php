@@ -83,7 +83,7 @@ trait SubCommandsWareTrait
      *
      * @throws InvalidArgumentException
      */
-    public function addCommand(string $name, $handler = null, array $options = []): void
+    public function addSub(string $name, $handler = null, array $options = []): void
     {
         if (!$handler && class_exists($name)) {
             /** @var Command $name name is an command class */
@@ -151,9 +151,9 @@ trait SubCommandsWareTrait
     {
         foreach ($commands as $name => $handler) {
             if (is_int($name)) {
-                $this->addCommand($handler);
+                $this->addSub($handler);
             } else {
-                $this->addCommand($name, $handler);
+                $this->addSub($name, $handler);
             }
         }
     }

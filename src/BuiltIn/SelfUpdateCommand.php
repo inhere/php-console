@@ -46,6 +46,10 @@ class SelfUpdateCommand extends Command
     /**
      * Execute the command.
      *
+     * @options
+     * --check          bool;check
+     * --rollback       bool;Rollback to prev version
+     *
      * @param Input  $input
      * @param Output $output
      */
@@ -57,13 +61,13 @@ class SelfUpdateCommand extends Command
         /**
          * Check for ancilliary options
          */
-        if ($input->getOption('rollback')) {
+        if ($this->flags->getOpt('rollback')) {
             $this->rollback();
 
             return;
         }
 
-        if ($input->getOption('check')) {
+        if ($this->flags->getOpt('check')) {
             $this->printAvailableUpdates();
 
             return;
@@ -72,25 +76,25 @@ class SelfUpdateCommand extends Command
         /**
          * Update to any specified stability option
          */
-        if ($input->getOption('dev')) {
+        if ($this->flags->getOpt('dev')) {
             $this->updateToDevelopmentBuild();
 
             return;
         }
 
-        if ($input->getOption('pre')) {
+        if ($this->flags->getOpt('pre')) {
             $this->updateToPreReleaseBuild();
 
             return;
         }
 
-        if ($input->getOption('stable')) {
+        if ($this->flags->getOpt('stable')) {
             $this->updateToStableBuild();
 
             return;
         }
 
-        if ($input->getOption('non-dev')) {
+        if ($this->flags->getOpt('non-dev')) {
             $this->updateToMostRecentNonDevRemote();
 
             return;
