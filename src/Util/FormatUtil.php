@@ -246,6 +246,10 @@ final class FormatUtil
             $hasKey  = !is_int($key);
             $fmtLine = $opts['leftChar'];
 
+            // if ($hasKey) {
+            //     $fmtLine = $opts['leftChar'];
+            // }
+
             if ($hasKey && $keyWidth) {
                 $strKey  = Str::pad((string)$key, $keyWidth, ' ', $keyPadPos);
                 $fmtLine .= ColorTag::wrap($strKey, $keyStyle) . $opts['sepChar'];

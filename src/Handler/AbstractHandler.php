@@ -336,9 +336,9 @@ abstract class AbstractHandler implements CommandHandlerInterface
             $first = $args[0];
             $rName = $this->resolveAlias($first);
 
-            if ($this->isSub($rName)) {
-                // TODO
-            }
+            // TODO
+            // if ($this->isSub($rName)) {
+            // }
         }
 
         // some prepare check

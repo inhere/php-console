@@ -4,7 +4,6 @@ namespace Inhere\Console\Examples\Controller;
 
 use Inhere\Console\Component\Symbol\ArtFont;
 use Inhere\Console\Controller;
-use Inhere\Console\IO\Input;
 use Inhere\Console\Util\Interact;
 use Inhere\Console\Util\ProgressBar;
 use Inhere\Console\Util\Show;
@@ -123,15 +122,8 @@ class HomeController extends Controller
   }
 
     // desc set at $this->commandMetas.
-    public function defArgCommand(): void
+    public function defArgCommand(FlagsParser $fs): void
     {
-        $this->output->dump(
-            $this->input->getArgs(),
-            $this->input->getOpts(),
-            $this->input->getBoolOpt('y')
-        );
-
-        $fs = $this->curActionFlags();
         $this->output->dump(
             $fs->getArgs(),
             $fs->getOpts(),
@@ -198,12 +190,12 @@ class HomeController extends Controller
      * output art font text
      *
      * @options
-     *  --font    Set the art font name(allow: {internalFonts}).
-     *  --italic  Set the art font type is italic.
-     *  --style   Set the art font style.
+     *  --font      Set the art font name(allow: {internalFonts}).
+     *  --italic    bool;Set the art font type is italic.
+     *  --style     Set the art font style.
      * @return int
      */
-    public function artFontCommand(): int
+    public function artFontCommand(FlagsParser $fs): int
     {
         $name = $this->input->getLongOpt('font', '404');
 
@@ -212,8 +204,8 @@ class HomeController extends Controller
         }
 
         ArtFont::create()->show($name, ArtFont::INTERNAL_GROUP, [
-            'type'  => $this->input->getBoolOpt('italic') ? 'italic' : '',
-            'style' => $this->input->getOpt('style'),
+            'type'  => $fs->getOpt('italic') ? 'italic' : '',
+            'style' => $fs->getOpt('style'),
         ]);
 
         return 0;

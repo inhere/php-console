@@ -63,32 +63,6 @@ class Input extends AbstractInput
     }
 
     /**
-     * @param array $rawFlags
-     */
-    protected function collectInfo(array $rawFlags): void
-    {
-        $this->getPwd();
-        if (!$rawFlags) {
-            return;
-        }
-
-        $this->tokens = $rawFlags;
-
-        // first is bin file
-        if (isset($rawFlags[0]) && is_string($rawFlags[0])) {
-            $this->scriptFile = array_shift($rawFlags);
-
-            // bin name
-            $this->scriptName = basename($this->scriptFile);
-        }
-
-        $this->flags = $rawFlags; // no script
-
-        // full script
-        $this->fullScript = implode(' ', $rawFlags);
-    }
-
-    /**
      * re-parse args/opts from given args
      *
      * @param array $args

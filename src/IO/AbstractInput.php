@@ -16,7 +16,9 @@ use Toolkit\PFlag\SFlags;
 use function array_shift;
 use function basename;
 use function getcwd;
+use function implode;
 use function is_int;
+use function is_string;
 use function trim;
 
 /**
@@ -113,6 +115,32 @@ abstract class AbstractInput implements InputInterface
      * @return string
      */
     abstract public function toString(): string;
+
+    /**
+     * @param array $rawFlags
+     */
+    protected function collectInfo(array $rawFlags): void
+    {
+        $this->getPwd();
+        if (!$rawFlags) {
+            return;
+        }
+
+        $this->tokens = $rawFlags;
+
+        // first is bin file
+        if (isset($rawFlags[0]) && is_string($rawFlags[0])) {
+            $this->scriptFile = array_shift($rawFlags);
+
+            // bin name
+            $this->scriptName = basename($this->scriptFile);
+        }
+
+        $this->flags = $rawFlags; // no script
+
+        // full script
+        $this->fullScript = implode(' ', $rawFlags);
+    }
 
     /**
      * find command name, it is first argument.
@@ -286,6 +314,14 @@ abstract class AbstractInput implements InputInterface
     }
 
     /**
+     * @param array $flags
+     */
+    public function setFlags(array $flags): void
+    {
+        $this->flags = $flags;
+    }
+
+    /**
      * @return array
      */
     public function getRawFlags(): array
@@ -307,6 +343,7 @@ abstract class AbstractInput implements InputInterface
     public function setTokens(array $tokens): void
     {
         $this->tokens = $tokens;
+        $this->collectInfo($tokens);
     }
 
     /**

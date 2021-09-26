@@ -48,10 +48,10 @@ trait InputOptionsTrait
     {
         // It's long-opt
         if (isset($name[1])) {
-            return $this->lOpt($name, $default);
+            return $this->getLongOpt($name, $default);
         }
 
-        return $this->sOpt($name, $default);
+        return $this->getShortOpt($name, $default);
     }
 
     /**
@@ -84,99 +84,6 @@ trait InputOptionsTrait
 
         $errMsg = $errMsg ?: "The option '$name' is required";
         throw new PromptException($errMsg);
-    }
-
-    /**
-     * Get an string option(long/short) value
-     *
-     * @param string $name
-     * @param string $default
-     *
-     * @return string
-     */
-    public function getStringOpt(string $name, string $default = ''): string
-    {
-        return (string)$this->getOpt($name, $default);
-    }
-
-    /**
-     * Get an string option(long/short) value
-     *
-     * @param string|string[] $names eg 'n,name' OR ['n', 'name']
-     * @param string          $default
-     *
-     * @return string
-     */
-    public function getSameStringOpt($names, string $default = ''): string
-    {
-        return (string)$this->getSameOpt($names, $default);
-    }
-
-    /**
-     * Get an int option(long/short) value
-     *
-     * @param string $name
-     * @param int    $default
-     *
-     * @return int
-     */
-    public function getIntOpt(string $name, int $default = 0): int
-    {
-        return (int)$this->getOpt($name, $default);
-    }
-
-    /**
-     * Get an int option(long/short) value
-     *
-     * @param string|string[] $names eg 'l,length' OR ['l', 'length']
-     * @param int             $default
-     *
-     * @return int
-     */
-    public function getSameIntOpt($names, int $default = 0): int
-    {
-        return (int)$this->getSameOpt($names, $default);
-    }
-
-    /**
-     * Get (long/short)option value(bool)
-     * eg: -h --help
-     *
-     * @param string $name
-     * @param bool   $default
-     *
-     * @return bool
-     */
-    public function getBoolOpt(string $name, bool $default = false): bool
-    {
-        return (bool)$this->getOpt($name, $default);
-    }
-
-    /**
-     * Get (long/short)option value(bool)
-     * eg: -h --help
-     *
-     * @param string|string[] $names eg 'n,name' OR ['n', 'name']
-     * @param bool            $default
-     *
-     * @return bool
-     */
-    public function getSameBoolOpt($names, bool $default = false): bool
-    {
-        return (bool)$this->getSameOpt($names, $default);
-    }
-
-    /**
-     * Alias of the getBoolOpt()
-     *
-     * @param string $name
-     * @param bool   $default
-     *
-     * @return bool
-     */
-    public function boolOpt(string $name, bool $default = false): bool
-    {
-        return (bool)$this->getOpt($name, $default);
     }
 
     /**
@@ -252,19 +159,6 @@ trait InputOptionsTrait
     }
 
     /**
-     * Alias of the getSameOpt()
-     *
-     * @param string|array $names
-     * @param mixed        $default
-     *
-     * @return bool|mixed|null
-     */
-    public function sameOpt($names, $default = null)
-    {
-        return $this->getSameOpt($names, $default);
-    }
-
-    /**
      * @return array
      */
     public function getOpts(): array
@@ -289,32 +183,6 @@ trait InputOptionsTrait
     }
 
     /************************** short-opts **********************/
-
-    /**
-     * Get short-opt value
-     *
-     * @param string $name
-     * @param null   $default
-     *
-     * @return mixed|null
-     */
-    public function sOpt(string $name, $default = null)
-    {
-        return $this->sOpts[$name] ?? $default;
-    }
-
-    /**
-     * Alias of the sOpt()
-     *
-     * @param string $name
-     * @param null   $default
-     *
-     * @return mixed|null
-     */
-    public function shortOpt(string $name, $default = null)
-    {
-        return $this->sOpts[$name] ?? $default;
-    }
 
     /**
      * Alias of the sOpt()
@@ -357,21 +225,6 @@ trait InputOptionsTrait
         }
 
         return '';
-    }
-
-    /**
-     * get short-opt value(bool)
-     *
-     * @param string     $name
-     * @param bool|mixed $default
-     *
-     * @return bool
-     */
-    public function sBoolOpt(string $name, $default = false): bool
-    {
-        $val = $this->sOpt($name);
-
-        return is_bool($val) ? $val : (bool)$default;
     }
 
     /**
@@ -432,19 +285,6 @@ trait InputOptionsTrait
     }
 
     /**
-     * Alias of the getLongOpt()
-     *
-     * @param string $name
-     * @param null   $default
-     *
-     * @return mixed|null
-     */
-    public function longOpt(string $name, $default = null)
-    {
-        return $this->lOpts[$name] ?? $default;
-    }
-
-    /**
      * Get long-opt value
      *
      * @param string $name
@@ -467,21 +307,6 @@ trait InputOptionsTrait
     public function hasLOpt(string $name): bool
     {
         return isset($this->lOpts[$name]);
-    }
-
-    /**
-     * get long-opt value(bool)
-     *
-     * @param string     $name
-     * @param bool|mixed $default
-     *
-     * @return bool
-     */
-    public function lBoolOpt(string $name, $default = false): bool
-    {
-        $val = $this->lOpt($name);
-
-        return is_bool($val) ? $val : (bool)$default;
     }
 
     /**

@@ -12,6 +12,7 @@ use Inhere\Console\Controller;
 use Inhere\Console\Util\Interact;
 use Inhere\Console\Util\Show;
 use Toolkit\Cli\Util\Terminal;
+use Toolkit\PFlag\FlagsParser;
 use function preg_match;
 
 /**
@@ -97,15 +98,16 @@ class InteractController extends Controller
 
     /**
      * This is a demo for use <magenta>Interact::limitedAsk()</magenta> method
+     *
      * @options
-     *  --nv   Not use validator.
-     *  --limit  limit times.(default: 3)
+     *  --nv        bool;Not use validator.
+     *  --limit     int;limit times.(default: 3)
      */
-    public function limitedAskCommand(): void
+    public function limitedAskCommand(FlagsParser $fs): void
     {
-        $times = (int)$this->input->getOpt('limit', 3);
+        $times = $fs->getOpt('limit', 3);
 
-        if ($this->input->getBoolOpt('nv')) {
+        if ($fs->getOpt('nv')) {
             $a = Interact::limitedAsk('you name is: ', '', null, $times);
         } else {
             $a = Interact::limitedAsk('you name is: ', '', static function ($val) {

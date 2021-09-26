@@ -100,7 +100,10 @@ class PharController extends Controller
         $workDir = $input->getPwd();
 
         $dir = $fs->getOpt('dir') ?: $workDir;
-        $cpr = $this->configCompiler($dir);
+        // get config file
+        $confFile = $fs->getOpt('config') ?: $dir . '/phar.build.inc';
+
+        $cpr = $this->configCompiler($dir, $confFile);
 
         $refresh  = $fs->getOpt('refresh');
         $outFile  = $fs->getOpt('output', $this->defPkgName);
@@ -155,10 +158,11 @@ class PharController extends Controller
 
     /**
      * @param string $dir
+     * @param string $confFile
      *
      * @return PharCompiler
      */
-    protected function configCompiler(string $dir): PharCompiler
+    protected function configCompiler(string $dir, string $confFile): PharCompiler
     {
         // create compiler
         $compiler = new PharCompiler($dir);
@@ -171,14 +175,12 @@ class PharController extends Controller
         }
 
         // use config file
-        $configFile = $this->input->getSameOpt(['c', 'config']) ?: $dir . '/phar.build.inc';
-
-        if ($configFile && is_file($configFile)) {
-            require $configFile;
+        if ($confFile && is_file($confFile)) {
+            require $confFile;
             return $compiler->in($dir);
         }
 
-        throw new RuntimeException("The phar build config file not exists! File: $configFile");
+        throw new RuntimeException("The phar build config file not exists! File: $confFile");
     }
 
     /**

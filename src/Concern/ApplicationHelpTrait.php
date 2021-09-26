@@ -117,10 +117,7 @@ trait ApplicationHelpTrait
         // display help for a special command
         if ($command) {
             $this->debugf('display command help by use help: help COMMAND');
-            $in->setCommand($command);
-            $in->setSOpt('h', true);
-            $in->clearArgs();
-            $this->dispatch($command);
+            $this->dispatch($command, ['-h']);
             return;
         }
 
@@ -183,7 +180,7 @@ trait ApplicationHelpTrait
         /** @var Input $input */
         $input = $this->input;
         // has option: --auto-completion
-        $autoComp = $input->getBoolOpt('auto-completion');
+        $autoComp = $input->getOpt('auto-completion');
         // has option: --shell-env
         $shellEnv = (string)$input->getLongOpt('shell-env', '');
         // input is an path: /bin/bash
@@ -325,7 +322,7 @@ trait ApplicationHelpTrait
 
         // info
         $glue    = ' ';
-        $genFile = $input->getStringOpt('gen-file', 'none');
+        $genFile = $input->getOpt('gen-file', 'none');
         $tplDir  = dirname(__DIR__, 2) . '/resource/templates';
 
         if ($shellEnv === 'bash') {
@@ -347,7 +344,7 @@ trait ApplicationHelpTrait
         }
 
         // new: support custom tpl file for gen completion script
-        $userTplFile = $input->getStringOpt('tpl-file');
+        $userTplFile = $input->getOpt('tpl-file');
         if ($userTplFile && file_exists($userTplFile)) {
             $tplFile = $userTplFile;
         }

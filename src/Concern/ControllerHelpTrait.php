@@ -32,13 +32,14 @@ trait ControllerHelpTrait
      * @options
      *  -s, --search  Search command by input keywords
      *  --format      Set the help information dump format(raw, xml, json, markdown)
+     *
      * @return int
      * @example
-     *  {script} {name} -h
-     *  {script} {name}:help
-     *  {script} {name}:help index
-     *  {script} {name}:index -h
-     *  {script} {name} index
+     *  {binName} {name} -h
+     *  {binName} {name}:help
+     *  {binName} {name}:help index
+     *  {binName} {name}:index -h
+     *  {binName} {name} index
      */
     public function helpCommand(): int
     {

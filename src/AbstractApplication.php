@@ -25,6 +25,7 @@ use Inhere\Console\Util\Helper;
 use Inhere\Console\Util\Interact;
 use InvalidArgumentException;
 use Throwable;
+use Toolkit\Cli\Helper\FlagHelper;
 use Toolkit\Cli\Style;
 use Toolkit\Cli\Util\LineParser;
 use Toolkit\PFlag\SFlags;
@@ -353,7 +354,7 @@ abstract class AbstractApplication implements ApplicationInterface
      */
     public function runWithArgs(array $args)
     {
-        $this->input->setArgs($args);
+        $this->input->setFlags($args);
         return $this->run(false);
     }
 
@@ -473,10 +474,16 @@ abstract class AbstractApplication implements ApplicationInterface
             return true;
         }
 
-        $this->logf(Console::VERB_DEBUG, 'run the global command: %s', $command);
+        $this->debugf('run the global command: %s', $command);
         switch ($command) {
             case 'help':
-                $this->showHelpInfo($this->input->getFirstArg());
+                $cmd  = '';
+                $args = $this->flags->getRawArgs();
+                if ($args && FlagHelper::isValidName($args[0])) {
+                    $cmd = $args[0];
+                }
+
+                $this->showHelpInfo($cmd);
                 break;
             case 'list':
                 $this->showCommandList();

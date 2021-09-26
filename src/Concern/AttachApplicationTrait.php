@@ -83,7 +83,7 @@ trait AttachApplicationTrait
             return $this->app->isInteractive();
         }
 
-        $value = $this->input->getBoolOpt(GlobalOption::NO_INTERACTIVE);
+        $value = $this->input->getOpt(GlobalOption::NO_INTERACTIVE);
         return $value === false;
     }
 
