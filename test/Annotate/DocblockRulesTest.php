@@ -69,6 +69,41 @@ DOC
         $this->assertArrayHasKey('repoPath', $args);
     }
 
+    public function testParse_byDocComment_mlOptions(): void
+    {
+        $dr = DocblockRules::new();
+        $dr->setDocTagsByDocblock(<<<DOC
+    /**
+     * Match directory paths by given keywords
+     *
+     * @arguments
+     *  keywords   The jump target directory keywords for match.
+     *
+     * @options
+     *  --flag     The flag set for match paths.
+     *              Allow:
+     *              1   Only match name path list
+     *              2   Only match history path list
+     *              3   match all directory path list(default)
+     *  --no-name   bool;Not output name for named paths, useful for bash env.
+     *  --limit     bool;Limit the match result rows
+     *
+     */
+DOC
+        );
+
+        $dr->parse();
+
+        $this->assertNotEmpty($opts = $dr->getOptRules());
+        $this->assertCount(3, $opts);
+        vdump($opts);
+        $this->assertStringContainsString('2   Only match history path list', $opts['--flag']);
+
+        $this->assertNotEmpty($args = $dr->getArgRules());
+        $this->assertCount(1, $args);
+        $this->assertArrayHasKey('keywords', $args);
+    }
+
     public function testParse_byDocComment_complex(): void
     {
         $dr = DocblockRules::new();

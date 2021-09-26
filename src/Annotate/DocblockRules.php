@@ -138,17 +138,18 @@ class DocblockRules
      */
     protected function parseMultiLines(array $lines): array
     {
-        $index = 0;
+        $index = $keyWidth = 0;
         $rules = $kvRules = [];
 
-        $keyWidth = 16; // with an default value.
+        $sepChar = '  ';
+        $sepLen = strlen($sepChar);
         foreach ($lines as $line) {
             $trimmed = trim($line);
             if (!$trimmed) {
                 continue;
             }
 
-            $nodes = Str::explode($trimmed, '  ', 2);
+            $nodes = Str::explode($trimmed, $sepChar, 2);
             if (!isset($nodes[1])) {
                 if ($index === 0) { // invalid first line
                     continue;
@@ -156,12 +157,6 @@ class DocblockRules
 
                 // multi desc message.
                 $rules[$index - 1][1] .= "\n" . $trimmed;
-                continue;
-            }
-
-            // TIP: special - if line indent space len gt keyWidth, is desc message of multi line.
-            if (!trim(substr($line, 0, $keyWidth))) {
-                $rules[$index - 1][1] .= "\n" . $trimmed; // multi desc message.
                 continue;
             }
 
@@ -176,8 +171,14 @@ class DocblockRules
                 continue;
             }
 
-            $nameLen  = strlen($name);
+            $nameLen  = strlen($name) + $sepLen;
             $keyWidth = $nameLen > $keyWidth ? $nameLen : $keyWidth;
+
+            // TIP: special - if line indent space len gt keyWidth, is desc message of multi line.
+            if (!trim(substr($line, 0, $keyWidth))) {
+                $rules[$index - 1][1] .= "\n" . $trimmed; // multi desc message.
+                continue;
+            }
 
             // append
             $rules[$index] = [$name, $nodes[1]];
