@@ -1,9 +1,11 @@
 <?php declare(strict_types=1);
-
-/*
-\r 回到行首
-chr 转换为 ASCI 码
-*/
+/**
+ * The file is part of inhere/console
+ *
+ * @author   https://github.com/inhere
+ * @homepage https://github.com/inhere/php-console
+ * @license  https://github.com/inhere/php-console/blob/master/LICENSE
+ */
 
 /**
  * @param int $total

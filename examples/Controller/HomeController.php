@@ -1,4 +1,11 @@
 <?php declare(strict_types=1);
+/**
+ * The file is part of inhere/console
+ *
+ * @author   https://github.com/inhere
+ * @homepage https://github.com/inhere/php-console
+ * @license  https://github.com/inhere/php-console/blob/master/LICENSE
+ */
 
 namespace Inhere\Console\Examples\Controller;
 
@@ -119,7 +126,7 @@ class HomeController extends Controller
         $fs->addOptByRule('opt1', "bool;description for the option 'opt1'");
 
         $fs->addArgByRule('name', "string;description for the argument 'name';true");
-  }
+    }
 
     // desc set at $this->commandMetas.
     public function defArgCommand(FlagsParser $fs): void

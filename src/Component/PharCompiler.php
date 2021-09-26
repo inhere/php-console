@@ -1,4 +1,11 @@
 <?php declare(strict_types=1);
+/**
+ * The file is part of inhere/console
+ *
+ * @author   https://github.com/inhere
+ * @homepage https://github.com/inhere/php-console
+ * @license  https://github.com/inhere/php-console/blob/master/LICENSE
+ */
 
 namespace Inhere\Console\Component;
 
@@ -68,6 +75,7 @@ class PharCompiler
     public const FILE_EXT = '.phar';
 
     public const ADD_CLI_INDEX = 'add.index.cli';
+
     public const ADD_WEB_INDEX = 'add.index.web';
 
     /** @var array */
@@ -614,7 +622,7 @@ class PharCompiler
             if (strpos($file, 'M ') === 0) {
                 yield substr($file, 2);
 
-                // new files
+            // new files
             } elseif (strpos($file, '?? ') === 0) {
                 yield substr($file, 3);
             }

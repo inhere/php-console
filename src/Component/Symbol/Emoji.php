@@ -1,9 +1,10 @@
 <?php declare(strict_types=1);
 /**
- * Created by PhpStorm.
- * User: inhere
- * Date: 2018-01-26
- * Time: 9:33
+ * The file is part of inhere/console
+ *
+ * @author   https://github.com/inhere
+ * @homepage https://github.com/inhere/php-console
+ * @license  https://github.com/inhere/php-console/blob/master/LICENSE
  */
 
 namespace Inhere\Console\Component\Symbol;

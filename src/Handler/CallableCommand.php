@@ -1,11 +1,18 @@
 <?php declare(strict_types=1);
-
+/**
+ * The file is part of inhere/console
+ *
+ * @author   https://github.com/inhere
+ * @homepage https://github.com/inhere/php-console
+ * @license  https://github.com/inhere/php-console/blob/master/LICENSE
+ */
 
 namespace Inhere\Console\Handler;
 
 use Inhere\Console\Command;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
+use BadMethodCallException;
 
 /**
  * Class CallableCommand - wrap an callable as Command
@@ -60,7 +67,7 @@ class CallableCommand extends Command
     protected function execute(Input $input, Output $output)
     {
         if (!$call = $this->callable) {
-            throw new \BadMethodCallException('The callable property is empty');
+            throw new BadMethodCallException('The callable property is empty');
         }
 
         // call custom callable

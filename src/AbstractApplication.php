@@ -1,9 +1,10 @@
 <?php declare(strict_types=1);
 /**
- * Created by PhpStorm.
- * User: inhere
- * Date: 2017-03-09
- * Time: 18:37
+ * The file is part of inhere/console
+ *
+ * @author   https://github.com/inhere
+ * @homepage https://github.com/inhere/php-console
+ * @license  https://github.com/inhere/php-console/blob/master/LICENSE
  */
 
 namespace Inhere\Console;
@@ -57,8 +58,11 @@ use const PHP_SAPI;
 abstract class AbstractApplication implements ApplicationInterface
 {
     use ApplicationHelpTrait;
+
     use InputOutputAwareTrait;
+
     use StyledOutputAwareTrait;
+
     use SimpleEventAwareTrait;
 
     /** @var array */
@@ -89,6 +93,7 @@ abstract class AbstractApplication implements ApplicationInterface
     /**
      * @var string Command delimiter char. e.g dev:serve
      */
+
     /** @var array Application config data */
     protected $config = [
         'name'           => 'My Console Application',
@@ -191,7 +196,7 @@ abstract class AbstractApplication implements ApplicationInterface
         $this->flags->setAutoBindArgs(false);
 
         // set helper render
-        $this->flags->setHelpRenderer(function () {
+        $this->flags->setHelpRenderer(function (): void {
             $this->showHelpInfo();
             $this->stop();
         });
@@ -329,7 +334,7 @@ abstract class AbstractApplication implements ApplicationInterface
     /**
      * @param int $code
      */
-    public function stop(int $code = 0)
+    public function stop(int $code = 0): void
     {
         // call 'onAppStop' event, if it is registered.
         $this->fire(self::ON_STOP_RUN, $this);
@@ -427,7 +432,7 @@ abstract class AbstractApplication implements ApplicationInterface
     {
         set_error_handler([$this, 'handleError']);
         set_exception_handler([$this, 'handleException']);
-        register_shutdown_function(function () {
+        register_shutdown_function(function (): void {
             if ($e = error_get_last()) {
                 $this->handleError($e['type'], $e['message'], $e['file'], $e['line']);
             }
@@ -506,7 +511,7 @@ abstract class AbstractApplication implements ApplicationInterface
     {
         // $in  = $this->input;
         $out = $this->output;
-        $out->title("Welcome interactive shell for run application", [
+        $out->title('Welcome interactive shell for run application', [
             'titlePos' => Title::POS_MIDDLE,
         ]);
 
@@ -516,7 +521,7 @@ abstract class AbstractApplication implements ApplicationInterface
 
         // register signal.
         if ($hasPcntl) {
-            ProcessUtil::installSignal(Signal::INT, static function () use ($out) {
+            ProcessUtil::installSignal(Signal::INT, static function () use ($out): void {
                 $out->colored("\nQuit by CTRL+C");
                 exit(0);
             });
@@ -534,7 +539,7 @@ abstract class AbstractApplication implements ApplicationInterface
         ];
 
         // set helper render
-        $this->flags->setHelpRenderer(function () {
+        $this->flags->setHelpRenderer(function (): void {
             $this->showHelpInfo();
             // $this->stop(); not exit
         });

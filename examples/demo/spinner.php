@@ -1,9 +1,10 @@
 <?php declare(strict_types=1);
 /**
- * Created by PhpStorm.
- * User: inhere
- * Date: 2018/9/6
- * Time: 下午5:15
+ * The file is part of inhere/console
+ *
+ * @author   https://github.com/inhere
+ * @homepage https://github.com/inhere/php-console
+ * @license  https://github.com/inhere/php-console/blob/master/LICENSE
  */
 
 class Spinner
@@ -11,7 +12,7 @@ class Spinner
     /** @var int $speed ms */
     public $speed = 100;
 
-    public static function create($speed)
+    public static function create($speed): void
     {
     }
 }
@@ -23,7 +24,7 @@ function spinner()
     $chars = '-\|/';
     $index = 0;
 
-    yield function () use ($chars, $index) {
+    yield function () use ($chars, $index): void {
         while (1) {
             printf("\x0D\x1B[2K %s handling ...", $chars[$index]);
 

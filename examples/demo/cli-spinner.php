@@ -1,15 +1,15 @@
 <?php declare(strict_types=1);
 /**
- * Created by PhpStorm.
- * User: inhere
- * Date: 2017-12-21
- * Time: 10:02
- * @link https://github.com/dealnews/Console
+ * The file is part of inhere/console
+ *
+ * @author   https://github.com/inhere
+ * @homepage https://github.com/inhere/php-console
+ * @license  https://github.com/inhere/php-console/blob/master/LICENSE
  */
 
 class Status
 {
-    public static function clearLine()
+    public static function clearLine(): void
     {
         echo "\033[2K"; // delete the current line
         echo "\r"; // return the cursor to the beginning of the line
@@ -20,7 +20,7 @@ class Status
      *
      * .*.
      */
-    public static function spinner()
+    public static function spinner(): void
     {
         static $spinner = 0;
         static $mtime = null;
@@ -45,7 +45,7 @@ class Status
      * Uses `stty` to hide input/output completely.
      * @param boolean $hidden Will hide/show the next data. Defaults to true.
      */
-    public static function hide($hidden = true)
+    public static function hide($hidden = true): void
     {
         system('stty ' . ($hidden? '-echo' : 'echo'));
     }

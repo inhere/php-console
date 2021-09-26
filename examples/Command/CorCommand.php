@@ -1,9 +1,10 @@
 <?php declare(strict_types=1);
 /**
- * Created by PhpStorm.
- * User: inhere
- * Date: 2018-01-26
- * Time: 17:47
+ * The file is part of inhere/console
+ *
+ * @author   https://github.com/inhere
+ * @homepage https://github.com/inhere/php-console
+ * @license  https://github.com/inhere/php-console/blob/master/LICENSE
  */
 
 namespace Inhere\Console\Examples\Command;
@@ -38,7 +39,7 @@ class CorCommand extends Command
      * @param  Input $input
      * @param  Output $output
      */
-    protected function execute(Input $input, Output $output)
+    protected function execute(Input $input, Output $output): void
     {
         $output->aList([
             'support coroutine?' => Helper::isSupportCoroutine() ? 'Y' : 'N',

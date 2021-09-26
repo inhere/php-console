@@ -1,4 +1,11 @@
 <?php declare(strict_types=1);
+/**
+ * The file is part of inhere/console
+ *
+ * @author   https://github.com/inhere
+ * @homepage https://github.com/inhere/php-console
+ * @license  https://github.com/inhere/php-console/blob/master/LICENSE
+ */
 
 namespace Inhere\Console;
 
@@ -36,6 +43,7 @@ final class ConsoleEvent
 
     // every command/subcommand exec will fire it
     public const COMMAND_EXEC_BEFORE = 'every.command.exec.before';
+
     public const COMMAND_EXEC_AFTER  = 'every.command.exec.after';
 
     public const SUBCOMMAND_RUN_BEFORE = 'group.subcommand.run.before';

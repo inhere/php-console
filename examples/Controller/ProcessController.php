@@ -1,9 +1,10 @@
 <?php declare(strict_types=1);
 /**
- * Created by PhpStorm.
- * User: inhere
- * Date: 2017-12-22
- * Time: 11:44
+ * The file is part of inhere/console
+ *
+ * @author   https://github.com/inhere
+ * @homepage https://github.com/inhere/php-console
+ * @license  https://github.com/inhere/php-console/blob/master/LICENSE
  */
 
 namespace Inhere\Console\Examples\Controller;
@@ -82,7 +83,7 @@ class ProcessController extends Controller
      */
     public function childProcessCommand(): void
     {
-        $ret = ProcessUtil::create(function ($pid) {
+        $ret = ProcessUtil::create(function ($pid): void {
             echo "print in process $pid";
 
             sleep(5);
@@ -99,7 +100,7 @@ class ProcessController extends Controller
      */
     public function daemonRunCommand(): void
     {
-        $ret = ProcessUtil::daemonRun(function ($pid) {
+        $ret = ProcessUtil::daemonRun(function ($pid): void {
             $this->output->info("will running background by new process: $pid");
         });
 

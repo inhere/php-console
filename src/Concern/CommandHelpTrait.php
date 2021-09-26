@@ -1,23 +1,23 @@
 <?php declare(strict_types=1);
+/**
+ * The file is part of inhere/console
+ *
+ * @author   https://github.com/inhere
+ * @homepage https://github.com/inhere/php-console
+ * @license  https://github.com/inhere/php-console/blob/master/LICENSE
+ */
 
 namespace Inhere\Console\Concern;
 
 use Inhere\Console\Handler\AbstractHandler;
-use Inhere\Console\Annotate\DocblockRules;
 use Inhere\Console\Console;
 use Inhere\Console\Util\FormatUtil;
-use ReflectionException;
 use Toolkit\PFlag\FlagsParser;
-use Toolkit\Stdlib\Helper\PhpHelper;
-use Toolkit\Stdlib\Util\PhpDoc;
 use function implode;
-use function is_string;
-use function preg_replace;
 use function sprintf;
 use function strpos;
 use function strtr;
 use function ucfirst;
-use const PHP_EOL;
 
 /**
  * Trait CommandHelpTrait
@@ -119,7 +119,7 @@ trait CommandHelpTrait
 
         // $isCommand = $this->isCommand();
         $commandId = $this->input->getCommandId();
-        $this->logf(Console::VERB_DEBUG, "render help for the command: %s", $commandId);
+        $this->logf(Console::VERB_DEBUG, 'render help for the command: %s', $commandId);
 
         if ($aliases) {
             $realName = $action ?: $this->getRealName();

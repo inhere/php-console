@@ -1,12 +1,16 @@
 <?php declare(strict_types=1);
 /**
- * phpunit --bootstrap tests/boot.php tests
+ * The file is part of inhere/console
+ *
+ * @author   https://github.com/inhere
+ * @homepage https://github.com/inhere/php-console
+ * @license  https://github.com/inhere/php-console/blob/master/LICENSE
  */
 
 error_reporting(E_ALL | E_STRICT);
 date_default_timezone_set('Asia/Shanghai');
 
-spl_autoload_register(function ($class) {
+spl_autoload_register(function ($class): void {
     $file = null;
 
     if (0 === strpos($class, 'Inhere\Console\Examples\\')) {

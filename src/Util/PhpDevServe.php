@@ -1,4 +1,11 @@
 <?php declare(strict_types=1);
+/**
+ * The file is part of inhere/console
+ *
+ * @author   https://github.com/inhere
+ * @homepage https://github.com/inhere/php-console
+ * @license  https://github.com/inhere/php-console/blob/master/LICENSE
+ */
 
 namespace Inhere\Console\Util;
 
@@ -25,7 +32,9 @@ use function strpos;
 class PhpDevServe
 {
     public const PHP_BIN  = 'php';
+
     public const IDX_FILE = 'index.php';
+
     public const SVR_ADDR = '127.0.0.1:8080';
 
     /**

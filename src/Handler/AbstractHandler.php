@@ -1,9 +1,10 @@
 <?php declare(strict_types=1);
 /**
- * Created by PhpStorm.
- * User: inhere
- * Date: 2017-03-17
- * Time: 11:40
+ * The file is part of inhere/console
+ *
+ * @author   https://github.com/inhere
+ * @homepage https://github.com/inhere/php-console
+ * @license  https://github.com/inhere/php-console/blob/master/LICENSE
  */
 
 namespace Inhere\Console\Handler;
@@ -43,9 +44,13 @@ use const PHP_OS;
 abstract class AbstractHandler implements CommandHandlerInterface
 {
     use AttachApplicationTrait;
+
     use CommandHelpTrait;
+
     use InputOutputAwareTrait;
+
     use UserInteractAwareTrait;
+
     use SubCommandsWareTrait;
 
     /**
@@ -243,7 +248,7 @@ abstract class AbstractHandler implements CommandHandlerInterface
         $this->flags->setBeforePrintHelp(function (string $text) {
             return $this->parseCommentsVars($text);
         });
-        $this->flags->setHelpRenderer(function () {
+        $this->flags->setHelpRenderer(function (): void {
             $this->logf(Console::VERB_DEBUG, 'show help message by input flags: -h, --help');
             $this->showHelp();
         });
@@ -356,7 +361,7 @@ abstract class AbstractHandler implements CommandHandlerInterface
      */
     public function coExecute(): int
     {
-        $cid = \Swoole\Coroutine\run(function () {
+        $cid = \Swoole\Coroutine\run(function (): void {
             $this->execute($this->input, $this->output);
         });
 

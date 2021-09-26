@@ -37,12 +37,12 @@ $rules = [
 ];
 
 $finder = PhpCsFixer\Finder::create()
-    // ->exclude('test')
        ->exclude('docs')
        ->exclude('vendor')
+       ->exclude('resource')
        ->in(__DIR__);
 
-return PhpCsFixer\Config::create()
+return (new PhpCsFixer\Config)
     ->setRiskyAllowed(true)
     ->setRules($rules)
     ->setFinder($finder)

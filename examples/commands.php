@@ -1,10 +1,10 @@
 <?php declare(strict_types=1);
 /**
- * Created by PhpStorm.
- * User: inhere
- * Date: 2016/12/7
- * Time: 12:46
- * @var Inhere\Console\Application $app
+ * The file is part of inhere/console
+ *
+ * @author   https://github.com/inhere
+ * @homepage https://github.com/inhere/php-console
+ * @license  https://github.com/inhere/php-console/blob/master/LICENSE
  */
 
 use Inhere\Console\BuiltIn\PharController;
@@ -20,7 +20,7 @@ use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
 
 $app->command(DemoCommand::class);
-$app->command('exam', function (Input $in, Output $out) {
+$app->command('exam', function (Input $in, Output $out): void {
     $cmd = $in->getCommand();
 
     $out->info('hello, this is a test command: ' . $cmd);

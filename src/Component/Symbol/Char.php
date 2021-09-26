@@ -1,9 +1,10 @@
 <?php declare(strict_types=1);
 /**
- * Created by PhpStorm.
- * User: inhere
- * Date: 2018-01-26
- * Time: 9:33
+ * The file is part of inhere/console
+ *
+ * @author   https://github.com/inhere
+ * @homepage https://github.com/inhere/php-console
+ * @license  https://github.com/inhere/php-console/blob/master/LICENSE
  */
 
 namespace Inhere\Console\Component\Symbol;
@@ -19,6 +20,7 @@ use ReflectionClass;
 final class Char
 {
     public const OK  = '✔';
+
     public const OK1 = '✓';
 
     public const NO = '✘︎';
@@ -34,13 +36,16 @@ final class Char
     // ☑︎☐☒
 
     public const FLAG = '⚑';
+
     public const FLAG1 = '⚐';
 
     public const HEART = '❤';
 
     // ☺︎☹︎☻
     public const SMILE  = '☺';
+
     public const SMILE1 = '☹︎';
+
     public const SMILE2 = '☻︎';
 
     public const FLOWER = '✿';

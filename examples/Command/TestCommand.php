@@ -1,9 +1,10 @@
 <?php declare(strict_types=1);
 /**
- * Created by PhpStorm.
- * User: inhere
- * Date: 2017-02-27
- * Time: 18:58
+ * The file is part of inhere/console
+ *
+ * @author   https://github.com/inhere
+ * @homepage https://github.com/inhere/php-console
+ * @license  https://github.com/inhere/php-console/blob/master/LICENSE
  */
 
 namespace Inhere\Console\Examples\Command;
@@ -25,7 +26,7 @@ class TestCommand extends Command
     protected function commands(): array
     {
         return [
-            'sub' => static function($in, $out) {
+            'sub' => static function ($in, $out): void {
                 $out->println('hello, this is an sub command of test.');
             },
         ];
@@ -46,7 +47,7 @@ class TestCommand extends Command
      * @param Input $input
      * @param Output $output
      */
-    public function execute(Input $input, Output $output)
+    public function execute(Input $input, Output $output): void
     {
         $output->write('hello, this in ' . __METHOD__);
     }

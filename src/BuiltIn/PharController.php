@@ -1,9 +1,10 @@
 <?php declare(strict_types=1);
 /**
- * Created by PhpStorm.
- * User: inhere
- * Date: 2018-01-22
- * Time: 11:55
+ * The file is part of inhere/console
+ *
+ * @author   https://github.com/inhere
+ * @homepage https://github.com/inhere/php-console
+ * @license  https://github.com/inhere/php-console/blob/master/LICENSE
  */
 
 namespace Inhere\Console\BuiltIn;
@@ -127,10 +128,10 @@ class PharController extends Controller
             $output->liteInfo("will only pack input files to the exists phar: $outFile");
         }
 
-        $cpr->onError(function ($error) {
+        $cpr->onError(function ($error): void {
             $this->writeln("<warning>$error</warning>");
         });
-        $cpr->on(PharCompiler::ON_MESSAGE, function ($msg) {
+        $cpr->on(PharCompiler::ON_MESSAGE, function ($msg): void {
             $this->output->colored('> ' . $msg);
         });
 
@@ -192,20 +193,20 @@ class PharController extends Controller
     {
         if ($this->isDebug()) {
             // $output->info('Pack file to Phar ... ...');
-            $cpr->onAdd(function (string $path) {
+            $cpr->onAdd(function (string $path): void {
                 $this->writeln(" <info>+</info> $path");
             });
 
-            $cpr->on('skip', function (string $path, bool $isFile) {
+            $cpr->on('skip', function (string $path, bool $isFile): void {
                 $mark = $isFile ? '[F]' : '[D]';
                 $this->writeln(" <red>-</red> $path <info>$mark</info>");
             });
         } else {
             $counter = Show::counterTxt('Collecting ...', 'Done.');
-            $cpr->onAdd(static function () use ($counter) {
+            $cpr->onAdd(static function () use ($counter): void {
                 $counter->send(1);
             });
-            $cpr->on(PharCompiler::ON_COLLECTED, function () use ($counter) {
+            $cpr->on(PharCompiler::ON_COLLECTED, function () use ($counter): void {
                 $counter->send(-1);
                 $this->writeln('');
             });

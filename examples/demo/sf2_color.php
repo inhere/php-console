@@ -1,13 +1,11 @@
 <?php declare(strict_types=1);
-/*
- * This file is part of the Symfony package.
+/**
+ * The file is part of inhere/console
  *
- * (c) Fabien Potencier <fabien@symfony.com>
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
+ * @author   https://github.com/inhere
+ * @homepage https://github.com/inhere/php-console
+ * @license  https://github.com/inhere/php-console/blob/master/LICENSE
  */
-
 
 /**
  * Formatter style class for defining styles.
@@ -81,7 +79,7 @@ class OutputFormatterStyle
      *
      * @throws \InvalidArgumentException When the color name isn't defined
      */
-    public function setForeground($color = null)
+    public function setForeground($color = null): void
     {
         if (null === $color) {
             $this->foreground = null;
@@ -104,7 +102,7 @@ class OutputFormatterStyle
      *
      * @throws \InvalidArgumentException When the color name isn't defined
      */
-    public function setBackground($color = null)
+    public function setBackground($color = null): void
     {
         if (null === $color) {
             $this->background = null;
@@ -127,7 +125,7 @@ class OutputFormatterStyle
      *
      * @throws \InvalidArgumentException When the option name isn't defined
      */
-    public function setOption($option)
+    public function setOption($option): void
     {
         if (!isset(static::$availableOptions[$option])) {
             throw new \InvalidArgumentException(sprintf(
@@ -148,7 +146,7 @@ class OutputFormatterStyle
      *
      * @throws \InvalidArgumentException When the option name isn't defined
      */
-    public function unsetOption($option)
+    public function unsetOption($option): void
     {
         if (!isset(static::$availableOptions[$option])) {
             throw new \InvalidArgumentException(sprintf(
@@ -168,7 +166,7 @@ class OutputFormatterStyle
      *
      * @param array $options
      */
-    public function setOptions(array $options)
+    public function setOptions(array $options): void
     {
         $this->options = [];
         foreach ($options as $option) {

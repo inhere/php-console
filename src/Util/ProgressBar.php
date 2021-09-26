@@ -1,9 +1,10 @@
 <?php declare(strict_types=1);
 /**
- * Created by PhpStorm.
- * User: Inhere
- * Date: 2017/3/7 0007
- * Time: 22:36
+ * The file is part of inhere/console
+ *
+ * @author   https://github.com/inhere
+ * @homepage https://github.com/inhere/php-console
+ * @license  https://github.com/inhere/php-console/blob/master/LICENSE
  */
 
 namespace Inhere\Console\Util;
@@ -32,6 +33,7 @@ use function max;
 class ProgressBar
 {
     // options
+
     /**
      * @var int
      */

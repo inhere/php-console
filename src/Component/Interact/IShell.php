@@ -1,4 +1,11 @@
 <?php declare(strict_types=1);
+/**
+ * The file is part of inhere/console
+ *
+ * @author   https://github.com/inhere
+ * @homepage https://github.com/inhere/php-console
+ * @license  https://github.com/inhere/php-console/blob/master/LICENSE
+ */
 
 namespace Inhere\Console\Component\Interact;
 
@@ -31,6 +38,7 @@ class IShell extends InteractiveHandle
     public const HELP = 'help';
 
     private const STOP = 1;
+
     private const GOON = 2;
 
     /**
@@ -147,7 +155,7 @@ class IShell extends InteractiveHandle
 
         // register signal.
         if ($this->hasPcntl) {
-            ProcessUtil::installSignal(Signal::INT, static function () {
+            ProcessUtil::installSignal(Signal::INT, static function (): void {
                 Show::colored("\nQuit by CTRL+C");
                 exit(0);
             });
@@ -357,7 +365,7 @@ class IShell extends InteractiveHandle
      */
     public function defaultErrorHandler(): Closure
     {
-        return static function (Throwable $e) {
+        return static function (Throwable $e): void {
             Console::write('<error>ERROR:</error> ' . $e->getMessage(), false);
         };
     }

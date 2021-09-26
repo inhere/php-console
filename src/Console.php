@@ -1,4 +1,11 @@
 <?php declare(strict_types=1);
+/**
+ * The file is part of inhere/console
+ *
+ * @author   https://github.com/inhere
+ * @homepage https://github.com/inhere/php-console
+ * @license  https://github.com/inhere/php-console/blob/master/LICENSE
+ */
 
 namespace Inhere\Console;
 
@@ -58,6 +65,7 @@ class Console extends Cli
     ];
 
     public const CMD_GROUP  = 1;
+
     public const CMD_SINGLE = 2;
 
     // eg: CONSOLE_DEBUG=4 php my-console

@@ -1,9 +1,10 @@
 <?php declare(strict_types=1);
 /**
- * Created by PhpStorm.
- * User: inhere
- * Date: 2016/12/7
- * Time: 19:23
+ * The file is part of inhere/console
+ *
+ * @author   https://github.com/inhere
+ * @homepage https://github.com/inhere/php-console
+ * @license  https://github.com/inhere/php-console/blob/master/LICENSE
  */
 
 namespace Inhere\Console\IO;
@@ -13,11 +14,8 @@ use Toolkit\Cli\Flags;
 use Toolkit\Cli\Helper\FlagHelper;
 use Toolkit\FsUtil\File;
 use function array_map;
-use function array_shift;
-use function basename;
 use function fwrite;
 use function implode;
-use function is_string;
 use function preg_match;
 
 /**

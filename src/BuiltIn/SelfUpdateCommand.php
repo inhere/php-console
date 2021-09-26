@@ -1,9 +1,10 @@
 <?php declare(strict_types=1);
 /**
- * Created by PhpStorm.
- * User: inhere
- * Date: 2018-01-23
- * Time: 9:46
+ * The file is part of inhere/console
+ *
+ * @author   https://github.com/inhere
+ * @homepage https://github.com/inhere/php-console
+ * @license  https://github.com/inhere/php-console/blob/master/LICENSE
  */
 
 namespace Inhere\Console\BuiltIn;
@@ -53,7 +54,7 @@ class SelfUpdateCommand extends Command
      * @param Input  $input
      * @param Output $output
      */
-    protected function execute(Input $input, Output $output)
+    protected function execute(Input $input, Output $output): void
     {
         $this->version = $this->getApp()->getVersion();
         $parser        = new VersionParser;

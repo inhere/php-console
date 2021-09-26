@@ -1,4 +1,11 @@
 <?php declare(strict_types=1);
+/**
+ * The file is part of inhere/console
+ *
+ * @author   https://github.com/inhere
+ * @homepage https://github.com/inhere/php-console
+ * @license  https://github.com/inhere/php-console/blob/master/LICENSE
+ */
 
 namespace Inhere\ConsoleTest;
 
@@ -165,7 +172,7 @@ class ApplicationTest extends TestCase
             'test1'
         ]);
 
-        $app->on(Application::ON_BEFORE_RUN, function (Application $app) {
+        $app->on(Application::ON_BEFORE_RUN, function (Application $app): void {
             $this->assertEquals('Tests', $app->getName());
         });
 

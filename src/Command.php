@@ -1,9 +1,10 @@
 <?php declare(strict_types=1);
 /**
- * Created by PhpStorm.
- * User: inhere
- * Date: 2016/12/7
- * Time: 13:23
+ * The file is part of inhere/console
+ *
+ * @author   https://github.com/inhere
+ * @homepage https://github.com/inhere/php-console
+ * @license  https://github.com/inhere/php-console/blob/master/LICENSE
  */
 
 namespace Inhere\Console;
@@ -120,7 +121,7 @@ abstract class Command extends AbstractHandler implements CommandInterface
     {
         $aliases = $this->getAliases();
 
-        $this->logf(Console::VERB_CRAZY, "display help info for the command: %s", $this->commandName);
+        $this->logf(Console::VERB_CRAZY, 'display help info for the command: %s', $this->commandName);
 
         // $execMethod = self::METHOD;
         // return $this->showHelpByAnnotations($execMethod, '', $aliases) !== 0;

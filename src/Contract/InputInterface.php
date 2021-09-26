@@ -1,9 +1,10 @@
 <?php declare(strict_types=1);
 /**
- * Created by PhpStorm.
- * User: Inhere
- * Date: 2016/4/23 0023
- * Time: 10:22
+ * The file is part of inhere/console
+ *
+ * @author   https://github.com/inhere
+ * @homepage https://github.com/inhere/php-console
+ * @license  https://github.com/inhere/php-console/blob/master/LICENSE
  */
 
 namespace Inhere\Console\Contract;
@@ -81,5 +82,5 @@ interface InputInterface
     /**
      * Whether the stream is an interactive terminal
      */
-    public function isInteractive() : bool;
+    public function isInteractive(): bool;
 }

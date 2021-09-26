@@ -1,4 +1,11 @@
 <?php declare(strict_types=1);
+/**
+ * The file is part of inhere/console
+ *
+ * @author   https://github.com/inhere
+ * @homepage https://github.com/inhere/php-console
+ * @license  https://github.com/inhere/php-console/blob/master/LICENSE
+ */
 
 namespace Inhere\ConsoleTest\Annotate;
 
@@ -36,7 +43,8 @@ class DocblockRulesTest extends BaseTestCase
     public function testParse_byDocComment(): void
     {
         $dr = DocblockRules::new();
-        $dr->setDocTagsByDocblock(<<<DOC
+        $dr->setDocTagsByDocblock(
+            <<<DOC
     /**
      * parse multi line text to flag rules
      *
@@ -72,7 +80,8 @@ DOC
     public function testParse_byDocComment_mlOptions(): void
     {
         $dr = DocblockRules::new();
-        $dr->setDocTagsByDocblock(<<<DOC
+        $dr->setDocTagsByDocblock(
+            <<<DOC
     /**
      * Match directory paths by given keywords
      *
@@ -107,7 +116,8 @@ DOC
     public function testParse_byDocComment_complex(): void
     {
         $dr = DocblockRules::new();
-        $dr->setDocTagsByDocblock(<<<DOC
+        $dr->setDocTagsByDocblock(
+            <<<DOC
     /**
      * collect git change log information by `git log`
      *
