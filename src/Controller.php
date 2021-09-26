@@ -311,10 +311,8 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
 
         // init flags for subcommand
         $fs = $this->newActionFlags();
-        if (!$this->compatible) {
-            $this->input->setFs($fs);
-        }
 
+        $this->input->setFs($fs);
         $this->debugf('load flags by configure method, subcommand: %s', $command);
         $this->configure();
 

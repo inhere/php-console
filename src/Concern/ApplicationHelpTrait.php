@@ -35,7 +35,6 @@ use function sprintf;
 use function str_replace;
 use function strpos;
 use function strtr;
-use function vdump;
 use const PHP_EOL;
 use const PHP_OS;
 use const PHP_VERSION;
@@ -123,8 +122,6 @@ trait ApplicationHelpTrait
 
         $this->debugf('display application help by input -h, --help');
         $this->fire(ConsoleEvent::BEFORE_RENDER_APP_HELP, $this);
-        $delimiter = $this->delimiter;
-        $binName   = $in->getScriptName();
 
         // built in options
         // $globalOptions = self::$globalOptions;
@@ -138,6 +135,7 @@ trait ApplicationHelpTrait
             $globalOptions['--gen-file']        = 'The output file for generate auto completion script';
         }
 
+        $binName  = $in->getScriptName();
         $helpInfo = [
             'Usage'   => "$binName <info>{command}</info> [--opt -v -h ...] [arg0 arg1 arg2=value2 ...]",
             'Options' => FormatUtil::alignOptions($globalOptions),
@@ -145,12 +143,10 @@ trait ApplicationHelpTrait
                 '- run a command/subcommand:',
                 "$binName test                     run a independent command",
                 "$binName home index               run a subcommand of the group",
-                sprintf("$binName home%sindex               run a subcommand of the group", $delimiter),
                 '',
                 '- display help for command:',
                 "$binName help COMMAND             see a command help information",
                 "$binName home index -h            see a subcommand help of the group",
-                sprintf("$binName home%sindex -h            see a subcommand help of the group", $delimiter),
             ],
             'Help'    => [
                 'Generate shell auto completion scripts:',
@@ -244,7 +240,7 @@ trait ApplicationHelpTrait
             /** @var AbstractHandler $command */
             if (is_subclass_of($command, CommandInterface::class)) {
                 $desc = $command::getDescription() ?: $placeholder;
-            } elseif ($msg = $options['description'] ?? '') {
+            } elseif ($msg = $options['desc'] ?? '') {
                 $desc = $msg;
             } elseif (is_string($command)) {
                 $desc = 'A handler : ' . $command;
@@ -274,7 +270,7 @@ trait ApplicationHelpTrait
         ksort($internalCommands);
         Console::startBuffer();
 
-        if ($appDesc = $this->getParam('description', '')) {
+        if ($appDesc = $this->getParam('desc', '')) {
             $appVer = $this->getParam('version', '');
             Console::writeln(sprintf('%s%s' . PHP_EOL, $appDesc, $appVer ? " (Version: <info>$appVer</info>)" : ''));
         }

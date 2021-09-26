@@ -30,7 +30,7 @@ class HelpPanel extends MessageFormatter
     /**
      * help panel keys
      */
-    public const DESC      = 'description';
+    public const DESC      = 'desc';
 
     public const USAGE     = 'usage';
 
@@ -86,8 +86,8 @@ class HelpPanel extends MessageFormatter
             'indentDes' => '  ',
         ];
         $config = array_merge([
-            'description' => '',
-            'usage'       => '',
+            'desc'      => '',
+            'usage'     => '',
 
             'commands'  => [],
             'arguments' => [],
@@ -108,9 +108,9 @@ class HelpPanel extends MessageFormatter
         }
 
         // description
-        if ($config['description']) {
-            $parts[] = "{$option['indentDes']}{$config['description']}\n";
-            unset($config['description']);
+        if ($config['desc']) {
+            $parts[] = "{$option['indentDes']}{$config['desc']}\n";
+            unset($config['desc']);
         }
 
         // now, render usage,commands,arguments,options,examples ...

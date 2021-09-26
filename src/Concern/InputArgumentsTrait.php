@@ -4,7 +4,6 @@ namespace Inhere\Console\Concern;
 
 use Inhere\Console\Exception\PromptException;
 use function array_merge;
-use function is_array;
 use function is_int;
 
 /**
@@ -36,7 +35,7 @@ trait InputArgumentsTrait
     /**
      * @param string $name
      * @param int    $index
-     * @return self|mixed
+     * @return self
      */
     public function bindArgument(string $name, int $index)
     {

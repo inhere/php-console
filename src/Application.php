@@ -9,6 +9,7 @@
 namespace Inhere\Console;
 
 use Closure;
+use Inhere\Console\Contract\ApplicationInterface;
 use Inhere\Console\Contract\ControllerInterface;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
@@ -17,6 +18,7 @@ use InvalidArgumentException;
 use RuntimeException;
 use SplFileInfo;
 use Throwable;
+use Toolkit\PFlag\SFlags;
 use Toolkit\Stdlib\Helper\DataHelper;
 use function array_unshift;
 use function class_exists;
@@ -40,8 +42,8 @@ class Application extends AbstractApplication
     /**
      * Class constructor.
      *
-     * @param array       $config
-     * @param Input|null  $input
+     * @param array $config
+     * @param Input|null $input
      * @param Output|null $output
      */
     public function __construct(array $config = [], Input $input = null, Output $output = null)
@@ -58,16 +60,10 @@ class Application extends AbstractApplication
     /**
      * {@inheritdoc}
      */
-    public function controller(string $name, $class = null, $option = null)
+    public function controller(string $name, $class = null, array $config = []): ApplicationInterface
     {
-        if (is_string($option)) {
-            $option = [
-                'description' => $option,
-            ];
-        }
-
-        $this->logf(Console::VERB_CRAZY, 'load group controller: %s', $name);
-        $this->router->addGroup($name, $class, (array)$option);
+        $this->logf(Console::VERB_CRAZY, 'register group controller: %s', $name);
+        $this->router->addGroup($name, $class, $config);
 
         return $this;
     }
@@ -75,29 +71,29 @@ class Application extends AbstractApplication
     /**
      * Add group/controller
      *
-     * @param string                          $name
+     * @param string $name
      * @param string|ControllerInterface|null $class The controller class
-     * @param null|array|string               $option
+     * @param array $config
      *
      * @return Application|Contract\ApplicationInterface
      * @see controller()
      */
-    public function addGroup(string $name, $class = null, $option = null)
+    public function addGroup(string $name, $class = null, array $config = []): ApplicationInterface
     {
-        return $this->controller($name, $class, $option);
+        return $this->controller($name, $class, $config);
     }
 
     /**
-     * @param string                          $name
+     * @param string $name
      * @param string|ControllerInterface|null $class The controller class
-     * @param null|array|string               $option
+     * @param array $config
      *
      * @return Application|Contract\ApplicationInterface
      * @see controller()
      */
-    public function addController(string $name, $class = null, $option = null)
+    public function addController(string $name, $class = null, array $config = []): ApplicationInterface
     {
-        return $this->controller($name, $class, $option);
+        return $this->controller($name, $class, $config);
     }
 
     /**
@@ -134,16 +130,10 @@ class Application extends AbstractApplication
     /**
      * {@inheritdoc}
      */
-    public function command(string $name, $handler = null, $option = null)
+    public function command(string $name, $handler = null, array $config = [])
     {
-        if (is_string($option)) {
-            $option = [
-                'description' => $option,
-            ];
-        }
-
-        $this->logf(Console::VERB_CRAZY, 'load application command: %s', $name);
-        $this->router->addCommand($name, $handler, (array)$option);
+        $this->logf(Console::VERB_CRAZY, 'register alone command: %s', $name);
+        $this->router->addCommand($name, $handler, $config);
 
         return $this;
     }
@@ -152,15 +142,15 @@ class Application extends AbstractApplication
      * add command
      *
      * @param string $name
-     * @param null   $handler
-     * @param null   $option
+     * @param null|mixed $handler
+     * @param array $config
      *
      * @return Application
      * @see command()
      */
-    public function addCommand(string $name, $handler = null, $option = null): self
+    public function addCommand(string $name, $handler = null, array $config = []): self
     {
-        return $this->command($name, $handler, $option);
+        return $this->command($name, $handler, $config);
     }
 
     /**
@@ -260,7 +250,7 @@ class Application extends AbstractApplication
 
     /**
      * @param string $name command name or command ID or command path.
-     * @param array  $args
+     * @param array $args
      *
      * @return int|mixed
      * @throws Throwable
@@ -322,10 +312,10 @@ class Application extends AbstractApplication
     /**
      * run a independent command
      *
-     * @param string         $name    Command name
+     * @param string $name Command name
      * @param Closure|string $handler Command class or handler func
-     * @param array          $options
-     * @param array          $args
+     * @param array $options
+     * @param array $args
      *
      * @return mixed
      * @throws Throwable
@@ -333,10 +323,16 @@ class Application extends AbstractApplication
     protected function runCommand(string $name, $handler, array $options, array $args)
     {
         if (is_object($handler) && method_exists($handler, '__invoke')) {
-            if ($this->input->getSameOpt(['h', 'help'])) {
-                $desc = $options['description'] ?? 'No command description message';
+            $fs = SFlags::new();
+            $fs->addOptsByRules(GlobalOption::getAloneOptions());
+            $desc = $options['desc'] ?? 'No command description message';
+            $fs->setDesc($desc);
 
-                return $this->output->write($desc);
+            // save to input object
+            $this->input->setFs($fs);
+
+            if (!$fs->parse($args)) {
+                return 0; // render help
             }
 
             $result = $handler($this->input, $this->output);
@@ -364,10 +360,12 @@ class Application extends AbstractApplication
      * Execute an action in a group command(controller)
      *
      * @param array $info Matched route info
+     *
      * @psalm-param array{action: string} $info Matched route info
+     *
      * @param array $options
      * @param array $args
-     * @param bool  $detachedRun
+     * @param bool $detachedRun
      *
      * @return mixed
      * @throws Throwable
@@ -375,7 +373,7 @@ class Application extends AbstractApplication
     protected function runAction(array $info, array $options, array $args, bool $detachedRun = false)
     {
         $controller = $this->createController($info);
-        $controller::setDesc($options['description'] ?? '');
+        $controller::setDesc($options['desc'] ?? '');
 
         if ($detachedRun) {
             $controller->setDetached();

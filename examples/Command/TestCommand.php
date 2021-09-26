@@ -43,7 +43,7 @@ class TestCommand extends Command
      *  --long,-s   option description 1
      *  --opt       option description 2
      *
-     * @param $input
+     * @param Input $input
      * @param Output $output
      */
     public function execute(Input $input, Output $output)

@@ -20,7 +20,6 @@ use Inhere\Console\ConsoleEvent;
 use Inhere\Console\Contract\CommandHandlerInterface;
 use Inhere\Console\Contract\CommandInterface;
 use Inhere\Console\IO\Input;
-use Inhere\Console\IO\InputDefinition;
 use Inhere\Console\IO\Output;
 use Inhere\Console\Util\Helper;
 use InvalidArgumentException;
@@ -70,21 +69,6 @@ abstract class AbstractHandler implements CommandHandlerInterface
     protected static $coroutine = false;
 
     /**
-     * Allow display message tags in the command annotation
-     *
-     * @var array
-     */
-    protected static $annotationTags = [
-        // tag name => multi line align
-        'description' => false,
-        'usage'       => false,
-        'arguments'   => true,
-        'options'     => true,
-        'example'     => true,
-        'help'        => true,
-    ];
-
-    /**
      * @var bool
      */
     private $initialized = false;
@@ -95,11 +79,6 @@ abstract class AbstractHandler implements CommandHandlerInterface
      * @var bool
      */
     protected $compatible = true;
-
-    /**
-     * @var InputDefinition|null
-     */
-    protected $definition;
 
     /**
      * @var string
@@ -143,7 +122,7 @@ abstract class AbstractHandler implements CommandHandlerInterface
      * @param Input $input
      * @param Output $output
      */
-    // TODO public function __construct(Input $input = null, Output $output = null, InputDefinition $definition = null)
+    // TODO public function __construct(Input $input = null, Output $output = null)
     public function __construct(Input $input, Output $output)
     {
         $this->input  = $input;

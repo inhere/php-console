@@ -3,12 +3,7 @@
 namespace Inhere\Console\Concern;
 
 use Inhere\Console\Exception\PromptException;
-use function array_map;
 use function array_merge;
-use function explode;
-use function is_array;
-use function is_bool;
-use function is_string;
 
 /**
  * Trait InputOptionsTrait
@@ -40,7 +35,7 @@ trait InputOptionsTrait
      * eg: -e dev --name sam
      *
      * @param string $name
-     * @param null   $default
+     * @param null $default
      *
      * @return bool|mixed|null
      */
@@ -58,7 +53,7 @@ trait InputOptionsTrait
      * Alias of the getOpt()
      *
      * @param string $name
-     * @param mixed  $default
+     * @param mixed $default
      *
      * @return mixed
      */
@@ -99,66 +94,6 @@ trait InputOptionsTrait
     }
 
     /**
-     * The give options exists
-     *
-     * ```php
-     * $input->hasOneOpt('h,help');
-     * $input->hasOneOpt(['h','help']);
-     * ```
-     *
-     * @param string|array $names
-     *
-     * @return bool
-     */
-    public function hasOneOpt($names): bool
-    {
-        if (is_string($names)) {
-            $names = array_map('trim', explode(',', $names));
-        } elseif (!is_array($names)) {
-            $names = (array)$names;
-        }
-
-        foreach ($names as $name) {
-            if ($this->hasOpt($name)) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * Get same opts value
-     * eg: -h --help
-     *
-     * ```php
-     * $input->sameOpt('h,help');
-     * $input->sameOpt(['h','help']);
-     * ```
-     *
-     * @param string|string[] $names eg 'n,name' OR ['n', 'name']
-     * @param mixed           $default
-     *
-     * @return bool|mixed|null
-     */
-    public function getSameOpt($names, $default = null)
-    {
-        if (is_string($names)) {
-            $names = array_map('trim', explode(',', $names));
-        } elseif (!is_array($names)) {
-            $names = (array)$names;
-        }
-
-        foreach ($names as $name) {
-            if ($this->hasOpt($name)) {
-                return $this->getOpt($name);
-            }
-        }
-
-        return $default;
-    }
-
-    /**
      * @return array
      */
     public function getOpts(): array
@@ -188,7 +123,7 @@ trait InputOptionsTrait
      * Alias of the sOpt()
      *
      * @param string $name
-     * @param null   $default
+     * @param null $default
      *
      * @return mixed|null
      */
@@ -210,24 +145,6 @@ trait InputOptionsTrait
     }
 
     /**
-     * Check multi short-opt exists
-     *
-     * @param string[] $names
-     *
-     * @return string
-     */
-    public function findOneShortOpts(array $names): string
-    {
-        foreach ($names as $name) {
-            if (isset($this->sOpts[$name])) {
-                return $name;
-            }
-        }
-
-        return '';
-    }
-
-    /**
      * @return array
      */
     public function getShortOpts(): array
@@ -237,7 +154,7 @@ trait InputOptionsTrait
 
     /**
      * @param string $name
-     * @param mixed  $value
+     * @param mixed $value
      */
     public function setSOpt(string $name, $value): void
     {
@@ -254,7 +171,7 @@ trait InputOptionsTrait
 
     /**
      * @param array $sOpts
-     * @param bool  $replace
+     * @param bool $replace
      */
     public function setSOpts(array $sOpts, bool $replace = false): void
     {
@@ -275,7 +192,7 @@ trait InputOptionsTrait
      * Alias of the getLongOpt()
      *
      * @param string $name
-     * @param null   $default
+     * @param null $default
      *
      * @return mixed|null
      */
@@ -288,7 +205,7 @@ trait InputOptionsTrait
      * Get long-opt value
      *
      * @param string $name
-     * @param null   $default
+     * @param null $default
      *
      * @return mixed|null
      */
@@ -319,7 +236,7 @@ trait InputOptionsTrait
 
     /**
      * @param string $name
-     * @param mixed  $value
+     * @param mixed $value
      */
     public function setLOpt(string $name, $value): void
     {
@@ -336,7 +253,7 @@ trait InputOptionsTrait
 
     /**
      * @param array $lOpts
-     * @param bool  $replace
+     * @param bool $replace
      */
     public function setLOpts(array $lOpts, bool $replace = false): void
     {

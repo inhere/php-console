@@ -6,7 +6,7 @@
  * Time: 下午8:14
  */
 
-namespace Inhere\Console\IO;
+namespace Deprecated;
 
 use Inhere\Console\Util\Helper;
 use InvalidArgumentException;

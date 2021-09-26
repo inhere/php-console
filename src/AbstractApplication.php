@@ -92,7 +92,7 @@ abstract class AbstractApplication implements ApplicationInterface
     /** @var array Application config data */
     protected $config = [
         'name'           => 'My Console Application',
-        'description'    => 'This is my console application',
+        'desc'           => 'This is my console application',
         'version'        => '0.5.1',
         'homepage'       => '', // can provide you app homepage url
         'publishAt'      => '2017.03.24',

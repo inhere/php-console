@@ -82,7 +82,19 @@ class ApplicationTest extends TestCase
         }
     }
 
-    public function testRunCommand(): void
+    public function testRunCommand_class(): void
+    {
+        $app = $this->newApp([
+            './app',
+            'test1'
+        ]);
+        $app->addCommand(TestCommand::class);
+
+        $ret = $app->run(false);
+        self::assertSame('Inhere\ConsoleTest\TestCommand::execute', $ret);
+    }
+
+    public function testRunCommand_callback(): void
     {
         $app = $this->newApp([
             './app',
