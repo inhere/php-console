@@ -14,9 +14,9 @@ require dirname(__DIR__) . '/test/bootstrap.php';
 
 // create app instance
 $app = new Application([
-    'debug'       => true,
-    'rootPath'    => dirname(__DIR__),
-    'description' => 'This is demo console application',
+    'debug'    => true,
+    'rootPath' => dirname(__DIR__),
+    'desc'     => 'This is demo console application',
 ]);
 
 $app->setLogo("

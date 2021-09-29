@@ -7,6 +7,7 @@
  * @license  https://github.com/inhere/php-console/blob/master/LICENSE
  */
 
+use Inhere\Console\Application;
 use Inhere\Console\BuiltIn\PharController;
 use Inhere\Console\BuiltIn\SelfUpdateCommand;
 use Inhere\Console\Examples\Command\CorCommand;
@@ -19,12 +20,15 @@ use Inhere\Console\Examples\Controller\ShowController;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
 
+/** @var Application $app */
 $app->command(DemoCommand::class);
 $app->command('exam', function (Input $in, Output $out): void {
     $cmd = $in->getCommand();
 
     $out->info('hello, this is a test command: ' . $cmd);
-}, 'a description message');
+}, [
+    'desc' => 'a description message',
+]);
 
 $app->command('test', TestCommand::class, [
     'aliases' => ['t']
