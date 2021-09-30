@@ -31,32 +31,26 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php}}
-          tools: pecl, php-cs-fixer, phpunit
-          extensions: mbstring, dom, fileinfo, mysql, openssl # , swoole-4.4.19 #optional, setup extensions
+          tools: php-cs-fixer, phpunit
+          extensions: mbstring, dom, fileinfo, openssl # , swoole-4.4.19 #optional, setup extensions
           ini-values: post_max_size=56M, short_open_tag=On #optional, setup php.ini configuration
           coverage: none #optional, setup coverage driver: xdebug, none
 
-      - name: Install dependencies # eg: v1.0.3
+      - name: Generate changelog file
+        id: changelog
         run: |
-          tag1=${GITHUB_REF#refs/*/}
-          echo "release tag: ${tag1}"
-          composer install --no-progress
+          wget -c -q https://github.com/inhere/kite/releases/latest/download/kite.phar
+          php kite.phar git cl prev last --style gh-release --no-merges --fetch-tags --unshallow --file changelog.md
+          cat changelog.md
 
-      # Add a test script to composer.json, for instance: "test": "vendor/bin/phpunit"
-      # Docs: https://getcomposer.org/doc/articles/scripts.md
-
-#      - name: Build phar and send to github assets
-#        run: |
-#          echo $RELEASE_TAG
-#          echo $RELEASE_NAME
-#          php -d phar.readonly=0 bin/kite phar:pack -o kite-${RELEASE_TAG}.phar --no-progress
-#          php kite-${RELEASE_TAG}.phar -V
-
-      # https://github.com/actions/create-release
-      - uses: meeDamian/github-release@2.0
+      # https://github.com/softprops/action-gh-release
+      - name: Create release and upload assets
+        uses: softprops/action-gh-release@v1
+        #        if: startsWith(github.ref, 'refs/tags/')
         with:
-          gzip: false
-          token: ${{ secrets.GITHUB_TOKEN }}
-          tag: ${{ env.RELEASE_TAG }}
           name: ${{ env.RELEASE_TAG }}
-#          files: kite-${{ env.RELEASE_TAG }}.phar
+          tag_name: ${{ env.RELEASE_TAG }}
+          body_path: changelog.md
+          # files: kite-${{ env.RELEASE_TAG }}.phar
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
