@@ -80,19 +80,21 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
     private $action = '';
 
     /**
+     * The action method name on the controller.
+     *
      * @var string
      */
     private $actionMethod = '';
 
     /**
-     * Input subcommand name.
+     * The input group name.
      *
      * @var string
      */
-    private $commandName = '';
+    private $groupName = '';
 
     /**
-     * eg: '/' ':'
+     * The delimiter. eg: '/' ':'
      *
      * @var string
      */
@@ -181,6 +183,7 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
 
         $list = $this->disabledCommands();
 
+        $this->groupName = $this->getRealGName();
         // save to property
         $this->disabledCommands = $list ? array_flip($list) : [];
 
@@ -576,14 +579,6 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
     }
 
     /**
-     * @return string
-     */
-    public function getGroupName(): string
-    {
-        return self::getName();
-    }
-
-    /**
      * @param string $name
      *
      * @return bool
@@ -648,7 +643,31 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
     /**
      * @return string
      */
-    public function getAction(): string
+    public function getGroupName(): string
+    {
+        return $this->groupName;
+    }
+
+    /**
+     * @return string
+     */
+    public function getRealGName(): string
+    {
+        return self::getName();
+    }
+
+    /**
+     * @param string $groupName
+     */
+    public function setGroupName(string $groupName): void
+    {
+        $this->groupName = $groupName;
+    }
+
+    /**
+     * @return string
+     */
+    public function getRealCName(): string
     {
         return $this->action;
     }
@@ -656,9 +675,31 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
     /**
      * @return string
      */
-    public function getCommandName(): string
+    public function getSubName(): string
     {
         return $this->commandName;
+    }
+
+    /**
+     * @param bool $useReal
+     *
+     * @return string
+     */
+    public function getCommandId(bool $useReal = true): string
+    {
+        if ($useReal) {
+            return self::getName() . $this->delimiter . $this->action;
+        }
+
+        return $this->groupName . $this->delimiter . $this->commandName;
+    }
+
+    /**
+     * @return string
+     */
+    public function getAction(): string
+    {
+        return $this->action;
     }
 
     /**

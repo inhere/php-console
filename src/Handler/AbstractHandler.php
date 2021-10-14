@@ -96,6 +96,13 @@ abstract class AbstractHandler implements CommandHandlerInterface
     protected $params;
 
     /**
+     * The input command name. maybe is an alias name.
+     *
+     * @var string
+     */
+    protected $commandName = '';
+
+    /**
      * @var array Command options
      */
     protected $commandOptions = [];
@@ -526,9 +533,51 @@ abstract class AbstractHandler implements CommandHandlerInterface
     /**
      * @return string
      */
+    public function getRealGName(): string
+    {
+        return '';
+    }
+
+    /**
+     * @return string
+     */
+    public function getRealCName(): string
+    {
+        return '';
+    }
+
+    /**
+     * @param string $commandName
+     */
+    public function setCommandName(string $commandName): void
+    {
+        $this->commandName = $commandName;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCommandName(): string
+    {
+        return $this->commandName;
+    }
+
+    /**
+     * @return string
+     */
     public function getRealName(): string
     {
         return self::getName();
+    }
+
+    /**
+     * @param bool $useReal
+     *
+     * @return string
+     */
+    public function getCommandId(bool $useReal = true): string
+    {
+        return $useReal ? self::getName() : $this->commandName;
     }
 
     /**

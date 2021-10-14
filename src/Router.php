@@ -261,18 +261,25 @@ class Router implements RouterInterface
      **********************************************************/
 
     /**
-     * @param string $name The input command name
-     *
-     * @return array return route info array. If not found, will return empty array.
-     * [
-     *  type    => 1, // 1 group 2 command
-     *  name    => '', // formatted $name
+     * ```php
+     * return [
+     *  type     => 1, // 1 group 2 command
+     *  name     => '', // input group/command name.
+     *  cmdId    => '', // format and resolved $name
+     *  // for group
+     *  group    => '', // group name.
+     *  sub      => '', // input subcommand name. on name is group.
+     *  // common info
      *  handler => handler class/object/func ...
      *  options => [
      *      aliases => [],
      *      description => '',
      *  ],
      * ]
+     * ```
+     * @param string $name The input command name
+     *
+     * @return array return route info array. If not found, will return empty array.
      */
     public function match(string $name): array
     {
@@ -283,18 +290,20 @@ class Router implements RouterInterface
 
         // is a command name
         if ($route = $this->commands[$realName] ?? []) {
-            $route['name'] = $route['cmdId'] = $realName;
+            $route['name']  = $name;
+            $route['cmdId'] = $realName;
             return $route;
         }
 
         // maybe is a controller/group name
         $action = '';
-        $group  = $realName;
+        $iptGrp = $group = $realName;
 
         // like 'home:index'
         if (strpos($realName, $sep) > 0) {
             [$group, $action] = explode($sep, $realName, 2);
 
+            $iptGrp = $group;
             $action = trim($action, ': ');
             // resolve alias
             $group = $this->resolveAlias($group);
@@ -302,10 +311,10 @@ class Router implements RouterInterface
 
         // is group name
         if ($route = $this->controllers[$group] ?? []) {
-            $route['name']   = $realName;
-            $route['group']  = $group;
-            $route['action'] = $action;
-            $route['cmdId']  = $group . $sep . $action;
+            $route['name'] = $iptGrp;
+            $route['group'] = $group;
+            $route['sub']   = $action;
+            $route['cmdId'] = $group . $sep . $action;
             return $route;
         }
 

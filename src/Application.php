@@ -303,7 +303,7 @@ class Application extends AbstractApplication
 
         // is command
         if ($info['type'] === Router::TYPE_SINGLE) {
-            return $this->runCommand($info['name'], $info['handler'], $cmdOptions, $args);
+            return $this->runCommand($info, $cmdOptions, $args);
         }
 
         // is controller/group
@@ -313,16 +313,18 @@ class Application extends AbstractApplication
     /**
      * run a independent command
      *
-     * @param string $name Command name
-     * @param Closure|string $handler Command class or handler func
+     * @param array{name: string, handler: mixed, realName: string} $info
      * @param array $options
      * @param array $args
      *
      * @return mixed
      * @throws Throwable
      */
-    protected function runCommand(string $name, $handler, array $options, array $args)
+    protected function runCommand(array $info, array $options, array $args)
     {
+        /** @var Closure|string $handler Command class or handler func */
+        $handler = $info['handler'];
+
         if (is_object($handler) && method_exists($handler, '__invoke')) {
             $fs = SFlags::new();
             $fs->addOptsByRules(GlobalOption::getAloneOptions());
@@ -344,13 +346,13 @@ class Application extends AbstractApplication
 
             /** @var Command $object */
             $object = new $handler($this->input, $this->output);
-
             if (!($object instanceof Command)) {
                 Helper::throwInvalidArgument("The console command class [$handler] must instanceof the " . Command::class);
             }
 
-            $object::setName($name);
+            $object::setName($info['cmdId']); // real command name.
             $object->setApp($this);
+            $object->setCommandName($info['name']);
             $result = $object->run($args);
         }
 
@@ -380,8 +382,8 @@ class Application extends AbstractApplication
             $controller->setDetached();
         }
 
-        if ($info['action']) {
-            array_unshift($args, $info['action']);
+        if ($info['sub']) {
+            array_unshift($args, $info['sub']);
         }
 
         // Command method, no suffix
@@ -441,6 +443,12 @@ class Application extends AbstractApplication
         // force set name and description
         $handler::setName($group);
         $handler->setApp($this);
+
+        // set input name
+        if ($inputName = $info['name'] ?? '') {
+            $handler->setGroupName($inputName);
+        }
+
         $handler->setDelimiter($this->delimiter);
 
         // cache object

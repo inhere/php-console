@@ -45,21 +45,46 @@ interface CommandHandlerInterface
     public function getApp(): AbstractApplication;
 
     /**
+     * The input group name.
+     *
      * @return string
      */
     public function getGroupName(): string;
 
     /**
-     * Alias of the getName()
+     * The real group or command name. Alias of the getName()
      *
      * @return string
      */
     public function getRealName(): string;
 
     /**
+     * The real group name.
+     *
+     * @return string
+     */
+    public function getRealGName(): string;
+
+    /**
+     * The real command name.
+     *
+     * @return string
+     */
+    public function getRealCName(): string;
+
+    /**
+     * The input command/subcommand name.
+     *
      * @return string
      */
     public function getCommandName(): string;
+
+    /**
+     * @param bool $useReal
+     *
+     * @return string
+     */
+    public function getCommandId(bool $useReal = true): string;
 
     /**
      * @return string
