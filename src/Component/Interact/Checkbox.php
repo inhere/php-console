@@ -59,7 +59,7 @@ class Checkbox extends MultiSelect
         }
 
         Console::write($text);
-        $defText = $default ? "[default:<comment>{$default}</comment>]" : '';
+        $defText = $default !== null ? "[default:<comment>{$default}</comment>]" : '';
         $filter  = function ($val) use ($options) {
             return $val !== 'q' && isset($options[$val]);
         };

@@ -63,7 +63,7 @@ class Choose extends SingleSelect
             $text .= "\n  <info>$key</info>) $value";
         }
 
-        $defaultText = $default ? "[default:<info>$default</info>]" : '';
+        $defaultText = $default !== null ? "[default:<info>$default</info>]" : '';
         Console::write($text);
 
         beginChoice:
