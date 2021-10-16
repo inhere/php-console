@@ -18,10 +18,20 @@
 > 使用方便简单。可以方便的整合到任何已有项目中。
 
 - 命令行应用, 命令行的 `controller`, `command` 解析运行 
-- 支持给命令设置别名,一个命令可以有多个别名。支持命令的显示/隐藏，启用/禁用
-- 功能全面的命令行的选项参数解析(命名参数，短选项 `-s`，长选项 `--long`)
-- 命令行下的 输入`input`, 输出 `output` 管理、使用
-- 命令方法注释自动解析为帮助信息（默认提取 `@usage` `@arguments` `@options` `@example` 等信息）
+- 支持给命令设置别名,一个命令可以有多个别名。
+  - 支持命令的显示/隐藏，启用/禁用
+- 命令行下的 输入`input`, 输出 `output`， Flag解析管理、使用
+- 功能全面的命令行的选项、参数解析
+  - 命名参数，数组参数
+  - 选项绑定 短选项 `-s`，长选项 `--long`
+  - 支持定义数据类型(`bool,int,string,array`)，解析后会自动格式化输入值
+- 命令方法注释自动解析为帮助信息
+  - 默认提取 `@usage` `@arguments` `@options` `@example` 等信息
+  - **NEW** v4 版本支持从注释定义选项参数的数据类型
+- 支持注册事件监听，错误处理等
+
+### 更多特性
+
 - 支持输出多种颜色风格的消息文本(`info`, `comment`, `success`, `warning`, `danger`, `error` ... )
 - 常用的特殊格式信息显示(`section`, `panel`, `padding`, `helpPanel`, `table`, `tree`, `title`, `list`, `multiList`)
 - 丰富的动态信息显示(`pending/loading`, `pointing`, `spinner`, `counterTxt`, `dynamicText`, `progressTxt`, `progressBar`)
@@ -43,13 +53,43 @@
 
 ## 快速安装
 
+- Requirement php 7.3+
+
 ```bash
 composer require inhere/console
 ```
 
+## 快速开始
+
+```php
+// file: examples/app
+use Inhere\Console\IO\Input;
+use Inhere\Console\IO\Output;
+
+$meta = [
+    'name'    => 'My Console App',
+    'version' => '1.0.2',
+];
+
+// 通常无需传入 $input $output ，会自动创建
+// $app = new \Inhere\Console\Application($meta, $input, $output);
+$app = new \Inhere\Console\Application($meta);
+
+// 注册命令
+$app->command(DemoCommand::class);
+// 注册命令组
+$app->addGroup(MyController::class);
+// ... ...
+
+// run
+$app->run();
+```
+
 ## 文档列表
 
-> 请到WIKI查看详细的使用文档
+请到[WIKI](https://github.com/inhere/php-console/wiki)查看更多详细的使用文档
+
+
 
 - **[文档首页](https://github.com/inhere/php-console/wiki/home)**
 - **[功能概览](https://github.com/inhere/php-console/wiki/overview)**
@@ -98,12 +138,18 @@ $ php examples/app --debug 4
 - [kite](https://github.com/inhere/kite) PHP编写的，方便本地开发和使用的个人CLI工具应用
 - More, please see [github used by](https://github.com/inhere/php-console/network/dependents?package_id=UGFja2FnZS01NDI5NzMxOTI%3D)
 
-## License
-
-[MIT](LICENSE)
-
 ## 我的其他项目
 
 - [inhere/php-validate](https://github.com/inhere/php-validate) 一个简洁小巧且功能完善的php验证库
 - [inhere/sroute](https://github.com/inhere/php-srouter) 轻量且快速的HTTP请求路由库
 
+## 依赖包
+
+- [toolkit/cli-utils](https://github.com/php-toolkit/cli-utils)
+- [toolkit/pflag](https://github.com/php-toolkit/pflag)
+- [toolkit/stdlib](https://github.com/php-toolkit/stdlib)
+- [toolkit/sys-utils](https://github.com/php-toolkit/sys-utils)
+
+## License
+
+[MIT](LICENSE)
