@@ -48,8 +48,15 @@
 - 命令行的php代码高亮支持（来自于`jakub-onderka/php-console-highlighter`并做了一些调整）
 - 简单的Terminal屏幕、光标控制操作类
 - 简单的进程操作使用类（fork,run,stop,wait ... 等）
+  
+所有的特性，功能：
 
-> 所有的特性，效果；都可以运行 `examples/` 中的示例代码 `php examples/app` 展示出来的。基本上涵盖了所有功能，可以直接测试运行
+ 都可以运行 `examples/` 中的示例代码 `php examples/app` 展示出来的。基本上涵盖了所有功能，可以直接测试运行
+
+## 项目地址
+
+- **github** https://github.com/inhere/php-console.git
+- **gitee** https://gitee.com/inhere/php-console.git
 
 ## 快速安装
 
@@ -85,31 +92,21 @@ $app->addGroup(MyController::class);
 $app->run();
 ```
 
+运行示例应用： `php examples/app`
+
 ## 文档列表
 
-请到[WIKI](https://github.com/inhere/php-console/wiki)查看更多详细的使用文档
-
-
+**[从v3升级到v4](https://github.com/inhere/php-console/wiki/v3-upgrade-to-v4)**
 
 - **[文档首页](https://github.com/inhere/php-console/wiki/home)**
 - **[功能概览](https://github.com/inhere/php-console/wiki/overview)**
 - **[安装](https://github.com/inhere/php-console/wiki/install)**
 - **[创建应用](https://github.com/inhere/php-console/wiki/quick-start)**
-- **[添加命令](https://github.com/inhere/php-console/wiki/add-command)**
-- **[添加命令组](https://github.com/inhere/php-console/wiki/add-group)**
+- **[创建命令/组](https://github.com/inhere/php-console/wiki/create-command-and-group)**
 - **[注册命令](https://github.com/inhere/php-console/wiki/register-command)**
 - **[错误/异常捕获](https://github.com/inhere/php-console/wiki/error-handle)**
-- **[输入对象](https://github.com/inhere/php-console/wiki/input-instance)**
-- **[输出对象](https://github.com/inhere/php-console/wiki/output-instance)**
-- **[格式化输出](https://github.com/inhere/php-console/wiki/format-output)** `section`, `panel`, `padding`, `helpPanel`, `table`, `tree`, `title`, `list`, `multiList` 等风格信息输出
-- **[进度动态输出](https://github.com/inhere/php-console/wiki/process-output)** 动态信息显示(`pending/loading`, `pointing`, `spinner`, `counterTxt`, `dynamicText`, `progressTxt`, `progressBar`)
-- **[用户交互](https://github.com/inhere/php-console/wiki/user-interactive)** 用户信息交互支持(`select`, `multiSelect`, `confirm`, `ask/question`, `askPassword/askHiddenInput`)
-- **[扩展工具](https://github.com/inhere/php-console/wiki/extra-tools)** 打包phar, 命令行下的文件下载, 命令行的php代码高亮
 
-## 项目地址
-
-- **github** https://github.com/inhere/php-console.git
-- **gitee** https://gitee.com/inhere/php-console.git
+更多使用文档请点击跳转到[WIKI](https://github.com/inhere/php-console/wiki)查看
 
 ## 单元测试
 
