@@ -5,87 +5,83 @@
 [![Latest Stable Version](http://img.shields.io/packagist/v/inhere/console.svg)](https://packagist.org/packages/inhere/console)
 [![Github Actions Status](https://github.com/inhere/php-console/workflows/Unit-tests/badge.svg)](https://github.com/inhere/php-console/actions)
 
-Full-featured php command line application library. 
+简洁、功能全面的php命令行应用库。提供控制台参数解析, 命令运行，颜色风格输出, 用户信息交互, 特殊格式信息显示。
 
-Provide console parameter parsing, command run, color style output, user information interaction, and special format information display.
+> **[EN README](./README.md)**
 
-> **[中文README](./README.zh-CN.md)**
-
-## Command line preview
+## 命令行预览
 
 ![app-command-list](https://raw.githubusercontent.com/inhere/php-console/3.x/docs/screenshots/app-command-list.png)
 
-## Features
+## 功能概览
 
-> Easy to use. Can be easily integrated into any existing project.
+> 使用方便简单。可以方便的整合到任何已有项目中。
 
-- Command line application, `controller`, `command` parsing run on the command line
-- Support for setting aliases for commands. A command can have multiple aliases. 
-- Support command display/hide, enable/disable.
-- Full-featured command line option parameter parsing (named parameters, short options `-s`, long options `--long`). 
-- The `input`, `output` of the command line, management, use
-- Command method comments are automatically parsed as help information (by default, `@usage` `@arguments` `@options` `@example`)
-- Support for outputting message texts of multiple color styles (`info`, `comment`, `success`, `warning`, `danger`, `error` ... )
-- Commonly used special format information display (`section`, `panel`, `padding`, `helpPanel`, `table`, `tree`, `title`, `list`, `multiList`)
-- Rich dynamic information display (`pending/loading`, `pointing`, `spinner`, `counterTxt`, `dynamicText`, `progressTxt`, `progressBar`)
-- Common user information interaction support (`select`, `multiSelect`, `confirm`, `ask/question`, `askPassword/askHiddenInput`)
-- Support for predefined parameter definitions like `symfony/console` (giving parameter values by position, recommended when strict parameter restrictions are required)
-- The color output is `windows` `linux` `mac` compatible. Environments that do not support color will automatically remove the relevant CODE.
-- Quickly generate auto-completion scripts for the current application in the `bash/zsh` environment
-- NEW: Support start an interactive shell for run application
+- 命令行应用, 命令行的 `controller`, `command` 解析运行 
+- 支持给命令设置别名,一个命令可以有多个别名。支持命令的显示/隐藏，启用/禁用
+- 功能全面的命令行的选项参数解析(命名参数，短选项 `-s`，长选项 `--long`)
+- 命令行下的 输入`input`, 输出 `output` 管理、使用
+- 命令方法注释自动解析为帮助信息（默认提取 `@usage` `@arguments` `@options` `@example` 等信息）
+- 支持输出多种颜色风格的消息文本(`info`, `comment`, `success`, `warning`, `danger`, `error` ... )
+- 常用的特殊格式信息显示(`section`, `panel`, `padding`, `helpPanel`, `table`, `tree`, `title`, `list`, `multiList`)
+- 丰富的动态信息显示(`pending/loading`, `pointing`, `spinner`, `counterTxt`, `dynamicText`, `progressTxt`, `progressBar`)
+- 常用的用户信息交互支持(`select`, `multiSelect`, `confirm`, `ask/question`, `askPassword/askHiddenInput`)
+- 支持类似 `symfony/console` 的预定义参数定义(按位置赋予参数值, 需要严格限制参数选项时推荐使用)
+- 颜色输出是 `windows` `linux` `mac` 兼容的，不支持颜色的环境会自动去除相关CODE
+- 快速的为当前应用生成 `bash/zsh` 环境下的自动补全脚本
 
-### Built-in tools
+### 内置工具
 
-- Built-in Phar packaging tool class, which can be easily packaged into `phar` files. Easy to distribute and use
-  - Run the command `php examples/app phar:pack` in the example, which will package this console library into an `app.phar`
-- Built-in file download tool class under command line with progress bar display
-- Command line php code highlighting support (from `jakub-onderka/php-console-highlighter` and making some adjustments)
-- Simple Terminal screen, cursor control operation class
-- Simple process operations using classes (fork, run, stop, wait ..., etc.)
+- 内置Phar打包工具类，可以方便的将应用打包成`phar`文件。方便分发和使用
+  - 运行示例中的命令 `php examples/app phar:pack`,会将此console库打包成一个`app.phar`
+- 内置了命令行下的文件下载工具类，带有进度条显示
+- 命令行的php代码高亮支持（来自于`jakub-onderka/php-console-highlighter`并做了一些调整）
+- 简单的Terminal屏幕、光标控制操作类
+- 简单的进程操作使用类（fork,run,stop,wait ... 等）
 
-> All features, effects; can be run in the example code `phps/app` in `examples/`. Basically covers all the features and can be tested directly
+> 所有的特性，效果；都可以运行 `examples/` 中的示例代码 `php examples/app` 展示出来的。基本上涵盖了所有功能，可以直接测试运行
 
-## Installation
+## 快速安装
 
 ```bash
 composer require inhere/console
 ```
 
-## Document List
+## 文档列表
 
-> Please go to WIKI for detailed usage documentation
+> 请到WIKI查看详细的使用文档
 
-- **[Document Home](https://github.com/inhere/php-console/wiki/home)**
-- **[Feature Overview](https://github.com/inhere/php-console/wiki/overview)**
-- **[Install](https://github.com/inhere/php-console/wiki/install)**
-- **[Create Application](https://github.com/inhere/php-console/wiki/quick-start)**
-- **[Add Command](https://github.com/inhere/php-console/wiki/add-command)**
-- **[Add Command Group](https://github.com/inhere/php-console/wiki/add-group)**
-- **[Register Command](https://github.com/inhere/php-console/wiki/register-command)**
-- **[Error/Exception Capture](https://github.com/inhere/php-console/wiki/error-handle)**
-- **[Input Object](https://github.com/inhere/php-console/wiki/input-instance)**
-- **[output object](https://github.com/inhere/php-console/wiki/output-instance)**
-- **[Formatted Output](https://github.com/inhere/php-console/wiki/format-output)**
-- **[Progress Dynamic Output](https://github.com/inhere/php-console/wiki/process-output)**
-- **[User Interaction](https://github.com/inhere/php-console/wiki/user-interactive)**
-- **[Extension Tools](https://github.com/inhere/php-console/wiki/extra-tools)**
+- **[文档首页](https://github.com/inhere/php-console/wiki/home)**
+- **[功能概览](https://github.com/inhere/php-console/wiki/overview)**
+- **[安装](https://github.com/inhere/php-console/wiki/install)**
+- **[创建应用](https://github.com/inhere/php-console/wiki/quick-start)**
+- **[添加命令](https://github.com/inhere/php-console/wiki/add-command)**
+- **[添加命令组](https://github.com/inhere/php-console/wiki/add-group)**
+- **[注册命令](https://github.com/inhere/php-console/wiki/register-command)**
+- **[错误/异常捕获](https://github.com/inhere/php-console/wiki/error-handle)**
+- **[输入对象](https://github.com/inhere/php-console/wiki/input-instance)**
+- **[输出对象](https://github.com/inhere/php-console/wiki/output-instance)**
+- **[格式化输出](https://github.com/inhere/php-console/wiki/format-output)** `section`, `panel`, `padding`, `helpPanel`, `table`, `tree`, `title`, `list`, `multiList` 等风格信息输出
+- **[进度动态输出](https://github.com/inhere/php-console/wiki/process-output)** 动态信息显示(`pending/loading`, `pointing`, `spinner`, `counterTxt`, `dynamicText`, `progressTxt`, `progressBar`)
+- **[用户交互](https://github.com/inhere/php-console/wiki/user-interactive)** 用户信息交互支持(`select`, `multiSelect`, `confirm`, `ask/question`, `askPassword/askHiddenInput`)
+- **[扩展工具](https://github.com/inhere/php-console/wiki/extra-tools)** 打包phar, 命令行下的文件下载, 命令行的php代码高亮
 
-## Project address
+## 项目地址
 
 - **github** https://github.com/inhere/php-console.git
 - **gitee** https://gitee.com/inhere/php-console.git
 
-## Unit test
+## 单元测试
 
 ```bash
 phpunit
-// output coverage without xdebug
+// 没有xdebug时输出覆盖率
 phpdbg -dauto_globals_jit=Off -qrr /usr/local/bin/phpunit --coverage-text
 ```
 
-## Debuging
+## 开发调试
 
-You can set debug level by ENV `CONSOLE_DEBUG=level`, global option `--debug level`
+你可以通过环境变量 `CONSOLE_DEBUG=level`, 全局选项 `--debug level` 设置debug级别
 
 ```bash
 # by ENV
@@ -95,18 +91,19 @@ $ CONSOLE_DEBUG=5 php examples/app
 $ php examples/app --debug 4
 ```
 
-## Project use
+## 使用console的项目
 
-Check out these projects, which use https://github.com/inhere/php-console :
+看看这些使用了 https://github.com/inhere/php-console 的项目:
 
-- [kite](https://github.com/inhere/kite) Kite is a tool for help development.
+- [kite](https://github.com/inhere/kite) PHP编写的，方便本地开发和使用的个人CLI工具应用
 - More, please see [github used by](https://github.com/inhere/php-console/network/dependents?package_id=UGFja2FnZS01NDI5NzMxOTI%3D)
 
 ## License
 
 [MIT](LICENSE)
 
-## My projects
+## 我的其他项目
 
-- [inhere/php-validate](https://github.com/inhere/php-validate) A compact and full-featured php verification library
-- [inhere/sroute](https://github.com/inhere/php-srouter) Lightweight and fast HTTP request routing library
+- [inhere/php-validate](https://github.com/inhere/php-validate) 一个简洁小巧且功能完善的php验证库
+- [inhere/sroute](https://github.com/inhere/php-srouter) 轻量且快速的HTTP请求路由库
+
