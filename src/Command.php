@@ -34,6 +34,11 @@ abstract class Command extends AbstractHandler implements CommandInterface
     public const METHOD = 'execute';
 
     /**
+     * @var Controller
+     */
+    protected $group;
+
+    /**
      * @var Command
      */
     protected $parent;
@@ -129,5 +134,25 @@ abstract class Command extends AbstractHandler implements CommandInterface
     public function getRealCName(): string
     {
         return self::getName();
+    }
+
+    /**
+     * Get the group
+     *
+     * @return  Controller
+     */ 
+    public function getGroup()
+    {
+        return $this->group;
+    }
+
+    /**
+     * Set the value of group
+     *
+     * @param  Controller  $group
+     */ 
+    public function setGroup(Controller $group): void
+    {
+        $this->group = $group;
     }
 }

@@ -80,13 +80,6 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
     private $action = '';
 
     /**
-     * The action method name on the controller.
-     *
-     * @var string
-     */
-    private $actionMethod = '';
-
-    /**
      * The input group name.
      *
      * @var string
@@ -104,6 +97,13 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
      * @var string
      */
     private $defaultAction = '';
+
+    /**
+     * The action method name on the controller.
+     *
+     * @var string
+     */
+    private $actionMethod = '';
 
     /**
      * @var string
@@ -213,7 +213,7 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
      */
     protected function onNotFound(string $action, array $args): bool
     {
-        // you can add custom logic on sub-command not found.
+        // TIP: you can add custom logic on sub-command not found.
         return false;
     }
 

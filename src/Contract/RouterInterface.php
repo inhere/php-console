@@ -32,9 +32,9 @@ interface RouterInterface
      *
      * @param string                     $name    The controller name
      * @param string|ControllerInterface $class   The controller class
-     * @param array                      $options array:
-     *                                            - aliases     The command aliases
-     *                                            - description The description message
+     * @param array{aliases: array, desc: string} $options The options 
+     *                                            - aliases The command aliases
+     *                                            - desc    The description message
      *
      * @return static
      * @throws InvalidArgumentException
@@ -46,10 +46,9 @@ interface RouterInterface
      *
      * @param string|CommandInterface         $name
      * @param string|Closure|CommandInterface $handler
-     * @param array                           $options
-     *  array:
-     *  - aliases     The command aliases
-     *  - description The description message
+     * @param array{aliases: array, desc: string} $options The options 
+     *                                            - aliases The command aliases
+     *                                            - desc    The description message
      *
      * @return static
      * @throws InvalidArgumentException
