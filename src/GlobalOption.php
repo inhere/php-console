@@ -61,6 +61,25 @@ class GlobalOption
         '--help'           => 'bool;Display application help message;;;h',
         '--version'        => 'bool;Show application version information;;;V',
         '--no-interactive' => 'bool;Run commands in a non-interactive environment',
+        '--auto-completion'          => [
+            'type'   => FlagType::BOOL,
+            'hidden' => true,
+            'desc'   => 'Open generate auto completion script',
+            // 'envVar' => Console::DEBUG_ENV_KEY,
+        ],
+        '--shell-env'          => [
+            'type'   => FlagType::STRING,
+            'hidden' => true,
+            'desc'   => 'The shell env name for generate auto completion script',
+            // 'envVar' => Console::DEBUG_ENV_KEY,
+            'default' => 'stdout',
+        ],
+        '--gen-file'          => [
+            'type'   => FlagType::STRING,
+            'hidden' => true,
+            'desc'   => 'The output file for generate auto completion script',
+            // 'envVar' => Console::DEBUG_ENV_KEY,
+        ],
     ];
 
     /**

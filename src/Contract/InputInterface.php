@@ -57,16 +57,6 @@ interface InputInterface
     public function getArgs(): array;
 
     /**
-     * get Argument
-     *
-     * @param null|int|string $name
-     * @param mixed           $default
-     *
-     * @return mixed
-     */
-    public function getArg($name, $default = null);
-
-    /**
      * @return array
      */
     public function getOpts(): array;
