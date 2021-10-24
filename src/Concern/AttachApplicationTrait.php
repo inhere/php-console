@@ -91,8 +91,8 @@ trait AttachApplicationTrait
             return $this->app->isInteractive();
         }
 
-        $value = $this->input->getOpt(GlobalOption::NO_INTERACTIVE);
-        return $value === false;
+        // $value = $this->input->getOpt(GlobalOption::NO_INTERACTIVE);
+        return $this->input->isInteractive();
     }
 
     /**
@@ -106,7 +106,9 @@ trait AttachApplicationTrait
             return $this->app->getVerbLevel();
         }
 
-        return (int)$this->input->getLongOpt('debug', Console::VERB_ERROR);
+        // return (int)$this->input->getLongOpt('debug', Console::VERB_ERROR);
+        $envVal = OS::getEnvStrVal(Console::DEBUG_ENV_KEY);
+        return $envVal !== '' ? (int)$envVal : Console::VERB_ERROR;
     }
 
     /**

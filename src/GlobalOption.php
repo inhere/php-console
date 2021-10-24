@@ -50,35 +50,42 @@ class GlobalOption
      * @psalm-var array<string, string>
      */
     private static $options = [
-        '--debug'          => [
+        'debug'          => [
             'type'   => FlagType::INT,
             'desc'   => 'Setting the runtime log debug level(quiet 0 - 5 crazy)',
             'envVar' => Console::DEBUG_ENV_KEY,
         ],
-        '--ishell'         => 'bool;Run application an interactive shell environment',
-        '--profile'        => 'bool;Display timing and memory usage information',
-        '--no-color'       => 'bool;Disable color/ANSI for message output',
-        '--help'           => 'bool;Display application help message;;;h',
-        '--version'        => 'bool;Show application version information;;;V',
-        '--no-interactive' => 'bool;Run commands in a non-interactive environment',
-        '--auto-completion'          => [
+        'ishell'         => 'bool;Run application an interactive shell environment',
+        'profile'        => 'bool;Display timing and memory usage information',
+        'no-color'       => 'bool;Disable color/ANSI for message output',
+        'help'           => 'bool;Display application help message;;;h',
+        'version'        => 'bool;Show application version information;;;V',
+        'no-interactive' => 'bool;Run commands in a non-interactive environment',
+        // - hidden options
+        'auto-completion'          => [
             'type'   => FlagType::BOOL,
             'hidden' => true,
             'desc'   => 'Open generate auto completion script',
             // 'envVar' => Console::DEBUG_ENV_KEY,
         ],
-        '--shell-env'          => [
+        'shell-env'          => [
             'type'   => FlagType::STRING,
             'hidden' => true,
             'desc'   => 'The shell env name for generate auto completion script',
             // 'envVar' => Console::DEBUG_ENV_KEY,
-            'default' => 'stdout',
         ],
-        '--gen-file'          => [
+        'gen-file'          => [
             'type'   => FlagType::STRING,
             'hidden' => true,
             'desc'   => 'The output file for generate auto completion script',
             // 'envVar' => Console::DEBUG_ENV_KEY,
+            'default' => 'stdout',
+        ],
+        'tpl-file'          => [
+            'type'   => FlagType::STRING,
+            'hidden' => true,
+            'desc'   => 'custom tpl file for generate completion script',
+            // 'default' => 'stdout',
         ],
     ];
 

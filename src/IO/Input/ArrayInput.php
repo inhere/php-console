@@ -23,31 +23,9 @@ class ArrayInput extends Input
      * Input constructor.
      *
      * @param null|array $args
-     * @param bool       $parsing
      */
-    public function __construct(array $args = null, bool $parsing = true)
+    public function __construct(array $args = null)
     {
-        parent::__construct([], false);
-
-        $this->collectInfo($args);
-
-        if ($parsing && $args) {
-            $this->doParse($this->flags);
-        }
-    }
-
-    /**
-     * @param array $args
-     */
-    protected function doParse(array $args): void
-    {
-        [
-            $this->args,
-            $this->sOpts,
-            $this->lOpts
-        ] = Flags::parseArray($args);
-
-        // find command name
-        $this->command = $this->findCommandName();
+        parent::__construct($args);
     }
 }

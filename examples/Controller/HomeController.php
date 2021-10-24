@@ -204,7 +204,7 @@ class HomeController extends Controller
      */
     public function artFontCommand(FlagsParser $fs): int
     {
-        $name = $this->input->getLongOpt('font', '404');
+        $name = $fs->getOpt('font', '404');
 
         if (!ArtFont::isInternalFont($name)) {
             return $this->output->liteError("Your input font name: $name, is not exists. Please use '-h' see allowed.");

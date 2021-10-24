@@ -44,9 +44,8 @@ class Input extends AbstractInput
      * Input constructor.
      *
      * @param null|array $args
-     * @param bool       $parsing
      */
-    public function __construct(array $args = null, bool $parsing = true)
+    public function __construct(array $args = null)
     {
         if (null === $args) {
             $args = $_SERVER['argv'];
@@ -54,35 +53,6 @@ class Input extends AbstractInput
 
         $this->inputStream = Cli::getInputStream();
         $this->collectInfo($args);
-
-        if ($parsing) {
-            $this->doParse($this->flags);
-        }
-    }
-
-    /**
-     * re-parse args/opts from given args
-     *
-     * @param array $args
-     */
-    public function parse(array $args): void
-    {
-        $this->doParse($args);
-    }
-
-    /**
-     * @param array $args
-     */
-    protected function doParse(array $args): void
-    {
-        [
-            $this->args,
-            $this->sOpts,
-            $this->lOpts
-        ] = Flags::parseArgv($args);
-
-        // find command name
-        $this->command = $this->findCommandName();
     }
 
     public function resetInputStream(): void

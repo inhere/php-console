@@ -9,8 +9,6 @@
 
 namespace Inhere\Console\IO;
 
-use Inhere\Console\Concern\InputArgumentsTrait;
-use Inhere\Console\Concern\InputOptionsTrait;
 use Inhere\Console\Contract\InputInterface;
 use Toolkit\PFlag\FlagsParser;
 use Toolkit\PFlag\SFlags;
@@ -29,8 +27,6 @@ use function trim;
  */
 abstract class AbstractInput implements InputInterface
 {
-    use InputArgumentsTrait, InputOptionsTrait;
-
     /**
      * Global flags parser
      *
@@ -141,40 +137,6 @@ abstract class AbstractInput implements InputInterface
 
         // full script
         $this->fullScript = implode(' ', $rawFlags);
-    }
-
-    /**
-     * find command name, it is first argument.
-     * TIP: will reset args data after founded.
-     */
-    public function findCommandName(): string
-    {
-        if (!isset($this->args[0])) {
-            return '';
-        }
-
-        $command = '';
-        $newArgs = [];
-        foreach ($this->args as $key => $value) {
-            if ($key === 0) {
-                $command = trim($value);
-            } elseif (is_int($key)) {
-                $newArgs[] = $value;
-            } else {
-                $newArgs[$key] = $value;
-            }
-        }
-
-        if ($command) {
-            $this->args = $newArgs;
-        }
-
-        return $command;
-    }
-
-    public function popFirstArg()
-    {
-        return array_shift($this->args);
     }
 
     /**

@@ -34,7 +34,6 @@ use function is_subclass_of;
 use function ksort;
 use function sprintf;
 use function str_replace;
-use function strpos;
 use function strtr;
 use const PHP_EOL;
 use const PHP_OS;
@@ -174,14 +173,13 @@ trait ApplicationHelpTrait
      */
     public function showCommandList(): void
     {
-        /** @var Input $input */
-        $input = $this->input;
+        $flags = $this->flags;
         // has option: --auto-completion
-        $autoComp = $input->getOpt('auto-completion');
+        $autoComp = $flags->getOpt('auto-completion');
         // has option: --shell-env
-        $shellEnv = (string)$input->getLongOpt('shell-env', '');
+        $shellEnv = $flags->getOpt('shell-env');
         // input is an path: /bin/bash
-        if ($shellEnv && strpos($shellEnv, '/') !== false) {
+        if ($shellEnv && str_contains($shellEnv, '/')) {
             $shellEnv = basename($shellEnv);
         }
 
@@ -193,13 +191,11 @@ trait ApplicationHelpTrait
 
         $this->logf(Console::VERB_DEBUG, 'Display the application commands list');
 
-        $router = $this->getRouter();
-
-        $hasGroup    = $hasCommand = false;
-        $groupArr    = $commandArr = [];
-        $placeholder = 'No description of the command';
+        $hasGroup = $hasCommand = false;
+        $groupArr = $commandArr = [];
 
         // all console groups/controllers
+        $router = $this->getRouter();
         if ($groups = $router->getControllers()) {
             $hasGroup = true;
             ksort($groups);
@@ -217,6 +213,7 @@ trait ApplicationHelpTrait
             $commandArr[] = PHP_EOL . '- <bold>Alone Commands</bold>';
         }
 
+        $placeholder = 'No description of the command';
         foreach ($groups as $name => $info) {
             $options    = $info['options'];
             $controller = $info['handler'];
@@ -319,7 +316,7 @@ trait ApplicationHelpTrait
 
         // info
         $glue    = ' ';
-        $genFile = $input->getOpt('gen-file', 'none');
+        $genFile = $this->flags->getOpt('gen-file', 'none');
         $tplDir  = dirname(__DIR__, 2) . '/resource/templates';
 
         if ($shellEnv === 'bash') {
@@ -341,7 +338,7 @@ trait ApplicationHelpTrait
         }
 
         // new: support custom tpl file for gen completion script
-        $userTplFile = $input->getOpt('tpl-file');
+        $userTplFile = $this->flags->getOpt('tpl-file');
         if ($userTplFile && file_exists($userTplFile)) {
             $tplFile = $userTplFile;
         }

@@ -279,7 +279,7 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
 
             $command = $first;
             array_shift($args);
-            $this->input->popFirstArg();
+            // $this->input->popFirstArg();
         }
 
         // update subcommand
