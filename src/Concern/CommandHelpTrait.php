@@ -140,8 +140,8 @@ trait CommandHelpTrait
 
         $help['Usage:'] = "$path [--options ...] [arguments ...]";
 
-        $help['Options:']  = FormatUtil::alignOptions($fs->getOptsHelpData());
-        $help['Argument:'] = $fs->getArgsHelpData();
+        $help['Options:']  = FormatUtil::alignOptions($fs->getOptsHelpLines());
+        $help['Argument:'] = $fs->getArgsHelpLines();
         $help['Example:']  = $fs->getExampleHelp();
 
         $help['More Help:'] = $fs->getMoreHelp();
@@ -152,7 +152,7 @@ trait CommandHelpTrait
 
         // attached to console app
         if ($app = $this->getApp()) {
-            $help['Global Options:'] = FormatUtil::alignOptions($app->getFlags()->getOptsHelpData());
+            $help['Global Options:'] = FormatUtil::alignOptions($app->getFlags()->getOptsHelpLines());
         }
 
         $this->output->mList($help, [

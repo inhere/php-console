@@ -51,9 +51,10 @@ class GlobalOption
      */
     private static $options = [
         'debug'          => [
-            'type'   => FlagType::INT,
-            'desc'   => 'Setting the runtime log debug level(quiet 0 - 5 crazy)',
-            'envVar' => Console::DEBUG_ENV_KEY,
+            'type'    => FlagType::INT,
+            'desc'    => 'Setting the runtime log debug level, quiet 0 - crazy 5',
+            'envVar'  => Console::DEBUG_ENV_KEY,
+            'default' => Console::VERB_ERROR,
         ],
         'ishell'         => 'bool;Run application an interactive shell environment',
         'profile'        => 'bool;Display timing and memory usage information',
@@ -104,7 +105,10 @@ class GlobalOption
      */
     protected static $groupOptions = [
         // '--help'          => 'bool;Display this help message;;;h',
-        self::SHOW_DISABLED => 'string;Whether display disabled commands',
+        self::SHOW_DISABLED => [
+            'hidden' => true,
+            'desc'   => 'Whether display disabled commands'
+        ],
     ];
 
     /**

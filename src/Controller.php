@@ -40,6 +40,7 @@ use function sprintf;
 use function substr;
 use function trim;
 use function ucfirst;
+use function vdump;
 
 /**
  * Class Controller
@@ -520,7 +521,7 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
      */
     protected function beforeRenderCommandHelp(array &$help): void
     {
-        $help['Group Options:'] = FormatUtil::alignOptions($this->flags->getOptsHelpData());
+        $help['Group Options:'] = FormatUtil::alignOptions($this->flags->getOptsHelpLines());
     }
 
     /**

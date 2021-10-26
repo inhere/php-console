@@ -160,10 +160,10 @@ final class FormatUtil
             }
 
             // padding length equals to '-h, '
-            if (!strpos($name, ',')) {
+            if (!str_contains($name, ',')) {
                 $name = '    ' . $name;
             } else {
-                $name = str_replace([' ', ','], ['', ', '], $name);
+                $name = str_replace([',-'], [', -'], $name);
             }
 
             $formatted[$name] = $des;

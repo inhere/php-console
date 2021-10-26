@@ -165,7 +165,7 @@ trait ControllerHelpTrait
 
         $globalOptions = [];
         if ($app = $this->getApp()) {
-            $globalOptions = $app->getFlags()->getOptsHelpData();
+            $globalOptions = $app->getFlags()->getOptsHelpLines();
         }
 
         $this->output->startBuffer();
@@ -175,7 +175,7 @@ trait ControllerHelpTrait
             $this->output->writef("<comment>Alias:</comment> %s\n", implode(',', $aliases));
         }
 
-        $groupOptions = $this->flags->getOptsHelpData();
+        $groupOptions = $this->flags->getOptsHelpLines();
         $this->output->mList([
             'Usage:'              => $usage,
             //'Group Name:' => "<info>$sName</info>",
