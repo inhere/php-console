@@ -13,6 +13,7 @@ use Toolkit\Cli\Style;
 use Inhere\Console\Console;
 use Inhere\Console\Concern\FormatOutputAwareTrait;
 use Toolkit\Cli\Cli;
+use Toolkit\FsUtil\File;
 
 /**
  * Class Output
@@ -128,6 +129,14 @@ class Output extends AbstractOutput
     public function read(string $question = '', bool $nl = false): string
     {
         return Console::read($question, $nl);
+    }
+
+    /**
+     * @return string
+     */
+    public function readAll(): string
+    {
+        return File::streamReadAll($this->outputStream);
     }
 
     /**

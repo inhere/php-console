@@ -38,7 +38,7 @@ class Input extends AbstractInput
      *
      * @var resource
      */
-    protected $inputStream;
+    protected $stream;
 
     /**
      * Input constructor.
@@ -51,13 +51,8 @@ class Input extends AbstractInput
             $args = $_SERVER['argv'];
         }
 
-        $this->inputStream = Cli::getInputStream();
+        $this->stream = Cli::getInputStream();
         $this->collectInfo($args);
-    }
-
-    public function resetInputStream(): void
-    {
-        $this->inputStream = Cli::getInputStream();
     }
 
     /**
@@ -89,6 +84,14 @@ class Input extends AbstractInput
     }
 
     /**
+     * @return string
+     */
+    public function readAll(): string
+    {
+        return File::streamReadAll($this->stream);
+    }
+
+    /**
      * Read input information
      *
      * @param string $question 若不为空，则先输出文本消息
@@ -99,10 +102,23 @@ class Input extends AbstractInput
     public function readln(string $question = '', bool $nl = false): string
     {
         if ($question) {
-            fwrite($this->inputStream, $question . ($nl ? "\n" : ''));
+            fwrite($this->stream, $question . ($nl ? "\n" : ''));
         }
 
-        return File::streamFgets($this->inputStream);
+        return File::streamFgets($this->stream);
+    }
+
+    /**
+     * @return resource
+     */
+    public function getInputStream()
+    {
+        return $this->stream;
+    }
+
+    public function resetInputStream(): void
+    {
+        $this->stream = Cli::getInputStream();
     }
 
     /***********************************************************************************
@@ -128,9 +144,9 @@ class Input extends AbstractInput
     /**
      * @return resource
      */
-    public function getInputStream()
+    public function getStream()
     {
-        return $this->inputStream;
+        return $this->stream;
     }
 
     /**
