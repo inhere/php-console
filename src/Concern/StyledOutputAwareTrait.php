@@ -60,12 +60,12 @@ use function substr;
  *
  * @method Generator counterTxt($msg = 'Pending ', $ended = false)
  *
- * @method confirm(string $question, bool $default = true): bool
- * @method unConfirm(string $question, bool $default = true): bool
+ * @method bool confirm(string $question, bool $default = true)
+ * @method bool unConfirm(string $question, bool $default = true)
  * @method string select(string $description, $options, $default = null, bool $allowExit = true, array $opts = [])
- * @method checkbox(string $description, $options, $default = null, bool $allowExit = true): array
- * @method ask(string $question, string $default = '', Closure $validator = null): string
- * @method askPassword(string $prompt = 'Enter Password:'): string
+ * @method array checkbox(string $description, $options, $default = null, bool $allowExit = true)
+ * @method string ask(string $question, string $default = '', Closure $validator = null)
+ * @method string askPassword(string $prompt = 'Enter Password:')
  * @see Interact
  */
 trait StyledOutputAwareTrait

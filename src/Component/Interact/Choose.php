@@ -11,8 +11,11 @@ namespace Inhere\Console\Component\Interact;
 
 use Inhere\Console\Console;
 use Inhere\Console\Util\Show;
+use Toolkit\Cli\Cli;
 use function array_key_exists;
+use function array_keys;
 use function explode;
+use function implode;
 use function is_array;
 use function trim;
 
@@ -51,7 +54,7 @@ class Choose extends SingleSelect
 
         // If default option is error
         if (null !== $default && !isset($options[$default])) {
-            Show::error("The default option [{$default}] don't exists.", true);
+            Show::error("The default option [$default] don't exists.", true);
         }
 
         if ($allowExit) {
@@ -75,6 +78,7 @@ class Choose extends SingleSelect
 
         // error, allow try again once.
         if (!array_key_exists($r, $options)) {
+            Cli::warn('[WARN] input must in the list: ' . implode(',', array_keys($options)));
             goto beginChoice;
         }
 

@@ -19,11 +19,13 @@ use function array_keys;
 use function array_merge;
 use function array_shift;
 use function explode;
+use function get_class;
 use function implode;
 use function is_array;
 use function is_bool;
 use function is_int;
 use function is_numeric;
+use function is_object;
 use function is_scalar;
 use function rtrim;
 use function str_repeat;
@@ -272,6 +274,8 @@ final class FormatUtil
                 }
 
                 $value = rtrim($temp, ' ,') . ']';
+            // } elseif (is_object($value)) {
+            //     $value = get_class($value);
             } elseif (is_bool($value)) {
                 $value = $value ? '(True)' : '(False)';
             } else { // to string.
