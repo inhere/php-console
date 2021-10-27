@@ -32,7 +32,7 @@ trait FormatOutputAwareTrait
     {
         return Console::write($messages, $nl, $quit, array_merge([
             'flush'  => true,
-            'stream' => $this->outputStream,
+            'stream' => $this->getOutputStream(),
         ], $opts));
     }
 
