@@ -9,21 +9,15 @@
 
 namespace Inhere\Console\IO;
 
+use Inhere\Console\IO\Input\StreamInput;
 use Toolkit\Cli\Cli;
-use Toolkit\Cli\Flags;
-use Toolkit\Cli\Helper\FlagHelper;
-use Toolkit\FsUtil\File;
-use function array_map;
-use function fwrite;
-use function implode;
-use function preg_match;
 
 /**
- * Class Input - The input information. by parse global var $argv.
+ * Class Input - The std input.
  *
  * @package Inhere\Console\IO
  */
-class Input extends AbstractInput
+class Input extends StreamInput
 {
     /**
      * The real command ID(group:command)
@@ -32,13 +26,6 @@ class Input extends AbstractInput
      * @var string
      */
     protected $commandId = '';
-
-    /**
-     * Default is STDIN
-     *
-     * @var resource
-     */
-    protected $stream;
 
     /**
      * Input constructor.
@@ -51,61 +38,8 @@ class Input extends AbstractInput
             $args = $_SERVER['argv'];
         }
 
-        $this->stream = Cli::getInputStream();
+        parent::__construct(Cli::getInputStream());
         $this->collectInfo($args);
-    }
-
-    /**
-     * @return string
-     */
-    public function toString(): string
-    {
-        $tokens = array_map([$this, 'tokenEscape'], $this->tokens);
-
-        return implode(' ', $tokens);
-    }
-
-    /**
-     * @param string $token
-     *
-     * @return string
-     */
-    protected function tokenEscape(string $token): string
-    {
-        if (preg_match('{^(-[^=]+=)(.+)}', $token, $match)) {
-            return $match[1] . FlagHelper::escapeToken($match[2]);
-        }
-
-        if ($token && $token[0] !== '-') {
-            return FlagHelper::escapeToken($token);
-        }
-
-        return $token;
-    }
-
-    /**
-     * @return string
-     */
-    public function readAll(): string
-    {
-        return File::streamReadAll($this->stream);
-    }
-
-    /**
-     * Read input information
-     *
-     * @param string $question 若不为空，则先输出文本消息
-     * @param bool   $nl       true 会添加换行符 false 原样输出，不添加换行符
-     *
-     * @return string
-     */
-    public function readln(string $question = '', bool $nl = false): string
-    {
-        if ($question) {
-            fwrite($this->stream, $question . ($nl ? "\n" : ''));
-        }
-
-        return File::streamFgets($this->stream);
     }
 
     /**
@@ -139,14 +73,6 @@ class Input extends AbstractInput
     public function getFullCommand(): string
     {
         return $this->scriptFile . ' ' . $this->getCommandPath();
-    }
-
-    /**
-     * @return resource
-     */
-    public function getStream()
-    {
-        return $this->stream;
     }
 
     /**

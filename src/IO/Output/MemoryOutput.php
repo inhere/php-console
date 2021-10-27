@@ -23,6 +23,9 @@ class MemoryOutput extends StreamOutput
         parent::__construct(fopen('php://memory', 'rwb'));
     }
 
+    /**
+     * @return string
+     */
     public function getBuffer(): string
     {
         return '';

@@ -25,6 +25,8 @@ class InputTest extends TestCase
 
         $this->assertSame('./bin/app', $in->getScriptFile());
         $this->assertSame('app', $in->getScriptName());
-        $this->assertSame('cmd', $in->getCommand());
+        // $this->assertSame('cmd', $in->getCommand());
+        $this->assertEquals('cmd val0 val1', $in->getFullScript());
+        $this->assertEquals("'./bin/app' cmd val0 val1", $in->toString());
     }
 }

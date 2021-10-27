@@ -66,7 +66,7 @@ class TempStream
     }
 
     /**
-     * @param string|int $string
+     * @param string|int|mixed $string
      */
     public static function write($string): void
     {

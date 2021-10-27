@@ -40,4 +40,9 @@ interface InputInterface
      * Whether the stream is an interactive terminal
      */
     public function isInteractive(): bool;
+
+    /**
+     * @return string
+     */
+    public function toString(): string;
 }

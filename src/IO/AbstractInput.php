@@ -10,14 +10,17 @@
 namespace Inhere\Console\IO;
 
 use Inhere\Console\Contract\InputInterface;
+use Toolkit\Cli\Helper\FlagHelper;
 use Toolkit\PFlag\FlagsParser;
 use Toolkit\PFlag\SFlags;
+use function array_map;
 use function array_shift;
 use function basename;
 use function getcwd;
 use function implode;
 use function is_int;
 use function is_string;
+use function preg_match;
 use function trim;
 
 /**
@@ -111,7 +114,33 @@ abstract class AbstractInput implements InputInterface
     /**
      * @return string
      */
-    abstract public function toString(): string;
+    public function toString(): string
+    {
+        if (!$this->tokens) {
+            return '';
+        }
+
+        $tokens = array_map([$this, 'tokenEscape'], $this->tokens);
+        return implode(' ', $tokens);
+    }
+
+    /**
+     * @param string $token
+     *
+     * @return string
+     */
+    protected function tokenEscape(string $token): string
+    {
+        if (preg_match('{^(-[^=]+=)(.+)}', $token, $match)) {
+            return $match[1] . FlagHelper::escapeToken($match[2]);
+        }
+
+        if ($token && $token[0] !== '-') {
+            return FlagHelper::escapeToken($token);
+        }
+
+        return $token;
+    }
 
     /**
      * @param array $rawFlags

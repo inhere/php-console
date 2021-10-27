@@ -11,6 +11,7 @@ namespace Inhere\Console\IO\Input;
 
 use Inhere\Console\IO\Input;
 use Toolkit\Cli\Flags;
+use function is_int;
 
 /**
  * Class ArrayInput
@@ -22,10 +23,19 @@ class ArrayInput extends Input
     /**
      * Input constructor.
      *
-     * @param null|array $args
+     * @param array $arr
      */
-    public function __construct(array $args = null)
+    public function __construct(array $arr = [])
     {
+        $args = [];
+        foreach ($arr as $key => $val) {
+            if (!is_int($key)) {
+                $args[] = $key;
+            }
+
+            $args[] = $val;
+        }
+
         parent::__construct($args);
     }
 }

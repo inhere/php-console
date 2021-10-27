@@ -10,7 +10,6 @@
 namespace Inhere\Console\IO\Input;
 
 use Inhere\Console\IO\Input;
-use Toolkit\Cli\Flags;
 use Toolkit\Cli\Util\LineParser;
 
 /**
@@ -28,6 +27,7 @@ class StringInput extends Input
     public function __construct(string $line)
     {
         $flags = LineParser::parseIt($line);
+
         parent::__construct($flags);
     }
 }
