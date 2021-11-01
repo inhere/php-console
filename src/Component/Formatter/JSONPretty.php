@@ -23,6 +23,7 @@ use function rtrim;
 use function str_contains;
 use function str_ends_with;
 use function trim;
+use function vdump;
 
 /**
  * class JSONPretty
@@ -33,6 +34,21 @@ class JSONPretty extends AbstractObj
         'keyName' => 'mga',
         'strVal'  => 'info',
         'intVal'  => 'cyan',
+        'boolVal' => 'red',
+    ];
+
+    public const THEME_ONE = [
+        'keyName' => 'blue',
+        'strVal'  => 'cyan',
+        'intVal'  => 'red',
+        'boolVal' => 'green',
+    ];
+
+    // json.cn
+    public const THEME_TWO = [
+        'keyName' => 'mga1',
+        'strVal'  => 'info',
+        'intVal'  => 'hiBlue',
         'boolVal' => 'red',
     ];
 
@@ -91,8 +107,8 @@ class JSONPretty extends AbstractObj
                 $val = rtrim($val, ',');
             }
 
-            // bool val
-            if ($val === 'true' || $val === 'false') {
+            // NULL or BOOL val
+            if ($val === 'null' || $val === 'true' || $val === 'false') {
                 $val = ColorTag::wrap($val, $this->theme['boolVal']);
             } elseif (is_numeric($val)) { // number
                 $val = ColorTag::wrap($val, $this->theme['intVal']);
@@ -100,7 +116,7 @@ class JSONPretty extends AbstractObj
                 $val = ColorTag::wrap($val, $this->theme['strVal']);
             }
 
-            $buf->writeln($key . ': ' . $val . ($hasEndComma ?  ',' : ''));
+            $buf->writeln($key . ': ' . $val . ($hasEndComma ? ',' : ''));
         }
 
         return $buf->getAndClear();

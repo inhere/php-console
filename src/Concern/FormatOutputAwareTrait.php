@@ -13,6 +13,7 @@ use Inhere\Console\Console;
 use Toolkit\Stdlib\Helper\JsonHelper;
 use Toolkit\Stdlib\Php;
 use function array_merge;
+use function count;
 use function json_encode;
 
 /**
@@ -36,6 +37,20 @@ trait FormatOutputAwareTrait
         ], $opts));
     }
 
+    // public function print(...$args): void
+    // {
+    //     if (count($args) > 1) {
+    //         echo ;
+    //     }
+    //
+    //
+    // }
+    //
+    // public function echo(...$args): void
+    // {
+    //     Console::printf($format, ...$args);
+    // }
+
     /**
      * @param string $format
      * @param mixed  ...$args
@@ -56,7 +71,7 @@ trait FormatOutputAwareTrait
 
     /**
      * @param string|mixed $text
-     * @param bool         $quit
+     * @param bool|int     $quit
      * @param array        $opts
      *
      * @return int
@@ -130,7 +145,7 @@ trait FormatOutputAwareTrait
      */
     public function dump(...$vars): void
     {
-        Console::write(Php::dumpVars(...$vars));
+        Console::writeRaw(Php::dumpVars(...$vars));
     }
 
     /**
@@ -138,6 +153,6 @@ trait FormatOutputAwareTrait
      */
     public function prints(...$vars): void
     {
-        Console::write(Php::printVars(...$vars));
+        Console::writeRaw(Php::printVars(...$vars));
     }
 }

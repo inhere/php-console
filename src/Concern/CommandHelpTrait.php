@@ -88,7 +88,7 @@ trait CommandHelpTrait
     public function parseCommentsVars(string $str): string
     {
         // not use vars
-        if (false === strpos($str, self::HELP_VAR_LEFT)) {
+        if (!str_contains($str, self::HELP_VAR_LEFT)) {
             return $str;
         }
 
