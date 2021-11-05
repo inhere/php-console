@@ -30,7 +30,7 @@ use Throwable;
 use Toolkit\PFlag\FlagsParser;
 use Toolkit\PFlag\SFlags;
 use Toolkit\Stdlib\Helper\PhpHelper;
-use Toolkit\Stdlib\Obj\ConfigObject;
+use Toolkit\Stdlib\Obj\DataObject;
 use function cli_set_process_title;
 use function error_get_last;
 use function function_exists;
@@ -91,7 +91,7 @@ abstract class AbstractHandler implements CommandHandlerInterface
     protected $processTitle = '';
 
     /**
-     * @var ConfigObject
+     * @var DataObject
      */
     protected $params;
 
@@ -461,9 +461,9 @@ abstract class AbstractHandler implements CommandHandlerInterface
     }
 
     /**
-     * @return ConfigObject
+     * @return DataObject
      */
-    public function getParams(): ConfigObject
+    public function getParams(): DataObject
     {
         if (!$this->params) {
             $this->initParams([]);
@@ -475,11 +475,11 @@ abstract class AbstractHandler implements CommandHandlerInterface
     /**
      * @param array $params
      *
-     * @return ConfigObject
+     * @return DataObject
      */
-    public function initParams(array $params): ConfigObject
+    public function initParams(array $params): DataObject
     {
-        $this->params = ConfigObject::new($params);
+        $this->params = DataObject::new($params);
         return $this->params;
     }
 
