@@ -49,6 +49,14 @@ trait InputOutputAwareTrait
     /**
      * @return string
      */
+    public function getWorkdir(): string
+    {
+        return $this->input->getWorkDir();
+    }
+
+    /**
+     * @return string
+     */
     public function getScriptName(): string
     {
         return $this->input->getScriptName();

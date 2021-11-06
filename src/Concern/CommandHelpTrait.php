@@ -33,6 +33,13 @@ trait CommandHelpTrait
     private $commentsVars;
 
     /**
+     * on display command help
+     *
+     * @var bool
+     */
+    protected $renderGlobalOption = false;
+
+    /**
      * @return array
      */
     public function getCommentsVars(): array
@@ -151,7 +158,7 @@ trait CommandHelpTrait
         $this->beforeRenderCommandHelp($help);
 
         // attached to console app
-        if ($app = $this->getApp()) {
+        if ($this->renderGlobalOption && ($app = $this->getApp())) {
             $help['Global Options:'] = FormatUtil::alignOptions($app->getFlags()->getOptsHelpLines());
         }
 
@@ -169,5 +176,13 @@ trait CommandHelpTrait
      */
     protected function beforeRenderCommandHelp(array &$help): void
     {
+    }
+
+    /**
+     * @param bool $renderGlobalOption
+     */
+    public function setRenderGlobalOption(bool $renderGlobalOption): void
+    {
+        $this->renderGlobalOption = $renderGlobalOption;
     }
 }

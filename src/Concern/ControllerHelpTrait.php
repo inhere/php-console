@@ -121,7 +121,7 @@ trait ControllerHelpTrait
             }
 
             // is a annotation tag
-            if (strpos($desc, '@') === 0) {
+            if (str_starts_with($desc, '@')) {
                 $desc = $defaultDes;
             }
 

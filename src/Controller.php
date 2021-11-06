@@ -40,7 +40,6 @@ use function sprintf;
 use function substr;
 use function trim;
 use function ucfirst;
-use function vdump;
 
 /**
  * Class Controller
