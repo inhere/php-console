@@ -99,7 +99,7 @@ trait ControllerHelpTrait
         $ref   = new ReflectionClass($this);
         $sName = lcfirst(self::getName() ?: $ref->getShortName());
 
-        if (!($classDes = self::getDescription())) {
+        if (!($classDes = self::getDesc())) {
             $classDes = PhpDoc::description($ref->getDocComment()) ?: 'No description for the command group';
         }
 

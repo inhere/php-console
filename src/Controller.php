@@ -556,7 +556,7 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
      * @param string $name
      *
      * @return string
-     * @description please use resolveAlias()
+     * @deprecated please use resolveAlias()
      */
     public function getRealCommandName(string $name): string
     {

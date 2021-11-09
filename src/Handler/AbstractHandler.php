@@ -66,6 +66,14 @@ abstract class AbstractHandler implements CommandHandlerInterface
      *
      * @var string
      */
+    protected static $desc = '';
+
+    /**
+     * command/controller description message
+     *
+     * @var string
+     * @deprecated please use {@see $desc}
+     */
     protected static $description = '';
 
     /**
@@ -614,15 +622,7 @@ abstract class AbstractHandler implements CommandHandlerInterface
      */
     public static function getDesc(): string
     {
-        return static::$description;
-    }
-
-    /**
-     * @return string
-     */
-    public static function getDescription(): string
-    {
-        return static::$description;
+        return static::$desc ?: static::$description;
     }
 
     /**
@@ -630,17 +630,25 @@ abstract class AbstractHandler implements CommandHandlerInterface
      */
     public static function setDesc(string $desc): void
     {
-        self::setDescription($desc);
+        if ($desc) {
+            static::$desc = $desc;
+        }
     }
 
     /**
-     * @param string $description
+     * @return string
      */
-    public static function setDescription(string $description): void
+    public static function getDescription(): string
     {
-        if ($description) {
-            static::$description = $description;
-        }
+        return self::getDesc();
+    }
+
+    /**
+     * @param string $desc
+     */
+    public static function setDescription(string $desc): void
+    {
+        self::setDesc($desc);
     }
 
     /**

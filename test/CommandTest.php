@@ -24,6 +24,6 @@ class CommandTest extends TestCase
         $c = new TestCommand(new Input(), new Output());
 
         $this->assertSame('test1', $c::getName());
-        $this->assertStringContainsString('desc', $c::getDescription());
+        $this->assertStringContainsString('desc', $c::getDesc());
     }
 }

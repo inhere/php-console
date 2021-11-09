@@ -218,7 +218,7 @@ trait ApplicationHelpTrait
             $options    = $info['options'];
             $controller = $info['handler'];
             /** @var AbstractHandler $controller */
-            $desc    = $controller::getDescription() ?: $placeholder;
+            $desc    = $controller::getDesc() ?: $placeholder;
             $aliases = $options['aliases'];
             $extra   = $aliases ? ColorTag::wrap(' (alias: ' . implode(',', $aliases) . ')', 'info') : '';
 
@@ -237,7 +237,7 @@ trait ApplicationHelpTrait
 
             /** @var AbstractHandler $command */
             if (is_subclass_of($command, CommandInterface::class)) {
-                $desc = $command::getDescription() ?: $placeholder;
+                $desc = $command::getDesc() ?: $placeholder;
             } elseif ($msg = $options['desc'] ?? '') {
                 $desc = $msg;
             } elseif (is_string($command)) {
