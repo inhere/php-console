@@ -13,8 +13,12 @@ use Inhere\Console\IO\AbstractInput;
 use InvalidArgumentException;
 use Toolkit\FsUtil\File;
 use Toolkit\Stdlib\OS;
+use function fclose;
+use function fopen;
 use function fwrite;
+use function stream_get_contents;
 use function stream_get_meta_data;
+use function stream_set_blocking;
 use function strpos;
 use const STDIN;
 
@@ -40,11 +44,13 @@ class StreamInput extends AbstractInput
     }
 
     /**
+     * @param bool $blocking
+     *
      * @return string
      */
-    public function readAll(): string
+    public function readAll(bool $blocking = true): string
     {
-        return File::streamReadAll($this->stream);
+        return File::streamReadAll($this->stream, $blocking);
     }
 
     /**

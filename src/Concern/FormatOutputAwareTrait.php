@@ -14,7 +14,9 @@ use Toolkit\Stdlib\Helper\JsonHelper;
 use Toolkit\Stdlib\Php;
 use function array_merge;
 use function count;
+use function implode;
 use function json_encode;
+use const PHP_EOL;
 
 /**
  * Class FormatOutputAwareTrait
@@ -45,11 +47,22 @@ trait FormatOutputAwareTrait
     //
     //
     // }
-    //
-    // public function echo(...$args): void
-    // {
-    //     Console::printf($format, ...$args);
-    // }
+
+    /**
+     * @param ...$args
+     */
+    public function echo(...$args): void
+    {
+        echo count($args) > 1 ? implode(' ', $args) : $args;
+    }
+
+    /**
+     * @param ...$args
+     */
+    public function echoln(...$args): void
+    {
+        echo (count($args) > 1 ? implode(' ', $args) : $args), PHP_EOL;
+    }
 
     /**
      * @param string $format

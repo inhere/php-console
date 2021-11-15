@@ -43,7 +43,7 @@ class Title extends MessageFormatter
         // list($sW, $sH) = Helper::getScreenSize();
         $width  = (int)$opts['width'];
         $char   = trim($opts['char']);
-        $indent = (int)$opts['indent'] >= 0 ? $opts['indent'] : 2;
+        $indent = (int)$opts['indent'] >= 0 ? $opts['indent'] : 0;
 
         $indentStr = '';
         if ($indent > 0) {
@@ -60,18 +60,19 @@ class Title extends MessageFormatter
         }
 
         // title position
+        $titleIndent = '';
         if ($tLength >= $width) {
             $titleIndent = Str::pad(self::CHAR_SPACE, $indent, self::CHAR_SPACE);
         } elseif ($opts['titlePos'] === self::POS_RIGHT) {
             $titleIndent = Str::pad(self::CHAR_SPACE, ceil($width - $tLength) + $indent, self::CHAR_SPACE);
         } elseif ($opts['titlePos'] === self::POS_MIDDLE) {
             $titleIndent = Str::pad(self::CHAR_SPACE, ceil(($width - $tLength) / 2) + $indent, self::CHAR_SPACE);
-        } else {
+        } elseif ($indent > 0) {
             $titleIndent = Str::pad(self::CHAR_SPACE, $indent, self::CHAR_SPACE);
         }
 
         $titleText = ColorTag::wrap($title, $opts['titleStyle']);
-        $titleLine = "$titleIndent{$titleText}\n";
+        $titleLine = "$titleIndent$titleText\n";
 
         $border = $indentStr . Str::pad($char, $width, $char);
 
