@@ -53,7 +53,7 @@ trait FormatOutputAwareTrait
      */
     public function echo(...$args): void
     {
-        echo count($args) > 1 ? implode(' ', $args) : $args;
+        echo count($args) > 1 ? implode(' ', $args) : $args[0];
     }
 
     /**
@@ -61,7 +61,7 @@ trait FormatOutputAwareTrait
      */
     public function echoln(...$args): void
     {
-        echo (count($args) > 1 ? implode(' ', $args) : $args), PHP_EOL;
+        echo (count($args) > 1 ? implode(' ', $args) : $args[0]), PHP_EOL;
     }
 
     /**

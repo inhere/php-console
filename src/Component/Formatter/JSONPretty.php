@@ -93,7 +93,7 @@ class JSONPretty extends AbstractObj
                 continue;
             }
 
-            [$key, $val] = explode(': ', $line);
+            [$key, $val] = explode(': ', $line, 2);
 
             // format key name.
             if ($keyTag = $this->theme['keyName']) {
