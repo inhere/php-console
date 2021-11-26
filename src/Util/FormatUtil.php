@@ -33,6 +33,7 @@ use function str_replace;
 use function strpos;
 use function trim;
 use function ucfirst;
+use function vdump;
 use function wordwrap;
 use const STR_PAD_RIGHT;
 
@@ -150,7 +151,6 @@ final class FormatUtil
 
         // e.g '-h, --help'
         $hasShort = (bool)strpos(implode('', array_keys($options)), ',');
-
         if (!$hasShort) {
             return $options;
         }
@@ -161,8 +161,8 @@ final class FormatUtil
                 continue;
             }
 
-            // padding length equals to '-h, '
-            if (!str_contains($name, ',')) {
+            // start with '--', padding length equals to '-h, '
+            if (isset($name[1]) && $name[1] === '-') {
                 $name = '    ' . $name;
             } else {
                 $name = str_replace([',-'], [', -'], $name);
