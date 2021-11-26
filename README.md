@@ -1,13 +1,14 @@
 # PHP Console
 
 [![License](https://img.shields.io/packagist/l/inhere/console.svg?style=flat-square)](LICENSE)
-[![Php Version](https://img.shields.io/badge/php-%3E=7.3.0-brightgreen.svg?maxAge=2592000)](https://packagist.org/packages/inhere/console)
+[![Php Version](https://img.shields.io/badge/php-%3E=8.0-brightgreen.svg?maxAge=2592000)](https://packagist.org/packages/inhere/console)
 [![Latest Stable Version](http://img.shields.io/packagist/v/inhere/console.svg)](https://packagist.org/packages/inhere/console)
 [![Github Actions Status](https://github.com/inhere/php-console/workflows/Unit-tests/badge.svg)](https://github.com/inhere/php-console/actions)
+[![English](https://img.shields.io/badge/Readme-English-brightgreen.svg?maxAge=2592000)](README.en.md)
 
 简洁、功能全面的php命令行应用库。提供控制台参数解析, 命令运行，颜色风格输出, 用户信息交互, 特殊格式信息显示。
 
-> **[EN README](./README.md)**
+> NOTICE: Current v4.1+, require **PHP 8.0+**
 
 ## 命令行预览
 

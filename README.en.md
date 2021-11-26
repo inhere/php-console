@@ -1,15 +1,16 @@
 # PHP Console
 
 [![License](https://img.shields.io/packagist/l/inhere/console.svg?style=flat-square)](LICENSE)
-[![Php Version](https://img.shields.io/badge/php-%3E=7.3.0-brightgreen.svg?maxAge=2592000)](https://packagist.org/packages/inhere/console)
+[![Php Version](https://img.shields.io/badge/php-%3E=8.0-brightgreen.svg?maxAge=2592000)](https://packagist.org/packages/inhere/console)
 [![Latest Stable Version](http://img.shields.io/packagist/v/inhere/console.svg)](https://packagist.org/packages/inhere/console)
 [![Github Actions Status](https://github.com/inhere/php-console/workflows/Unit-tests/badge.svg)](https://github.com/inhere/php-console/actions)
+[![zh-CN readme](https://img.shields.io/badge/Readme-中文-brightgreen.svg?maxAge=2592000)](README.md)
 
 Full-featured php command line application library. 
 
 Provide console parameter parsing, command run, color style output, user information interaction, and special format information display.
 
-> **[中文README](./README.zh-CN.md)**
+> NOTICE: Current v4.1+, require **PHP 8.0+**
 
 ## Command line preview
 

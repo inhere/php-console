@@ -1,7 +1,12 @@
 # CHANGELOG
 
+## v4.1.x
+
+> require php 8.0+
+
 ## v4.0.x
 
+> require php 7.3+
 > begin at: 2020.08.21, branch `master`
 
 ## v3.1.21
