@@ -20,11 +20,11 @@ use Inhere\Console\Util\Helper;
  */
 class CorCommand extends Command
 {
-    protected static $name = 'cor';
+    protected static string $name = 'cor';
 
-    protected static $description = 'a coroutine test command';
+    protected static string $description = 'a coroutine test command';
 
-    protected static $coroutine = true;
+    protected static bool $coroutine = true;
 
     /**
      * @return array

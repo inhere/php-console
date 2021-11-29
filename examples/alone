@@ -19,10 +19,10 @@ $ctrl->setDetached();
 
 try {
     exit($ctrl->run([$input->getCommand()]));
-} catch (\Exception $e) {
+} catch (Exception $e) {
     $message = Color::apply('error', $e->getMessage());
 
-    echo \sprintf("%s\nFile %s:%d\nTrace:\n%s\n",
+    echo sprintf("%s\nFile %s:%d\nTrace:\n%s\n",
         $message, $e->getFile(), $e->getLine(), $e->getTraceAsString()
     );
 }

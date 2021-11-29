@@ -11,9 +11,10 @@
  * @param int $total
  * @param string $msg
  * @param string $char
+ *
  * @return Generator
  */
-function progress_bar($total, $msg, $char = '=')
+function progress_bar(int $total, string $msg, string $char = '='): Generator
 {
     $finished = false;
 

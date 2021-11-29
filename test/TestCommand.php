@@ -20,9 +20,9 @@ use Inhere\Console\IO\Output;
  */
 class TestCommand extends Command
 {
-    protected static $name = 'test1';
+    protected static string $name = 'test1';
 
-    protected static $description = 'command description message';
+    protected static string $description = 'command description message';
 
     /**
      * do execute command
@@ -32,7 +32,7 @@ class TestCommand extends Command
      *
      * @return int|mixed
      */
-    protected function execute(Input $input, Output $output)
+    protected function execute(Input $input, Output $output): mixed
     {
         return __METHOD__;
     }

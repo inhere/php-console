@@ -8,19 +8,19 @@
  */
 
 // Boolean true constants
-define('yes', true);
-define('ok', true);
-define('okay', true);
-define('✔', true);
-define('correct', true);
-define('👍', true);
+const yes     = true;
+const ok      = true;
+const okay    = true;
+const ✔       = true;
+const correct = true;
+const 👍      = true;
 
 // Boolean false constants
-define('no', false);
-define('not', false);
-define('✘', false);
-define('wrong', false);
-define('👎', false);
+const no    = false;
+const not   = false;
+const ✘     = false;
+const wrong = false;
+const 👎    = false;
 
 // Constants with a random boolean value
 define('maybe', (bool)random_int(0, 1));

@@ -27,9 +27,9 @@ use function file_get_contents;
  */
 class ShowController extends Controller
 {
-    protected static $name = 'show';
+    protected static string $name = 'show';
 
-    protected static $description = 'there are some demo commands for show format data';
+    protected static string $description = 'there are some demo commands for show format data';
 
     public static function commandAliases(): array
     {

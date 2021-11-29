@@ -14,6 +14,7 @@ use Inhere\Console\Controller;
 use Inhere\Console\Util\Interact;
 use Inhere\Console\Util\ProgressBar;
 use Inhere\Console\Util\Show;
+use JetBrains\PhpStorm\NoReturn;
 use LogicException;
 use RuntimeException;
 use Toolkit\Cli\Cli;
@@ -31,9 +32,9 @@ use function trigger_error;
  */
 class HomeController extends Controller
 {
-    protected static $name = 'home';
+    protected static string $name = 'home';
 
-    protected static $description = 'This is a demo command controller. there are some command usage examples(2)';
+    protected static string $description = 'This is a demo command controller. there are some command usage examples(2)';
 
     /**
      * @return array
@@ -151,6 +152,7 @@ class HomeController extends Controller
     /**
      * a command for test trigger error
      */
+    #[NoReturn]
     public function errorCommand(): void
     {
         trigger_error('oo, this is a runtime error!', E_USER_ERROR);

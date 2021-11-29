@@ -25,7 +25,7 @@ trait InputArgumentsTrait
      *
      * @var array
      */
-    protected $args = [];
+    protected array $args = [];
 
     /**
      * Bind an name for argument index
@@ -37,14 +37,14 @@ trait InputArgumentsTrait
      *
      * @var array
      */
-    protected $binds = [];
+    protected array $binds = [];
 
     /**
      * @param string $name
      * @param int    $index
      * @return self
      */
-    public function bindArgument(string $name, int $index)
+    public function bindArgument(string $name, int $index): static
     {
         $this->binds[$name] = $index;
         return $this;
@@ -95,11 +95,11 @@ trait InputArgumentsTrait
     }
 
     /**
-     * @param string|int $name
+     * @param int|string $name
      *
      * @return bool
      */
-    public function hasArg($name): bool
+    public function hasArg(int|string $name): bool
     {
         // get real index key
         $key = $this->binds[$name] ?? $name;
@@ -110,12 +110,12 @@ trait InputArgumentsTrait
     /**
      * get Argument
      *
-     * @param null|int|string $name
-     * @param mixed           $default
+     * @param int|string|null $name
+     * @param mixed|null $default
      *
      * @return mixed
      */
-    public function getArgument($name, $default = null)
+    public function getArgument(int|string|null $name, mixed $default = null): mixed
     {
         return $this->get($name, $default);
     }
@@ -123,12 +123,12 @@ trait InputArgumentsTrait
     /**
      * get argument
      *
-     * @param null|int|string $name
-     * @param mixed           $default
+     * @param int|string|null $name
+     * @param mixed|null $default
      *
      * @return mixed
      */
-    public function getArg($name, $default = null)
+    public function getArg(int|string|null $name, mixed $default = null): mixed
     {
         return $this->get($name, $default);
     }
@@ -136,12 +136,12 @@ trait InputArgumentsTrait
     /**
      * get Argument
      *
-     * @param null|int|string $name
-     * @param mixed           $default
+     * @param int|string|null $name
+     * @param mixed|null $default
      *
      * @return mixed
      */
-    public function get($name, $default = null)
+    public function get(int|string|null $name, mixed $default = null): mixed
     {
         // get real index key
         $key = $this->binds[$name] ?? $name;
@@ -157,7 +157,7 @@ trait InputArgumentsTrait
      *
      * @return mixed
      */
-    public function getRequiredArg($name, string $errMsg = '')
+    public function getRequiredArg(int|string $name, string $errMsg = ''): mixed
     {
         // get real index key
         $key = $this->binds[$name] ?? $name;
@@ -166,8 +166,8 @@ trait InputArgumentsTrait
         }
 
         if (!$errMsg) {
-            $errName = is_int($key) ? "'{$name}'(position#{$key})" : "'{$name}'";
-            $errMsg  = "The argument {$errName} is required";
+            $errName = is_int($key) ? "'$name'(position#$key)" : "'$name'";
+            $errMsg  = "The argument $errName is required";
         }
 
         throw new PromptException($errMsg);

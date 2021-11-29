@@ -10,7 +10,7 @@
 class Spinner
 {
     /** @var int $speed ms */
-    public $speed = 100;
+    public int $speed = 100;
 
     public static function create($speed): void
     {
@@ -19,12 +19,12 @@ class Spinner
 
 Swoole\Runtime::enableCoroutine();
 
-function spinner()
+function spinner(): Generator
 {
     $chars = '-\|/';
     $index = 0;
 
-    yield function () use ($chars, $index): void {
+    yield static function () use ($chars, $index): void {
         while (1) {
             printf("\x0D\x1B[2K %s handling ...", $chars[$index]);
 

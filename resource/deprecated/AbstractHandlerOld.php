@@ -23,7 +23,7 @@ class AbstractHandlerOld
     /**
      * @var InputDefinition|null
      */
-    protected $definition;
+    protected ?InputDefinition $definition;
 
     /**
      * @return InputDefinition
@@ -123,7 +123,7 @@ class AbstractHandlerOld
                 } elseif ($conf['default'] !== null) {
                     $opts[$name] = $conf['default'];
                 } elseif ($conf['required']) {
-                    $missingOpts[] = "--{$name}" . ($srt ? "|-{$srt}" : '');
+                    $missingOpts[] = "--$name" . ($srt ? "|-$srt" : '');
                 }
             }
         }

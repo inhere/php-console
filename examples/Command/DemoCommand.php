@@ -21,9 +21,9 @@ use Toolkit\PFlag\FlagType;
  */
 class DemoCommand extends Command
 {
-    protected static $name = 'demo';
+    protected static string $name = 'demo';
 
-    protected static $description = 'this is a demo alone command. but use Definition instead of annotations';
+    protected static string $description = 'this is a demo alone command. but use Definition instead of annotations';
 
     /**
      * {@inheritDoc}

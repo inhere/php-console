@@ -22,9 +22,9 @@ use function preg_match;
  */
 class InteractController extends Controller
 {
-    protected static $name = 'interact';
+    protected static string $name = 'interact';
 
-    protected static $description = 'there are some demo commands for use interactive method';
+    protected static string $description = 'there are some demo commands for use interactive method';
 
     public static function aliases(): array
     {

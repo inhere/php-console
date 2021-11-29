@@ -21,9 +21,9 @@ use function is_resource;
  */
 class ProcessController extends Controller
 {
-    protected static $name = 'process';
+    protected static string $name = 'process';
 
-    protected static $description = 'Some simple process to create and use examples';
+    protected static string $description = 'Some simple process to create and use examples';
 
     protected static function commandAliases(): array
     {

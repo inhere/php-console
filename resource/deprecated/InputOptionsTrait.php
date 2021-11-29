@@ -24,14 +24,14 @@ trait InputOptionsTrait
      *
      * @var array
      */
-    protected $sOpts = [];
+    protected array $sOpts = [];
 
     /**
      * Input long-opts data
      *
      * @var array
      */
-    protected $lOpts = [];
+    protected array $lOpts = [];
 
     /***********************************************************************************
      * long/short options (eg: -d --help)
@@ -46,7 +46,7 @@ trait InputOptionsTrait
      *
      * @return bool|mixed|null
      */
-    public function getOpt(string $name, $default = null)
+    public function getOpt(string $name, $default = null): mixed
     {
         // It's long-opt
         if (isset($name[1])) {
@@ -60,11 +60,11 @@ trait InputOptionsTrait
      * Alias of the getOpt()
      *
      * @param string $name
-     * @param mixed $default
+     * @param mixed|null $default
      *
      * @return mixed
      */
-    public function getOption(string $name, $default = null)
+    public function getOption(string $name, mixed $default = null): mixed
     {
         return $this->getOpt($name, $default);
     }
@@ -78,7 +78,7 @@ trait InputOptionsTrait
      *
      * @return mixed
      */
-    public function getRequiredOpt(string $name, string $errMsg = '')
+    public function getRequiredOpt(string $name, string $errMsg = ''): mixed
     {
         if (null !== ($val = $this->getOpt($name))) {
             return $val;
@@ -134,7 +134,7 @@ trait InputOptionsTrait
      *
      * @return mixed|null
      */
-    public function getShortOpt(string $name, $default = null)
+    public function getShortOpt(string $name, $default = null): mixed
     {
         return $this->sOpts[$name] ?? $default;
     }
@@ -163,7 +163,7 @@ trait InputOptionsTrait
      * @param string $name
      * @param mixed $value
      */
-    public function setSOpt(string $name, $value): void
+    public function setSOpt(string $name, mixed $value): void
     {
         $this->sOpts[$name] = $value;
     }
@@ -203,7 +203,7 @@ trait InputOptionsTrait
      *
      * @return mixed|null
      */
-    public function lOpt(string $name, $default = null)
+    public function lOpt(string $name, $default = null): mixed
     {
         return $this->lOpts[$name] ?? $default;
     }
@@ -216,7 +216,7 @@ trait InputOptionsTrait
      *
      * @return mixed|null
      */
-    public function getLongOpt(string $name, $default = null)
+    public function getLongOpt(string $name, $default = null): mixed
     {
         return $this->lOpts[$name] ?? $default;
     }
@@ -245,7 +245,7 @@ trait InputOptionsTrait
      * @param string $name
      * @param mixed $value
      */
-    public function setLOpt(string $name, $value): void
+    public function setLOpt(string $name, mixed $value): void
     {
         $this->lOpts[$name] = $value;
     }

@@ -23,10 +23,10 @@ try {
     $app->controller('home', HomeController::class);
 
     $subCmd = $input->getCommand();
-    $result = $app->dispatch('home:' . $subCmd, true);
+    $result = $app->dispatch('home:' . $subCmd, []);
 
     exit((int)$result);
-} catch (\Exception $e) {
+} catch (Exception $e) {
     $message = Color::apply('error', $e->getMessage());
 
     echo sprintf("%s\nFile %s:%d\nTrace:\n%s\n",

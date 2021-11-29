@@ -36,19 +36,19 @@ abstract class AbstractInput implements InputInterface
      *
      * @var FlagsParser|SFlags
      */
-    protected $gfs;
+    protected FlagsParser|SFlags $gfs;
 
     /**
      * Command flags parser
      *
      * @var FlagsParser|SFlags
      */
-    protected $fs;
+    protected FlagsParser|SFlags $fs;
 
     /**
      * @var string
      */
-    protected $pwd = '';
+    protected string $pwd = '';
 
     /**
      * The bin script file
@@ -56,7 +56,7 @@ abstract class AbstractInput implements InputInterface
      *
      * @var string
      */
-    protected $scriptFile = '';
+    protected string $scriptFile = '';
 
     /**
      * The bin script name
@@ -64,7 +64,7 @@ abstract class AbstractInput implements InputInterface
      *
      * @var string
      */
-    protected $scriptName = '';
+    protected string $scriptName = '';
 
     /**
      * the command name(Is first argument)
@@ -72,7 +72,7 @@ abstract class AbstractInput implements InputInterface
      *
      * @var string
      */
-    protected $command = '';
+    protected string $command = '';
 
     /**
      * the command name(Is first argument)
@@ -80,14 +80,14 @@ abstract class AbstractInput implements InputInterface
      *
      * @var string
      */
-    protected $subCommand = '';
+    protected string $subCommand = '';
 
     /**
      * eg `./examples/app home:useArg status=2 name=john arg0 -s=test --page=23`
      *
      * @var string
      */
-    protected $fullScript;
+    protected string $fullScript;
 
     /**
      * Raw input argv data.
@@ -95,14 +95,14 @@ abstract class AbstractInput implements InputInterface
      *
      * @var array
      */
-    protected $tokens;
+    protected array $tokens;
 
     /**
      * Same the $tokens but no $script
      *
      * @var array
      */
-    protected $flags = [];
+    protected array $flags = [];
 
     /**
      * @return string

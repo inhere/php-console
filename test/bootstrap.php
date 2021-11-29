@@ -10,18 +10,18 @@
 error_reporting(E_ALL | E_STRICT);
 date_default_timezone_set('Asia/Shanghai');
 
-spl_autoload_register(function ($class): void {
+spl_autoload_register(static function ($class): void {
     $file = null;
 
-    if (0 === strpos($class, 'Inhere\Console\Examples\\')) {
+    if (str_starts_with($class, 'Inhere\Console\Examples\\')) {
         $path = str_replace('\\', '/', substr($class, strlen('Inhere\Console\Examples\\')));
         $file = dirname(__DIR__) . "/examples/$path.php";
-    } elseif (0 === strpos($class, 'Inhere\ConsoleTest\\')) {
+    } elseif (str_starts_with($class, 'Inhere\ConsoleTest\\')) {
         $path = str_replace('\\', '/', substr($class, strlen('Inhere\ConsoleTest\\')));
         $file = __DIR__ . "/$path.php";
-    } elseif (0 === strpos($class, 'Inhere\Console\\')) {
+    } elseif (str_starts_with($class, 'Inhere\Console\\')) {
         $path = str_replace('\\', '/', substr($class, strlen('Inhere\Console\\')));
-        $file = dirname(__DIR__) . "/src/{$path}.php";
+        $file = dirname(__DIR__) . "/src/$path.php";
     }
 
     if ($file && is_file($file)) {

@@ -33,7 +33,7 @@ use function trim;
 class InputDefinition
 {
     /** @var array */
-    private static $defaultArgOptConfig = [
+    private static array $defaultArgOptConfig = [
         'mode'        => null,
         'default'     => null,
         'description' => '',
@@ -42,42 +42,42 @@ class InputDefinition
     /**
      * @var string|array
      */
-    private $example;
+    private string|array $example;
 
     /**
      * @var string
      */
-    private $description;
+    private string $description;
 
     /**
      * @var array[]
      */
-    private $arguments = [];
+    private array $arguments = [];
 
     /**
      * @var int
      */
-    private $requiredCount = 0;
+    private int $requiredCount = 0;
 
     /**
      * @var bool
      */
-    private $hasOptionalArgument = false;
+    private bool $hasOptionalArgument = false;
 
     /**
      * @var bool
      */
-    private $hasAnArrayArgument = false;
+    private bool $hasAnArrayArgument = false;
 
     /**
      * @var array[]
      */
-    private $options;
+    private array $options;
 
     /**
      * @var array
      */
-    private $shortcuts;
+    private array $shortcuts;
 
     /**
      * @param array $arguments
@@ -160,12 +160,12 @@ class InputDefinition
      * @param int    $mode        The argument mode flags. eg: Input::ARG_REQUIRED, Input::ARG_OPTIONAL
      *                            allow more flags, eg: Input::ARG_REQUIRED|Input::ARG_IS_ARRAY
      * @param string $description A description text
-     * @param mixed  $default     The default value (for Input::ARG_OPTIONAL mode only)
+     * @param mixed|null $default     The default value (for Input::ARG_OPTIONAL mode only)
      *
      * @return $this
      * @throws LogicException
      */
-    public function addArgument(string $name, int $mode = 0, string $description = '', $default = null): self
+    public function addArgument(string $name, int $mode = 0, string $description = '', mixed $default = null): self
     {
         if (0 === $mode) {
             $mode = Input::ARG_OPTIONAL;
@@ -231,7 +231,7 @@ class InputDefinition
      *
      * @return string|int|null
      */
-    public function getArgument($name, $default = null)
+    public function getArgument(int|string $name, $default = null): array|int|string|null
     {
         $arguments = is_int($name) ? array_values($this->arguments) : $this->arguments;
 
@@ -244,11 +244,11 @@ class InputDefinition
     }
 
     /**
-     * @param string|int $name The argument name or position
+     * @param int|string $name The argument name or position
      *
      * @return bool true if the InputArgument object exists, false otherwise
      */
-    public function hasArgument($name): bool
+    public function hasArgument(int|string $name): bool
     {
         $arguments = is_int($name) ? array_values($this->arguments) : $this->arguments;
 
@@ -324,7 +324,7 @@ class InputDefinition
      * @param string|null $shortcut
      * @param int|null    $mode
      * @param string      $description
-     * @param null|mixed  $default
+     * @param mixed|null $default
      *
      * @return InputDefinition
      */
@@ -333,7 +333,7 @@ class InputDefinition
         string $shortcut = null,
         int $mode = null,
         string $description = '',
-        $default = null
+        mixed $default = null
     ): self {
         return $this->addOption($name, $shortcut, $mode, $description, $default);
     }
@@ -342,12 +342,12 @@ class InputDefinition
      * Adds an option.
      *
      * @param string|bool       $name        The option name, must is a string
-     * @param string|array|null $shortcut    The shortcut (can be null)
+     * @param array|string|null $shortcut    The shortcut (can be null)
      *                                       - array: [a, b]
      *                                       - string: 'a|b'
      * @param int               $mode        The option mode: One of the Input::OPT_* constants
      * @param string            $description A description text
-     * @param mixed             $default     The default value (must be null for InputOption::OPT_BOOL)
+     * @param mixed|null $default     The default value (must be null for InputOption::OPT_BOOL)
      *
      * @return $this
      * @throws InvalidArgumentException
@@ -355,10 +355,10 @@ class InputDefinition
      */
     public function addOption(
         string $name,
-        $shortcut = '',
+        array|string|null $shortcut = '',
         int $mode = 0,
         string $description = '',
-        $default = null
+        mixed $default = null
     ): self {
         $name = trim($name, '-');
         if (empty($name)) {
@@ -510,7 +510,7 @@ class InputDefinition
      * @return mixed
      * @throws InvalidArgumentException
      */
-    private function shortcutToName(string $shortcut)
+    private function shortcutToName(string $shortcut): mixed
     {
         if (!isset($this->shortcuts[$shortcut])) {
             throw new InvalidArgumentException(sprintf('The "-%s" option does not exist.', $shortcut));
@@ -554,7 +554,7 @@ class InputDefinition
                 $shortcut   = $option['shortcut'] ? sprintf('-%s, ', $option['shortcut']) : '    ';
                 $elements[] = sprintf('[%s--%s%s]', $shortcut, $name, $value);
 
-                $key        = "{$shortcut}--{$name}";
+                $key        = "$shortcut--$name";
                 $opts[$key] = ($option['required'] ? '<red>*</red>' : '') . $option['description'];
             }
         }
@@ -597,11 +597,11 @@ class InputDefinition
     }
 
     /**
-     * @param string|int $name
+     * @param int|string $name
      *
      * @return bool
      */
-    public function argumentIsRequired($name): bool
+    public function argumentIsRequired(int|string $name): bool
     {
         if (isset($this->arguments[$name])) {
             return $this->arguments[$name]['mode'] === Input::ARG_REQUIRED;
@@ -633,17 +633,17 @@ class InputDefinition
     /**
      * @return string|array
      */
-    public function getExample()
+    public function getExample(): array|string
     {
         return $this->example;
     }
 
     /**
-     * @param string|array $example
+     * @param array|string $example
      *
      * @return $this
      */
-    public function setExample($example): self
+    public function setExample(array|string $example): self
     {
         $this->example = $example;
         return $this;

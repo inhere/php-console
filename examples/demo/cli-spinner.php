@@ -43,9 +43,10 @@ class Status
 
     /**
      * Uses `stty` to hide input/output completely.
+     *
      * @param boolean $hidden Will hide/show the next data. Defaults to true.
      */
-    public static function hide($hidden = true): void
+    public static function hide(bool $hidden = true): void
     {
         system('stty ' . ($hidden? '-echo' : 'echo'));
     }
@@ -53,12 +54,13 @@ class Status
     /**
      * Prompts the user for input. Optionally masking it.
      *
-     * @param   string  $prompt     The prompt to show the user
-     * @param   bool    $masked     If true, the users input will not be shown. e.g. password input
-     * @param   int     $limit      The maximum amount of input to accept
+     * @param string $prompt     The prompt to show the user
+     * @param bool $masked     If true, the users input will not be shown. e.g. password input
+     * @param int $limit      The maximum amount of input to accept
+     *
      * @return  string
      */
-    public static function prompt($prompt, $masked=false, $limit=100)
+    public static function prompt(string $prompt, bool $masked, int $limit=100): string
     {
         echo "$prompt: ";
         if ($masked) {
@@ -66,7 +68,7 @@ class Status
         }
         $buffer = '';
         $char = '';
-        $f = fopen('php://stdin', 'r');
+        $f = fopen('php://stdin', 'rb');
         while (strlen($buffer) < $limit) {
             $char = fread($f, 1);
             if ($char === "\n" || $char === "\r") {
@@ -89,6 +91,7 @@ Status::hide(false);
 echo $input;
 die;
 
+/** @noinspection PhpUnreachableStatementInspection */
 $total = random_int(5000, 10000);
 for ($x=1; $x<=$total; $x++) {
     Status::spinner();
