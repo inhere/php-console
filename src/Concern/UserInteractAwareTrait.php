@@ -34,27 +34,27 @@ trait UserInteractAwareTrait
 {
     /**
      * @param string          $description
-     * @param string|array    $options Option data
-     * @param string|int|null $default Default option
-     * @param bool            $allowExit
+     * @param array|string $options Option data
+     * @param int|string|null $default Default option
+     * @param bool $allowExit
      *
      * @return string
      * @see Interact::choice()
      */
-    public function select(string $description, $options, $default = null, $allowExit = true): string
+    public function select(string $description, array|string $options, int|string $default = null, bool $allowExit = true): string
     {
         return $this->choice($description, $options, $default, $allowExit);
     }
 
     /**
      * @param string          $description
-     * @param string|array    $options Option data
-     * @param string|int|null $default Default option
-     * @param bool            $allowExit
+     * @param array|string $options Option data
+     * @param int|string|null $default Default option
+     * @param bool $allowExit
      *
      * @return string
      */
-    public function choice(string $description, $options, $default = null, $allowExit = true): string
+    public function choice(string $description, array|string $options, int|string $default = null, bool $allowExit = true): string
     {
         return Interact::choice($description, $options, $default, $allowExit);
     }
@@ -109,12 +109,12 @@ trait UserInteractAwareTrait
      * @param string       $question
      * @param string       $default
      * @param Closure|null $validator
-     * @param int          $times
+     * @param int $times
      *
      * @return string|null
      * @see Interact::limitedAsk()
      */
-    public function limitedAsk(string $question, string $default = '', Closure $validator = null, $times = 3): ?string
+    public function limitedAsk(string $question, string $default = '', Closure $validator = null, int $times = 3): ?string
     {
         return Interact::limitedAsk($question, $default, $validator, $times);
     }
@@ -126,7 +126,7 @@ trait UserInteractAwareTrait
      * @return int
      * @throws LogicException
      */
-    public function __call($method, array $args = [])
+    public function __call(string $method, array $args = [])
     {
         if (method_exists(Interact::class, $method)) {
             return Interact::$method(...$args);

@@ -68,7 +68,7 @@ class TempStream
     /**
      * @param string|int|mixed $string
      */
-    public static function write($string): void
+    public static function write(mixed $string): void
     {
         fwrite(self::$tempFd, (string)$string);
     }

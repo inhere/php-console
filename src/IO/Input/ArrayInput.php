@@ -10,7 +10,6 @@
 namespace Inhere\Console\IO\Input;
 
 use Inhere\Console\IO\Input;
-use Toolkit\Cli\Flags;
 use function is_int;
 
 /**

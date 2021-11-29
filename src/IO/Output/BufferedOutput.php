@@ -22,7 +22,7 @@ class BufferedOutput extends AbstractOutput
     /**
      * @var string
      */
-    private $buffer = '';
+    private string $buffer = '';
 
     /**
      * @param bool $reset
@@ -58,13 +58,14 @@ class BufferedOutput extends AbstractOutput
 
     /**
      * @param string $content
+     * @param bool $quit
+     * @param array $opts
      *
      * @return int
      */
-    public function writeln(string $content): int
+    public function writeln($content, bool $quit = false, array $opts = []): int
     {
         $this->buffer .= $content . PHP_EOL;
-
         return strlen($content) + 1;
     }
 

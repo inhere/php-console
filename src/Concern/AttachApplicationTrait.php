@@ -12,7 +12,6 @@ namespace Inhere\Console\Concern;
 use Inhere\Console\AbstractApplication;
 use Inhere\Console\Application;
 use Inhere\Console\Console;
-use Inhere\Console\GlobalOption;
 use Toolkit\Stdlib\OS;
 
 /**
@@ -28,16 +27,16 @@ trait AttachApplicationTrait
     }
 
     /**
-     * @var Application
+     * @var Application|null
      */
-    protected $app;
+    protected ?Application $app = null;
 
     /**
      * Mark the command/controller is attached in console application.
      *
      * @var bool
      */
-    private $attached = false;
+    private bool $attached = false;
 
     /**
      * @return AbstractApplication

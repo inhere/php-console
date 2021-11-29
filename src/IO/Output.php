@@ -35,9 +35,9 @@ class Output extends StreamOutput
      * 控制台窗口(字体/背景)颜色添加处理
      * window colors
      *
-     * @var Style
+     * @var Style|null
      */
-    protected $style;
+    protected ?Style $style = null;
 
     /**
      * Output constructor.
@@ -79,7 +79,7 @@ class Output extends StreamOutput
      *
      * @see Console::stopBuffer()
      */
-    public function stopBuffer(bool $flush = true, bool $nl = false, $quit = false, array $opts = []): void
+    public function stopBuffer(bool $flush = true, bool $nl = false, bool $quit = false, array $opts = []): void
     {
         Console::stopBuffer($flush, $nl, $quit, $opts);
     }
@@ -88,10 +88,10 @@ class Output extends StreamOutput
      * stop buffering and flush buffer text
      *
      * @param bool $nl
-     * @param bool|int $quit
+     * @param bool $quit
      * @param array $opts
      */
-    public function flush(bool $nl = false, $quit = false, array $opts = []): void
+    public function flush(bool $nl = false, bool $quit = false, array $opts = []): void
     {
         Console::flushBuffer($nl, $quit, $opts);
     }

@@ -15,7 +15,6 @@ use Inhere\Console\Util\FormatUtil;
 use Toolkit\PFlag\FlagsParser;
 use function implode;
 use function sprintf;
-use function strpos;
 use function strtr;
 use function ucfirst;
 
@@ -30,14 +29,14 @@ trait CommandHelpTrait
      * @var array [name => value]
      * @see AbstractHandler::annotationVars()
      */
-    private $commentsVars;
+    private array $commentsVars = [];
 
     /**
      * on display command help
      *
      * @var bool
      */
-    protected $renderGlobalOption = false;
+    protected bool $renderGlobalOption = false;
 
     /**
      * @return array
@@ -57,9 +56,9 @@ trait CommandHelpTrait
 
     /**
      * @param string $name
-     * @param string|array $value
+     * @param array|string $value
      */
-    protected function addCommentsVar(string $name, $value): void
+    protected function addCommentsVar(string $name, array|string $value): void
     {
         if (!isset($this->commentsVars[$name])) {
             $this->setCommentsVar($name, $value);
@@ -78,9 +77,9 @@ trait CommandHelpTrait
 
     /**
      * @param string $name
-     * @param string|array $value
+     * @param array|string $value
      */
-    protected function setCommentsVar(string $name, $value): void
+    protected function setCommentsVar(string $name, array|string $value): void
     {
         $this->commentsVars[$name] = is_array($value) ? implode(',', $value) : (string)$value;
     }

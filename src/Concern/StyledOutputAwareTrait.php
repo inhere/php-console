@@ -24,7 +24,6 @@ use LogicException;
 use Toolkit\Cli\Style;
 use function method_exists;
 use function sprintf;
-use function strpos;
 use function substr;
 
 /**
@@ -85,11 +84,11 @@ trait StyledOutputAwareTrait
      * @param array|mixed $messages
      * @param string      $type
      * @param string      $style
-     * @param bool        $quit
+     * @param bool $quit
      *
      * @return int
      */
-    public function block($messages, string $type = 'MESSAGE', string $style = Style::NORMAL, $quit = false): int
+    public function block(mixed $messages, string $type = 'MESSAGE', string $style = Style::NORMAL, bool $quit = false): int
     {
         return Show::block($messages, $type, $style, $quit);
     }
@@ -98,11 +97,11 @@ trait StyledOutputAwareTrait
      * @param array|mixed $messages
      * @param string      $type
      * @param string      $style
-     * @param bool        $quit
+     * @param bool $quit
      *
      * @return int
      */
-    public function liteBlock($messages, string $type = 'MESSAGE', string $style = Style::NORMAL, $quit = false): int
+    public function liteBlock(mixed $messages, string $type = 'MESSAGE', string $style = Style::NORMAL, bool $quit = false): int
     {
         return Show::liteBlock($messages, $type, $style, $quit);
     }
@@ -118,10 +117,10 @@ trait StyledOutputAwareTrait
 
     /**
      * @param string       $title
-     * @param string|array $body The section body message
+     * @param array|string $body The section body message
      * @param array        $opts
      */
-    public function section(string $title, $body, array $opts = []): void
+    public function section(string $title, array|string $body, array $opts = []): void
     {
         Section::show($title, $body, $opts);
     }
@@ -131,7 +130,7 @@ trait StyledOutputAwareTrait
      * @param string      $title
      * @param array       $opts
      */
-    public function aList($data, string $title = 'Information', array $opts = []): void
+    public function aList(mixed $data, string $title = 'Information', array $opts = []): void
     {
         SingleList::show($data, $title, $opts);
     }
@@ -201,7 +200,7 @@ trait StyledOutputAwareTrait
      * @return Generator
      * @see Show::progressBar()
      */
-    public function progressBar($total, array $opts = []): Generator
+    public function progressBar(int $total, array $opts = []): Generator
     {
         return Show::progressBar($total, $opts);
     }
@@ -222,7 +221,7 @@ trait StyledOutputAwareTrait
             $quit  = $args[1] ?? false;
             $style = $map[$method];
 
-            if (0 === strpos($method, 'lite')) {
+            if (str_starts_with($method, 'lite')) {
                 $type = substr($method, 4);
                 return Show::liteBlock($msg, $type === 'Primary' ? 'IMPORTANT' : $type, $style, $quit);
             }

@@ -66,11 +66,13 @@ trait FormatOutputAwareTrait
 
     /**
      * @param string $format
-     * @param mixed  ...$args
+     * @param mixed ...$args
+     *
+     * @return int
      */
-    public function writef(string $format, ...$args): void
+    public function writef(string $format, ...$args): int
     {
-        Console::printf($format, ...$args);
+        return Console::printf($format, ...$args);
     }
 
     /**
@@ -84,12 +86,12 @@ trait FormatOutputAwareTrait
 
     /**
      * @param string|mixed $text
-     * @param bool|int     $quit
-     * @param array        $opts
+     * @param bool|int $quit
+     * @param array $opts
      *
      * @return int
      */
-    public function writeln($text, $quit = false, array $opts = []): int
+    public function writeln($text, bool $quit = false, array $opts = []): int
     {
         return Console::writeln($text, $quit, $opts);
     }
@@ -101,7 +103,7 @@ trait FormatOutputAwareTrait
      *
      * @return int
      */
-    public function println($text, bool $quit = false, array $opts = []): int
+    public function println(mixed $text, bool $quit = false, array $opts = []): int
     {
         return Console::writeln($text, $quit, $opts);
     }
@@ -109,12 +111,12 @@ trait FormatOutputAwareTrait
     /**
      * @param string|mixed $text
      * @param bool         $nl
-     * @param bool|int     $quit
+     * @param bool|int $quit
      * @param array        $opts
      *
      * @return int
      */
-    public function writeRaw($text, bool $nl = true, $quit = false, array $opts = []): int
+    public function writeRaw(mixed $text, bool $nl = true, bool $quit = false, array $opts = []): int
     {
         return Console::writeRaw($text, $nl, $quit, $opts);
     }
@@ -127,10 +129,10 @@ trait FormatOutputAwareTrait
      * @return int|string
      */
     public function json(
-        $data,
+        mixed $data,
         bool $echo = true,
         int $flags = JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
-    ) {
+    ): int|string {
         $string = json_encode($data, $flags);
 
         if ($echo) {
@@ -144,7 +146,7 @@ trait FormatOutputAwareTrait
      * @param mixed $data
      * @param string $title
      */
-    public function prettyJSON($data, string $title = 'JSON:'): void
+    public function prettyJSON(mixed $data, string $title = 'JSON:'): void
     {
         if ($title) {
             Console::colored($title, 'ylw0');

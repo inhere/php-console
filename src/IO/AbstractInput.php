@@ -12,16 +12,13 @@ namespace Inhere\Console\IO;
 use Inhere\Console\Contract\InputInterface;
 use Toolkit\Cli\Helper\FlagHelper;
 use Toolkit\PFlag\FlagsParser;
-use Toolkit\PFlag\SFlags;
 use function array_map;
 use function array_shift;
 use function basename;
 use function getcwd;
 use function implode;
-use function is_int;
 use function is_string;
 use function preg_match;
-use function trim;
 
 /**
  * Class AbstractInput
@@ -33,21 +30,21 @@ abstract class AbstractInput implements InputInterface
     /**
      * Global flags parser
      *
-     * @var FlagsParser|SFlags
+     * @var FlagsParser|null
      */
-    protected $gfs;
+    protected ?FlagsParser $gfs = null;
 
     /**
      * Command flags parser
      *
-     * @var FlagsParser|SFlags
+     * @var FlagsParser|null
      */
-    protected $fs;
+    protected ?FlagsParser $fs = null;
 
     /**
      * @var string
      */
-    protected $pwd = '';
+    protected string $pwd = '';
 
     /**
      * The bin script file
@@ -55,7 +52,7 @@ abstract class AbstractInput implements InputInterface
      *
      * @var string
      */
-    protected $scriptFile = '';
+    protected string $scriptFile = '';
 
     /**
      * The bin script name
@@ -63,7 +60,7 @@ abstract class AbstractInput implements InputInterface
      *
      * @var string
      */
-    protected $scriptName = '';
+    protected string $scriptName = '';
 
     /**
      * the command name(Is first argument)
@@ -71,22 +68,22 @@ abstract class AbstractInput implements InputInterface
      *
      * @var string
      */
-    protected $command = '';
+    protected string $command = '';
 
     /**
      * the command name(Is first argument)
-     * e.g `subcmd` in the `./app group subcmd`
+     * e.g `subcommand` in the `./app group subcommand`
      *
      * @var string
      */
-    protected $subCommand = '';
+    protected string $subCommand = '';
 
     /**
      * eg `./examples/app home:useArg status=2 name=john arg0 -s=test --page=23`
      *
      * @var string
      */
-    protected $fullScript;
+    protected string $fullScript;
 
     /**
      * Raw input argv data.
@@ -94,14 +91,14 @@ abstract class AbstractInput implements InputInterface
      *
      * @var array
      */
-    protected $tokens;
+    protected array $tokens;
 
     /**
      * Same the $tokens but no $script
      *
      * @var array
      */
-    protected $flags = [];
+    protected array $flags = [];
 
     /**
      * @return string

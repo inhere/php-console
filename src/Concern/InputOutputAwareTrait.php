@@ -24,19 +24,19 @@ use Toolkit\PFlag\SFlags;
 trait InputOutputAwareTrait
 {
     /**
-     * @var SFlags|FlagsParser
+     * @var FlagsParser|null
      */
-    protected $flags;
+    protected ?FlagsParser $flags;
 
     /**
-     * @var Input|InputInterface
+     * @var InputInterface|null
      */
-    protected $input;
+    protected ?InputInterface $input;
 
     /**
-     * @var Output|OutputInterface
+     * @var OutputInterface|null
      */
-    protected $output;
+    protected ?OutputInterface $output;
 
     /**
      * @return string
@@ -74,26 +74,23 @@ trait InputOutputAwareTrait
     }
 
     /**
-     * @param mixed    $message
-     * @param bool     $nl
-     * @param bool|int $quit
+     * @param mixed $message
      *
      * @return int
      */
-    public function write($message, bool $nl = true, $quit = false): int
+    public function write(mixed $message): int
     {
-        return $this->output->write($message, $nl, $quit);
+        return $this->output->write($message);
     }
 
     /**
-     * @param mixed    $message
-     * @param bool|int $quit
+     * @param mixed $message
      *
      * @return int
      */
-    public function writeln($message, $quit = false): int
+    public function writeln(mixed $message): int
     {
-        return $this->output->write($message, true, $quit);
+        return $this->output->writeln($message);
     }
 
     /**

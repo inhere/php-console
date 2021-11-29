@@ -12,9 +12,10 @@ namespace Inhere\Console\IO\Output;
 use Inhere\Console\IO\AbstractOutput;
 use InvalidArgumentException;
 use Toolkit\FsUtil\File;
+use Toolkit\Stdlib\Helper\DataHelper;
 use Toolkit\Stdlib\OS;
+use function sprintf;
 use function stream_get_meta_data;
-use function strpos;
 use const PHP_EOL;
 use const STDOUT;
 
@@ -52,12 +53,29 @@ class StreamOutput extends AbstractOutput
     }
 
     /**
-     * @param string $content
+     * @param string $format
+     * @param mixed ...$args
      *
      * @return int
      */
-    public function writeln(string $content): int
+    public function writef(string $format, ...$args): int
     {
+        $content = sprintf($format, ...$args);
+
+        return File::streamWrite($this->stream, $content);
+    }
+
+    /**
+     * @param string $content
+     * @param bool $quit
+     * @param array $opts
+     *
+     * @return int
+     */
+    public function writeln($content, bool $quit = false, array $opts = []): int
+    {
+        $content = DataHelper::toString($content);
+
         return File::streamWrite($this->stream, $content . PHP_EOL);
     }
 

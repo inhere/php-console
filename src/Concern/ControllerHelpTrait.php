@@ -21,7 +21,6 @@ use function implode;
 use function ksort;
 use function lcfirst;
 use function sprintf;
-use function strpos;
 use function ucfirst;
 use const PHP_EOL;
 

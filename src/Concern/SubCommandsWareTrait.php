@@ -15,6 +15,7 @@ use Inhere\Console\Console;
 use Inhere\Console\Contract\CommandInterface;
 use Inhere\Console\Util\Helper;
 use InvalidArgumentException;
+use Toolkit\Stdlib\Obj\Traits\NameAliasTrait;
 use function array_keys;
 use function array_merge;
 use function class_exists;
@@ -33,12 +34,12 @@ use function preg_match;
  */
 trait SubCommandsWareTrait
 {
-    use \Toolkit\Stdlib\Obj\Traits\NameAliasTrait;
+    use NameAliasTrait;
 
     /**
      * @var array
      */
-    private $blocked = ['help', 'version'];
+    private array $blocked = ['help', 'version'];
 
     /**
      * The sub-commands of the command
@@ -51,7 +52,7 @@ trait SubCommandsWareTrait
      *  ]
      * ]
      */
-    private $commands = [];
+    private array $commands = [];
 
     /**
      * Can attach sub-commands
@@ -89,7 +90,7 @@ trait SubCommandsWareTrait
      *
      * @throws InvalidArgumentException
      */
-    public function addSub(string $name, $handler = null, array $options = []): void
+    public function addSub(string $name, string|Closure|CommandInterface $handler = null, array $options = []): void
     {
         if (!$handler && class_exists($name)) {
             /** @var Command $name name is an command class */

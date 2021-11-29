@@ -25,7 +25,7 @@ class Input extends StreamInput
      *
      * @var string
      */
-    protected $commandId = '';
+    protected string $commandId = '';
 
     /**
      * Input constructor.

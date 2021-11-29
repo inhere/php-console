@@ -29,7 +29,7 @@ trait RuntimeProfileTrait
      *
      * @var array
      */
-    private static $profiles = [];
+    private static array $profiles = [];
 
     /**
      * @var array
@@ -40,7 +40,7 @@ trait RuntimeProfileTrait
      *  ...
      * ]
      */
-    private static $keyQueue = [];
+    private static array $keyQueue = [];
 
     /**
      * mark data analysis start
@@ -51,7 +51,7 @@ trait RuntimeProfileTrait
      *
      * @throws InvalidArgumentException
      */
-    public static function profile($name, array $context = [], $category = 'application'): void
+    public static function profile($name, array $context = [], string $category = 'application'): void
     {
         $data = [
             '_profile_stats' => [
@@ -65,7 +65,7 @@ trait RuntimeProfileTrait
 
         $profileKey = $category . '|' . $name;
 
-        if (in_array($profileKey, self::$keyQueue, 1)) {
+        if (in_array($profileKey, self::$keyQueue, true)) {
             throw new InvalidArgumentException("Your added profile name [$name] have been exists!");
         }
 
@@ -81,7 +81,7 @@ trait RuntimeProfileTrait
      *
      * @return bool|array
      */
-    public static function profileEnd(string $msg = null, array $context = [])
+    public static function profileEnd(string $msg = null, array $context = []): bool|array
     {
         if (!$latestKey = array_pop(self::$keyQueue)) {
             return false;

@@ -50,7 +50,7 @@ trait ApplicationHelpTrait
     /**
      * @var string|array
      */
-    protected $moreHelpInfo = '';
+    protected string|array $moreHelpInfo = '';
 
     /***************************************************************************
      * Show information for the application
