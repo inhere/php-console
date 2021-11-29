@@ -19,19 +19,19 @@ class SingleSelect extends AbstractSelect
      *
      * @var string
      */
-    protected $default;
+    protected string $default;
 
     /**
      * The selected key
      *
      * @var string
      */
-    protected $selected;
+    protected string $selected;
 
     /**
      * @var string
      */
-    protected $selectedVal;
+    protected string $selectedVal;
 
     /**
      * @return string

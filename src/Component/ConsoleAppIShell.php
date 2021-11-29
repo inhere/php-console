@@ -20,9 +20,9 @@ use Inhere\Console\Component\Interact\IShell;
 class ConsoleAppIShell extends IShell
 {
     /**
-     * @var Application
+     * @var Application|null
      */
-    public $app;
+    public ?Application $app;
 
     // TODO start an shell for run app.
 }

@@ -30,21 +30,22 @@ class Choose extends SingleSelect
      * Choose one of several options
      *
      * @param string          $description
-     * @param string|array    $options Option data
+     * @param array|string $options Option data
      *                                 e.g
      *                                 [
      *                                 // option => value
      *                                 '1' => 'chengdu',
      *                                 '2' => 'beijing'
      *                                 ]
-     * @param null|int|string $default Default option
+     * @param int|string|null $default Default option
      * @param bool            $allowExit
      * @param array           $opts
+     *
      * @psalm-param array{returnVal: bool, retFilter: callable}  $opts
      *
      * @return string
      */
-    public static function one(string $description, $options, $default = null, bool $allowExit = true, array $opts = []): string
+    public static function one(string $description, array|string $options, int|string $default = null, bool $allowExit = true, array $opts = []): string
     {
         if (!$description = trim($description)) {
             Show::error('Please provide a description text!', 1);

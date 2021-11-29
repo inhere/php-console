@@ -23,7 +23,6 @@ use function rtrim;
 use function str_contains;
 use function str_ends_with;
 use function trim;
-use function vdump;
 
 /**
  * class JSONPretty

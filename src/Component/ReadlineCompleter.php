@@ -22,12 +22,12 @@ class ReadlineCompleter extends AbstractObj
     /**
      * @var string
      */
-    private $historyFile = '';
+    private string $historyFile = '';
 
     /**
      * @var int
      */
-    private $historySize = 1024;
+    private int $historySize = 1024;
 
     /**
      * @var callable

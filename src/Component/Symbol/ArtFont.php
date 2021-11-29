@@ -28,15 +28,15 @@ class ArtFont
     public const INTERNAL_GROUP = '_internal';
 
     /** @var self */
-    private static $instance;
+    private static ArtFont $instance;
 
     /** @var array */
-    private static $internalFonts = ['404', '500', 'error', 'no', 'ok', 'success', 'yes'];
+    private static array $internalFonts = ['404', '500', 'error', 'no', 'ok', 'success', 'yes'];
 
     /**
      * @var array <name:path>
      */
-    private $groups = [];
+    private array $groups = [];
 
     /**
      * @var array
@@ -44,7 +44,7 @@ class ArtFont
      *   group => [ name => path ]
      * ]
      */
-    private $fonts = [];
+    private array $fonts = [];
 
     /**
      * @var array
@@ -52,7 +52,7 @@ class ArtFont
      *   name => content
      * ]
      */
-    private $fontContents = [];
+    private array $fontContents = [];
 
     /**
      * @return self
@@ -261,9 +261,9 @@ class ArtFont
      *
      * @return bool
      */
-    public static function isInternalFont($name): bool
+    public static function isInternalFont(string $name): bool
     {
-        return in_array((string)$name, self::$internalFonts, true);
+        return in_array($name, self::$internalFonts, true);
     }
 
     /**

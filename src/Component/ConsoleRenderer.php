@@ -19,9 +19,9 @@ use Inhere\Console\Contract\FormatterInterface;
 class ConsoleRenderer
 {
     /**
-     * @var FormatterInterface
+     * @var FormatterInterface|null
      */
-    private $formatter;
+    private ?FormatterInterface $formatter;
 
     /**
      * @return string

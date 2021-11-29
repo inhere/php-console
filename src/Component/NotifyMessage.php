@@ -20,7 +20,7 @@ use RuntimeException;
 class NotifyMessage
 {
     /** @var int Speed value. allow 1 - 10 */
-    protected $speed = 2;
+    protected int $speed = 2;
 
     /**
      * @return int
@@ -33,7 +33,7 @@ class NotifyMessage
     /**
      * @param int $speed
      */
-    public function setSpeed($speed): void
+    public function setSpeed(int $speed): void
     {
         $this->speed = (int)$speed;
     }

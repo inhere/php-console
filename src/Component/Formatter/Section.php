@@ -29,10 +29,10 @@ class Section extends MessageFormatter
 {
     /**
      * @param string       $title The title text
-     * @param string|array $body  The section body message
+     * @param array|string $body  The section body message
      * @param array        $opts
      */
-    public static function show(string $title, $body, array $opts = []): void
+    public static function show(string $title, array|string $body, array $opts = []): void
     {
         $opts = array_merge([
             'width'        => 80,

@@ -11,8 +11,8 @@ namespace Inhere\Console\Component\Formatter;
 
 use Inhere\Console\Component\MessageFormatter;
 use Inhere\Console\Console;
-use Inhere\Console\Util\FormatUtil;
 use Toolkit\Cli\Cli;
+use Toolkit\Stdlib\Std;
 use function array_merge;
 use function is_array;
 use function is_scalar;
@@ -26,10 +26,10 @@ use function str_pad;
 class Tree extends MessageFormatter
 {
     /** @var int */
-    private $counter = 0;
+    private int $counter = 0;
 
     /** @var bool */
-    private $started = false;
+    private bool $started = false;
 
     /**
      * Render data like tree
@@ -64,7 +64,7 @@ class Tree extends MessageFormatter
                 $counter++;
                 $leftString = $opts['leftPadding'] . str_pad($opts['prefix'], $opts['_level'] + 1, $opts['char']);
 
-                Console::write($leftString . ' ' . FormatUtil::typeToString($value));
+                Console::write($leftString . ' ' . Std::toString($value));
             } elseif (is_array($value)) {
                 $newOpts             = $opts;
                 $newOpts['_is_main'] = false;

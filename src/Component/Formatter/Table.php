@@ -30,25 +30,25 @@ use function is_string;
 class Table extends MessageFormatter
 {
     /** @var array */
-    public $data = [];
+    public array $data = [];
 
     /** @var array */
-    public $columns = [];
+    public array $columns = [];
 
     /** @var string|array */
-    public $body;
+    public string|array $body;
 
     /** @var string */
-    public $title = '';
+    public string $title = '';
 
     /** @var string */
-    public $titleBorder = '-';
+    public string $titleBorder = '-';
 
     /** @var string */
-    public $titleStyle = '-';
+    public string $titleStyle = '-';
 
     /** @var string */
-    public $titleAlign = self::ALIGN_LEFT;
+    public string $titleAlign = self::ALIGN_LEFT;
 
     /**
      * Tabular data display
@@ -169,7 +169,7 @@ class Table extends MessageFormatter
             $title       = Str::ucwords(trim($title));
             $titleLength = Str::utf8Len($title, 'UTF-8');
             $indentSpace = Str::pad(' ', ceil($tableWidth / 2) - ceil($titleLength / 2) + ($columnCount * 2), ' ');
-            $buf->write("  {$indentSpace}<$tStyle>{$title}</$tStyle>\n");
+            $buf->write("  $indentSpace<$tStyle>$title</$tStyle>\n");
         }
 
         $border = $leftIndent . Str::pad($rowBorderChar, $tableWidth + ($columnCount * 3) + 2, $rowBorderChar);
@@ -183,7 +183,7 @@ class Table extends MessageFormatter
 
         // output table head
         if ($hasHead) {
-            $headStr = "{$leftIndent}{$colBorderChar} ";
+            $headStr = "$leftIndent$colBorderChar ";
 
             foreach ($head as $index => $name) {
                 $colMaxWidth = $info['columnMaxWidth'][$index];
@@ -193,7 +193,7 @@ class Table extends MessageFormatter
                 $name = Str::padByWidth($name, $colMaxWidth, ' ');
                 $name = ColorTag::wrap($name, $opts['headStyle']);
                 // join string
-                $headStr .= " {$name} {$colBorderChar}";
+                $headStr .= " $name $colBorderChar";
             }
 
             $buf->write($headStr . "\n");
@@ -227,7 +227,7 @@ class Table extends MessageFormatter
                 // use Str::padByWidth support zh-CN words
                 $value  = Str::padByWidth($value, $colMaxWidth, ' ');
                 $value  = ColorTag::wrap($value, $opts['bodyStyle']);
-                $rowStr .= " {$value} {$colBorderChar}";
+                $rowStr .= " $value $colBorderChar";
                 $colIndex++;
             }
 

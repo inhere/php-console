@@ -21,7 +21,7 @@ use Toolkit\Stdlib\Obj;
 class CompletionDumper extends Obj\AbstractObj
 {
     /**
-     * @var Application
+     * @var Application|null
      */
-    public $app;
+    public ?Application $app;
 }

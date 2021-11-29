@@ -16,11 +16,11 @@ namespace Inhere\Console\Component\Formatter;
  */
 class Body
 {
-    public $nodes = [];
+    public array $nodes = [];
 
-    public $style = '';
+    public string $style = '';
 
-    public $keyStyle = 'info';
+    public string $keyStyle = 'info';
 
-    public $valStyle = '';
+    public string $valStyle = '';
 }

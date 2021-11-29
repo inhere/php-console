@@ -29,13 +29,13 @@ class Checkbox extends MultiSelect
      * List multiple options and allow multiple selections
      *
      * @param string       $description
-     * @param string|array $options
-     * @param null|mixed   $default
+     * @param array|string $options
+     * @param mixed|null $default
      * @param bool         $allowExit
      *
      * @return array
      */
-    public static function select(string $description, $options, $default = null, bool $allowExit = true): array
+    public static function select(string $description, array|string $options, mixed $default = null, bool $allowExit = true): array
     {
         if (!$description = trim($description)) {
             Show::error('Please provide a description text!', 1);
@@ -59,13 +59,13 @@ class Checkbox extends MultiSelect
         }
 
         Console::write($text);
-        $defText = $default !== null ? "[default:<comment>{$default}</comment>]" : '';
-        $filter  = function ($val) use ($options) {
+        $defText = $default !== null ? "[default:<comment>$default</comment>]" : '';
+        $filter  = static function ($val) use ($options) {
             return $val !== 'q' && isset($options[$val]);
         };
 
         beginChoice:
-        $r = Console::readln("Your choice{$defText} : ");
+        $r = Console::readln("Your choice$defText : ");
         $r = $r !== '' ? str_replace(' ', '', trim($r, $sep)) : '';
 
         // empty

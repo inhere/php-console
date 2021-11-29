@@ -77,9 +77,9 @@ class LimitedAsk extends InteractiveHandle
         $hasDefault = '' !== $default;
 
         if ($hasDefault) {
-            $message = "<comment>{$question}</comment>(default: <info>$default</info>) ";
+            $message = "<comment>$question</comment>(default: <info>$default</info>) ";
         } else {
-            $message = "<comment>{$question}</comment>";
+            $message = "<comment>$question</comment>";
             Console::write($message);
         }
 

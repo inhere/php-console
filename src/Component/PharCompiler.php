@@ -79,7 +79,7 @@ class PharCompiler
     public const ADD_WEB_INDEX = 'add.index.web';
 
     /** @var array */
-    private static $supportedSignatureTypes = [
+    private static array $supportedSignatureTypes = [
         Phar::SHA512 => 1,
         Phar::SHA256 => 1,
         Phar::SHA1   => 1
@@ -89,42 +89,42 @@ class PharCompiler
     private $key;
 
     /** @var int */
-    private $signatureType;
+    private int $signatureType;
 
     /**
      * @var int compress Mode @see \Phar::NONE, \Phar::GZ, \Phar::BZ2
      */
-    private $compressMode = 0;
+    private int $compressMode = 0;
 
     /**
      * @var string The want to packaged project path
      */
-    private $basePath;
+    private string $basePath;
 
     /**
      * @var string
      */
-    private $cliIndex = '';
+    private string $cliIndex = '';
 
     /**
      * @var string
      */
-    private $webIndex = '';
+    private string $webIndex = '';
 
     /**
      * @var string|bool Set the shebang. eg '#!/usr/bin/env php'
      */
-    private $shebang;
+    private string|bool $shebang;
 
     /**
      * @var array Want to added files. (It is relative the $basePath)
      */
-    private $files = [];
+    private array $files = [];
 
     /**
      * @var array Want to include files suffix name list
      */
-    private $suffixes = ['.php'];
+    private array $suffixes = ['.php'];
 
     /**
      * Want to exclude directory/file name list
@@ -137,53 +137,53 @@ class PharCompiler
      *
      * @var array
      */
-    private $excludes = [];
+    private array $excludes = [];
 
     /**
      * The directory paths, will collect files in there.
      *
      * @var array
      */
-    private $directories = [];
+    private array $directories = [];
 
     /**
      * Some events. if you want to get some info on packing.
      *
      * @var Closure[]
      */
-    private $events = [];
+    private array $events = [];
 
     /**
      * @var Closure Maybe you not want strip all files.
      */
-    private $stripFilter;
+    private Closure $stripFilter;
 
     /**
      * @var bool Whether strip comments
      */
-    private $stripComments = true;
+    private bool $stripComments = true;
 
     /**
      * @var bool Whether auto collect version info by git log.
      */
-    private $collectVersionInfo = true;
+    private bool $collectVersionInfo = true;
 
     // -------------------- project version(by git) --------------------
 
     /**
      * @var string The latest commit id
      */
-    private $lastCommit = '';
+    private string $lastCommit = '';
 
     /**
      * @var string The latest tag name
      */
-    private $lastVersion = '';
+    private string $lastVersion = '';
 
     /**
      * @var DateTime
      */
-    private $versionDate;
+    private DateTime $versionDate;
 
     /**
      * 记录上面三个信息的文件, 相对于basePath
@@ -196,42 +196,42 @@ class PharCompiler
      *
      * @var string
      */
-    private $versionFile = '';
+    private string $versionFile = '';
 
     /**
      * @var string
      */
-    private $versionFileContent = '';
+    private string $versionFileContent = '';
 
     // -------------------- internal properties --------------------
 
     /** @var int */
-    private $counter = 0;
+    private int $counter = 0;
 
     /**
      * @var string Phar file path. e.g '/some/path/app.phar'
      */
-    private $pharFile;
+    private string $pharFile;
 
     /**
      * @var string Phar file name. eg 'app.phar'
      */
-    private $pharName;
+    private string $pharName;
 
     /**
      * @var Closure File filter
      */
-    private $fileFilter;
+    private Closure $fileFilter;
 
     /**
      * @var array|Iterator The modifies files list. if not empty, will skip find dirs.
      */
-    private $modifies;
+    private array|Iterator $modifies;
 
     /**
      * @var SplQueue
      */
-    private $fileQueue;
+    private SplQueue $fileQueue;
 
     /**
      * @throws RuntimeException
@@ -252,14 +252,14 @@ class PharCompiler
     /**
      * @param string            $pharFile
      * @param string            $extractTo
-     * @param string|array|null $files Only fetch the listed files
+     * @param array|string|null $files Only fetch the listed files
      * @param bool              $overwrite
      *
      * @return bool
      * @throws BadMethodCallException
      * @throws RuntimeException
      */
-    public static function unpack(string $pharFile, string $extractTo, $files = null, bool $overwrite = false): bool
+    public static function unpack(string $pharFile, string $extractTo, array|string $files = null, bool $overwrite = false): bool
     {
         self::checkEnv();
 
@@ -283,16 +283,16 @@ class PharCompiler
         $this->fileQueue = new SplQueue();
 
         if (!is_dir($this->basePath)) {
-            throw new RuntimeException("The inputted path is not exists. PATH: {$this->basePath}");
+            throw new RuntimeException("The inputted path is not exists. PATH: $this->basePath");
         }
     }
 
     /**
-     * @param string|array $files
+     * @param array|string $files
      *
      * @return $this
      */
-    public function addFile($files): self
+    public function addFile(array|string $files): self
     {
         $this->files = array_merge($this->files, (array)$files);
         return $this;
@@ -310,33 +310,33 @@ class PharCompiler
     }
 
     /**
-     * @param string|array $suffixes
+     * @param array|string $suffixes
      *
      * @return $this
      */
-    public function addSuffix($suffixes): self
+    public function addSuffix(array|string $suffixes): self
     {
         $this->suffixes = array_merge($this->suffixes, (array)$suffixes);
         return $this;
     }
 
     /**
-     * @param string|array $patterns
+     * @param array|string $patterns
      *
      * @return $this
      */
-    public function addExclude($patterns): self
+    public function addExclude(array|string $patterns): self
     {
         $this->excludes = array_merge($this->excludes, (array)$patterns);
         return $this;
     }
 
     /**
-     * @param string|array $patterns
+     * @param array|string $patterns
      *
      * @return $this
      */
-    public function addExcludeDir($patterns): self
+    public function addExcludeDir(array|string $patterns): self
     {
         $list = [];
         foreach ((array)$patterns as $pattern) {
@@ -348,11 +348,11 @@ class PharCompiler
     }
 
     /**
-     * @param string|array $patterns
+     * @param array|string $patterns
      *
      * @return $this
      */
-    public function addExcludeFile($patterns): self
+    public function addExcludeFile(array|string $patterns): self
     {
         $list = [];
         foreach ((array)$patterns as $pattern) {
@@ -375,22 +375,22 @@ class PharCompiler
     }
 
     /**
-     * @param bool|string|int $value
+     * @param bool|int|string $value
      *
      * @return PharCompiler
      */
-    public function stripComments($value): self
+    public function stripComments(bool|int|string $value): self
     {
         $this->stripComments = (bool)$value;
         return $this;
     }
 
     /**
-     * @param bool|string|int $value
+     * @param bool|int|string $value
      *
      * @return PharCompiler
      */
-    public function collectVersion($value): self
+    public function collectVersion(bool|int|string $value): self
     {
         $this->collectVersionInfo = (bool)$value;
         return $this;
@@ -412,29 +412,29 @@ class PharCompiler
      *
      * @return PharCompiler
      */
-    public function setShebang($shebang): self
+    public function setShebang(bool|string $shebang): self
     {
         $this->shebang = $shebang;
         return $this;
     }
 
     /**
-     * @param string|array $dirs
+     * @param array|string $dirs
      *
      * @return PharCompiler
      */
-    public function in($dirs): self
+    public function in(array|string $dirs): self
     {
         $this->directories = array_merge($this->directories, (array)$dirs);
         return $this;
     }
 
     /**
-     * @param array|Iterator $modifies
+     * @param Iterator|array $modifies
      *
      * @return PharCompiler
      */
-    public function setModifies($modifies): self
+    public function setModifies(Iterator|array $modifies): self
     {
         $this->modifies = $modifies;
         return $this;
@@ -619,11 +619,11 @@ class PharCompiler
             }
 
             // modified files
-            if (strpos($file, 'M ') === 0) {
+            if (str_starts_with($file, 'M ')) {
                 yield substr($file, 2);
 
             // new files
-            } elseif (strpos($file, '?? ') === 0) {
+            } elseif (str_starts_with($file, '?? ')) {
                 yield substr($file, 3);
             }
         }
@@ -768,7 +768,7 @@ EOF;
                 $path = $file->getPathname();
 
                 // Skip hidden files and directories.
-                if (strpos($name, '.') === 0) {
+                if (str_starts_with($name, '.')) {
                     return false;
                 }
 
@@ -800,18 +800,6 @@ EOF;
         }
 
         return $this->fileFilter;
-    }
-
-    /**
-     * Removes whitespace from a PHP source string while preserving line numbers.
-     *
-     * @param string $source A PHP string
-     *
-     * @return string The PHP string with the whitespace removed
-     */
-    private function stripWhitespace(string $source): string
-    {
-        return File::stripPhpCode($source);
     }
 
     /**
@@ -880,7 +868,7 @@ EOF;
      *
      * @return mixed|null
      */
-    private function fire(string $event, ...$args)
+    private function fire(string $event, ...$args): mixed
     {
         if (isset($this->events[$event])) {
             $cb = $this->events[$event];

@@ -24,7 +24,6 @@ use Toolkit\Sys\Proc\Signal;
 use function explode;
 use function stripos;
 use function strlen;
-use function strpos;
 use function substr;
 use function trim;
 
@@ -44,17 +43,17 @@ class IShell extends InteractiveHandle
     /**
      * @var bool
      */
-    private $debug = false;
+    private bool $debug = false;
 
     /**
      * @var string
      */
-    private $prefix = 'CMD';
+    private string $prefix = 'CMD';
 
     /**
      * @var string
      */
-    private $title = 'Welcome interactive shell environment';
+    private string $title = 'Welcome interactive shell environment';
 
     /**
      * the main logic handler
@@ -76,7 +75,7 @@ class IShell extends InteractiveHandle
     /**
      * @var array
      */
-    private $exitKeys = [
+    private array $exitKeys = [
         'q'    => 1,
         'quit' => 1,
         'exit' => 1,
@@ -85,22 +84,22 @@ class IShell extends InteractiveHandle
     /**
      * @var bool
      */
-    private $hasPcntl = false;
+    private bool $hasPcntl = false;
 
     /**
      * @var bool
      */
-    private $hasReadline = false;
+    private bool $hasReadline = false;
 
     /**
      * @var string
      */
-    private $historyFile = '';
+    private string $historyFile = '';
 
     /**
      * @var int
      */
-    private $historySize = 1024;
+    private int $historySize = 1024;
 
     /**
      * Auto complete handler
@@ -268,7 +267,7 @@ class IShell extends InteractiveHandle
 
         // display help
         $hasMoreKey = false;
-        if ($line === self::HELP || ($hasMoreKey = strpos($line, 'help ') === 0)) {
+        if ($line === self::HELP || ($hasMoreKey = str_starts_with($line, 'help '))) {
             // help CMD
             $moreKeys = $hasMoreKey ? explode(' ', $line) : [];
             $this->handleHelp($moreKeys);
@@ -301,7 +300,7 @@ class IShell extends InteractiveHandle
      *
      * @return array|bool
      */
-    public function autoCompleteHandle(string $input, int $index)
+    public function autoCompleteHandle(string $input, int $index): array|bool
     {
         // custom auto-completer
         if ($fn = $this->autoCompleter) {
@@ -323,7 +322,7 @@ class IShell extends InteractiveHandle
         $founded = [];
 
         // $line=$input completion for top command name prefix.
-        if (strpos($line, ' ') === false) {
+        if (!str_contains($line, ' ')) {
             foreach ($commands as $name) {
                 if (stripos($name, $input)) {
                     $founded[] = $name;

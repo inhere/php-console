@@ -42,7 +42,7 @@ class SingleList extends MessageFormatter
      *
      * @return int|string
      */
-    public static function show($data, string $title = 'Information', array $opts = [])
+    public static function show(mixed $data, string $title = 'Information', array $opts = []): int|string
     {
         $string = '';
         $opts   = array_merge([

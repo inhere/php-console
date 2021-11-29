@@ -71,7 +71,6 @@ class SimpleBar extends NotifyMessage
             }
 
             $step = yield;
-
             if ((int)$step <= 0) {
                 $step = 1;
             }
@@ -92,7 +91,8 @@ class SimpleBar extends NotifyMessage
              */ // printf("\r[%'--100s] %d%% %s",
             // printf("\x0D\x1B[2K[%'{$waitChar}-100s] %d%% %s",
             printf(
-                "{$tplPrefix}[%'{$waitChar}-100s] %' 3d%% %s",
+                "%s[%'$waitChar-100s] %' 3d%% %s",
+                $tplPrefix,
                 str_repeat($opts['doneChar'], $percent) . ($finished ? '' : $opts['signChar']),
                 $percent,
                 $msg

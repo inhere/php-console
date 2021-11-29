@@ -98,7 +98,7 @@ final class Char
      *  ...
      * ]
      */
-    private static $constants;
+    private static array $constants;
 
     /**
      * @return array

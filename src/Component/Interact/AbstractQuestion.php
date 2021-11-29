@@ -10,7 +10,7 @@
 namespace Inhere\Console\Component\Interact;
 
 use Inhere\Console\Component\InteractiveHandle;
-use Toolkit\Stdlib\Str\StrObject;
+use Toolkit\Stdlib\Str\StrValue;
 
 /**
  * Class AbstractQuestion
@@ -20,22 +20,22 @@ use Toolkit\Stdlib\Str\StrObject;
 abstract class AbstractQuestion extends InteractiveHandle
 {
     /**
-     * @var StrObject
+     * @var StrValue|null
      */
-    protected $answer;
+    protected ?StrValue $answer = null;
 
     /**
      * @param string $str
      */
     protected function createAnswer(string $str): void
     {
-        $this->answer = StrObject::new($str)->trim();
+        $this->answer = StrValue::new($str)->trim();
     }
 
     /**
-     * @return StrObject
+     * @return StrValue
      */
-    public function getAnswer(): StrObject
+    public function getAnswer(): StrValue
     {
         return $this->answer;
     }

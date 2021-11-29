@@ -19,12 +19,12 @@ abstract class AbstractSelect extends InteractiveHandle
     /**
      * @var array
      */
-    protected $data = [];
+    protected array $data = [];
 
     /**
      * @var bool
      */
-    protected $allowExit = true;
+    protected bool $allowExit = true;
 
     /**
      * @return bool

@@ -31,7 +31,7 @@ abstract class MessageFormatter implements FormatterInterface
     /**
      * @var array
      */
-    protected $config = [];
+    protected array $config = [];
 
     /**
      * @var callable

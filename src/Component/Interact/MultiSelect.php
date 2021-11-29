@@ -19,19 +19,19 @@ class MultiSelect extends AbstractSelect
      *
      * @var string
      */
-    protected $defaults;
+    protected string $defaults;
 
     /**
      * The selected key
      *
      * @var string[]
      */
-    protected $selected;
+    protected array $selected;
 
     /**
      * @var string[]
      */
-    protected $selectedVals;
+    protected array $selectedVals;
 
     /**
      * @return string[]

@@ -30,17 +30,17 @@ class ErrorHandler implements ErrorHandlerInterface
     /**
      * @var bool
      */
-    protected $debug = false;
+    protected bool $debug = false;
 
     /**
      * @var string
      */
-    protected $rootPath = '';
+    protected string $rootPath = '';
 
     /**
      * @var bool
      */
-    protected $hideRootPath = false;
+    protected bool $hideRootPath = false;
 
     /**
      * @param array $config

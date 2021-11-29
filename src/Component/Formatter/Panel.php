@@ -35,48 +35,48 @@ use const PHP_EOL;
 class Panel extends MessageFormatter
 {
     /** @var string */
-    public $title = '';
+    public string $title = '';
 
     /** @var string */
-    public $titleBorder = '-';
+    public string $titleBorder = '-';
 
     /** @var string */
-    public $titleStyle = 'bold';
+    public string $titleStyle = 'bold';
 
     /** @var string */
-    public $titleAlign = self::ALIGN_LEFT;
+    public string $titleAlign = self::ALIGN_LEFT;
 
     /** @var string|array */
-    public $data;
+    public string|array $data;
 
     /** @var string */
-    public $bodyAlign = self::ALIGN_LEFT;
+    public string $bodyAlign = self::ALIGN_LEFT;
 
     /** @var string */
-    public $footerBorder = '-';
+    public string $footerBorder = '-';
 
     /** @var string */
-    public $footer = '';
+    public string $footer = '';
 
     /** @var bool */
-    public $ucFirst = true;
+    public bool $ucFirst = true;
 
     /** @var int */
-    public $width = 0;
+    public int $width = 0;
 
     /** @var bool */
-    public $showBorder = true;
+    public bool $showBorder = true;
 
     /** @var string */
-    public $borderYChar = '-';
+    public string $borderYChar = '-';
 
     /** @var string */
-    public $borderXChar = '|';
+    public string $borderXChar = '|';
 
     /**
      * @var string Template for the panel. don't contains border
      */
-    public $template = <<<EOF
+    public string $template = <<<EOF
 {%title%}
 {%title-border%}
 {%content%}
@@ -93,7 +93,7 @@ EOF;
      *
      * @return int
      */
-    public static function show($data, string $title = 'Information Panel', array $opts = []): int
+    public static function show(mixed $data, string $title = 'Information Panel', array $opts = []): int
     {
         if (!$data) {
             Console::write('<info>No data to display!</info>');
@@ -164,7 +164,7 @@ EOF;
             $titleLength = mb_strlen($title, 'UTF-8');
             $panelWidth  = $panelWidth > $titleLength ? $panelWidth : $titleLength;
             $indentSpace = Str::pad(' ', ceil($panelWidth / 2) - ceil($titleLength / 2) + 2 * 2, ' ');
-            Console::write("  {$indentSpace}<bold>{$title}</bold>");
+            Console::write("  $indentSpace<bold>$title</bold>");
         }
 
         // output panel top border
@@ -226,7 +226,6 @@ EOF;
             if (is_array($value)) {
                 $temp = '';
 
-                /** @var array $value */
                 foreach ($value as $key => $val) {
                     if (is_bool($val)) {
                         $val = $val ? 'True' : 'False';
@@ -262,7 +261,7 @@ EOF;
             $titleLength = mb_strlen($title, 'UTF-8');
             $panelWidth  = $panelWidth > $titleLength ? $panelWidth : $titleLength;
             $indentSpace = Str::pad(' ', ceil($panelWidth / 2) - ceil($titleLength / 2) + 2 * 2, ' ');
-            $buffer->write("  {$indentSpace}<bold>{$title}</bold>\n");
+            $buffer->write("  $indentSpace<bold>$title</bold>\n");
         }
 
         // output panel top border
@@ -297,7 +296,7 @@ EOF;
      *
      * @return $this
      */
-    public function showBorder($border): self
+    public function showBorder(bool $border): self
     {
         $this->showBorder = (bool)$border;
         return $this;

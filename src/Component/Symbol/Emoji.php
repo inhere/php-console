@@ -131,7 +131,7 @@ final class Emoji
      *  ...
      * ]
      */
-    private static $constants;
+    private static array $constants;
 
     /**
      * @return array
