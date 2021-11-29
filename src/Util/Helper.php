@@ -20,6 +20,7 @@ use RecursiveIteratorIterator;
 use RuntimeException;
 use Swoole\Coroutine;
 use Toolkit\Stdlib\Arr\ArrayHelper;
+use Traversable;
 use function class_exists;
 use function file_exists;
 use function is_dir;
@@ -28,7 +29,6 @@ use function preg_match;
 use function similar_text;
 use function sprintf;
 use function strlen;
-use function strpos;
 
 /**
  * Class Helper
@@ -77,7 +77,7 @@ class Helper
      */
     public static function isAbsPath(string $path): bool
     {
-        return strpos($path, '/') === 0 || 1 === preg_match('#^[a-z]:[\/|\\\]{1}.+#i', $path);
+        return str_starts_with($path, '/') || 1 === preg_match('#^[a-z]:[\/|\\\]{1}.+#i', $path);
     }
 
     /**
@@ -126,7 +126,7 @@ class Helper
     /**
      * @param string   $srcDir
      * @param callable $filter
-     * @param int      $flags
+     * @param int $flags
      *
      * @return RecursiveIteratorIterator
      * @throws InvalidArgumentException
@@ -134,7 +134,7 @@ class Helper
     public static function directoryIterator(
         string $srcDir,
         callable $filter,
-        $flags = FilesystemIterator::KEY_AS_PATHNAME | FilesystemIterator::CURRENT_AS_FILEINFO
+        int $flags = FilesystemIterator::KEY_AS_PATHNAME | FilesystemIterator::CURRENT_AS_FILEINFO
     ): RecursiveIteratorIterator {
         if (!$srcDir || !file_exists($srcDir)) {
             throw new InvalidArgumentException('Please provide a exists source directory.');
@@ -158,12 +158,12 @@ class Helper
      * find similar text from an array|Iterator
      *
      * @param string         $need
-     * @param Iterator|array $iterator
+     * @param Traversable|array $iterator
      * @param int            $similarPercent
      *
      * @return array
      */
-    public static function findSimilar(string $need, $iterator, int $similarPercent = 45): array
+    public static function findSimilar(string $need, Traversable|array $iterator, int $similarPercent = 45): array
     {
         if (!$need) {
             return [];

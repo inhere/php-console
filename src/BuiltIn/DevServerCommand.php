@@ -15,7 +15,6 @@ use Inhere\Console\Command;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
 use Inhere\Console\Util\PhpDevServe;
-use function strpos;
 
 /**
  * Class DevServerCommand
@@ -24,9 +23,9 @@ use function strpos;
  */
 class DevServerCommand extends Command
 {
-    protected static $name = 'dev:server';
+    protected static string $name = 'dev:server';
 
-    protected static $description = 'Start a php built-in http server for development';
+    protected static string $description = 'Start a php built-in http server for development';
 
     public static function aliases(): array
     {
@@ -68,7 +67,7 @@ class DevServerCommand extends Command
         }
 
         $port = $this->flags->getOpt('port');
-        if ($port && strpos($serveAddr, ':') === false) {
+        if ($port && !str_contains($serveAddr, ':')) {
             $serveAddr .= ':' . $port;
         }
 

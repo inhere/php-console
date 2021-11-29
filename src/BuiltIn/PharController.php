@@ -34,19 +34,19 @@ use function realpath;
  */
 class PharController extends Controller
 {
-    protected static $name = 'phar';
+    protected static string $name = 'phar';
 
-    protected static $description = 'Pack a project directory to phar or unpack phar to directory';
+    protected static string $description = 'Pack a project directory to phar or unpack phar to directory';
 
     /**
      * @var Closure
      */
-    private $compilerConfiger;
+    private Closure $compilerConfiger;
 
     /**
      * @var string
      */
-    private $defPkgName;
+    private string $defPkgName;
 
     protected static function commandAliases(): array
     {

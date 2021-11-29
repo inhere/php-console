@@ -35,14 +35,14 @@ class SelfUpdateCommand extends Command
 
     public const FILE_NAME = 'console.phar';
 
-    protected static $name = 'self-update';
+    protected static string $name = 'self-update';
 
-    protected static $description = 'Update phar package to most recent stable, pre-release or development build.';
+    protected static string $description = 'Update phar package to most recent stable, pre-release or development build.';
 
     /**
      * @var string
      */
-    protected $version;
+    protected string $version;
 
     /**
      * Execute the command.
@@ -118,7 +118,7 @@ class SelfUpdateCommand extends Command
         $this->updateToMostRecentNonDevRemote();
     }
 
-    protected function getStableUpdater()
+    protected function getStableUpdater(): Updater
     {
         $updater = new Updater;
         $updater->setStrategy(Updater::STRATEGY_GITHUB);
@@ -126,7 +126,7 @@ class SelfUpdateCommand extends Command
         return $this->getGithubReleasesUpdater($updater);
     }
 
-    protected function getPreReleaseUpdater()
+    protected function getPreReleaseUpdater(): Updater
     {
         $updater = new Updater;
         $updater->setStrategy(Updater::STRATEGY_GITHUB);
@@ -135,7 +135,7 @@ class SelfUpdateCommand extends Command
         return $this->getGithubReleasesUpdater($updater);
     }
 
-    protected function getMostRecentNonDevUpdater()
+    protected function getMostRecentNonDevUpdater(): Updater
     {
         $updater = new Updater;
         $updater->setStrategy(Updater::STRATEGY_GITHUB);

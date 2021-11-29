@@ -42,14 +42,14 @@ class PhpDevServe
      *
      * @var string
      */
-    protected $phpBin = self::PHP_BIN;
+    protected string $phpBin = self::PHP_BIN;
 
     /**
      * The document root dir for server
      *
      * @var string
      */
-    protected $docRoot = '';
+    protected string $docRoot = '';
 
     /**
      * The entry file for server. e.g web/index.php
@@ -57,14 +57,14 @@ class PhpDevServe
      *
      * @var string
      */
-    protected $entryFile = '';
+    protected string $entryFile = '';
 
     /**
      * The http server address. e.g 127.0.0.1:8552
      *
      * @var string
      */
-    protected $serveAddr = '';
+    protected string $serveAddr = '';
 
     /**
      * Can custom message for print before start server.
@@ -79,17 +79,17 @@ class PhpDevServe
      *
      * @var array
      */
-    private $hceData = [];
+    private array $hceData = [];
 
     /**
      * @var string
      */
-    private $hceEnv = '';
+    private string $hceEnv = '';
 
     /**
      * @var array
      */
-    private $envVars = [];
+    private array $envVars = [];
 
     /**
      * @param string $serveAddr
@@ -243,9 +243,10 @@ class PhpDevServe
 
     /**
      * @param string $hceFile
-     * @param bool   $mustLoad
+     * @param bool $mustLoad
      *
      * @return bool
+     * @throws \JsonException
      */
     public function loadHceFile(string $hceFile, bool $mustLoad = false): bool
     {

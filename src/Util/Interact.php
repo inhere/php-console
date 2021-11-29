@@ -32,7 +32,7 @@ class Interact extends Show
     /**
      * read line from CLI input
      *
-     * @param mixed $message
+     * @param mixed|null $message
      * @param bool  $nl
      * @param array $opts
      *   [
@@ -41,7 +41,7 @@ class Interact extends Show
      *
      * @return string
      */
-    public static function readln($message = null, bool $nl = false, array $opts = []): string
+    public static function readln(mixed $message = null, bool $nl = false, array $opts = []): string
     {
         return Cli::readln($message, $nl, $opts);
     }
@@ -49,23 +49,23 @@ class Interact extends Show
     /**
      * 读取输入信息
      *
-     * @param mixed $message 若不为空，则先输出文本
+     * @param mixed|null $message 若不为空，则先输出文本
      * @param bool  $nl      true 会添加换行符 false 原样输出，不添加换行符
      *
      * @return string
      */
-    public static function readRow($message = null, bool $nl = false): string
+    public static function readRow(mixed $message = null, bool $nl = false): string
     {
         return Cli::readln($message, $nl);
     }
 
     /**
-     * @param null|mixed $message
+     * @param mixed|null $message
      * @param bool       $nl
      *
      * @return string
      */
-    public static function readFirst($message = null, bool $nl = false): string
+    public static function readFirst(mixed $message = null, bool $nl = false): string
     {
         return Cli::readFirst($message, $nl);
     }
@@ -78,14 +78,14 @@ class Interact extends Show
      * alias of the `select()`
      *
      * @param string       $description 说明
-     * @param string|array $options     选项数据
+     * @param array|string $options     选项数据
      * @param null         $default     默认选项
      * @param bool         $allowExit   有退出选项 默认 true
      * @param array        $opts
      *
      * @return string
      */
-    public static function select(string $description, $options, $default = null, bool $allowExit = true, array $opts = []): string
+    public static function select(string $description, array|string $options, $default = null, bool $allowExit = true, array $opts = []): string
     {
         return self::choice($description, $options, $default, $allowExit, $opts);
     }
@@ -94,7 +94,7 @@ class Interact extends Show
      * Choose one of several options
      *
      * @param string       $description
-     * @param string|array $options Option data
+     * @param array|string $options Option data
      *                              e.g
      *                              [
      *                              // option => value
@@ -107,7 +107,7 @@ class Interact extends Show
      *
      * @return string
      */
-    public static function choice(string $description, $options, $default = null, bool $allowExit = true, array $opts = []): string
+    public static function choice(string $description, array|string $options, $default = null, bool $allowExit = true, array $opts = []): string
     {
         return Choose::one($description, $options, $default, $allowExit, $opts);
     }
@@ -116,13 +116,13 @@ class Interact extends Show
      * alias of the `multiSelect()`
      *
      * @param string       $description
-     * @param string|array $options
-     * @param null|mixed   $default
+     * @param array|string $options
+     * @param mixed|null $default
      * @param bool         $allowExit
      *
      * @return array
      */
-    public static function checkbox(string $description, $options, $default = null, bool $allowExit = true): array
+    public static function checkbox(string $description, array|string $options, mixed $default = null, bool $allowExit = true): array
     {
         return self::multiSelect($description, $options, $default, $allowExit);
     }
@@ -131,13 +131,13 @@ class Interact extends Show
      * List multiple options and allow multiple selections
      *
      * @param string       $description
-     * @param string|array $options
-     * @param null|mixed   $default
+     * @param array|string $options
+     * @param mixed|null $default
      * @param bool         $allowExit
      *
      * @return array
      */
-    public static function multiSelect(string $description, $options, $default = null, bool $allowExit = true): array
+    public static function multiSelect(string $description, array|string $options, mixed $default = null, bool $allowExit = true): array
     {
         return Checkbox::select($description, $options, $default, $allowExit);
     }

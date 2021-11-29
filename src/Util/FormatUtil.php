@@ -19,13 +19,11 @@ use function array_keys;
 use function array_merge;
 use function array_shift;
 use function explode;
-use function get_class;
 use function implode;
 use function is_array;
 use function is_bool;
 use function is_int;
 use function is_numeric;
-use function is_object;
 use function is_scalar;
 use function rtrim;
 use function str_repeat;
@@ -33,7 +31,6 @@ use function str_replace;
 use function strpos;
 use function trim;
 use function ucfirst;
-use function vdump;
 use function wordwrap;
 use const STR_PAD_RIGHT;
 
@@ -49,7 +46,7 @@ final class FormatUtil
      *
      * @return string
      */
-    public static function typeToString($val): string
+    public static function typeToString(mixed $val): string
     {
         if (null === $val) {
             return '(Null)';
@@ -184,7 +181,7 @@ final class FormatUtil
      * @return string
      * @deprecated use Format::memory($secs);
      */
-    public static function memoryUsage($memory): string
+    public static function memoryUsage(float|int $memory): string
     {
         return Format::memory($memory);
     }

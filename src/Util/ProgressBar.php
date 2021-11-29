@@ -37,39 +37,39 @@ class ProgressBar
     /**
      * @var int
      */
-    private $barWidth = 30;
+    private int $barWidth = 30;
 
     /**
      * @var string 已完成的显示字符
      */
-    private $completeChar = '=';
+    private string $completeChar = '=';
 
     /**
      * @var string 当前进度的显示字符
      */
-    private $progressChar = '>';
+    private string $progressChar = '>';
 
     /**
      * @var string 剩下的的显示字符
      */
-    private $remainingChar = '-';
+    private string $remainingChar = '-';
 
     /**
      * @var int
      */
-    private $redrawFreq = 1;
+    private int $redrawFreq = 1;
 
     /**
      * @var string
      */
-    private $format;
+    private string $format;
 
     /**
      * 已完成百分比
      *
      * @var float
      */
-    private $percent = 0.0;
+    private float $percent = 0.0;
 
     /**
      * maximal steps.
@@ -77,7 +77,7 @@ class ProgressBar
      *
      * @var int
      */
-    private $step = 0;
+    private int $step = 0;
 
     /**
      * maximal steps.
@@ -85,7 +85,7 @@ class ProgressBar
      *
      * @var int
      */
-    private $maxSteps;
+    private int $maxSteps;
 
     /**
      * step Width
@@ -93,51 +93,51 @@ class ProgressBar
      *
      * @var int
      */
-    private $stepWidth;
+    private int $stepWidth;
 
     /**
      * @var int
      */
-    private $startTime = 0;
+    private int $startTime = 0;
 
     /**
      * @var int
      */
-    private $finishTime = 0;
+    private int $finishTime = 0;
 
     /**
      * @var bool
      */
-    private $overwrite = true;
+    private bool $overwrite = true;
 
     /**
      * @var bool
      */
-    private $started = false;
+    private bool $started = false;
 
     /**
      * @var bool
      */
-    private $firstRun = true;
+    private bool $firstRun = true;
 
     /**
      * @var OutputInterface
      */
-    private $output;
+    private Output|OutputInterface $output;
 
     /**
      * messages
      *
      * @var array
      */
-    private $messages = [];
+    private array $messages = [];
 
     /**
      * section parsers
      *
      * @var Closure[]
      */
-    private static $parsers = [// 'precent' => function () { ... },
+    private static array $parsers = [// 'precent' => function () { ... },
     ];
 
     public const DEFAULT_FORMAT = '[{@bar}] {@percent:3s}%({@current}/{@max}) {@elapsed:6s}/{@estimated:-6s} {@memory:6s}';
@@ -309,7 +309,7 @@ class ProgressBar
      * @return mixed
      * @throws RuntimeException
      */
-    protected function buildLine()
+    protected function buildLine(): mixed
     {
         // $regex = "{%([a-z\-_]+)(?:\:([^%]+))?%}i";
         return preg_replace_callback('/{@([\w]+)(?:\:([\w-]+))?}/i', function ($matches) {
@@ -349,7 +349,7 @@ class ProgressBar
      * @return mixed
      * @throws RuntimeException
      */
-    public function getParser(string $section, bool $throwException = false)
+    public function getParser(string $section, bool $throwException = false): mixed
     {
         if (!self::$parsers) {
             self::$parsers = self::loadDefaultParsers();
@@ -388,7 +388,7 @@ class ProgressBar
      * @param string $message The text to associate with the placeholder
      * @param string $name    The name of the placeholder
      */
-    public function setMessage($message, string $name = 'message'): void
+    public function setMessage(string $message, string $name = 'message'): void
     {
         $this->messages[$name] = $message;
     }
@@ -421,9 +421,9 @@ class ProgressBar
     /**
      * Sets the redraw frequency.
      *
-     * @param int|float $freq The frequency in steps
+     * @param float|int $freq The frequency in steps
      */
-    public function setRedrawFreq($freq): void
+    public function setRedrawFreq(float|int $freq): void
     {
         $this->redrawFreq = max((int)$freq, 1);
     }
@@ -499,11 +499,7 @@ class ProgressBar
      */
     public function getCompleteChar(): string
     {
-        if (null === $this->completeChar) {
-            return $this->maxSteps ? '=' : $this->completeChar;
-        }
-
-        return $this->completeChar;
+        return $this->completeChar ?? ($this->maxSteps ? '=' : $this->completeChar);
     }
 
     /**
@@ -549,7 +545,7 @@ class ProgressBar
     /**
      * @return mixed
      */
-    public function getStartTime()
+    public function getStartTime(): mixed
     {
         return $this->startTime;
     }
@@ -557,7 +553,7 @@ class ProgressBar
     /**
      * @return mixed
      */
-    public function getFinishTime()
+    public function getFinishTime(): mixed
     {
         return $this->finishTime;
     }
@@ -639,7 +635,7 @@ class ProgressBar
                 return $bar->getMaxSteps();
             },
             'percent'   => static function (self $bar) {
-                return (float)floor($bar->getPercent() * 100);
+                return floor($bar->getPercent() * 100);
             },
         ];
     }

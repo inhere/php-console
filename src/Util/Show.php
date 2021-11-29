@@ -41,7 +41,6 @@ use function is_string;
 use function microtime;
 use function sprintf;
 use function strlen;
-use function strpos;
 use function strtoupper;
 use function substr;
 use function ucwords;
@@ -70,14 +69,8 @@ use const PHP_EOL;
  */
 class Show
 {
-    /** @var string */
-    private static $buffer;
-
-    /** @var bool */
-    private static $buffering = false;
-
     /** @var array */
-    public static $defaultBlocks = [
+    public static array $defaultBlocks = [
         'block',
         'primary',
         'info',
@@ -96,11 +89,11 @@ class Show
      * @param mixed       $messages
      * @param string      $type
      * @param string      $style
-     * @param int|boolean $quit If is int, setting it is exit code.
+     * @param bool|int $quit If is int, setting it is exit code.
      *
      * @return int
      */
-    public static function block($messages, string $type = 'MESSAGE', string $style = Style::NORMAL, $quit = false): int
+    public static function block(mixed $messages, string $type = 'MESSAGE', string $style = Style::NORMAL, bool|int $quit = false): int
     {
         $messages = is_array($messages) ? array_values($messages) : [$messages];
 
@@ -123,15 +116,15 @@ class Show
      * @param mixed       $messages
      * @param string      $type
      * @param string      $style
-     * @param int|boolean $quit If is int, setting it is exit code.
+     * @param boolean|int $quit If is int, setting it is exit code.
      *
      * @return int
      */
     public static function liteBlock(
-        $messages,
+        mixed $messages,
         string $type = 'MESSAGE',
         string $style = Style::NORMAL,
-        $quit = false
+        bool|int $quit = false
     ): int {
         $fmtType  = '';
         $messages = is_array($messages) ? array_values($messages) : [$messages];
@@ -156,7 +149,7 @@ class Show
     /**
      * @var array
      */
-    private static $blockMethods = [
+    private static array $blockMethods = [
         // method => style
         'info'        => 'info',
         'note'        => 'note',
@@ -192,7 +185,7 @@ class Show
             $quit  = $args[1] ?? false;
             $style = self::$blockMethods[$method];
 
-            if (0 === strpos($method, 'lite')) {
+            if (str_starts_with($method, 'lite')) {
                 $type = substr($method, 4);
 
                 return self::liteBlock($msg, $type === 'primary' ? 'IMPORTANT' : $type, $style, $quit);
@@ -214,7 +207,7 @@ class Show
      * @param mixed $data
      * @param string $title
      */
-    public static function prettyJSON($data, string $title = 'JSON:'): void
+    public static function prettyJSON(mixed $data, string $title = 'JSON:'): void
     {
         if ($title) {
             Console::colored($title, 'ylw0');
@@ -258,10 +251,10 @@ class Show
 
     /**
      * @param string       $title The title text
-     * @param string|array $body  The section body message
+     * @param array|string $body  The section body message
      * @param array        $opts
      */
-    public static function section(string $title, $body, array $opts = []): void
+    public static function section(string $title, array|string $body, array $opts = []): void
     {
         Section::show($title, $body, $opts);
     }
@@ -295,13 +288,13 @@ class Show
      * ];
      * ```
      *
-     * @param array|object  $data
+     * @param object|array $data
      * @param string $title
      * @param array  $opts More {@see FormatUtil::spliceKeyValue()}
      *
      * @return int|string
      */
-    public static function aList($data, string $title = '', array $opts = [])
+    public static function aList(object|array $data, string $title = '', array $opts = []): int|string
     {
         return SingleList::show($data, $title, $opts);
     }
@@ -313,7 +306,7 @@ class Show
      *
      * @return int|string
      */
-    public static function sList($data, string $title = '', array $opts = [])
+    public static function sList(mixed $data, string $title = '', array $opts = []): int|string
     {
         return SingleList::show($data, $title, $opts);
     }
@@ -375,7 +368,7 @@ class Show
      *
      * @return int
      */
-    public static function panel($data, string $title = 'Information Panel', array $opts = []): int
+    public static function panel(mixed $data, string $title = 'Information Panel', array $opts = []): int
     {
         return Panel::show($data, $title, $opts);
     }
@@ -593,7 +586,7 @@ class Show
      * @param int   $total
      * @param array $opts
      *
-     * @return Generator
+     * @return Generator|null
      * @internal int $current
      */
     public static function progressBar(int $total, array $opts = []): ?Generator
@@ -614,13 +607,13 @@ class Show
      * $bar->finish();
      * ```
      *
-     * @param int  $max
+     * @param int $max
      * @param bool $start
      *
      * @return ProgressBar
      * @throws LogicException
      */
-    public static function createProgressBar($max = 0, $start = true): ProgressBar
+    public static function createProgressBar(int $max = 0, bool $start = true): ProgressBar
     {
         $bar = new ProgressBar(null, $max);
 
@@ -629,103 +622,6 @@ class Show
         }
 
         return $bar;
-    }
-
-    /***********************************************************************************
-     * Output buffer
-     ***********************************************************************************/
-
-    /**
-     * @return bool
-     * @deprecated Please use \Inhere\Console\Console method instead it.
-     */
-    public static function isBuffering(): bool
-    {
-        return self::$buffering;
-    }
-
-    /**
-     * @return string
-     * @deprecated Please use \Inhere\Console\Console method instead it.
-     */
-    public static function getBuffer(): string
-    {
-        return self::$buffer;
-    }
-
-    /**
-     * @param string $buffer
-     *
-     * @deprecated Please use \Inhere\Console\Console method instead it.
-     */
-    public static function setBuffer(string $buffer): void
-    {
-        self::$buffer = $buffer;
-    }
-
-    /**
-     * start buffering
-     *
-     * @deprecated Please use \Inhere\Console\Console method instead it.
-     */
-    public static function startBuffer(): void
-    {
-        self::$buffering = true;
-    }
-
-    /**
-     * start buffering
-     *
-     * @deprecated Please use \Inhere\Console\Console method instead it.
-     */
-    public static function clearBuffer(): void
-    {
-        self::$buffer = null;
-    }
-
-    /**
-     * stop buffering
-     *
-     * @param bool  $flush Whether flush buffer to output stream
-     * @param bool  $nl    Default is False, because the last write() have been added "\n"
-     * @param bool|int  $quit
-     * @param array $opts
-     *
-     * @return null|string If flush = False, will return all buffer text.
-     * @see        Show::write()
-     * @deprecated Please use \Inhere\Console\Console method instead it.
-     */
-    public static function stopBuffer(bool $flush = true, bool $nl = false, $quit = false, array $opts = []): ?string
-    {
-        self::$buffering = false;
-
-        if ($flush && self::$buffer) {
-            // all text have been rendered by Style::render() in every write();
-            $opts['color'] = false;
-
-            // flush to stream
-            self::write(self::$buffer, $nl, $quit, $opts);
-
-            // clear buffer
-            self::$buffer = null;
-        }
-
-        return self::$buffer;
-    }
-
-    /**
-     * stop buffering and flush buffer text
-     *
-     * @param bool  $nl
-     * @param bool  $quit
-     * @param array $opts
-     *
-     * @see        Show::write()
-     * @deprecated Please use \Inhere\Console\Console method instead it.
-     */
-    public static function flushBuffer(bool $nl = false, $quit = false, array $opts = []): void
-    {
-        self::stopBuffer(true, $nl, $quit, $opts);
     }
 
     /***********************************************************************************
@@ -748,10 +644,10 @@ class Show
     /**
      * Write a message to standard output stream.
      *
-     * @param string|array $messages Output message
+     * @param array|string $messages Output message
      * @param boolean      $nl       True 会添加换行符, False 原样输出，不添加换行符
-     * @param int|bool     $quit     If is int, setting it is exit code. 'True' translate as code 0 and exit, 'False' will not exit.
-     * @param array        $opts     Some options for write
+     * @param bool|int $quit     If is int, setting it is exit code. 'True' translate as code 0 and exit, 'False' will not exit.
+     * @param array{color:bool,stream:resource,flush:bool,quit:bool,quitCode:int}  $opts Some options for write
      *                               refer:
      *                               [
      *                               'color'  => bool, // whether render color, default is: True.
@@ -761,22 +657,24 @@ class Show
      *
      * @return int
      */
-    public static function write($messages, bool $nl = true, $quit = false, array $opts = []): int
+    public static function write(array|string $messages, bool $nl = true, bool $quit = false, array $opts = []): int
     {
+        $qCode = $opts['quitCode'] ?? 0;
+
         return Console::write($messages, $nl, $quit, $opts);
     }
 
     /**
      * Write raw data to stdout, will disable color render.
      *
-     * @param string|array $message
-     * @param bool         $nl
-     * @param bool|int     $quit
-     * @param array        $opts
+     * @param array|string $message
+     * @param bool $nl
+     * @param bool $quit
+     * @param array{color:bool,stream:resource,flush:bool,quit:bool,quitCode:int} $opts
      *
      * @return int
      */
-    public static function writeRaw($message, bool $nl = true, $quit = false, array $opts = []): int
+    public static function writeRaw(array|string $message, bool $nl = true, bool $quit = false, array $opts = []): int
     {
         $opts['color'] = false;
         return Console::write($message, $nl, $quit, $opts);
@@ -785,26 +683,26 @@ class Show
     /**
      * Write data to stdout with newline.
      *
-     * @param string|array $message
-     * @param array        $opts
-     * @param bool|int     $quit
+     * @param array|string $message
+     * @param bool $quit
+     * @param array{color:bool,stream:resource,flush:bool,quit:bool,quitCode:int} $opts
      *
      * @return int
      */
-    public static function writeln($message, $quit = false, array $opts = []): int
+    public static function writeln(array|string $message, bool $quit = false, array $opts = []): int
     {
         return Console::write($message, true, $quit, $opts);
     }
 
     /**
-     * @param string|array $message
+     * @param array|string $message
      * @param string       $style
      * @param bool         $nl
-     * @param array        $opts
+     * @param array{quit:bool,quitCode:int}  $opts
      *
      * @return int
      */
-    public static function colored($message, string $style = 'info', bool $nl = true, array $opts = []): int
+    public static function colored(array|string $message, string $style = 'info', bool $nl = true, array $opts = []): int
     {
         $quit = isset($opts['quit']) ? (bool)$opts['quit'] : false;
 
