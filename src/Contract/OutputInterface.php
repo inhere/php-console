@@ -13,6 +13,7 @@ namespace Inhere\Console\Contract;
  * Class OutputInterface
  *
  * @package Inhere\Console\Contract
+ * @method error(string $string)
  */
 interface OutputInterface
 {
@@ -28,11 +29,23 @@ interface OutputInterface
     /**
      * Write a message to output with newline
      *
-     * @param string $content
+     * @param string|int|array|mixed $content
+     * @param bool $quit
+     * @param array $opts
      *
      * @return int
      */
-    public function writeln(string $content): int;
+    public function writeln(mixed $content, bool $quit = false, array $opts = []): int;
+
+    /**
+     * Write a message to output with format.
+     *
+     * @param string $format
+     * @param mixed ...$args
+     *
+     * @return int
+     */
+    public function writef(string $format, ...$args): int;
 
     /**
      * Whether the stream is an interactive terminal

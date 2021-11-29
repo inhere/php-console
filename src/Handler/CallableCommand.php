@@ -64,7 +64,7 @@ class CallableCommand extends Command
      *
      * @return int|mixed
      */
-    protected function execute(Input $input, Output $output)
+    protected function execute(Input $input, Output $output): mixed
     {
         if (!$call = $this->callable) {
             throw new BadMethodCallException('The callable property is empty');

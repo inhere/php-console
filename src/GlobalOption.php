@@ -49,7 +49,7 @@ class GlobalOption
      * @var array
      * @psalm-var array<string, string>
      */
-    private static $options = [
+    private static array $options = [
         'debug'          => [
             'type'    => FlagType::INT,
             'desc'    => 'Setting the runtime log debug level, quiet 0 - crazy 5',
@@ -93,7 +93,7 @@ class GlobalOption
     /**
      * @var array built-in options for the alone command
      */
-    protected static $aloneOptions = [
+    protected static array $aloneOptions = [
         // '--help'          => 'bool;Display this help message;;;h',
         // '--show-disabled' => 'string;Whether display disabled commands',
     ];
@@ -103,7 +103,7 @@ class GlobalOption
     /**
      * @var array built-in options for the group command
      */
-    protected static $groupOptions = [
+    protected static array $groupOptions = [
         // '--help'          => 'bool;Display this help message;;;h',
         self::SHOW_DISABLED => [
             'hidden' => true,
@@ -114,7 +114,7 @@ class GlobalOption
     /**
      * @var array common options for the group/command
      */
-    protected static $commonOptions = [
+    protected static array $commonOptions = [
         self::HELP => 'bool;Display command help message;;;h',
     ];
 

@@ -72,9 +72,9 @@ class Console extends Cli
     public const DEBUG_ENV_KEY = 'CONSOLE_DEBUG';
 
     /**
-     * @var Application
+     * @var Application|null
      */
-    private static $app;
+    private static ?Application $app;
 
     /**
      * @return Application
@@ -126,7 +126,7 @@ class Console extends Cli
     /**
      * @var int
      */
-    public static $traceIndex = 1;
+    public static int $traceIndex = 1;
 
     /**
      * @param int    $level
@@ -171,7 +171,7 @@ class Console extends Cli
         $userOpts = [];
         $datetime = date('Y/m/d H:i:s');
         foreach ($opts as $n => $v) {
-            if (is_numeric($n) || strpos($n, '_') === 0) {
+            if (is_numeric($n) || str_starts_with($n, '_')) {
                 $userOpts[] = "[$v]";
             } else {
                 $userOpts[] = "[$n:$v]";

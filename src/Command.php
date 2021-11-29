@@ -34,14 +34,14 @@ abstract class Command extends AbstractHandler implements CommandInterface
     public const METHOD = 'execute';
 
     /**
-     * @var Controller
+     * @var Controller|null
      */
-    protected $group;
+    protected ?Controller $group = null;
 
     /**
-     * @var Command
+     * @var Command|null
      */
-    protected $parent;
+    protected ?Command $parent = null;
 
     protected function init(): void
     {
@@ -140,8 +140,8 @@ abstract class Command extends AbstractHandler implements CommandInterface
      * Get the group
      *
      * @return  Controller
-     */ 
-    public function getGroup()
+     */
+    public function getGroup(): ?Controller
     {
         return $this->group;
     }
@@ -150,7 +150,7 @@ abstract class Command extends AbstractHandler implements CommandInterface
      * Set the value of group
      *
      * @param  Controller  $group
-     */ 
+     */
     public function setGroup(Controller $group): void
     {
         $this->group = $group;

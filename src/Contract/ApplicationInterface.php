@@ -35,7 +35,7 @@ interface ApplicationInterface
      *
      * @return int|mixed
      */
-    public function run(bool $exit = true);
+    public function run(bool $exit = true): mixed;
 
     /**
      * Dispatch input command, exec found command handler.
@@ -48,20 +48,18 @@ interface ApplicationInterface
      *
      * @return int|mixed
      */
-    public function dispatch(string $name, array $args = []);
+    public function dispatch(string $name, array $args = []): mixed;
 
     /**
      * @param int $code
-     *
-     * @return mixed
      */
-    public function stop(int $code = 0);
+    public function stop(int $code = 0): void;
 
     /**
      * Register a app group command(by controller)
      *
      * @param string $name The controller name
-     * @param string|ControllerInterface $class The controller class
+     * @param string|ControllerInterface|null $class The controller class
      * @param array $config config the controller
      *                      - aliases   The command aliases
      *                      - desc      The description message
@@ -69,13 +67,13 @@ interface ApplicationInterface
      * @return static
      * @throws InvalidArgumentException
      */
-    public function controller(string $name, $class = null, array $config = []): ApplicationInterface;
+    public function controller(string $name, ControllerInterface|string $class = null, array $config = []): ApplicationInterface;
 
     /**
      * Register a app independent console command
      *
      * @param string|CommandInterface $name
-     * @param string|Closure|CommandInterface $handler
+     * @param string|Closure|CommandInterface|null $handler
      * @param array $config config the command
      *                      - aliases     The command aliases
      *                      - desc        The description message
@@ -83,7 +81,7 @@ interface ApplicationInterface
      * @return mixed
      * @throws InvalidArgumentException
      */
-    public function command(string $name, $handler = null, array $config = []);
+    public function command(string $name, string|Closure|CommandInterface $handler = null, array $config = []): static;
 
     public function showCommandList();
 

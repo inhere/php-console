@@ -36,5 +36,5 @@ $compiler->setStripFilter(static function ($file) {
   /** @var SplFileInfo $file */
   $name = $file->getFilename();
 
-  return false === strpos($name, 'Command.php') && false === strpos($name, 'Controller.php');
+  return !str_contains($name, 'Command.php') && !str_contains($name, 'Controller.php');
 });

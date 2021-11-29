@@ -42,14 +42,14 @@ class Router implements RouterInterface
     /**
      * @var array
      */
-    private $blocked = ['help', 'version'];
+    private array $blocked = ['help', 'version'];
 
     /**
      * Command delimiter char. e.g dev:serve
      *
      * @var string
      */
-    private $delimiter = ':'; // '/' ':'
+    private string $delimiter = ':'; // '/' ':'
 
     /**
      * The independent commands
@@ -62,7 +62,7 @@ class Router implements RouterInterface
      *  ]
      * ]
      */
-    private $commands = [];
+    private array $commands = [];
 
     /**
      * The group commands(controller)
@@ -75,7 +75,7 @@ class Router implements RouterInterface
      *  ]
      * ]
      */
-    private $controllers = [];
+    private array $controllers = [];
 
     /**********************************************************
      * register command/group methods
@@ -94,7 +94,7 @@ class Router implements RouterInterface
      * @return Router
      * @throws InvalidArgumentException
      */
-    public function addGroup(string $name, $class = null, array $options = []): RouterInterface
+    public function addGroup(string $name, ControllerInterface|string $class = null, array $options = []): RouterInterface
     {
         /**
          * @var Controller $class name is an controller class
@@ -161,7 +161,7 @@ class Router implements RouterInterface
      * @return Router|RouterInterface
      * @throws InvalidArgumentException
      */
-    public function addCommand(string $name, $handler = null, array $options = []): RouterInterface
+    public function addCommand(string $name, string|Closure|CommandInterface $handler = null, array $options = []): RouterInterface
     {
         if (!$handler && class_exists($name)) {
             $handler = $name;

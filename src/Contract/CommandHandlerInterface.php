@@ -37,7 +37,7 @@ interface CommandHandlerInterface
      *
      * @return int|mixed return int is exit code. other is command exec result.
      */
-    public function run(array $args);
+    public function run(array $args): mixed;
 
     /**
      * @return AbstractApplication|ApplicationInterface

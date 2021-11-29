@@ -29,7 +29,7 @@ class DocblockRules
      *
      * @var array
      */
-    protected static $allowedTags = [
+    protected static array $allowedTags = [
         // tag name => multi line align
         'desc'      => false,
         'usage'     => false,
@@ -46,17 +46,17 @@ class DocblockRules
      * @see $allowedTags for keys
      * @psalm-var array<string, mixed>
      */
-    private $docTags;
+    private array $docTags;
 
     /**
      * @var array
      */
-    private $argRules = [];
+    private array $argRules = [];
 
     /**
      * @var array
      */
-    private $optRules = [];
+    private array $optRules = [];
 
     /**
      * @param string $doc

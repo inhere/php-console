@@ -19,7 +19,7 @@ class AnnotateRules
      *
      * @var array
      */
-    protected static $allowedTags = [
+    protected static array $allowedTags = [
         // tag name => allow multi tags
         'desc'     => false,
         'usage'    => false,

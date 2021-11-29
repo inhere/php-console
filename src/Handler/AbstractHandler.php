@@ -58,7 +58,7 @@ abstract class AbstractHandler implements CommandHandlerInterface
      *
      * @var string
      */
-    protected static $name = '';
+    protected static string $name = '';
 
     /**
      * command/controller description message
@@ -66,7 +66,7 @@ abstract class AbstractHandler implements CommandHandlerInterface
      *
      * @var string
      */
-    protected static $desc = '';
+    protected static string $desc = '';
 
     /**
      * command/controller description message
@@ -74,46 +74,46 @@ abstract class AbstractHandler implements CommandHandlerInterface
      * @var string
      * @deprecated please use {@see $desc}
      */
-    protected static $description = '';
+    protected static string $description = '';
 
     /**
      * @var bool Whether enable coroutine. It is require swoole extension.
      */
-    protected static $coroutine = false;
+    protected static bool $coroutine = false;
 
     /**
      * @var bool
      */
-    private $initialized = false;
+    private bool $initialized = false;
 
     /**
      * Compatible mode run command.
      *
      * @var bool
      */
-    protected $compatible = true;
+    protected bool $compatible = true;
 
     /**
      * @var string
      */
-    protected $processTitle = '';
+    protected string $processTitle = '';
 
     /**
      * @var DataObject
      */
-    protected $params;
+    protected DataObject $params;
 
     /**
      * The input command name. maybe is an alias name.
      *
      * @var string
      */
-    protected $commandName = '';
+    protected string $commandName = '';
 
     /**
      * @var array Command options
      */
-    protected $commandOptions = [];
+    protected array $commandOptions = [];
 
     /**
      * Whether enabled
@@ -293,7 +293,7 @@ abstract class AbstractHandler implements CommandHandlerInterface
      * @return bool|int|mixed
      * @throws Throwable
      */
-    public function run(array $args)
+    public function run(array $args): mixed
     {
         $name = self::getName();
 
@@ -329,7 +329,7 @@ abstract class AbstractHandler implements CommandHandlerInterface
      *
      * @return int|mixed
      */
-    protected function doRun(array $args)
+    protected function doRun(array $args): mixed
     {
         if (isset($args[0])) {
             $first = $args[0];
@@ -411,7 +411,7 @@ abstract class AbstractHandler implements CommandHandlerInterface
      * @param Input $input
      * @param Output $output
      *
-     * @return int|mixed
+     * @return void|mixed
      */
     abstract protected function execute(Input $input, Output $output);
 
@@ -662,7 +662,7 @@ abstract class AbstractHandler implements CommandHandlerInterface
     /**
      * @param bool|mixed $coroutine
      */
-    public static function setCoroutine($coroutine): void
+    public static function setCoroutine(mixed $coroutine): void
     {
         static::$coroutine = (bool)$coroutine;
     }

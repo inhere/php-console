@@ -11,6 +11,7 @@ namespace Inhere\Console;
 
 use Closure;
 use Inhere\Console\Contract\ApplicationInterface;
+use Inhere\Console\Contract\CommandInterface;
 use Inhere\Console\Contract\ControllerInterface;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
@@ -61,7 +62,7 @@ class Application extends AbstractApplication
     /**
      * {@inheritdoc}
      */
-    public function controller(string $name, $class = null, array $config = []): ApplicationInterface
+    public function controller(string $name, ControllerInterface|string $class = null, array $config = []): ApplicationInterface
     {
         $this->logf(Console::VERB_CRAZY, 'register group controller: %s', $name);
         $this->router->addGroup($name, $class, $config);
@@ -79,7 +80,7 @@ class Application extends AbstractApplication
      * @return Application|Contract\ApplicationInterface
      * @see controller()
      */
-    public function addGroup(string $name, $class = null, array $config = []): ApplicationInterface
+    public function addGroup(string $name, ControllerInterface|string $class = null, array $config = []): ApplicationInterface
     {
         return $this->controller($name, $class, $config);
     }
@@ -92,7 +93,7 @@ class Application extends AbstractApplication
      * @return Application|Contract\ApplicationInterface
      * @see controller()
      */
-    public function addController(string $name, $class = null, array $config = []): ApplicationInterface
+    public function addController(string $name, ControllerInterface|string $class = null, array $config = []): ApplicationInterface
     {
         return $this->controller($name, $class, $config);
     }
@@ -131,7 +132,7 @@ class Application extends AbstractApplication
     /**
      * {@inheritdoc}
      */
-    public function command(string $name, $handler = null, array $config = [])
+    public function command(string $name, string|Closure|CommandInterface $handler = null, array $config = []): static
     {
         $this->logf(Console::VERB_CRAZY, 'register alone command: %s', $name);
         $this->router->addCommand($name, $handler, $config);
@@ -143,13 +144,13 @@ class Application extends AbstractApplication
      * add command
      *
      * @param string $name
-     * @param null|mixed $handler
+     * @param mixed|null $handler
      * @param array $config
      *
      * @return Application
      * @see command()
      */
-    public function addCommand(string $name, $handler = null, array $config = []): self
+    public function addCommand(string $name, mixed $handler = null, array $config = []): self
     {
         return $this->command($name, $handler, $config);
     }
@@ -231,7 +232,7 @@ class Application extends AbstractApplication
             $name = $f->getFilename();
 
             // Skip hidden files and directories.
-            if (strpos($name, '.') === 0) {
+            if (str_starts_with($name, '.')) {
                 return false;
             }
 
@@ -241,7 +242,7 @@ class Application extends AbstractApplication
             }
 
             // php file
-            return $f->isFile() && substr($name, -4) === '.php';
+            return $f->isFile() && str_ends_with($name, '.php');
         };
     }
 
@@ -253,10 +254,10 @@ class Application extends AbstractApplication
      * @param string $name command name or command ID or command path.
      * @param array $args
      *
-     * @return int|mixed
+     * @return mixed
      * @throws Throwable
      */
-    public function dispatch(string $name, array $args = [])
+    public function dispatch(string $name, array $args = []): mixed
     {
         if (!$name = trim($name)) {
             throw new InvalidArgumentException('cannot dispatch an empty command');
@@ -320,7 +321,7 @@ class Application extends AbstractApplication
      * @return mixed
      * @throws Throwable
      */
-    protected function runCommand(array $info, array $options, array $args)
+    protected function runCommand(array $info, array $options, array $args): mixed
     {
         /** @var Closure|string $handler Command class or handler func */
         $handler = $info['handler'];
@@ -373,7 +374,7 @@ class Application extends AbstractApplication
      * @return mixed
      * @throws Throwable
      */
-    protected function runAction(array $info, array $options, array $args, bool $detachedRun = false)
+    protected function runAction(array $info, array $options, array $args, bool $detachedRun = false): mixed
     {
         $controller = $this->createController($info);
         $controller::setDesc($options['desc'] ?? '');

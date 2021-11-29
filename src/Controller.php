@@ -61,12 +61,12 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
      *
      * @var array
      */
-    private static $commandAliases = [];
+    private static array $commandAliases = [];
 
     /**
      * @var array global options for the group command
      */
-    protected static $globalOptions = [
+    protected static array $globalOptions = [
         '--show-disabled' => 'Whether display disabled commands',
     ];
 
@@ -77,38 +77,38 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
      *
      * @var string
      */
-    private $action = '';
+    private string $action = '';
 
     /**
      * The input group name.
      *
      * @var string
      */
-    private $groupName = '';
+    private string $groupName = '';
 
     /**
      * The delimiter. eg: '/' ':'
      *
      * @var string
      */
-    private $delimiter = ':';
+    private string $delimiter = ':';
 
     /**
      * @var string
      */
-    private $defaultAction = '';
+    private string $defaultAction = '';
 
     /**
      * The action method name on the controller.
      *
      * @var string
      */
-    private $actionMethod = '';
+    private string $actionMethod = '';
 
     /**
      * @var string
      */
-    private $actionSuffix = self::COMMAND_SUFFIX;
+    private string $actionSuffix = self::COMMAND_SUFFIX;
 
     /**
      * Flags for all action commands
@@ -123,19 +123,19 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
      * @var FlagsParser[]
      * @psalm-var array<string, FlagsParser>
      */
-    private $subFss = [];
+    private array $subFss = [];
 
     /**
      * @var array From disabledCommands()
      */
-    private $disabledCommands = [];
+    private array $disabledCommands = [];
 
     /**
      * TODO ...
      *
      * @var array
      */
-    private $attachedCommands = [];
+    private array $attachedCommands = [];
 
     /**
      * Metadata for sub-commands. such as: desc, alias
@@ -150,7 +150,7 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
      *
      * @var array
      */
-    protected $commandMetas = [];
+    protected array $commandMetas = [];
 
     /**
      * Define command alias mapping. please rewrite it on sub-class.
@@ -243,7 +243,7 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
      * @return bool|int|mixed
      * @throws Throwable
      */
-    public function runActionWithArgs(string $cmd, array $args)
+    public function runActionWithArgs(string $cmd, array $args): mixed
     {
         $args[0] = $cmd;
         return $this->doRun($args);
@@ -259,7 +259,7 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
      * @return int|mixed
      * @throws Throwable
      */
-    public function doRun(array $args)
+    public function doRun(array $args): mixed
     {
         $name = self::getName();
         if (!$args) {
@@ -374,7 +374,7 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
      * @return mixed
      * @throws ReflectionException
      */
-    final public function execute(Input $input, Output $output)
+    final public function execute(Input $input, Output $output): mixed
     {
         $action = $this->action;
         $group  = static::getName();
@@ -807,7 +807,7 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
      *
      * @return mixed|null
      */
-    public function getCommandMeta(string $key, $default = null, string $command = '')
+    public function getCommandMeta(string $key, $default = null, string $command = ''): mixed
     {
         $action = $command ?: $this->action;
 

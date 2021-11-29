@@ -21,11 +21,11 @@ class RuleArg
     /**
      * @var string
      */
-    public $name;
+    public string $name;
 
     /**
      * @var string
      * @see FlagsParser::$argRules
      */
-    public $rule;
+    public string $rule;
 }

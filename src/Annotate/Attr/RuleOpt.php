@@ -21,11 +21,11 @@ class RuleOpt
     /**
      * @var string
      */
-    public $name;
+    public string $name;
 
     /**
      * @var string
      * @see FlagsParser::$optRules
      */
-    public $rule;
+    public string $rule;
 }

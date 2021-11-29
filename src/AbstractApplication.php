@@ -25,6 +25,7 @@ use Inhere\Console\IO\Output;
 use Inhere\Console\Util\Helper;
 use Inhere\Console\Util\Interact;
 use InvalidArgumentException;
+use JetBrains\PhpStorm\NoReturn;
 use Throwable;
 use Toolkit\Cli\Helper\FlagHelper;
 use Toolkit\Cli\Style;
@@ -66,14 +67,14 @@ abstract class AbstractApplication implements ApplicationInterface
     use SimpleEventAwareTrait;
 
     /** @var array */
-    protected static $internalCommands = [
+    protected static array $internalCommands = [
         'version' => 'Show application version information',
         'help'    => 'Show application help information',
         'list'    => 'List all group and alone commands',
     ];
 
     /** @var array Application runtime stats */
-    protected $stats = [
+    protected array $stats = [
         'startTime'   => 0,
         'endTime'     => 0,
         'startMemory' => 0,
@@ -83,19 +84,19 @@ abstract class AbstractApplication implements ApplicationInterface
     /**
      * @var string
      */
-    public $delimiter = ':'; // '/' ':'
+    public string $delimiter = ':'; // '/' ':'
 
     /**
      * @var string
      */
-    protected $commandName = '';
+    protected string $commandName = '';
 
     /**
      * @var string Command delimiter char. e.g dev:serve
      */
 
     /** @var array Application config data */
-    protected $config = [
+    protected array $config = [
         'name'           => 'My Console Application',
         'desc'           => 'This is my console application',
         'version'        => '0.5.1',
@@ -124,17 +125,17 @@ abstract class AbstractApplication implements ApplicationInterface
     /**
      * @var Router
      */
-    protected $router;
+    protected Router $router;
 
     /**
      * @var ErrorHandlerInterface Can custom error handler
      */
-    protected $errorHandler;
+    protected ErrorHandlerInterface $errorHandler;
 
     /**
      * @var Controller[]
      */
-    protected $groupObjects = [];
+    protected array $groupObjects = [];
 
     /**
      * Class constructor.
@@ -169,12 +170,10 @@ abstract class AbstractApplication implements ApplicationInterface
             'endMemory'   => 0,
         ];
 
-        if (!$this->errorHandler) {
-            $this->errorHandler = new ErrorHandler([
-                'rootPath'     => $this->config['rootPath'],
-                'hideRootPath' => (bool)$this->config['hideRootPath'],
-            ]);
-        }
+        $this->errorHandler = new ErrorHandler([
+            'rootPath'     => $this->config['rootPath'],
+            'hideRootPath' => (bool)$this->config['hideRootPath'],
+        ]);
 
         $this->registerErrorHandle();
 
@@ -288,10 +287,10 @@ abstract class AbstractApplication implements ApplicationInterface
      *
      * @param bool $exit
      *
-     * @return int|mixed
+     * @return mixed
      * @throws InvalidArgumentException
      */
-    public function run(bool $exit = true)
+    public function run(bool $exit = true): mixed
     {
         try {
             // init
@@ -334,6 +333,7 @@ abstract class AbstractApplication implements ApplicationInterface
     /**
      * @param int $code
      */
+    #[NoReturn]
     public function stop(int $code = 0): void
     {
         // call 'onAppStop' event, if it is registered.
@@ -355,9 +355,9 @@ abstract class AbstractApplication implements ApplicationInterface
     /**
      * @param array $args
      *
-     * @return int|mixed
+     * @return mixed
      */
-    public function runWithArgs(array $args)
+    public function runWithArgs(array $args): mixed
     {
         $this->input->setFlags($args);
         return $this->run(false);
@@ -382,9 +382,9 @@ abstract class AbstractApplication implements ApplicationInterface
      * @param InputInterface  $input
      * @param OutputInterface $output
      *
-     * @return int|mixed
+     * @return mixed
      */
-    public function subRun(string $command, InputInterface $input, OutputInterface $output)
+    public function subRun(string $command, InputInterface $input, OutputInterface $output): mixed
     {
         $app = $this->copy();
         $app->setInput($input);
@@ -449,6 +449,7 @@ abstract class AbstractApplication implements ApplicationInterface
      *
      * @throws InvalidArgumentException
      */
+    #[NoReturn]
     public function handleError(int $num, string $str, string $file, int $line): void
     {
         $this->handleException(new ErrorException($str, 0, $num, $file, $line));
@@ -591,11 +592,11 @@ abstract class AbstractApplication implements ApplicationInterface
 
     /**
      * @param string       $name
-     * @param string|array $aliases
+     * @param array|string $aliases
      *
      * @return $this
      */
-    public function addAliases(string $name, $aliases): self
+    public function addAliases(string $name, array|string $aliases): self
     {
         if ($name && $aliases) {
             $this->router->setAlias($name, $aliases, true);
@@ -768,12 +769,12 @@ abstract class AbstractApplication implements ApplicationInterface
     /**
      * Get config param value
      *
-     * @param string            $name
-     * @param null|string|mixed $default
+     * @param string $name
+     * @param mixed|null $default
      *
-     * @return array|string
+     * @return mixed
      */
-    public function getParam(string $name, $default = null)
+    public function getParam(string $name, mixed $default = null): mixed
     {
         return $this->config[$name] ?? $default;
     }
