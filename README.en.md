@@ -10,7 +10,7 @@ Full-featured php command line application library.
 
 Provide console parameter parsing, command run, color style output, user information interaction, and special format information display.
 
-> NOTICE: Current v4.1+, require **PHP 8.0+**
+> NOTICE: Current version **v4.1+**, require **PHP 8.0+**
 
 ## Command line preview
 
@@ -47,6 +47,8 @@ Provide console parameter parsing, command run, color style output, user informa
 > All features, effects; can be run in the example code `phps/app` in `examples/`. Basically covers all the features and can be tested directly
 
 ## Installation
+
+- Requirement PHP 8.0+
 
 ```bash
 composer require inhere/console

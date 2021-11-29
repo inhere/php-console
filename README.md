@@ -8,7 +8,7 @@
 
 简洁、功能全面的php命令行应用库。提供控制台参数解析, 命令运行，颜色风格输出, 用户信息交互, 特殊格式信息显示。
 
-> NOTICE: Current v4.1+, require **PHP 8.0+**
+> NOTICE: Current version **v4.1+**, require **PHP 8.0+**
 
 ## 命令行预览
 
@@ -61,7 +61,7 @@
 
 ## 快速安装
 
-- Requirement php 7.3+
+- Requirement PHP 8.0+
 
 ```bash
 composer require inhere/console
