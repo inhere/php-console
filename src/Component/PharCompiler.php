@@ -26,6 +26,7 @@ use SplFileInfo;
 use SplQueue;
 use Toolkit\FsUtil\File;
 use Toolkit\Sys\Sys;
+use Traversable;
 use UnexpectedValueException;
 use function array_merge;
 use function basename;
@@ -89,10 +90,12 @@ class PharCompiler
     private $key;
 
     /** @var int */
-    private int $signatureType;
+    private int $signatureType = Phar::SHA256;
 
     /**
-     * @var int compress Mode @see \Phar::NONE, \Phar::GZ, \Phar::BZ2
+     * compress Mode @see \Phar::NONE, \Phar::GZ, \Phar::BZ2
+     *
+     * @var int
      */
     private int $compressMode = 0;
 
@@ -154,9 +157,9 @@ class PharCompiler
     private array $events = [];
 
     /**
-     * @var Closure Maybe you not want strip all files.
+     * @var Closure|null Maybe you not want strip all files.
      */
-    private Closure $stripFilter;
+    private ?Closure $stripFilter = null;
 
     /**
      * @var bool Whether strip comments
@@ -181,9 +184,9 @@ class PharCompiler
     private string $lastVersion = '';
 
     /**
-     * @var DateTime
+     * @var DateTime|null
      */
-    private DateTime $versionDate;
+    private ?DateTime $versionDate = null;
 
     /**
      * 记录上面三个信息的文件, 相对于basePath
@@ -211,22 +214,23 @@ class PharCompiler
     /**
      * @var string Phar file path. e.g '/some/path/app.phar'
      */
-    private string $pharFile;
+    private string $pharFile = '';
 
     /**
      * @var string Phar file name. eg 'app.phar'
      */
-    private string $pharName;
+    private string $pharName = '';
 
     /**
-     * @var Closure File filter
+     * @var Closure|null File filter
      */
-    private Closure $fileFilter;
+    private ?Closure $fileFilter = null;
 
     /**
-     * @var array|Iterator The modifies files list. if not empty, will skip find dirs.
+     * The modifies files list. if not empty, will skip find dirs.
+     * @var array|Traversable
      */
-    private array|Iterator $modifies;
+    private array|Traversable $modifies;
 
     /**
      * @var SplQueue
@@ -430,11 +434,11 @@ class PharCompiler
     }
 
     /**
-     * @param Iterator|array $modifies
+     * @param Traversable|array $modifies
      *
      * @return PharCompiler
      */
-    public function setModifies(Iterator|array $modifies): self
+    public function setModifies(Traversable|array $modifies): self
     {
         $this->modifies = $modifies;
         return $this;

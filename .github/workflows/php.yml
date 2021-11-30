@@ -53,4 +53,10 @@ jobs:
       # Docs: https://getcomposer.org/doc/articles/scripts.md
 
       - name: Run unit tests
-        run: phpunit -v --debug
+        run: |
+          phpunit -v --debug
+
+      - name: Test build PHAR
+        run: |
+          php -d phar.readonly=0 examples/app phar pack -o=myapp.phar
+          php myapp.phar -h

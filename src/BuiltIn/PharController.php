@@ -39,9 +39,9 @@ class PharController extends Controller
     protected static string $description = 'Pack a project directory to phar or unpack phar to directory';
 
     /**
-     * @var Closure
+     * @var Closure|null
      */
-    private Closure $compilerConfiger;
+    private ?Closure $compilerConfiger = null;
 
     /**
      * @var string
