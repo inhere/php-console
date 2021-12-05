@@ -26,6 +26,7 @@ use RuntimeException;
 use Throwable;
 use Toolkit\Cli\Helper\FlagHelper;
 use Toolkit\PFlag\FlagsParser;
+use Toolkit\PFlag\FlagUtil;
 use Toolkit\PFlag\SFlags;
 use Toolkit\Stdlib\Obj\ObjectHelper;
 use Toolkit\Stdlib\Str;
@@ -272,7 +273,7 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
             }
         } else {
             $first = $args[0];
-            if (!FlagHelper::isValidName($first)) {
+            if (!FlagUtil::isValidName($first)) {
                 $this->debugf('not input subcommand, display help for the group: %s', $name);
                 return $this->showHelp();
             }

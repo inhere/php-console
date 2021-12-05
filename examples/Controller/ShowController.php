@@ -17,7 +17,7 @@ use Inhere\Console\Controller;
 use Inhere\Console\Util\Show;
 use ReflectionException;
 use Toolkit\Cli\Color;
-use Toolkit\Cli\Highlighter;
+use Toolkit\Cli\Util\Highlighter;
 use Toolkit\PFlag\FlagsParser;
 use function file_get_contents;
 

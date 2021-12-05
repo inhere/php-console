@@ -27,9 +27,9 @@ use Inhere\Console\Util\Interact;
 use InvalidArgumentException;
 use JetBrains\PhpStorm\NoReturn;
 use Throwable;
-use Toolkit\Cli\Helper\FlagHelper;
 use Toolkit\Cli\Style;
 use Toolkit\Cli\Util\LineParser;
+use Toolkit\PFlag\FlagUtil;
 use Toolkit\PFlag\SFlags;
 use Toolkit\Stdlib\Helper\DataHelper;
 use Toolkit\Stdlib\Helper\PhpHelper;
@@ -485,7 +485,7 @@ abstract class AbstractApplication implements ApplicationInterface
             case 'help':
                 $cmd  = '';
                 $args = $this->flags->getRawArgs();
-                if ($args && FlagHelper::isValidName($args[0])) {
+                if ($args && FlagUtil::isValidName($args[0])) {
                     $cmd = $args[0];
                 }
 

@@ -646,21 +646,12 @@ class Show
      *
      * @param array|string $messages Output message
      * @param boolean      $nl       True 会添加换行符, False 原样输出，不添加换行符
-     * @param bool|int $quit     If is int, setting it is exit code. 'True' translate as code 0 and exit, 'False' will not exit.
+     * @param bool $quit     If is int, setting it is exit code. 'True' translate as code 0 and exit, 'False' will not exit.
      * @param array{color:bool,stream:resource,flush:bool,quit:bool,quitCode:int}  $opts Some options for write
-     *                               refer:
-     *                               [
-     *                               'color'  => bool, // whether render color, default is: True.
-     *                               'stream' => resource, // the stream resource, default is: STDOUT
-     *                               'flush'  => bool, // flush the stream data, default is: True
-     *                               ]
-     *
      * @return int
      */
     public static function write(array|string $messages, bool $nl = true, bool $quit = false, array $opts = []): int
     {
-        $qCode = $opts['quitCode'] ?? 0;
-
         return Console::write($messages, $nl, $quit, $opts);
     }
 
@@ -704,7 +695,7 @@ class Show
      */
     public static function colored(array|string $message, string $style = 'info', bool $nl = true, array $opts = []): int
     {
-        $quit = isset($opts['quit']) ? (bool)$opts['quit'] : false;
+        $quit = isset($opts['quit']) && $opts['quit'];
 
         if (is_array($message)) {
             $message = implode($nl ? PHP_EOL : '', $message);
