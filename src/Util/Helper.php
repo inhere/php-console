@@ -13,7 +13,6 @@ use FilesystemIterator;
 use Inhere\Console\Concern\RuntimeProfileTrait;
 use Inhere\Console\ConsoleConst;
 use InvalidArgumentException;
-use Iterator;
 use RecursiveCallbackFilterIterator;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;

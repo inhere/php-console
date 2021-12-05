@@ -595,7 +595,7 @@ class ProgressBar
                 return $display;
             },
             'elapsed'   => static function (self $bar) {
-                return FormatUtil::howLongAgo(time() - $bar->getStartTime());
+                return Format::howLongAgo(time() - $bar->getStartTime());
             },
             'remaining' => static function (self $bar) {
                 if (!$bar->getMaxSteps()) {
@@ -609,7 +609,7 @@ class ProgressBar
                     $remaining = (int)round((time() - $bar->getStartTime()) / $progress * ($bar->getMaxSteps() - $progress));
                 }
 
-                return FormatUtil::howLongAgo($remaining);
+                return Format::howLongAgo($remaining);
             },
             'estimated' => static function (self $bar) {
                 if (!$bar->getMaxSteps()) {
@@ -623,7 +623,7 @@ class ProgressBar
                     $estimated = (int)round((time() - $bar->getStartTime()) / $bar->getProgress() * $bar->getMaxSteps());
                 }
 
-                return FormatUtil::howLongAgo($estimated);
+                return Format::howLongAgo($estimated);
             },
             'memory'    => static function () {
                 return Format::memory(memory_get_usage(true));

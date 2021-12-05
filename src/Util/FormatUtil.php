@@ -11,7 +11,6 @@ namespace Inhere\Console\Util;
 
 use Toolkit\Cli\ColorTag;
 use Toolkit\Stdlib\Arr\ArrayHelper;
-use Toolkit\Stdlib\Helper\Format;
 use Toolkit\Stdlib\Helper\JsonHelper;
 use Toolkit\Stdlib\Str;
 use Toolkit\Sys\Sys;
@@ -25,6 +24,7 @@ use function is_bool;
 use function is_int;
 use function is_numeric;
 use function is_scalar;
+use function preg_match;
 use function rtrim;
 use function str_repeat;
 use function str_replace;
@@ -136,9 +136,12 @@ final class FormatUtil
     }
 
     /**
+     * Align command option names.
+     *
      * @param array $options
      *
      * @return array
+     * @deprecated Please use {@see FlagUtil::alignOptions()}
      */
     public static function alignOptions(array $options): array
     {
@@ -146,9 +149,9 @@ final class FormatUtil
             return [];
         }
 
-        // e.g '-h, --help'
-        $hasShort = (bool)strpos(implode('', array_keys($options)), ',');
-        if (!$hasShort) {
+        // check has short option. e.g '-h, --help'
+        $nameString = implode('|', array_keys($options));
+        if (preg_match('/\|-\w/', $nameString) !== 1) {
             return $options;
         }
 
@@ -169,34 +172,6 @@ final class FormatUtil
         }
 
         return $formatted;
-    }
-
-    /**
-     * ```
-     * FormatUtil::memoryUsage(memory_get_usage(true));
-     * ```
-     *
-     * @param float|int $memory
-     *
-     * @return string
-     * @deprecated use Format::memory($secs);
-     */
-    public static function memoryUsage(float|int $memory): string
-    {
-        return Format::memory($memory);
-    }
-
-    /**
-     * format timestamp to how long ago
-     *
-     * @param int $secs
-     *
-     * @return string
-     * @deprecated use Format::howLongAgo($secs);
-     */
-    public static function howLongAgo(int $secs): string
-    {
-        return Format::howLongAgo($secs);
     }
 
     /**
