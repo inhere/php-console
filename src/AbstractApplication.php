@@ -261,8 +261,14 @@ abstract class AbstractApplication implements ApplicationInterface
         $firstArg = array_shift($remainArgs);
 
         if (!Helper::isValidCmdPath($firstArg)) {
-            $this->output->liteError('input an invalid command name');
-            $this->showCommandList();
+            $evtName = ConsoleEvent::ON_NOT_FOUND;
+            if (true === $this->fire($evtName, $firstArg, $this)) {
+                $this->debugf('user custom handle the invalid command: %s, event: %s', $firstArg, $evtName);
+            } else {
+                $this->output->liteError("input an invalid command name: $firstArg");
+                $this->showCommandList();
+            }
+
             return false;
         }
 

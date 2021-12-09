@@ -22,10 +22,10 @@
     }
   ],
   "require": {
-    "php": ">=8.0.1",
+    "php": ">8.0.1",
     "toolkit/cli-utils": "~2.0",
     "toolkit/fsutil": "~2.0",
-    "toolkit/pflag": "~1.0",
+    "toolkit/pflag": "~2.0",
     "toolkit/stdlib": "^2.0",
     "toolkit/sys-utils": "~2.0"
   },
