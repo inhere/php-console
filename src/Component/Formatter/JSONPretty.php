@@ -65,11 +65,40 @@ class JSONPretty extends AbstractObj
      * @param string $json
      *
      * @return string
-     * @throws JsonException
+     */
+    public static function prettyJSON(string $json): string
+    {
+        return (new self)->render($json);
+    }
+
+    /**
+     * @param mixed $data
+     *
+     * @return string
+     */
+    public static function pretty(mixed $data): string
+    {
+        return (new self)->renderData($data);
+    }
+
+    /**
+     * @param mixed $data
+     *
+     * @return string
+     */
+    public static function prettyData(mixed $data): string
+    {
+        return (new self)->renderData($data);
+    }
+
+    /**
+     * @param string $json
+     *
+     * @return string
      */
     public function render(string $json): string
     {
-        $data = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
+        $data = JsonHelper::decode($json, true);
 
         return $this->renderData($data);
     }
@@ -79,7 +108,7 @@ class JSONPretty extends AbstractObj
      *
      * @return string
      */
-    public function renderData(array $data): string
+    public function renderData(mixed $data): string
     {
         $buf  = StrBuffer::new();
         $json = JsonHelper::prettyJSON($data);

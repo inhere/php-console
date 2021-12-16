@@ -26,7 +26,7 @@ use Inhere\Console\Component\Progress\SimpleTextBar;
 use Inhere\Console\Console;
 use LogicException;
 use Toolkit\Cli\Cli;
-use Toolkit\Cli\ColorTag;
+use Toolkit\Cli\Color\ColorTag;
 use Toolkit\Cli\Style;
 use Toolkit\Stdlib\Helper\JsonHelper;
 use Toolkit\Stdlib\Math;

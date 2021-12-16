@@ -10,7 +10,7 @@
 namespace Inhere\Console\Component\Symbol;
 
 use Inhere\Console\Console;
-use Toolkit\Cli\ColorTag;
+use Toolkit\Cli\Color\ColorTag;
 use function dirname;
 use function file_get_contents;
 use function in_array;

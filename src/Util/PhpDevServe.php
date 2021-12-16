@@ -246,7 +246,6 @@ class PhpDevServe
      * @param bool $mustLoad
      *
      * @return bool
-     * @throws \JsonException
      */
     public function loadHceFile(string $hceFile, bool $mustLoad = false): bool
     {

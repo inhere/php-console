@@ -11,7 +11,7 @@ namespace Inhere\Console\Component\Formatter;
 
 use Inhere\Console\Component\MessageFormatter;
 use Inhere\Console\Console;
-use Toolkit\Cli\ColorTag;
+use Toolkit\Cli\Color\ColorTag;
 use Toolkit\Stdlib\Str;
 use Toolkit\Stdlib\Str\StrBuffer;
 use function array_keys;

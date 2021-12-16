@@ -12,7 +12,7 @@ namespace Inhere\Console;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
 use Toolkit\Cli\Cli;
-use Toolkit\Cli\ColorTag;
+use Toolkit\Cli\Color\ColorTag;
 use function date;
 use function debug_backtrace;
 use function implode;

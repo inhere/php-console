@@ -9,7 +9,7 @@
 
 namespace Inhere\Console\Util;
 
-use Toolkit\Cli\ColorTag;
+use Toolkit\Cli\Color\ColorTag;
 use Toolkit\Stdlib\Arr\ArrayHelper;
 use Toolkit\Stdlib\Helper\JsonHelper;
 use Toolkit\Stdlib\Str;

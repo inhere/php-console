@@ -9,13 +9,13 @@
 
 namespace Inhere\Console\Concern;
 
+use Inhere\Console\Component\Formatter\JSONPretty;
 use Inhere\Console\Console;
-use Toolkit\Stdlib\Helper\JsonHelper;
+use Toolkit\Stdlib\Json;
 use Toolkit\Stdlib\Php;
 use function array_merge;
 use function count;
 use function implode;
-use function json_encode;
 use const PHP_EOL;
 
 /**
@@ -133,7 +133,7 @@ trait FormatOutputAwareTrait
         bool $echo = true,
         int $flags = JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
     ): int|string {
-        $string = json_encode($data, $flags);
+        $string = Json::encode($data, $flags);
 
         if ($echo) {
             return Console::write($string);
@@ -152,7 +152,7 @@ trait FormatOutputAwareTrait
             Console::colored($title, 'ylw0');
         }
 
-        Console::write(JsonHelper::prettyJSON($data));
+        Console::write(JSONPretty::pretty($data));
     }
 
     /**

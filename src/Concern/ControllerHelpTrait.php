@@ -13,7 +13,7 @@ use Inhere\Console\Console;
 use Inhere\Console\GlobalOption;
 use Inhere\Console\Util\FormatUtil;
 use ReflectionClass;
-use Toolkit\Cli\ColorTag;
+use Toolkit\Cli\Color\ColorTag;
 use Toolkit\Stdlib\Str;
 use Toolkit\Stdlib\Util\PhpDoc;
 use function array_merge;
