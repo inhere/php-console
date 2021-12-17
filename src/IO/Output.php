@@ -32,21 +32,11 @@ class Output extends StreamOutput
     protected $errorStream;
 
     /**
-     * 控制台窗口(字体/背景)颜色添加处理
-     * window colors
-     *
-     * @var Style|null
-     */
-    protected ?Style $style = null;
-
-    /**
      * Output constructor.
      */
     public function __construct()
     {
         parent::__construct(Cli::getOutputStream());
-
-        $this->getStyle();
     }
 
     /***************************************************************************
@@ -136,7 +126,7 @@ class Output extends StreamOutput
      */
     public function stderr(string $text = '', bool $nl = true): int
     {
-        return Console::write($text, $nl, [
+        return Console::write($text, $nl, false, [
             'steam' => $this->errorStream,
         ]);
     }
@@ -150,11 +140,7 @@ class Output extends StreamOutput
      */
     public function getStyle(): Style
     {
-        if (!$this->style) {
-            $this->style = Style::instance();
-        }
-
-        return $this->style;
+        return Style::global();
     }
 
     /**

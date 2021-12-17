@@ -18,8 +18,6 @@ use Inhere\Console\Concern\SimpleEventAwareTrait;
 use Inhere\Console\Concern\StyledOutputAwareTrait;
 use Inhere\Console\Contract\ApplicationInterface;
 use Inhere\Console\Contract\ErrorHandlerInterface;
-use Inhere\Console\Contract\InputInterface;
-use Inhere\Console\Contract\OutputInterface;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
 use Inhere\Console\Util\Helper;
@@ -370,10 +368,10 @@ abstract class AbstractApplication implements ApplicationInterface
     }
 
     /**
-     * @param InputInterface  $input
-     * @param OutputInterface $output
+     * @param Input  $input
+     * @param Output $output
      */
-    public function runWithIO(InputInterface $input, OutputInterface $output): void
+    public function runWithIO(Input $input, Output $output): void
     {
         $app = $this->copy();
         $app->setInput($input);
@@ -384,13 +382,13 @@ abstract class AbstractApplication implements ApplicationInterface
     }
 
     /**
-     * @param string          $command
-     * @param InputInterface  $input
-     * @param OutputInterface $output
+     * @param string $command
+     * @param Input  $input
+     * @param Output $output
      *
      * @return mixed
      */
-    public function subRun(string $command, InputInterface $input, OutputInterface $output): mixed
+    public function subRun(string $command, Input $input, Output $output): mixed
     {
         $app = $this->copy();
         $app->setInput($input);

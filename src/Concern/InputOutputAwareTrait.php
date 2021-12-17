@@ -10,11 +10,8 @@
 namespace Inhere\Console\Concern;
 
 use Inhere\Console\IO\Input;
-use Inhere\Console\Contract\InputInterface;
 use Inhere\Console\IO\Output;
-use Inhere\Console\Contract\OutputInterface;
 use Toolkit\PFlag\FlagsParser;
-use Toolkit\PFlag\SFlags;
 
 /**
  * Class InputOutputAwareTrait
@@ -29,14 +26,14 @@ trait InputOutputAwareTrait
     protected ?FlagsParser $flags;
 
     /**
-     * @var InputInterface|null
+     * @var Input|null
      */
-    protected ?InputInterface $input;
+    protected ?Input $input;
 
     /**
-     * @var OutputInterface|null
+     * @var Output|null
      */
-    protected ?OutputInterface $output;
+    protected ?Output $output;
 
     /**
      * @return string
@@ -64,7 +61,7 @@ trait InputOutputAwareTrait
 
     /**
      * @param string $question
-     * @param bool   $nl
+     * @param bool $nl
      *
      * @return string
      */
@@ -94,39 +91,39 @@ trait InputOutputAwareTrait
     }
 
     /**
-     * @return Input|InputInterface
+     * @return Input
      */
-    public function getInput(): InputInterface
+    public function getInput(): Input
     {
         return $this->input;
     }
 
     /**
-     * @param InputInterface $input
+     * @param Input $input
      */
-    public function setInput(InputInterface $input): void
+    public function setInput(Input $input): void
     {
         $this->input = $input;
     }
 
     /**
-     * @return Output|OutputInterface
+     * @return Output
      */
-    public function getOutput(): OutputInterface
+    public function getOutput(): Output
     {
         return $this->output;
     }
 
     /**
-     * @param Output|OutputInterface $output
+     * @param Output $output
      */
-    public function setOutput(OutputInterface $output): void
+    public function setOutput(Output $output): void
     {
         $this->output = $output;
     }
 
     /**
-     * @return FlagsParser|SFlags
+     * @return FlagsParser
      */
     public function getFlags(): FlagsParser
     {
@@ -134,7 +131,7 @@ trait InputOutputAwareTrait
     }
 
     /**
-     * @param FlagsParser|SFlags $flags
+     * @param FlagsParser $flags
      */
     public function setFlags(FlagsParser $flags): void
     {

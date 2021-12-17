@@ -27,7 +27,7 @@ use function trim;
  *
  * @package Inhere\Console\IO
  */
-abstract class AbstractInput implements InputInterface
+abstract class AbstractInput // implements InputInterface
 {
     use InputArgumentsTrait, InputOptionsTrait;
 

@@ -13,7 +13,6 @@ namespace Inhere\Console\Contract;
  * Class OutputInterface
  *
  * @package Inhere\Console\Contract
- * @method error(string $string)
  */
 interface OutputInterface
 {

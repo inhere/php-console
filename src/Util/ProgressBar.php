@@ -11,7 +11,6 @@ namespace Inhere\Console\Util;
 
 use Closure;
 use Inhere\Console\IO\Output;
-use Inhere\Console\Contract\OutputInterface;
 use LogicException;
 use RuntimeException;
 use Toolkit\Stdlib\Helper\Format;
@@ -24,7 +23,7 @@ use function max;
  * @package Inhere\Console\Util
  * @form \Symfony\Component\Console\Helper\ProgressBar
  *
- * ```
+ * ```bash
  *     1 [->--------------------------]
  *     3 [■■■>------------------------]
  * 25/50 [==============>-------------]  50%
@@ -121,9 +120,9 @@ class ProgressBar
     private bool $firstRun = true;
 
     /**
-     * @var OutputInterface
+     * @var Output
      */
-    private Output|OutputInterface $output;
+    private Output $output;
 
     /**
      * messages
@@ -143,21 +142,21 @@ class ProgressBar
     public const DEFAULT_FORMAT = '[{@bar}] {@percent:3s}%({@current}/{@max}) {@elapsed:6s}/{@estimated:-6s} {@memory:6s}';
 
     /**
-     * @param OutputInterface|null $output
-     * @param int             $maxSteps
+     * @param Output|null $output
+     * @param int $maxSteps
      *
      * @return ProgressBar
      */
-    public static function create(OutputInterface $output = null, int $maxSteps = 0): ProgressBar
+    public static function create(Output $output = null, int $maxSteps = 0): ProgressBar
     {
         return new self($output, $maxSteps);
     }
 
     /**
-     * @param OutputInterface|null $output
+     * @param Output|null $output
      * @param int $maxSteps
      */
-    public function __construct(OutputInterface $output = null, int $maxSteps = 0)
+    public function __construct(Output $output = null, int $maxSteps = 0)
     {
         $this->output = $output ?: new Output;
 
@@ -168,11 +167,11 @@ class ProgressBar
     /**
      * 开始
      *
-     * @param null $maxSteps
+     * @param int|null $maxSteps
      *
      * @throws LogicException
      */
-    public function start($maxSteps = null): void
+    public function start(int $maxSteps = null): void
     {
         if ($this->started) {
             throw new LogicException('Progress bar already started.');
@@ -260,7 +259,7 @@ class ProgressBar
      */
     public function display(): void
     {
-        if (null === $this->format) {
+        if (!$this->format) {
             $this->format = self::DEFAULT_FORMAT;
         }
 
@@ -306,10 +305,10 @@ class ProgressBar
     }
 
     /**
-     * @return mixed
+     * @return string
      * @throws RuntimeException
      */
-    protected function buildLine(): mixed
+    protected function buildLine(): string
     {
         // $regex = "{%([a-z\-_]+)(?:\:([^%]+))?%}i";
         return preg_replace_callback('/{@([\w]+)(?:\:([\w-]+))?}/i', function ($matches) {
@@ -543,17 +542,17 @@ class ProgressBar
     }
 
     /**
-     * @return mixed
+     * @return int
      */
-    public function getStartTime(): mixed
+    public function getStartTime(): int
     {
         return $this->startTime;
     }
 
     /**
-     * @return mixed
+     * @return int
      */
-    public function getFinishTime(): mixed
+    public function getFinishTime(): int
     {
         return $this->finishTime;
     }

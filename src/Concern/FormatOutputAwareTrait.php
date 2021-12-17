@@ -39,15 +39,6 @@ trait FormatOutputAwareTrait
         ], $opts));
     }
 
-    // public function print(...$args): void
-    // {
-    //     if (count($args) > 1) {
-    //         echo ;
-    //     }
-    //
-    //
-    // }
-
     /**
      * @param ...$args
      */
