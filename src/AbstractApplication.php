@@ -11,6 +11,7 @@ namespace Inhere\Console;
 
 use ErrorException;
 use Inhere\Console\Component\ErrorHandler;
+use Inhere\Console\Component\Router;
 use Inhere\Console\Component\Formatter\Title;
 use Inhere\Console\Concern\ApplicationHelpTrait;
 use Inhere\Console\Concern\InputOutputAwareTrait;

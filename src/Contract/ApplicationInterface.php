@@ -33,7 +33,7 @@ interface ApplicationInterface
     /**
      * @param bool $exit
      *
-     * @return int|mixed
+     * @return mixed
      */
     public function run(bool $exit = true): mixed;
 
@@ -46,7 +46,7 @@ interface ApplicationInterface
      *                            - 'group action'
      * @param array $args
      *
-     * @return int|mixed
+     * @return mixed
      */
     public function dispatch(string $name, array $args = []): mixed;
 
@@ -60,21 +60,21 @@ interface ApplicationInterface
      *
      * @param string $name The controller name
      * @param string|ControllerInterface|null $class The controller class
-     * @param array $config config the controller
+     * @param array{desc: string, aliases: array} $config config the controller.
      *                      - aliases   The command aliases
      *                      - desc      The description message
      *
      * @return static
      * @throws InvalidArgumentException
      */
-    public function controller(string $name, ControllerInterface|string $class = null, array $config = []): ApplicationInterface;
+    public function controller(string $name, ControllerInterface|string $class = null, array $config = []): static;
 
     /**
      * Register a app independent console command
      *
-     * @param string|CommandInterface $name
+     * @param string|class-string $name
      * @param string|Closure|CommandInterface|null $handler
-     * @param array $config config the command
+     * @param array{desc: string, aliases: array} $config config the command.
      *                      - aliases     The command aliases
      *                      - desc        The description message
      *

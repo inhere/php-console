@@ -13,11 +13,11 @@ use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
 use Toolkit\Cli\Cli;
 use Toolkit\Cli\Color\ColorTag;
+use Toolkit\Stdlib\Json;
 use function date;
 use function debug_backtrace;
 use function implode;
 use function is_numeric;
-use function json_encode;
 use function sprintf;
 use function strpos;
 use function trim;
@@ -179,7 +179,7 @@ class Console extends Cli
         }
 
         $optString  = $userOpts ? ' ' . implode(' ', $userOpts) : '';
-        $dataString = $data ? json_encode($data, JSON_UNESCAPED_SLASHES) : '';
+        $dataString = $data ? Json::encode($data, JSON_UNESCAPED_SLASHES) : '';
 
         $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, self::$traceIndex + 2);
         $position  = self::formatBacktrace($backtrace, self::$traceIndex);

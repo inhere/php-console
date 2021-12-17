@@ -13,7 +13,7 @@ use Inhere\Console\Application;
 use Inhere\Console\Console;
 use Inhere\Console\IO\Input;
 use Inhere\Console\Contract\InputInterface;
-use Inhere\Console\Router;
+use Inhere\Console\Component\Router;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 use Throwable;

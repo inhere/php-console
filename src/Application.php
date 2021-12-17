@@ -10,7 +10,7 @@
 namespace Inhere\Console;
 
 use Closure;
-use Inhere\Console\Contract\ApplicationInterface;
+use Inhere\Console\Component\Router;
 use Inhere\Console\Contract\CommandInterface;
 use Inhere\Console\Contract\ControllerInterface;
 use Inhere\Console\IO\Input;
@@ -62,7 +62,7 @@ class Application extends AbstractApplication
     /**
      * {@inheritdoc}
      */
-    public function controller(string $name, ControllerInterface|string $class = null, array $config = []): ApplicationInterface
+    public function controller(string $name, ControllerInterface|string $class = null, array $config = []): static
     {
         $this->logf(Console::VERB_CRAZY, 'register group controller: %s', $name);
         $this->router->addGroup($name, $class, $config);
@@ -73,14 +73,14 @@ class Application extends AbstractApplication
     /**
      * Add group/controller
      *
-     * @param string $name
+     * @param string|class-string $name
      * @param string|ControllerInterface|null $class The controller class
      * @param array $config
      *
-     * @return Application|Contract\ApplicationInterface
+     * @return static
      * @see controller()
      */
-    public function addGroup(string $name, ControllerInterface|string $class = null, array $config = []): ApplicationInterface
+    public function addGroup(string $name, ControllerInterface|string $class = null, array $config = []): static
     {
         return $this->controller($name, $class, $config);
     }
@@ -90,10 +90,10 @@ class Application extends AbstractApplication
      * @param string|ControllerInterface|null $class The controller class
      * @param array $config
      *
-     * @return Application|Contract\ApplicationInterface
+     * @return $this
      * @see controller()
      */
-    public function addController(string $name, ControllerInterface|string $class = null, array $config = []): ApplicationInterface
+    public function addController(string $name, ControllerInterface|string $class = null, array $config = []): static
     {
         return $this->controller($name, $class, $config);
     }

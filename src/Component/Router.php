@@ -7,12 +7,14 @@
  * @license  https://github.com/inhere/php-console/blob/master/LICENSE
  */
 
-namespace Inhere\Console;
+namespace Inhere\Console\Component;
 
 use Closure;
+use Inhere\Console\Command;
 use Inhere\Console\Contract\CommandInterface;
 use Inhere\Console\Contract\ControllerInterface;
 use Inhere\Console\Contract\RouterInterface;
+use Inhere\Console\Controller;
 use Inhere\Console\Util\Helper;
 use InvalidArgumentException;
 use Toolkit\Stdlib\Obj\Traits\NameAliasTrait;
@@ -86,15 +88,15 @@ class Router implements RouterInterface
      *
      * @param string                     $name  The controller name
      * @param string|ControllerInterface|null $class The controller class
-     * @param array                      $options
+     * @param array{aliases: array, desc: string} $config config for group.
      *                                          array:
      *                                          - aliases     The command aliases
-     *                                          - description The description message
+     *                                          - desc The description message
      *
-     * @return Router
+     * @return static
      * @throws InvalidArgumentException
      */
-    public function addGroup(string $name, ControllerInterface|string $class = null, array $options = []): RouterInterface
+    public function addGroup(string $name, ControllerInterface|string $class = null, array $config = []): static
     {
         /**
          * @var Controller $class name is an controller class
@@ -141,7 +143,7 @@ class Router implements RouterInterface
         ];
 
         // has alias option
-        if (isset($options['aliases'])) {
+        if ($options['aliases']) {
             $this->setAlias($name, $options['aliases'], true);
         }
 
@@ -151,17 +153,13 @@ class Router implements RouterInterface
     /**
      * Register a app independent console command
      *
-     * @param string|CommandInterface         $name
+     * @param string|class-string         $name
      * @param string|Closure|CommandInterface|null $handler
-     * @param array                           $options
-     *  array:
-     *  - aliases     The command aliases
-     *  - description The description message
+     * @param array{aliases: array, desc: string}  $config
      *
-     * @return Router|RouterInterface
-     * @throws InvalidArgumentException
+     * @return static
      */
-    public function addCommand(string $name, string|Closure|CommandInterface $handler = null, array $options = []): RouterInterface
+    public function addCommand(string $name, string|Closure|CommandInterface $handler = null, array $config = []): static
     {
         if (!$handler && class_exists($name)) {
             $handler = $name;
@@ -217,7 +215,7 @@ class Router implements RouterInterface
         ];
 
         // has alias option
-        if (isset($options['aliases'])) {
+        if ($options['aliases']) {
             $this->setAlias($name, $options['aliases'], true);
         }
 
