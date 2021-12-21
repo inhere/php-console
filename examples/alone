@@ -18,8 +18,8 @@ $ctrl  = new HomeController($input, new Output());
 $ctrl->setDetached();
 
 try {
-    exit($ctrl->run([$input->getCommand()]));
-} catch (Exception $e) {
+    $ctrl->run([$input->getCommand()]);
+} catch (Throwable $e) {
     $message = Color::apply('error', $e->getMessage());
 
     echo sprintf("%s\nFile %s:%d\nTrace:\n%s\n",

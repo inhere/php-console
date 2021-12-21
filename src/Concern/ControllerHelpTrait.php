@@ -163,7 +163,7 @@ trait ControllerHelpTrait
         }
 
         $globalOptions = [];
-        if ($app = $this->getApp()) {
+        if ($app = $this->app) {
             $globalOptions = $app->getFlags()->getOptsHelpLines();
         }
 
@@ -185,8 +185,8 @@ trait ControllerHelpTrait
             'sepChar' => '  ',
         ]);
 
-        $msgTpl = 'More information about a command, please see: <cyan>%s %s COMMAND -h</cyan>';
-        $this->output->write(sprintf($msgTpl, $script, $detached ? '' : $sName));
+        $msgTpl = 'More information about a command, please see: <cyan>%s%s COMMAND -h</cyan>';
+        $this->output->writeln(sprintf($msgTpl, $script, $detached ? '' : ' ' . $sName));
         $this->output->flush();
     }
 }

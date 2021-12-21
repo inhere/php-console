@@ -55,6 +55,8 @@ jobs:
       - name: Run unit tests
         run: |
           phpunit -v --debug
+          php examples/alone -h
+          php examples/app --help
 
       - name: Test build PHAR
         run: |
