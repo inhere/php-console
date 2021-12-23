@@ -36,6 +36,11 @@ class HomeController extends Controller
 
     protected static string $description = 'This is a demo command controller. there are some command usage examples(2)';
 
+    public static function aliases(): array
+    {
+        return ['h'];
+    }
+
     /**
      * @return array
      */

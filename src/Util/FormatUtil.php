@@ -141,7 +141,7 @@ final class FormatUtil
      * @param array $options
      *
      * @return array
-     * @deprecated Please use {@see FlagUtil::alignOptions()}
+     * @deprecated Please use FlagUtil::alignOptions {@see FlagUtil::alignOptions()}
      */
     public static function alignOptions(array $options): array
     {

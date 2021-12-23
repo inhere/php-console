@@ -11,9 +11,9 @@ namespace Inhere\Console\Concern;
 
 use Inhere\Console\Console;
 use Inhere\Console\GlobalOption;
-use Inhere\Console\Util\FormatUtil;
 use ReflectionClass;
 use Toolkit\Cli\Color\ColorTag;
+use Toolkit\PFlag\FlagUtil;
 use Toolkit\Stdlib\Str;
 use Toolkit\Stdlib\Util\PhpDoc;
 use function array_merge;
@@ -96,7 +96,7 @@ trait ControllerHelpTrait
         $this->beforeShowCommandList();
 
         $ref   = new ReflectionClass($this);
-        $sName = lcfirst(self::getName() ?: $ref->getShortName());
+        $sName = self::getName() ?: lcfirst($ref->getShortName());
 
         if (!($classDes = self::getDesc())) {
             $classDes = PhpDoc::description($ref->getDocComment()) ?: 'No description for the command group';
@@ -124,6 +124,7 @@ trait ControllerHelpTrait
                 $desc = $defaultDes;
             }
 
+            $desc = ucfirst($desc);
             if ($this->isDisabled($cmd)) {
                 if (!$showDisabled) {
                     continue;
@@ -151,7 +152,6 @@ trait ControllerHelpTrait
 
         // if is alone running.
         if ($detached = $this->isDetached()) {
-            // $name  = $sName . ' ';
             $usage = "$script <info>COMMAND</info> [--options ...] [arguments ...]";
         } else {
             $name = $sName . $this->delimiter;
@@ -162,24 +162,25 @@ trait ControllerHelpTrait
             ];
         }
 
-        $globalOptions = [];
-        if ($app = $this->app) {
-            $globalOptions = $app->getFlags()->getOptsHelpLines();
-        }
+        // $globalOptions = [];
+        // if ($app = $this->app) {
+        //     $globalOptions = $app->getFlags()->getOptsHelpLines();
+        // }
 
         $this->output->startBuffer();
         $this->output->write(ucfirst($classDes) . PHP_EOL);
 
+        $alias = '';
         if ($aliases = $this->getAliases()) {
-            $this->output->writef("<comment>Alias:</comment> %s\n", implode(',', $aliases));
+            $alias = ' (alias: <info>' . implode(',', $aliases) . '</info>)';
         }
+        $this->output->writef("<comment>Name :</comment> %s%s\n", $sName, $alias);
 
         $groupOptions = $this->flags->getOptsHelpLines();
         $this->output->mList([
             'Usage:'              => $usage,
-            //'Group Name:' => "<info>$sName</info>",
-            'Group Options:'      => FormatUtil::alignOptions($groupOptions),
-            'Global Options:'     => FormatUtil::alignOptions($globalOptions),
+            'Group Options:'      => FlagUtil::alignOptions($groupOptions),
+            // 'Global Options:'     => FlagUtil::alignOptions($globalOptions),
             'Available Commands:' => $commands,
         ], [
             'sepChar' => '  ',

@@ -13,12 +13,13 @@ define('BASE_PATH', dirname(__DIR__));
 
 require dirname(__DIR__) . '/test/bootstrap.php';
 
+// run: php examples/alone
 $input = new Input();
 $ctrl  = new HomeController($input, new Output());
-$ctrl->setDetached();
 
 try {
-    $ctrl->run([$input->getCommand()]);
+    $ctrl->setDetached();
+    $ctrl->run($input->getFlags());
 } catch (Throwable $e) {
     $message = Color::apply('error', $e->getMessage());
 

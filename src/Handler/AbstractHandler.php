@@ -290,7 +290,7 @@ abstract class AbstractHandler implements CommandHandlerInterface
     /**
      * @param array $args
      *
-     * @return bool|int|mixed
+     * @return mixed
      * @throws Throwable
      */
     public function run(array $args): mixed
@@ -593,9 +593,10 @@ abstract class AbstractHandler implements CommandHandlerInterface
      */
     public function getAliases(): array
     {
-        $aliases = [];
         if ($this->app) {
             $aliases = $this->app->getAliases(self::getName());
+        } else {
+            $aliases = static::aliases();
         }
 
         return $aliases;
