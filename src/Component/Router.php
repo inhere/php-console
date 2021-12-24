@@ -15,8 +15,11 @@ use Inhere\Console\Contract\CommandInterface;
 use Inhere\Console\Contract\ControllerInterface;
 use Inhere\Console\Contract\RouterInterface;
 use Inhere\Console\Controller;
+use Inhere\Console\IO\Output;
 use Inhere\Console\Util\Helper;
 use InvalidArgumentException;
+use Toolkit\PFlag\FlagsParser;
+use Toolkit\Stdlib\Helper\Assert;
 use Toolkit\Stdlib\Obj\Traits\NameAliasTrait;
 use function array_keys;
 use function array_merge;
@@ -56,26 +59,41 @@ class Router implements RouterInterface
     /**
      * The independent commands
      *
-     * @var array
+     * ```php
      * [
      *  'name' => [
+     *      'type'    => 2,
      *      'handler' => MyCommand::class,
-     *      'options' => []
+     *      'config' => [
+     *          'desc'    => 'string',
+     *          'options' => [],
+     *          'arguments' => [],
+     *      ]
      *  ]
      * ]
+     * ```
+     *
+     *
+     * @var array<string, array{type: string, handler:mixed, config: array}>
      */
     private array $commands = [];
 
     /**
      * The group commands(controller)
      *
-     * @var array
+     * ```php
      * [
      *  'name' => [
+     *      'type'    => 1,
      *      'handler' => MyController::class,
-     *      'options' => []
+     *      'config' => [
+     *          'desc'    => 'string',
+     *      ]
      *  ]
      * ]
+     * ```
+     *
+     * @var array<string, array{type: string, handler:mixed, config: array}>
      */
     private array $controllers = [];
 
@@ -129,23 +147,24 @@ class Router implements RouterInterface
             return $this;
         }
 
-        $options['aliases'] = isset($options['aliases']) ? (array)$options['aliases'] : [];
+        $config['aliases'] = isset($config['aliases']) ? (array)$config['aliases'] : [];
 
         // allow define aliases in group class by Controller::aliases()
         if ($aliases = $class::aliases()) {
-            $options['aliases'] = array_merge($options['aliases'], $aliases);
+            $config['aliases'] = array_merge($config['aliases'], $aliases);
         }
 
+        // has alias option
+        if ($config['aliases']) {
+            $this->setAlias($name, $config['aliases'], true);
+        }
+
+        // $this->controllers[$name] = $config;
         $this->controllers[$name] = [
             'type'    => self::TYPE_GROUP,
             'handler' => $class,
-            'options' => $options,
+            'config'  => $config,
         ];
-
-        // has alias option
-        if ($options['aliases']) {
-            $this->setAlias($name, $options['aliases'], true);
-        }
 
         return $this;
     }
@@ -154,8 +173,8 @@ class Router implements RouterInterface
      * Register a app independent console command
      *
      * @param string|class-string         $name
-     * @param string|Closure|CommandInterface|null $handler
-     * @param array{aliases: array, desc: string}  $config
+     * @param string|CommandInterface|null|Closure(FlagsParser, Output):void $handler
+     * @param array{aliases: array, desc: string, options: array, arguments: array} $config
      *
      * @return static
      */
@@ -163,23 +182,16 @@ class Router implements RouterInterface
     {
         if (!$handler && class_exists($name)) {
             $handler = $name;
-            $name    = $name::getName();
+            /** @var Command $name name is an command class */
+            $name = $name::getName();
         }
 
-        /**
-         * @var Command $name name is an command class
-         */
-        if (!$name || !$handler) {
-            Helper::throwInvalidArgument("Command 'name' and 'handler' cannot be empty! name: $name");
-        }
+        Assert::isFalse(!$name || !$handler, "Command 'name' and 'handler' cannot be empty! name: $name");
+        Assert::isFalse(isset($this->commands[$name]), "Command '$name' have been registered!");
 
         $this->validateName($name);
 
-        if (isset($this->commands[$name])) {
-            Helper::throwInvalidArgument("Command '$name' have been registered!");
-        }
-
-        $options['aliases'] = isset($options['aliases']) ? (array)$options['aliases'] : [];
+        $config['aliases'] = isset($config['aliases']) ? (array)$config['aliases'] : [];
 
         if (is_string($handler)) {
             if (!class_exists($handler)) {
@@ -198,7 +210,7 @@ class Router implements RouterInterface
 
             // allow define aliases in Command class by Command::aliases()
             if ($aliases = $handler::aliases()) {
-                $options['aliases'] = array_merge($options['aliases'], $aliases);
+                $config['aliases'] = array_merge($config['aliases'], $aliases);
             }
         } elseif (!is_object($handler) || !method_exists($handler, '__invoke')) {
             Helper::throwInvalidArgument(
@@ -207,17 +219,18 @@ class Router implements RouterInterface
             );
         }
 
+        // has alias option
+        if ($config['aliases']) {
+            $this->setAlias($name, $config['aliases'], true);
+        }
+
         // is an class name string
+        // $this->commands[$name] = $config;
         $this->commands[$name] = [
             'type'    => self::TYPE_SINGLE,
             'handler' => $handler,
-            'options' => $options,
+            'config'  => $config,
         ];
-
-        // has alias option
-        if ($options['aliases']) {
-            $this->setAlias($name, $options['aliases'], true);
-        }
 
         return $this;
     }
@@ -259,25 +272,47 @@ class Router implements RouterInterface
      **********************************************************/
 
     /**
+     * match a command or group
+     *
+     * returns examples:
+     *
+     * - Command
+     *
+     * ```php
+     * return [
+     *  type     => 2, // 1 group 2 command
+     *  name     => '', // input command name.
+     *  cmdId    => '', // format and resolved $name
+     *  // common info
+     *  handler => handler class/object/func ...
+     *  aliases => [],
+     *  desc  => '',
+     * ]
+     * ```
+     *
+     * - Group/Controller
+     *
      * ```php
      * return [
      *  type     => 1, // 1 group 2 command
-     *  name     => '', // input group/command name.
+     *  name     => 'git', // input command name.
      *  cmdId    => '', // format and resolved $name
      *  // for group
-     *  group    => '', // group name.
-     *  sub      => '', // input subcommand name. on name is group.
+     *  group    => 'git', // group name.
+     *  sub      => 'clone', // input subcommand name. on name is group.
      *  // common info
      *  handler => handler class/object/func ...
-     *  options => [
-     *      aliases => [],
-     *      description => '',
+     *  aliases => [],
+     *  config  => [
+     *      desc    => '',
      *  ],
      * ]
      * ```
+     *
      * @param string $name The input command name
      *
-     * @return array return route info array. If not found, will return empty array.
+     * @return array{type: string, name:string, cmdId: string, config: array, handler: mixed} return route info.
+     * If not found, will return empty array.
      */
     public function match(string $name): array
     {

@@ -24,6 +24,7 @@ use RuntimeException;
 use Seld\PharUtils\Timestamps;
 use SplFileInfo;
 use SplQueue;
+use Toolkit\FsUtil\Dir;
 use Toolkit\FsUtil\File;
 use Toolkit\Sys\Sys;
 use Traversable;
@@ -637,11 +638,10 @@ class PharCompiler
      * @param string $directory
      *
      * @return Iterator
-     * @throws InvalidArgumentException
      */
     protected function findFiles(string $directory): Iterator
     {
-        return Helper::directoryIterator(
+        return Dir::getIterator(
             $directory,
             $this->getIteratorFilter(),
             FilesystemIterator::KEY_AS_PATHNAME | FilesystemIterator::CURRENT_AS_FILEINFO | FilesystemIterator::SKIP_DOTS

@@ -18,9 +18,10 @@ use Inhere\Console\IO\Output;
 use Inhere\Console\Util\Helper;
 use InvalidArgumentException;
 use RuntimeException;
-use SplFileInfo;
 use Throwable;
+use Toolkit\FsUtil\Dir;
 use Toolkit\PFlag\SFlags;
+use Toolkit\Stdlib\Helper\Assert;
 use Toolkit\Stdlib\Helper\DataHelper;
 use function array_unshift;
 use function class_exists;
@@ -60,7 +61,11 @@ class Application extends AbstractApplication
      ****************************************************************************/
 
     /**
-     * {@inheritdoc}
+     * @param string $name
+     * @param ControllerInterface|string|null $class
+     * @param array $config
+     *
+     * @return $this
      */
     public function controller(string $name, ControllerInterface|string $class = null, array $config = []): static
     {
@@ -100,8 +105,6 @@ class Application extends AbstractApplication
 
     /**
      * @param array $controllers
-     *
-     * @throws InvalidArgumentException
      */
     public function controllers(array $controllers): void
     {
@@ -110,19 +113,6 @@ class Application extends AbstractApplication
 
     /**
      * @param array $controllers
-     *
-     * @throws InvalidArgumentException
-     * @deprecated please use addControllers() instead it.
-     */
-    public function setControllers(array $controllers): void
-    {
-        $this->addControllers($controllers);
-    }
-
-    /**
-     * @param array $controllers
-     *
-     * @throws InvalidArgumentException
      */
     public function addControllers(array $controllers): void
     {
@@ -130,7 +120,11 @@ class Application extends AbstractApplication
     }
 
     /**
-     * {@inheritdoc}
+     * @param string $name
+     * @param class-string|CommandInterface|null|Closure():void $handler
+     * @param array{desc: string, aliases: array, options: array, arguments: array} $config config the command.
+     *
+     * @return Application
      */
     public function command(string $name, string|Closure|CommandInterface $handler = null, array $config = []): static
     {
@@ -144,21 +138,19 @@ class Application extends AbstractApplication
      * add command
      *
      * @param string $name
-     * @param mixed|null $handler
-     * @param array $config
+     * @param class-string|CommandInterface|null|Closure():void $handler
+     * @param array{desc: string, aliases: array, options: array, arguments: array} $config config the command.
      *
      * @return Application
      * @see command()
      */
-    public function addCommand(string $name, mixed $handler = null, array $config = []): self
+    public function addCommand(string $name, string|Closure|CommandInterface $handler = null, array $config = []): static
     {
         return $this->command($name, $handler, $config);
     }
 
     /**
-     * @param array $commands
-     *
-     * @throws InvalidArgumentException
+     * @param array{string, mixed} $commands
      */
     public function addCommands(array $commands): void
     {
@@ -166,9 +158,7 @@ class Application extends AbstractApplication
     }
 
     /**
-     * @param array $commands
-     *
-     * @throws InvalidArgumentException
+     * @param array{string, mixed} $commands
      */
     public function commands(array $commands): void
     {
@@ -186,14 +176,14 @@ class Application extends AbstractApplication
      * @param string $basePath
      *
      * @return $this
-     * @throws InvalidArgumentException
      */
-    public function registerCommands(string $namespace, string $basePath): self
+    public function registerCommands(string $namespace, string $basePath): static
     {
-        $length   = strlen($basePath) + 1;
-        $iterator = Helper::directoryIterator($basePath, $this->getFileFilter());
+        $length = strlen($basePath) + 1;
+        // $iterator = Helper::directoryIterator($basePath, $this->getFileFilter());
+        $iter = Dir::getIterator($basePath, Dir::getPhpFileFilter());
 
-        foreach ($iterator as $file) {
+        foreach ($iter as $file) {
             $class = $namespace . '\\' . substr($file->getPathName(), $length, -4);
             $this->addCommand($class);
         }
@@ -212,38 +202,16 @@ class Application extends AbstractApplication
      */
     public function registerGroups(string $namespace, string $basePath): self
     {
-        $length   = strlen($basePath) + 1;
-        $iterator = Helper::directoryIterator($basePath, $this->getFileFilter());
+        $length = strlen($basePath) + 1;
+        // $iterator = Helper::directoryIterator($basePath, $this->getFileFilter());
+        $iter = Dir::getIterator($basePath, Dir::getPhpFileFilter());
 
-        foreach ($iterator as $file) {
+        foreach ($iter as $file) {
             $class = $namespace . '\\' . substr($file->getPathName(), $length, -4);
             $this->addController($class);
         }
 
         return $this;
-    }
-
-    /**
-     * @return Closure
-     */
-    protected function getFileFilter(): callable
-    {
-        return static function (SplFileInfo $f) {
-            $name = $f->getFilename();
-
-            // Skip hidden files and directories.
-            if (str_starts_with($name, '.')) {
-                return false;
-            }
-
-            // go on read sub-dir
-            if ($f->isDir()) {
-                return true;
-            }
-
-            // php file
-            return $f->isFile() && str_ends_with($name, '.php');
-        };
     }
 
     /****************************************************************************
@@ -298,39 +266,49 @@ class Application extends AbstractApplication
         }
 
         // save command ID
-        $cmdOptions = $info['options'];
-        unset($info['options']);
+        $cmdConf = $info['config'];
+        unset($info['config']);
         $this->input->setCommandId($info['cmdId']);
 
         // is command
         if ($info['type'] === Router::TYPE_SINGLE) {
-            return $this->runCommand($info, $cmdOptions, $args);
+            return $this->runCommand($info, $cmdConf, $args);
         }
 
         // is controller/group
-        return $this->runAction($info, $cmdOptions, $args);
+        return $this->runAction($info, $cmdConf, $args);
     }
 
     /**
      * run a independent command
      *
      * @param array{name: string, handler: mixed, realName: string} $info
-     * @param array $options
+     * @param array{aliases: array, desc: string, options: array, arguments: array} $config The config.
      * @param array $args
      *
      * @return mixed
      * @throws Throwable
      */
-    protected function runCommand(array $info, array $options, array $args): mixed
+    protected function runCommand(array $info, array $config, array $args): mixed
     {
-        /** @var Closure|string $handler Command class or handler func */
+        /** @var Closure|class-string{Command} $handler Command class or handler func */
         $handler = $info['handler'];
+        $iptName = $info['name'];
 
         if (is_object($handler) && method_exists($handler, '__invoke')) {
             $fs = SFlags::new();
+            $fs->setName($iptName);
             $fs->addOptsByRules(GlobalOption::getAloneOptions());
-            $desc = $options['desc'] ?? 'No command description message';
-            $fs->setDesc($desc);
+
+            // command flags load
+            if ($cmdOpts = $config['options'] ?? null) {
+                $fs->addOptsByRules($cmdOpts);
+            }
+            if ($cmdArgs = $config['arguments'] ?? null) {
+                $fs->addArgsByRules($cmdArgs);
+            }
+
+            $fs->setDesc($config['desc'] ?? 'No command description message');
 
             // save to input object
             $this->input->setFs($fs);
@@ -339,21 +317,17 @@ class Application extends AbstractApplication
                 return 0; // render help
             }
 
-            $result = $handler($this->input, $this->output);
+            $result = $handler($fs, $this->output);
         } else {
-            if (!class_exists($handler)) {
-                Helper::throwInvalidArgument("The console command class [$handler] not exists!");
-            }
+            Assert::isTrue(class_exists($handler), "The console command class [$handler] not exists!");
+
+            $object = new $handler($this->input, $this->output);
+            Assert::isTrue($object instanceof Command, "Command class [$handler] must instanceof the " . Command::class);
 
             /** @var Command $object */
-            $object = new $handler($this->input, $this->output);
-            if (!($object instanceof Command)) {
-                Helper::throwInvalidArgument("The console command class [$handler] must instanceof the " . Command::class);
-            }
-
             $object::setName($info['cmdId']); // real command name.
             $object->setApp($this);
-            $object->setCommandName($info['name']);
+            $object->setCommandName($iptName);
             $result = $object->run($args);
         }
 
@@ -363,21 +337,18 @@ class Application extends AbstractApplication
     /**
      * Execute an action in a group command(controller)
      *
-     * @param array $info Matched route info
-     *
-     * @psalm-param array{action: string} $info Matched route info
-     *
-     * @param array $options
+     * @param array{action: string} $info Matched route info
+     * @param array $config
      * @param array $args
      * @param bool $detachedRun
      *
      * @return mixed
      * @throws Throwable
      */
-    protected function runAction(array $info, array $options, array $args, bool $detachedRun = false): mixed
+    protected function runAction(array $info, array $config, array $args, bool $detachedRun = false): mixed
     {
         $controller = $this->createController($info);
-        $controller::setDesc($options['desc'] ?? '');
+        $controller::setDesc($config['desc'] ?? '');
 
         if ($detachedRun) {
             $controller->setDetached();
@@ -408,7 +379,7 @@ class Application extends AbstractApplication
     }
 
     /**
-     * @param array $info
+     * @param array{name: string, group: string, handler: mixed} $info
      *
      * @return Controller
      */

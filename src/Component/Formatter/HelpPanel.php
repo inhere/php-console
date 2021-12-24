@@ -89,17 +89,13 @@ class HelpPanel extends MessageFormatter
         $config = array_merge([
             'desc'      => '',
             'usage'     => '',
-
             'commands'  => [],
             'arguments' => [],
             'options'   => [],
-
-            'examples' => [],
-
+            'examples'  => [],
             // extra
-            'extras'   => [],
-
-            '_opts' => [],
+            'extras'    => [],
+            '_opts'     => [],
         ], $config);
 
         // some option for show.

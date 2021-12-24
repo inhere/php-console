@@ -16,7 +16,6 @@ use Inhere\Console\Exception\ConsoleException;
 use Inhere\Console\Handler\AbstractHandler;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
-use Inhere\Console\Util\FormatUtil;
 use Inhere\Console\Util\Helper;
 use ReflectionClass;
 use ReflectionException;
@@ -520,7 +519,7 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
      */
     protected function beforeRenderCommandHelp(array &$help): void
     {
-        $help['Group Options:'] = FormatUtil::alignOptions($this->flags->getOptsHelpLines());
+        $help['Group Options:'] = FlagUtil::alignOptions($this->flags->getOptsHelpLines());
     }
 
     /**

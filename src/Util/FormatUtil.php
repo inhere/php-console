@@ -10,11 +10,11 @@
 namespace Inhere\Console\Util;
 
 use Toolkit\Cli\Color\ColorTag;
+use Toolkit\PFlag\FlagUtil;
 use Toolkit\Stdlib\Arr\ArrayHelper;
 use Toolkit\Stdlib\Helper\JsonHelper;
 use Toolkit\Stdlib\Str;
 use Toolkit\Sys\Sys;
-use function array_keys;
 use function array_merge;
 use function array_shift;
 use function explode;
@@ -24,10 +24,8 @@ use function is_bool;
 use function is_int;
 use function is_numeric;
 use function is_scalar;
-use function preg_match;
 use function rtrim;
 use function str_repeat;
-use function str_replace;
 use function strpos;
 use function trim;
 use function ucfirst;
@@ -145,33 +143,7 @@ final class FormatUtil
      */
     public static function alignOptions(array $options): array
     {
-        if (!$options) {
-            return [];
-        }
-
-        // check has short option. e.g '-h, --help'
-        $nameString = implode('|', array_keys($options));
-        if (preg_match('/\|-\w/', $nameString) !== 1) {
-            return $options;
-        }
-
-        $formatted = [];
-        foreach ($options as $name => $des) {
-            if (!$name = trim($name, ', ')) {
-                continue;
-            }
-
-            // start with '--', padding length equals to '-h, '
-            if (isset($name[1]) && $name[1] === '-') {
-                $name = '    ' . $name;
-            } else {
-                $name = str_replace([',-'], [', -'], $name);
-            }
-
-            $formatted[$name] = $des;
-        }
-
-        return $formatted;
+        return FlagUtil::alignOptions($options);
     }
 
     /**
