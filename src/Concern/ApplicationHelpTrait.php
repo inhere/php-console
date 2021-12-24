@@ -15,10 +15,10 @@ use Inhere\Console\ConsoleEvent;
 use Inhere\Console\Contract\CommandInterface;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
-use Inhere\Console\Util\FormatUtil;
 use Inhere\Console\Util\Show;
 use Toolkit\Cli\Color\ColorTag;
 use Toolkit\Cli\Style;
+use Toolkit\PFlag\FlagUtil;
 use function array_merge;
 use function basename;
 use function date;
@@ -138,7 +138,7 @@ trait ApplicationHelpTrait
         $binName  = $in->getScriptName();
         $helpInfo = [
             'Usage'   => "$binName <info>{command}</info> [--opt -v -h ...] [arg0 arg1 arg2=value2 ...]",
-            'Options' => FormatUtil::alignOptions($globalOptions),
+            'Options' => FlagUtil::alignOptions($globalOptions),
             'Example' => [
                 '- run a command/subcommand:',
                 "$binName test                     run a independent command",
@@ -215,11 +215,11 @@ trait ApplicationHelpTrait
 
         $placeholder = 'No description of the command';
         foreach ($groups as $name => $info) {
-            $options    = $info['options'];
             $controller = $info['handler'];
             /** @var AbstractHandler $controller */
             $desc    = $controller::getDesc() ?: $placeholder;
-            $aliases = $options['aliases'];
+            $config  = $info['config'];
+            $aliases = $config['aliases'];
             $extra   = $aliases ? ColorTag::wrap(' (alias: ' . implode(',', $aliases) . ')', 'info') : '';
 
             // collect
@@ -231,14 +231,14 @@ trait ApplicationHelpTrait
         }
 
         foreach ($commands as $name => $info) {
-            $desc    = $placeholder;
-            $options = $info['options'];
+            $desc   = $placeholder;
+            $config = $info['config'];
             $command = $info['handler'];
 
             /** @var AbstractHandler $command */
             if (is_subclass_of($command, CommandInterface::class)) {
                 $desc = $command::getDesc() ?: $placeholder;
-            } elseif ($msg = $options['desc'] ?? '') {
+            } elseif ($msg = $config['desc'] ?? '') {
                 $desc = $msg;
             } elseif (is_string($command)) {
                 $desc = 'A handler : ' . $command;
@@ -246,7 +246,7 @@ trait ApplicationHelpTrait
                 $desc = 'A handler by ' . get_class($command);
             }
 
-            $aliases = $options['aliases'];
+            $aliases = $config['aliases'];
             $extra   = $aliases ? ColorTag::wrap(' (alias: ' . implode(',', $aliases) . ')', 'info') : '';
 
             $commandArr[$name] = $desc . $extra;
@@ -281,7 +281,7 @@ trait ApplicationHelpTrait
 
         Show::mList([
             'Usage:'              => "$scriptName <info>{COMMAND}</info> [--opt -v -h ...] [arg0 arg1 arg2=value2 ...]",
-            'Options:'            => FormatUtil::alignOptions($globOpts),
+            'Options:'            => FlagUtil::alignOptions($globOpts),
             'Internal Commands:'  => $internalCommands,
             'Available Commands:' => array_merge($groupArr, $commandArr),
         ], [

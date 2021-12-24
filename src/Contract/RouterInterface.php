@@ -10,7 +10,6 @@
 namespace Inhere\Console\Contract;
 
 use Closure;
-use InvalidArgumentException;
 
 /**
  * Interface RouterInterface
@@ -33,11 +32,8 @@ interface RouterInterface
      * @param string|class-string  $name    The controller name
      * @param string|ControllerInterface|null $class   The controller class
      * @param array{aliases: array, desc: string} $config The options config.
-     *                                            - aliases The command aliases
-     *                                            - desc    The description message
      *
      * @return static
-     * @throws InvalidArgumentException
      */
     public function addGroup(string $name, ControllerInterface|string $class = null, array $config = []): static;
 
@@ -45,13 +41,10 @@ interface RouterInterface
      * Register a app independent console command
      *
      * @param string|class-string        $name
-     * @param string|Closure|CommandInterface|null $handler
-     * @param array{aliases: array, desc: string} $config The options config.
-     *                                            - aliases The command aliases
-     *                                            - desc    The description message
+     * @param string|CommandInterface|null|Closure():void $handler
+     * @param array{aliases: array, desc: string, options: array, arguments: array} $config The config.
      *
      * @return static
-     * @throws InvalidArgumentException
      */
     public function addCommand(string $name, string|Closure|CommandInterface $handler = null, array $config = []): static;
 
@@ -60,16 +53,16 @@ interface RouterInterface
      * return  [
      *  type    => 1, // 1 group 2 command
      *  handler => handler class/object/func ...
-     *  options => [
+     *  config => [
+     *      desc => '',
      *      aliases => [],
-     *      description => '',
      *  ],
      * ]
      * ```
      *
      * @param string $name The input command name
      *
-     * @return array return route info array. If not found, will return empty array.
+     * @return array{name:string, cmdId: string, config: array, handler: mixed} return route info. If not found, will return empty array.
      */
     public function match(string $name): array;
 }

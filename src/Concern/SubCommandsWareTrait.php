@@ -48,7 +48,7 @@ trait SubCommandsWareTrait
      * [
      *  'name' => [
      *      'handler' => MyCommand::class, // allow: string|Closure|CommandInterface
-     *      'options' => []
+     *      'config' => []
      *  ]
      * ]
      */
@@ -83,14 +83,14 @@ trait SubCommandsWareTrait
      *
      * @param string|CommandInterface              $name
      * @param string|Closure|CommandInterface|null $handler
-     * @param array                                $options
+     * @param array                                $config
      *  array:
      *  - aliases     The command aliases
      *  - description The description message
      *
      * @throws InvalidArgumentException
      */
-    public function addSub(string $name, string|Closure|CommandInterface $handler = null, array $options = []): void
+    public function addSub(string $name, string|Closure|CommandInterface $handler = null, array $config = []): void
     {
         if (!$handler && class_exists($name)) {
             /** @var Command $name name is an command class */
@@ -108,7 +108,7 @@ trait SubCommandsWareTrait
             Helper::throwInvalidArgument("Command '$name' have been registered!");
         }
 
-        $options['aliases'] = isset($options['aliases']) ? (array)$options['aliases'] : [];
+        $config['aliases'] = isset($config['aliases']) ? (array)$config['aliases'] : [];
 
         if (is_string($handler)) {
             if (!class_exists($handler)) {
@@ -127,7 +127,7 @@ trait SubCommandsWareTrait
 
             // allow define aliases in Command class by Command::aliases()
             if ($aliases = $handler::aliases()) {
-                $options['aliases'] = array_merge($options['aliases'], $aliases);
+                $config['aliases'] = array_merge($config['aliases'], $aliases);
             }
         } elseif (!is_object($handler) || !method_exists($handler, '__invoke')) {
             Helper::throwInvalidArgument(
@@ -140,12 +140,12 @@ trait SubCommandsWareTrait
         $this->commands[$name] = [
             'type'    => Console::CMD_SINGLE,
             'handler' => $handler,
-            'options' => $options,
+            'config' => $config,
         ];
 
         // has alias option
-        if (isset($options['aliases'])) {
-            $this->setAlias($name, $options['aliases'], true);
+        if (isset($config['aliases'])) {
+            $this->setAlias($name, $config['aliases'], true);
         }
     }
 

@@ -11,8 +11,8 @@ namespace Inhere\Console\Concern;
 
 use Inhere\Console\Handler\AbstractHandler;
 use Inhere\Console\Console;
-use Inhere\Console\Util\FormatUtil;
 use Toolkit\PFlag\FlagsParser;
+use Toolkit\PFlag\FlagUtil;
 use function implode;
 use function sprintf;
 use function strtr;
@@ -146,7 +146,7 @@ trait CommandHelpTrait
 
         $help['Usage:'] = "$path [--options ...] [arguments ...]";
 
-        $help['Options:']  = FormatUtil::alignOptions($fs->getOptsHelpLines());
+        $help['Options:']  = FlagUtil::alignOptions($fs->getOptsHelpLines());
         $help['Argument:'] = $fs->getArgsHelpLines();
         $help['Example:']  = $fs->getExampleHelp();
 
@@ -158,7 +158,7 @@ trait CommandHelpTrait
 
         // attached to console app
         if ($this->renderGlobalOption && ($app = $this->getApp())) {
-            $help['Global Options:'] = FormatUtil::alignOptions($app->getFlags()->getOptsHelpLines());
+            $help['Global Options:'] = FlagUtil::alignOptions($app->getFlags()->getOptsHelpLines());
         }
 
         $this->output->mList($help, [

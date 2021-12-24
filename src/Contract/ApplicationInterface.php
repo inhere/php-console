@@ -59,10 +59,8 @@ interface ApplicationInterface
      * Register a app group command(by controller)
      *
      * @param string $name The controller name
-     * @param string|ControllerInterface|null $class The controller class
+     * @param class-string|ControllerInterface|null $class The controller class
      * @param array{desc: string, aliases: array} $config config the controller.
-     *                      - aliases   The command aliases
-     *                      - desc      The description message
      *
      * @return static
      * @throws InvalidArgumentException
@@ -72,11 +70,9 @@ interface ApplicationInterface
     /**
      * Register a app independent console command
      *
-     * @param string|class-string $name
-     * @param string|Closure|CommandInterface|null $handler
+     * @param string $name
+     * @param string|CommandInterface|null|Closure():void $handler
      * @param array{desc: string, aliases: array} $config config the command.
-     *                      - aliases     The command aliases
-     *                      - desc        The description message
      *
      * @return mixed
      * @throws InvalidArgumentException
