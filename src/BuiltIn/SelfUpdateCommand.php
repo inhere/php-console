@@ -37,7 +37,7 @@ class SelfUpdateCommand extends Command
 
     protected static string $name = 'self-update';
 
-    protected static string $description = 'Update phar package to most recent stable, pre-release or development build.';
+    protected static string $desc = 'Update phar package to most recent stable, pre-release or development build.';
 
     /**
      * @var string

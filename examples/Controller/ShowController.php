@@ -29,7 +29,7 @@ class ShowController extends Controller
 {
     protected static string $name = 'show';
 
-    protected static string $description = 'there are some demo commands for show format data';
+    protected static string $desc = 'there are some demo commands for show format data';
 
     public static function commandAliases(): array
     {

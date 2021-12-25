@@ -25,7 +25,7 @@ class DevServerCommand extends Command
 {
     protected static string $name = 'dev:server';
 
-    protected static string $description = 'Start a php built-in http server for development';
+    protected static string $desc = 'Start a php built-in http server for development';
 
     public static function aliases(): array
     {

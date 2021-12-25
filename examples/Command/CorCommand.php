@@ -22,7 +22,7 @@ class CorCommand extends Command
 {
     protected static string $name = 'cor';
 
-    protected static string $description = 'a coroutine test command';
+    protected static string $desc = 'a coroutine test command';
 
     protected static bool $coroutine = true;
 

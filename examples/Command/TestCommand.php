@@ -21,12 +21,12 @@ class TestCommand extends Command
 {
     protected static string $name = 'test';
 
-    protected static string $description = 'this is a test independent command';
+    protected static string $desc = 'this is a test independent command';
 
     protected function commands(): array
     {
         return [
-            'sub' => static function ($in, $out): void {
+            'sub' => static function ($fs, $out): void {
                 $out->println('hello, this is an sub command of test.');
             },
         ];

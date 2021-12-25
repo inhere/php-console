@@ -23,7 +23,7 @@ class ProcessController extends Controller
 {
     protected static string $name = 'process';
 
-    protected static string $description = 'Some simple process to create and use examples';
+    protected static string $desc = 'Some simple process to create and use examples';
 
     protected static function commandAliases(): array
     {

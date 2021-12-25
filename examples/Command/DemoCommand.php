@@ -23,11 +23,10 @@ class DemoCommand extends Command
 {
     protected static string $name = 'demo';
 
-    protected static string $description = 'this is a demo alone command. but use Definition instead of annotations';
+    protected static string $desc = 'this is a demo alone command. but use Definition instead of annotations';
 
     /**
      * {@inheritDoc}
-     * @throws LogicException
      */
     protected function configure(): void
     {

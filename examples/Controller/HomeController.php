@@ -34,7 +34,7 @@ class HomeController extends Controller
 {
     protected static string $name = 'home';
 
-    protected static string $description = 'This is a demo command controller. there are some command usage examples(2)';
+    protected static string $desc = 'This is a demo command controller. there are some command usage examples(2)';
 
     public static function aliases(): array
     {

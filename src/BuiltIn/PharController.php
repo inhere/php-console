@@ -36,7 +36,7 @@ class PharController extends Controller
 {
     protected static string $name = 'phar';
 
-    protected static string $description = 'Pack a project directory to phar or unpack phar to directory';
+    protected static string $desc = 'Pack a project directory to phar or unpack phar to directory';
 
     /**
      * @var Closure|null
