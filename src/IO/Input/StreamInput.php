@@ -9,7 +9,7 @@
 
 namespace Inhere\Console\IO\Input;
 
-use Inhere\Console\IO\AbstractInput;
+use Inhere\Console\Concern\AbstractInput;
 use InvalidArgumentException;
 use Toolkit\FsUtil\File;
 use Toolkit\Stdlib\OS;
@@ -19,6 +19,7 @@ use const STDIN;
 
 /**
  * Class StreamInput
+ *
  * @package Inhere\Console\IO\Input
  */
 class StreamInput extends AbstractInput

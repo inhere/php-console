@@ -9,7 +9,7 @@
 
 namespace Inhere\Console\IO\Output;
 
-use Inhere\Console\IO\AbstractOutput;
+use Inhere\Console\Concern\AbstractOutput;
 use function strlen;
 use const PHP_EOL;
 

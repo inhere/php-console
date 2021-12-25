@@ -9,7 +9,7 @@
 
 namespace Inhere\Console\IO\Output;
 
-use Inhere\Console\IO\AbstractOutput;
+use Inhere\Console\Concern\AbstractOutput;
 use InvalidArgumentException;
 use Toolkit\FsUtil\File;
 use Toolkit\Stdlib\Helper\DataHelper;

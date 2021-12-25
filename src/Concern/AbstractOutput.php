@@ -7,13 +7,14 @@
  * @license  https://github.com/inhere/php-console/blob/master/LICENSE
  */
 
-namespace Inhere\Console\IO;
+namespace Inhere\Console\Concern;
 
 use Inhere\Console\Contract\OutputInterface;
 
 /**
  * Class AbstractOutput
- * @package Inhere\Console\IO
+ *
+ * @package Inhere\Console\Concern
  */
 abstract class AbstractOutput implements OutputInterface
 {

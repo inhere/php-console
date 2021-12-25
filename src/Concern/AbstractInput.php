@@ -7,7 +7,7 @@
  * @license  https://github.com/inhere/php-console/blob/master/LICENSE
  */
 
-namespace Inhere\Console\IO;
+namespace Inhere\Console\Concern;
 
 use Inhere\Console\Contract\InputInterface;
 use Toolkit\Cli\Helper\FlagHelper;
@@ -23,7 +23,7 @@ use function preg_match;
 /**
  * Class AbstractInput
  *
- * @package Inhere\Console\IO
+ * @package Inhere\Console\Concern
  */
 abstract class AbstractInput implements InputInterface
 {
