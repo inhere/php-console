@@ -89,7 +89,7 @@ class ApplicationTest extends TestCase
         }
     }
 
-    public function testRunCommand_class(): void
+    public function testAddCommand_class_run(): void
     {
         $app = $this->newApp([
             './app',
@@ -101,7 +101,7 @@ class ApplicationTest extends TestCase
         self::assertSame('Inhere\ConsoleTest\TestCommand::execute', $ret);
     }
 
-    public function testRunCommand_callback(): void
+    public function testAddCommand_callback_run(): void
     {
         $app = $this->newApp([
             './app',
@@ -116,14 +116,14 @@ class ApplicationTest extends TestCase
         self::assertSame('hello', $ret);
     }
 
-    public function testRun_Command_object(): void
+    public function testAddCommand_object_run(): void
     {
         $app = $this->newApp([
             './app',
             'test'
         ]);
 
-        $app->addCommand('test', new TestCommand());
+        $app->command('test', new TestCommand());
 
         $ret = $app->run(false);
         self::assertSame('Inhere\ConsoleTest\TestCommand::execute', $ret);
@@ -165,7 +165,7 @@ class ApplicationTest extends TestCase
         }
     }
 
-    public function testRunController(): void
+    public function testAdd_Controller_class_Run(): void
     {
         $app = $this->newApp([
             './app',
@@ -173,6 +173,19 @@ class ApplicationTest extends TestCase
         ]);
 
         $app->controller('test', TestController::class);
+
+        $ret = $app->run(false);
+        self::assertSame('Inhere\ConsoleTest\TestController::demoCommand', $ret);
+    }
+
+    public function testAdd_Controller_object_Run(): void
+    {
+        $app = $this->newApp([
+            './app',
+            'test:demo'
+        ]);
+
+        $app->controller('test', new TestController);
 
         $ret = $app->run(false);
         self::assertSame('Inhere\ConsoleTest\TestController::demoCommand', $ret);

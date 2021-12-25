@@ -29,7 +29,6 @@ use function class_exists;
 use function implode;
 use function is_object;
 use function is_string;
-use function method_exists;
 use function str_replace;
 use function strlen;
 use function strpos;
@@ -404,14 +403,13 @@ class Application extends AbstractApplication
         $handler = $info['handler']; // The controller class or object
         if (is_string($handler)) {
             $class = $handler;
-            if (!class_exists($class)) {
-                Helper::throwInvalidArgument('The console controller class [%s] not exists!', $class);
-            }
+            Assert::isTrue(class_exists($class), "The console controller class '$class' not exists!");
 
-            $handler = new $class($this->input, $this->output);
+            // create group object
+            $handler = new $class();
         }
 
-        if (!($handler instanceof Controller)) {
+        if (!$handler instanceof Controller) {
             Helper::throwInvalidArgument(
                 'The console controller class [%s] must instanceof the %s',
                 $handler,
@@ -422,6 +420,7 @@ class Application extends AbstractApplication
         // force set name and description
         $handler::setName($group);
         $handler->setApp($this);
+        $handler->setInputOutput($this->input, $this->output);
 
         // set input name
         if ($inputName = $info['name'] ?? '') {
