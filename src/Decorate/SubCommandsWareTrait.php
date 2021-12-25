@@ -7,7 +7,7 @@
  * @license  https://github.com/inhere/php-console/blob/master/LICENSE
  */
 
-namespace Inhere\Console\Concern;
+namespace Inhere\Console\Decorate;
 
 use Closure;
 use Inhere\Console\Command;
@@ -30,7 +30,7 @@ use function preg_match;
 /**
  * Trait SubCommandsWareTrait
  *
- * @package Inhere\Console\Concern
+ * @package Inhere\Console\Decorate
  */
 trait SubCommandsWareTrait
 {

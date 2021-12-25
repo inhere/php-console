@@ -7,7 +7,7 @@
  * @license  https://github.com/inhere/php-console/blob/master/LICENSE
  */
 
-namespace Inhere\Console\Concern;
+namespace Inhere\Console\Decorate;
 
 use Inhere\Console\Component\Formatter\JSONPretty;
 use Inhere\Console\Console;
@@ -21,7 +21,7 @@ use const PHP_EOL;
 /**
  * Class FormatOutputAwareTrait
  *
- * @package Inhere\Console\Traits
+ * @package Inhere\Console\Decorate
  */
 trait FormatOutputAwareTrait
 {

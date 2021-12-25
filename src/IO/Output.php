@@ -9,7 +9,7 @@
 
 namespace Inhere\Console\IO;
 
-use Inhere\Console\Concern\FormatOutputAwareTrait;
+use Inhere\Console\Decorate\FormatOutputAwareTrait;
 use Inhere\Console\Console;
 use Inhere\Console\IO\Output\StreamOutput;
 use Toolkit\Cli\Cli;

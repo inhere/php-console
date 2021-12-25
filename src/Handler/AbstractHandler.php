@@ -12,14 +12,14 @@ namespace Inhere\Console\Handler;
 use Inhere\Console\Annotate\DocblockRules;
 use Inhere\Console\Component\ErrorHandler;
 use Inhere\Console\Concern\AttachApplicationTrait;
-use Inhere\Console\Concern\CommandHelpTrait;
 use Inhere\Console\Concern\InputOutputAwareTrait;
-use Inhere\Console\Concern\SubCommandsWareTrait;
-use Inhere\Console\Concern\UserInteractAwareTrait;
+use Inhere\Console\Decorate\UserInteractAwareTrait;
 use Inhere\Console\Console;
 use Inhere\Console\ConsoleEvent;
 use Inhere\Console\Contract\CommandHandlerInterface;
 use Inhere\Console\Contract\CommandInterface;
+use Inhere\Console\Decorate\CommandHelpTrait;
+use Inhere\Console\Decorate\SubCommandsWareTrait;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
 use Inhere\Console\Util\Helper;
@@ -54,22 +54,23 @@ abstract class AbstractHandler implements CommandHandlerInterface
     use SubCommandsWareTrait;
 
     /**
-     * group/command name e.g 'test' 'test:one'
+     * The group/command name e.g 'test' 'test:one'
      *
      * @var string
      */
     protected static string $name = '';
 
     /**
-     * command/controller description message
-     * please use the property setting current controller/command description
+     * The command/controller description message.
+     *
+     * TIP: please use the property setting current controller/command description
      *
      * @var string
      */
     protected static string $desc = '';
 
     /**
-     * command/controller description message
+     * The command/controller description message
      *
      * @var string
      * @deprecated please use {@see $desc}
@@ -327,7 +328,7 @@ abstract class AbstractHandler implements CommandHandlerInterface
      *
      * @param array $args
      *
-     * @return int|mixed
+     * @return mixed
      */
     protected function doRun(array $args): mixed
     {

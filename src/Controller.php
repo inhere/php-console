@@ -10,8 +10,8 @@
 namespace Inhere\Console;
 
 use Generator;
-use Inhere\Console\Concern\ControllerHelpTrait;
 use Inhere\Console\Contract\ControllerInterface;
+use Inhere\Console\Decorate\ControllerHelpTrait;
 use Inhere\Console\Exception\ConsoleException;
 use Inhere\Console\Handler\AbstractHandler;
 use Inhere\Console\IO\Input;
@@ -255,7 +255,7 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
     /**
      * @param array $args
      *
-     * @return int|mixed
+     * @return mixed
      * @throws Throwable
      */
     public function doRun(array $args): mixed

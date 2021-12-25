@@ -7,7 +7,7 @@
  * @license  https://github.com/inhere/php-console/blob/master/LICENSE
  */
 
-namespace Inhere\Console\Concern;
+namespace Inhere\Console\Decorate;
 
 use Closure;
 use Generator;
@@ -29,7 +29,7 @@ use function substr;
 /**
  * Trait StyledOutputAwareTrait
  *
- * @package Inhere\Console\Concern
+ * @package Inhere\Console\Decorate
  *
  * @method int info($messages, $quit = false)
  * @method int note($messages, $quit = false)

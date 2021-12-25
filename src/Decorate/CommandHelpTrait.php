@@ -7,7 +7,7 @@
  * @license  https://github.com/inhere/php-console/blob/master/LICENSE
  */
 
-namespace Inhere\Console\Concern;
+namespace Inhere\Console\Decorate;
 
 use Inhere\Console\Handler\AbstractHandler;
 use Inhere\Console\Console;
@@ -21,7 +21,7 @@ use function ucfirst;
 /**
  * Trait CommandHelpTrait
  *
- * @package Inhere\Console\Concern
+ * @package Inhere\Console\Decorate
  */
 trait CommandHelpTrait
 {

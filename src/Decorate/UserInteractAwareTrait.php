@@ -7,7 +7,7 @@
  * @license  https://github.com/inhere/php-console/blob/master/LICENSE
  */
 
-namespace Inhere\Console\Concern;
+namespace Inhere\Console\Decorate;
 
 use Closure;
 use Inhere\Console\Util\Interact;
@@ -17,7 +17,7 @@ use function method_exists;
 /**
  * Class UserInteractAwareTrait
  *
- * @package Inhere\Console\Concern
+ * @package Inhere\Console\Decorate
  * @see     Interact
  *
  * @method string readRow($message = null, $nl = false)

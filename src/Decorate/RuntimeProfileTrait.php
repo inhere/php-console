@@ -7,7 +7,7 @@
  * @license  https://github.com/inhere/php-console/blob/master/LICENSE
  */
 
-namespace Inhere\Console\Concern;
+namespace Inhere\Console\Decorate;
 
 use InvalidArgumentException;
 use Toolkit\Stdlib\Helper\PhpHelper;
@@ -20,7 +20,7 @@ use function microtime;
 /**
  * Trait RuntimeProfileTrait
  *
- * @package Inhere\Library\Concern
+ * @package Inhere\Console\Decorate
  */
 trait RuntimeProfileTrait
 {

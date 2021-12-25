@@ -7,7 +7,7 @@
  * @license  https://github.com/inhere/php-console/blob/master/LICENSE
  */
 
-namespace Inhere\Console\Concern;
+namespace Inhere\Console\Decorate;
 
 use Inhere\Console\Console;
 use Inhere\Console\GlobalOption;
@@ -27,7 +27,7 @@ use const PHP_EOL;
 /**
  * Trait ControllerHelpTrait
  *
- * @package Inhere\Console\Concern
+ * @package Inhere\Console\Decorate
  */
 trait ControllerHelpTrait
 {
@@ -91,15 +91,15 @@ trait ControllerHelpTrait
      */
     public function showCommandList(): void
     {
-        $this->logf(Console::VERB_DEBUG, 'display all sub-commands list of the group: %s', static::$name);
-
+        $name = self::getName();
+        $this->logf(Console::VERB_DEBUG, 'display all sub-commands list of the group: %s', $name);
         $this->beforeShowCommandList();
 
-        $ref   = new ReflectionClass($this);
-        $sName = self::getName() ?: lcfirst($ref->getShortName());
+        $refCls = new ReflectionClass($this);
+        $sName  = $name ?: lcfirst($refCls->getShortName());
 
         if (!($classDes = self::getDesc())) {
-            $classDes = PhpDoc::description($ref->getDocComment()) ?: 'No description for the command group';
+            $classDes = PhpDoc::description($refCls->getDocComment()) ?: 'No description for the command group';
         }
 
         $commands     = [];
@@ -109,7 +109,7 @@ trait ControllerHelpTrait
         /**
          * @var $cmd string The command name.
          */
-        foreach ($this->getAllCommandMethods($ref) as $cmd => $m) {
+        foreach ($this->getAllCommandMethods($refCls) as $cmd => $m) {
             if (!$cmd) {
                 continue;
             }

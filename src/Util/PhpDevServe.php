@@ -13,6 +13,7 @@ use Closure;
 use Exception;
 use RuntimeException;
 use Toolkit\Cli\Cli;
+use Toolkit\FsUtil\Path;
 use Toolkit\Stdlib\Json;
 use Toolkit\Sys\Sys;
 use function explode;
@@ -189,7 +190,7 @@ class PhpDevServe
         $docRoot = $workDir;
         if ($this->docRoot) {
             $docRoot = $this->docRoot;
-            $docRoot = Helper::isAbsPath($docRoot) ? $docRoot : $workDir . '/' . $docRoot;
+            $docRoot = Path::isAbsPath($docRoot) ? $docRoot : $workDir . '/' . $docRoot;
         }
 
         Cli::writeln([

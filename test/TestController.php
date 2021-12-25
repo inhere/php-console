@@ -20,7 +20,7 @@ class TestController extends Controller
 {
     protected static string $name = 'test';
 
-    protected static string $description = 'controller description message';
+    protected static string $desc = 'controller description message';
 
     /**
      * this is an demo command in test

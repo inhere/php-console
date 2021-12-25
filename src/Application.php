@@ -20,6 +20,7 @@ use InvalidArgumentException;
 use RuntimeException;
 use Throwable;
 use Toolkit\FsUtil\Dir;
+use Toolkit\PFlag\FlagsParser;
 use Toolkit\PFlag\SFlags;
 use Toolkit\Stdlib\Helper\Assert;
 use Toolkit\Stdlib\Helper\DataHelper;
@@ -121,7 +122,7 @@ class Application extends AbstractApplication
 
     /**
      * @param string $name
-     * @param class-string|CommandInterface|null|Closure():void $handler
+     * @param class-string|CommandInterface|null|Closure(FlagsParser, Output):void $handler
      * @param array{desc: string, aliases: array, options: array, arguments: array} $config config the command.
      *
      * @return Application
@@ -138,7 +139,7 @@ class Application extends AbstractApplication
      * add command
      *
      * @param string $name
-     * @param class-string|CommandInterface|null|Closure():void $handler
+     * @param class-string|CommandInterface|null|Closure(FlagsParser, Output):void $handler
      * @param array{desc: string, aliases: array, options: array, arguments: array} $config config the command.
      *
      * @return Application

@@ -10,7 +10,7 @@
 namespace Inhere\Console\Util;
 
 use FilesystemIterator;
-use Inhere\Console\Concern\RuntimeProfileTrait;
+use Inhere\Console\Decorate\RuntimeProfileTrait;
 use Inhere\Console\ConsoleConst;
 use InvalidArgumentException;
 use RecursiveCallbackFilterIterator;
@@ -67,16 +67,6 @@ class Helper
     public static function hasMode(int $haystack, int $value): bool
     {
         return ($haystack & $value) > 0;
-    }
-
-    /**
-     * @param string $path
-     *
-     * @return bool
-     */
-    public static function isAbsPath(string $path): bool
-    {
-        return str_starts_with($path, '/') || 1 === preg_match('#^[a-z]:[\/|\\\]{1}.+#i', $path);
     }
 
     /**

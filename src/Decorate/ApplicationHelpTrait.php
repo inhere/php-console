@@ -7,7 +7,7 @@
  * @license  https://github.com/inhere/php-console/blob/master/LICENSE
  */
 
-namespace Inhere\Console\Concern;
+namespace Inhere\Console\Decorate;
 
 use Inhere\Console\Handler\AbstractHandler;
 use Inhere\Console\Console;
@@ -43,7 +43,7 @@ use const STR_PAD_LEFT;
 /**
  * Trait ApplicationHelpTrait
  *
- * @package Inhere\Console\Concern
+ * @package Inhere\Console\Decorate
  */
 trait ApplicationHelpTrait
 {

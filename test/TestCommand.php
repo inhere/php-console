@@ -22,7 +22,7 @@ class TestCommand extends Command
 {
     protected static string $name = 'test1';
 
-    protected static string $description = 'command description message';
+    protected static string $desc = 'command description message';
 
     /**
      * do execute command
