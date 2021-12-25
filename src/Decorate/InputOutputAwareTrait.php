@@ -123,6 +123,19 @@ trait InputOutputAwareTrait
     }
 
     /**
+     * @param Input $input
+     * @param Output $output
+     *
+     * @return static
+     */
+    public function setInputOutput(Input $input, Output $output): static
+    {
+        $this->input = $input;
+        $this->output = $output;
+        return $this;
+    }
+
+    /**
      * @return FlagsParser
      */
     public function getFlags(): FlagsParser

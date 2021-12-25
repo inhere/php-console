@@ -13,6 +13,7 @@ use Inhere\Console\Command;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
 use BadMethodCallException;
+use Toolkit\PFlag\FlagsParser;
 
 /**
  * Class CallableCommand - wrap an callable as Command
@@ -22,9 +23,14 @@ use BadMethodCallException;
 class CallableCommand extends Command
 {
     /**
-     * @var callable
+     * @var callable(FlagsParser, Output): void
      */
     private $callable;
+
+    /**
+     * @var array{options: array, arguments: array}
+     */
+    protected array $config = [];
 
     // public function new(callable $callable): self
     // {
@@ -46,6 +52,60 @@ class CallableCommand extends Command
     // }
 
     /**
+     * @param callable $fn
+     *
+     * @return $this
+     */
+    public function withFunc(callable $fn): self
+    {
+        return $this->setCallable($fn);
+    }
+
+    /**
+     * @param callable $fn
+     *
+     * @return $this
+     */
+    public function withCustom(callable $fn): self
+    {
+        $fn($this);
+        return $this;
+    }
+
+    /**
+     * @param array $config
+     *
+     * @return $this
+     */
+    public function withConfig(array $config): self
+    {
+        $this->config = $config;
+        return $this;
+    }
+
+    /**
+     * @param array $options
+     *
+     * @return $this
+     */
+    public function withOptions(array $options): self
+    {
+        $this->config['options'] = $options;
+        return $this;
+    }
+
+    /**
+     * @param array $arguments
+     *
+     * @return $this
+     */
+    public function withArguments(array $arguments): self
+    {
+        $this->config['arguments'] = $arguments;
+        return $this;
+    }
+
+    /**
      * @param callable $callable
      *
      * @return CallableCommand
@@ -57,12 +117,20 @@ class CallableCommand extends Command
     }
 
     /**
+     * @return array
+     */
+    public function getConfig(): array
+    {
+        return $this->config;
+    }
+
+    /**
      * Do execute command
      *
      * @param Input  $input
      * @param Output $output
      *
-     * @return int|mixed
+     * @return mixed
      */
     protected function execute(Input $input, Output $output): mixed
     {
@@ -71,6 +139,6 @@ class CallableCommand extends Command
         }
 
         // call custom callable
-        return $call($input, $output);
+        return $call($this->flags, $output);
     }
 }

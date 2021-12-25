@@ -296,40 +296,46 @@ class Application extends AbstractApplication
         $handler = $info['handler'];
         $iptName = $info['name'];
 
-        if (is_object($handler) && method_exists($handler, '__invoke')) {
-            $fs = SFlags::new();
-            $fs->setName($iptName);
-            $fs->addOptsByRules(GlobalOption::getAloneOptions());
+        if (is_object($handler)) {
+            // Command object
+            if ($handler instanceof Command) {
+                $handler->setInputOutput($this->input, $this->output);
+                $result = $handler->run($args);
+            } else { // Closure
+                $fs = SFlags::new();
+                $fs->setName($iptName);
+                $fs->addOptsByRules(GlobalOption::getAloneOptions());
 
-            // command flags load
-            if ($cmdOpts = $config['options'] ?? null) {
-                $fs->addOptsByRules($cmdOpts);
+                // command flags load
+                if ($cmdOpts = $config['options'] ?? null) {
+                    $fs->addOptsByRules($cmdOpts);
+                }
+                if ($cmdArgs = $config['arguments'] ?? null) {
+                    $fs->addArgsByRules($cmdArgs);
+                }
+
+                $fs->setDesc($config['desc'] ?? 'No command description message');
+
+                // save to input object
+                $this->input->setFs($fs);
+
+                if (!$fs->parse($args)) {
+                    return 0; // render help
+                }
+
+                $result = $handler($fs, $this->output);
             }
-            if ($cmdArgs = $config['arguments'] ?? null) {
-                $fs->addArgsByRules($cmdArgs);
-            }
-
-            $fs->setDesc($config['desc'] ?? 'No command description message');
-
-            // save to input object
-            $this->input->setFs($fs);
-
-            if (!$fs->parse($args)) {
-                return 0; // render help
-            }
-
-            $result = $handler($fs, $this->output);
         } else {
             Assert::isTrue(class_exists($handler), "The console command class [$handler] not exists!");
 
-            $object = new $handler($this->input, $this->output);
-            Assert::isTrue($object instanceof Command, "Command class [$handler] must instanceof the " . Command::class);
+            /** @var $cmd Command */
+            $cmd = new $handler($this->input, $this->output);
+            Assert::isTrue($cmd instanceof Command, "Command class [$handler] must instanceof the " . Command::class);
 
-            /** @var Command $object */
-            $object::setName($info['cmdId']); // real command name.
-            $object->setApp($this);
-            $object->setCommandName($iptName);
-            $result = $object->run($args);
+            $cmd::setName($info['cmdId']); // real command name.
+            $cmd->setApp($this);
+            $cmd->setCommandName($iptName);
+            $result = $cmd->run($args);
         }
 
         return $result;

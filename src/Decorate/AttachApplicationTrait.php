@@ -9,7 +9,6 @@
 
 namespace Inhere\Console\Decorate;
 
-use Inhere\Console\AbstractApplication;
 use Inhere\Console\Application;
 use Inhere\Console\Console;
 use Toolkit\Stdlib\OS;
@@ -38,9 +37,9 @@ trait AttachApplicationTrait
     private bool $attached = false;
 
     /**
-     * @return AbstractApplication
+     * @return Application
      */
-    public function getApp(): AbstractApplication
+    public function getApp(): Application
     {
         return $this->app;
     }

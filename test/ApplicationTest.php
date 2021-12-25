@@ -85,7 +85,7 @@ class ApplicationTest extends TestCase
             $app->addCommand('test', 'invalid');
         } catch (Throwable $e) {
             self::assertSame(get_class($e), InvalidArgumentException::class);
-            self::assertSame($e->getMessage(), 'The console command class [invalid] not exists!');
+            self::assertSame($e->getMessage(), "The console command class 'invalid' not exists!");
         }
     }
 
@@ -114,6 +114,19 @@ class ApplicationTest extends TestCase
 
         $ret = $app->run(false);
         self::assertSame('hello', $ret);
+    }
+
+    public function testRun_Command_object(): void
+    {
+        $app = $this->newApp([
+            './app',
+            'test'
+        ]);
+
+        $app->addCommand('test', new TestCommand());
+
+        $ret = $app->run(false);
+        self::assertSame('Inhere\ConsoleTest\TestCommand::execute', $ret);
     }
 
     public function testAddController(): void

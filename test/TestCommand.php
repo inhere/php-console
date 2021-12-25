@@ -30,7 +30,7 @@ class TestCommand extends Command
      * @param Input  $input
      * @param Output $output
      *
-     * @return int|mixed
+     * @return mixed
      */
     protected function execute(Input $input, Output $output): mixed
     {

@@ -194,16 +194,10 @@ class Router implements RouterInterface
         $config['aliases'] = isset($config['aliases']) ? (array)$config['aliases'] : [];
 
         if (is_string($handler)) {
-            if (!class_exists($handler)) {
-                Helper::throwInvalidArgument("The console command class [$handler] not exists!");
-            }
+            Assert::isTrue(class_exists($handler), "The console command class '$handler' not exists!");
+            Assert::isTrue(is_subclass_of($handler, Command::class), 'The command class must be subclass of the: ' . Command::class);
 
-            if (!is_subclass_of($handler, Command::class)) {
-                Helper::throwInvalidArgument('The console command class must is subclass of the: ' . Command::class);
-            }
-
-            // not enable
-            /** @var Command $handler */
+            /** @var Command $handler not enable */
             if (!$handler::isEnabled()) {
                 return $this;
             }
@@ -212,10 +206,11 @@ class Router implements RouterInterface
             if ($aliases = $handler::aliases()) {
                 $config['aliases'] = array_merge($config['aliases'], $aliases);
             }
-        } elseif (!is_object($handler) || !method_exists($handler, '__invoke')) {
+        } elseif (!is_object($handler) || !$this->isValidCmdObject($handler)) {
             Helper::throwInvalidArgument(
-                'The console command handler must is an subclass of %s OR a Closure OR a object have method __invoke()',
-                Command::class
+                'The command handler must is an subclass of %s OR a Closure OR a sub-object of %s',
+                Command::class,
+                Command::class,
             );
         }
 
@@ -233,6 +228,20 @@ class Router implements RouterInterface
         ];
 
         return $this;
+    }
+
+    /**
+     * @param object $handler
+     *
+     * @return bool
+     */
+    private function isValidCmdObject(object $handler): bool
+    {
+        if ($handler instanceof Command) {
+            return true;
+        }
+
+        return method_exists($handler, '__invoke');
     }
 
     /**

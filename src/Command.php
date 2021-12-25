@@ -51,6 +51,14 @@ abstract class Command extends AbstractHandler implements CommandInterface
     }
 
     /**
+     * @return array
+     */
+    public function getArguments(): array
+    {
+        return [];
+    }
+
+    /**
      * @param FlagsParser $fs
      */
     protected function beforeInitFlagsParser(FlagsParser $fs): void
@@ -139,7 +147,7 @@ abstract class Command extends AbstractHandler implements CommandInterface
     /**
      * Get the group
      *
-     * @return  Controller
+     * @return Controller|null
      */
     public function getGroup(): ?Controller
     {

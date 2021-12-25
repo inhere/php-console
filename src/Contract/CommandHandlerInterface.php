@@ -10,6 +10,7 @@
 namespace Inhere\Console\Contract;
 
 use Inhere\Console\AbstractApplication;
+use Inhere\Console\Application;
 
 /**
  * Interface CommandHandlerInterface
@@ -35,14 +36,14 @@ interface CommandHandlerInterface
      *
      * @param array $args
      *
-     * @return int|mixed return int is exit code. other is command exec result.
+     * @return mixed return int is exit code. other is command exec result.
      */
     public function run(array $args): mixed;
 
     /**
-     * @return AbstractApplication|ApplicationInterface
+     * @return Application
      */
-    public function getApp(): AbstractApplication;
+    public function getApp(): Application;
 
     /**
      * The input group name.

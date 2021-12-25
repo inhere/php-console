@@ -34,6 +34,7 @@ use Toolkit\Stdlib\Obj\DataObject;
 use function cli_set_process_title;
 use function error_get_last;
 use function function_exists;
+use function vdump;
 use const PHP_OS;
 
 /**
@@ -140,11 +141,11 @@ abstract class AbstractHandler implements CommandHandlerInterface
     /**
      * Command constructor.
      *
-     * @param Input $input
-     * @param Output $output
+     * @param Input|null $input
+     * @param Output|null $output
      */
-    // TODO public function __construct(Input $input = null, Output $output = null)
-    public function __construct(Input $input, Output $output)
+    // public function __construct(Input $input, Output $output)
+    public function __construct(Input $input = null, Output $output = null)
     {
         $this->input  = $input;
         $this->output = $output;
@@ -157,8 +158,7 @@ abstract class AbstractHandler implements CommandHandlerInterface
 
     protected function init(): void
     {
-        $this->commentsVars = $this->annotationVars();
-
+        // $this->commentsVars = $this->annotationVars();
         $this->afterInit();
         $this->debugf('attach inner subcommands to "%s"', self::getName());
         $this->addCommands($this->commands());
@@ -240,6 +240,12 @@ abstract class AbstractHandler implements CommandHandlerInterface
      * running a command
      **************************************************************************/
 
+    protected function initForRun(): void
+    {
+        $this->commentsVars = $this->annotationVars();
+
+    }
+
     /**
      * @param Input $input
      */
@@ -299,6 +305,8 @@ abstract class AbstractHandler implements CommandHandlerInterface
         $name = self::getName();
 
         try {
+            $this->initForRun();
+
             $this->initFlagsParser($this->input);
 
             $this->log(Console::VERB_DEBUG, "begin run '$name' - parse options", ['args' => $args]);
@@ -335,7 +343,7 @@ abstract class AbstractHandler implements CommandHandlerInterface
         if (isset($args[0])) {
             $first = $args[0];
             $rName = $this->resolveAlias($first);
-
+// vdump($first, $rName);
             // TODO
             // if ($this->isSub($rName)) {
             // }
