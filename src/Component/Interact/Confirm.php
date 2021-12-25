@@ -9,7 +9,7 @@
 
 namespace Inhere\Console\Component\Interact;
 
-use Inhere\Console\Component\InteractiveHandle;
+use Inhere\Console\Concern\InteractiveHandle;
 use Inhere\Console\Console;
 use Inhere\Console\Util\Show;
 use function stripos;

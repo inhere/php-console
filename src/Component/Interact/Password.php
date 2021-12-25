@@ -9,7 +9,7 @@
 
 namespace Inhere\Console\Component\Interact;
 
-use Inhere\Console\Component\InteractiveHandle;
+use Inhere\Console\Concern\InteractiveHandle;
 use RuntimeException;
 use Toolkit\Sys\Sys;
 use Toolkit\Sys\Util\ShellUtil;

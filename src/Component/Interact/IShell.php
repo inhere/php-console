@@ -11,7 +11,7 @@ namespace Inhere\Console\Component\Interact;
 
 use Closure;
 use Inhere\Console\Component\Formatter\Title;
-use Inhere\Console\Component\InteractiveHandle;
+use Inhere\Console\Concern\InteractiveHandle;
 use Inhere\Console\Console;
 use Inhere\Console\Util\Interact;
 use Inhere\Console\Util\Show;

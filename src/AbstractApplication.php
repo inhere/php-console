@@ -13,10 +13,10 @@ use ErrorException;
 use Inhere\Console\Component\ErrorHandler;
 use Inhere\Console\Component\Router;
 use Inhere\Console\Component\Formatter\Title;
-use Inhere\Console\Concern\InputOutputAwareTrait;
-use Inhere\Console\Concern\SimpleEventAwareTrait;
+use Inhere\Console\Decorate\SimpleEventAwareTrait;
 use Inhere\Console\Contract\ApplicationInterface;
 use Inhere\Console\Contract\ErrorHandlerInterface;
+use Inhere\Console\Decorate\InputOutputAwareTrait;
 use Inhere\Console\Decorate\ApplicationHelpTrait;
 use Inhere\Console\Decorate\StyledOutputAwareTrait;
 use Inhere\Console\IO\Input;
@@ -90,7 +90,7 @@ abstract class AbstractApplication implements ApplicationInterface
      */
     protected string $commandName = '';
 
-    /**
+    /*
      * @var string Command delimiter char. e.g dev:serve
      */
 

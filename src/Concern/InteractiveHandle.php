@@ -7,14 +7,14 @@
  * @license  https://github.com/inhere/php-console/blob/master/LICENSE
  */
 
-namespace Inhere\Console\Component;
+namespace Inhere\Console\Concern;
 
 use Toolkit\Stdlib\Obj;
 
 /**
  * Class InteractMessage
  *
- * @package Inhere\Console\Component
+ * @package Inhere\Console\Concern
  */
 abstract class InteractiveHandle
 {

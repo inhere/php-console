@@ -11,8 +11,8 @@ namespace Inhere\Console\Handler;
 
 use Inhere\Console\Annotate\DocblockRules;
 use Inhere\Console\Component\ErrorHandler;
-use Inhere\Console\Concern\AttachApplicationTrait;
-use Inhere\Console\Concern\InputOutputAwareTrait;
+use Inhere\Console\Decorate\AttachApplicationTrait;
+use Inhere\Console\Decorate\InputOutputAwareTrait;
 use Inhere\Console\Decorate\UserInteractAwareTrait;
 use Inhere\Console\Console;
 use Inhere\Console\ConsoleEvent;

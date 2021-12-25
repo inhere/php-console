@@ -9,7 +9,7 @@
 
 namespace Inhere\Console\Component\Interact;
 
-use Inhere\Console\Component\InteractiveHandle;
+use Inhere\Console\Concern\InteractiveHandle;
 
 /**
  * Class Terminal

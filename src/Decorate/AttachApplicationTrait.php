@@ -7,7 +7,7 @@
  * @license  https://github.com/inhere/php-console/blob/master/LICENSE
  */
 
-namespace Inhere\Console\Concern;
+namespace Inhere\Console\Decorate;
 
 use Inhere\Console\AbstractApplication;
 use Inhere\Console\Application;
@@ -17,13 +17,12 @@ use Toolkit\Stdlib\OS;
 /**
  * Trait AttachApplicationTrait
  *
- * @package Inhere\Console\Concern
+ * @package Inhere\Console\Decorate
  */
 trait AttachApplicationTrait
 {
     use SimpleEventAwareTrait {
         fire as parentFire;
-
     }
 
     /**
@@ -47,9 +46,9 @@ trait AttachApplicationTrait
     }
 
     /**
-     * @param AbstractApplication $app
+     * @param Application $app
      */
-    public function setApp(AbstractApplication $app): void
+    public function setApp(Application $app): void
     {
         $this->app = $app;
 

@@ -7,9 +7,8 @@
  * @license  https://github.com/inhere/php-console/blob/master/LICENSE
  */
 
-namespace Inhere\Console\Component\Interact;
+namespace Inhere\Console\Concern;
 
-use Inhere\Console\Component\InteractiveHandle;
 use Toolkit\Stdlib\Str\StrValue;
 
 /**
