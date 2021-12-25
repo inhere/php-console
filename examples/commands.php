@@ -40,9 +40,7 @@ $app->command(SelfUpdateCommand::class, null, [
 
 $app->command(CorCommand::class);
 
-$app->controller('home', HomeController::class, [
-    'aliases' => ['h']
-]);
+$app->controller('home', HomeController::class);
 
 $app->controller(ProcessController::class, null, [
     'aliases' => 'prc'
