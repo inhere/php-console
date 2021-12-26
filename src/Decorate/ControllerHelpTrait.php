@@ -139,6 +139,10 @@ trait ControllerHelpTrait
             $commands[$cmd] = $desc;
         }
 
+        if ($subCmds = $this->getSubsForHelp()) {
+            $commands = array_merge($commands, $subCmds);
+        }
+
         // sort commands
         ksort($commands);
 

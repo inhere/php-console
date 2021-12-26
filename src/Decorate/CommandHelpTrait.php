@@ -14,6 +14,7 @@ use Inhere\Console\Console;
 use Toolkit\PFlag\FlagsParser;
 use Toolkit\PFlag\FlagUtil;
 use function implode;
+use function ksort;
 use function sprintf;
 use function strtr;
 use function ucfirst;
@@ -81,7 +82,7 @@ trait CommandHelpTrait
      */
     protected function setCommentsVar(string $name, array|string $value): void
     {
-        $this->commentsVars[$name] = is_array($value) ? implode(',', $value) : (string)$value;
+        $this->commentsVars[$name] = is_array($value) ? implode(',', $value) : $value;
     }
 
     /**
@@ -148,8 +149,14 @@ trait CommandHelpTrait
 
         $help['Options:']  = FlagUtil::alignOptions($fs->getOptsHelpLines());
         $help['Argument:'] = $fs->getArgsHelpLines();
-        $help['Example:']  = $fs->getExampleHelp();
 
+        if ($subCmds = $this->getSubsForHelp()) {
+            // sort commands
+            ksort($subCmds);
+            $help['Commands:'] = $subCmds;
+        }
+
+        $help['Example:']   = $fs->getExampleHelp();
         $help['More Help:'] = $fs->getMoreHelp();
 
         // no group options. only set key position.

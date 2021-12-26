@@ -132,10 +132,10 @@ trait SubCommandsWareTrait
      * Register a app independent console command
      *
      * @param string|class-string  $name
-     * @param string|Closure|CommandInterface|null $handler
+     * @param class-string|CommandInterface|null $handler
      * @param array $config
      */
-    public function addSub(string $name, string|Closure|CommandInterface $handler = null, array $config = []): void
+    public function addSub(string $name, string|CommandInterface $handler = null, array $config = []): void
     {
         if (!$handler && class_exists($name)) {
             /** @var Command $name name is an command class */
@@ -171,9 +171,9 @@ trait SubCommandsWareTrait
             if ($aliases = $handler::aliases()) {
                 $config['aliases'] = array_merge($config['aliases'], $aliases);
             }
-        } elseif (!is_object($handler) || !ConsoleUtil::isValidCmdObject($handler)) {
+        } elseif (!is_object($handler) || !$handler instanceof Command) {
             Helper::throwInvalidArgument(
-                'The command handler must is an subclass of %s OR a Closure OR a sub-object of %s',
+                'The subcommand handler must be an subclass of %s OR a sub-object of %s',
                 Command::class,
                 Command::class,
             );
@@ -317,8 +317,38 @@ trait SubCommandsWareTrait
     /**
      * @return array
      */
-    public function getCommandNames(): array
+    public function getSubNames(): array
     {
         return array_keys($this->commands);
+    }
+
+    /**
+     * @return array
+     */
+    public function getCommands(): array
+    {
+        return $this->commands;
+    }
+
+    /**
+     * @return array
+     */
+    public function getSubsForHelp(): array
+    {
+        $subs = [];
+        foreach ($this->commands as $name => $subInfo) {
+            $sub = $subInfo['handler'];
+            if ($sub instanceof Command) {
+                $subs[$name] = $sub->getRealDesc();
+            } elseif (is_string($sub)) {
+                $subs[$name] = $sub::getDesc();
+            } else {
+                $subConf = $subInfo['config'];
+
+                $subs[$name] = $subConf['desc'] ?? 'no description';
+            }
+        }
+
+        return $subs;
     }
 }

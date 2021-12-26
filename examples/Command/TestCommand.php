@@ -10,6 +10,7 @@
 namespace Inhere\Console\Examples\Command;
 
 use Inhere\Console\Command;
+use Inhere\Console\Handler\CommandWrapper;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
 
@@ -26,9 +27,11 @@ class TestCommand extends Command
     protected function subCommands(): array
     {
         return [
-            'sub' => static function ($fs, $out): void {
+            'sub' => CommandWrapper::new(static function ($fs, $out): void {
                 $out->println('hello, this is an sub command of test.');
-            },
+            }, [
+                'desc' => 'sub command of test command'
+            ]),
         ];
     }
 
