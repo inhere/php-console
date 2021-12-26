@@ -19,11 +19,29 @@ use PHPUnit\Framework\TestCase;
  */
 class CommandTest extends TestCase
 {
-    public function testBasic(): void
+    public function testCommand_basic_usage(): void
     {
         $c = new TestCommand(new Input(), new Output());
 
         $this->assertSame('test1', $c::getName());
-        $this->assertStringContainsString('desc', $c::getDesc());
+        $this->assertSame('test1', $c->getRealName());
+        $this->assertStringContainsString('description', $c::getDesc());
+        $this->assertStringContainsString('description', $c->getRealDesc());
+    }
+
+    public function testCommand_alone_run(): void
+    {
+        $c = new TestCommand(new Input(), new Output());
+
+        $str = $c->run([]);
+        $this->assertEquals('Inhere\ConsoleTest\TestCommand::execute', $str);
+    }
+
+    public function testCommand_alone_run_sub(): void
+    {
+        $c = new TestCommand(new Input(), new Output());
+
+        $str = $c->run(['sub1']);
+        $this->assertEquals('Inhere\ConsoleTest\{closure}', $str);
     }
 }

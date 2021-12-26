@@ -23,7 +23,6 @@ use Inhere\Console\Decorate\SubCommandsWareTrait;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
 use Inhere\Console\Util\Helper;
-use InvalidArgumentException;
 use ReflectionException;
 use RuntimeException;
 use Throwable;
@@ -34,7 +33,6 @@ use Toolkit\Stdlib\Obj\DataObject;
 use function cli_set_process_title;
 use function error_get_last;
 use function function_exists;
-use function vdump;
 use const PHP_OS;
 
 /**
@@ -71,14 +69,6 @@ abstract class AbstractHandler implements CommandHandlerInterface
     protected static string $desc = '';
 
     /**
-     * The command/controller description message
-     *
-     * @var string
-     * @deprecated please use {@see $desc}
-     */
-    protected static string $description = '';
-
-    /**
      * @var bool Whether enable coroutine. It is require swoole extension.
      */
     protected static bool $coroutine = false;
@@ -101,9 +91,9 @@ abstract class AbstractHandler implements CommandHandlerInterface
     protected string $processTitle = '';
 
     /**
-     * @var DataObject
+     * @var DataObject|null
      */
-    protected DataObject $params;
+    protected ?DataObject $params = null;
 
     /**
      * The input command name. maybe is an alias name.
@@ -160,8 +150,8 @@ abstract class AbstractHandler implements CommandHandlerInterface
     {
         // $this->commentsVars = $this->annotationVars();
         $this->afterInit();
-        $this->debugf('attach inner subcommands to "%s"', self::getName());
-        $this->addCommands($this->commands());
+        $this->debugf('attach inner subcommands to "%s"', $this->getRealName());
+        $this->addCommands($this->subCommands());
     }
 
     protected function afterInit(): void
@@ -170,7 +160,7 @@ abstract class AbstractHandler implements CommandHandlerInterface
     }
 
     /**
-     * command options
+     * get command options
      *
      * **Alone Command**
      *
@@ -183,7 +173,7 @@ abstract class AbstractHandler implements CommandHandlerInterface
      *
      * @return array
      */
-    protected function options(): array
+    protected function getOptions(): array
     {
         // ['--skip-invalid' => 'Whether ignore invalid arguments and options, when use input definition',]
         return [];
@@ -257,13 +247,13 @@ abstract class AbstractHandler implements CommandHandlerInterface
         }
 
         $input->setFs($this->flags);
-        $this->flags->setDesc(self::getDesc());
-        $this->flags->setScriptName(self::getName());
+        $this->flags->setDesc($this->getRealDesc());
+        $this->flags->setScriptName($this->getRealName());
 
         $this->beforeInitFlagsParser($this->flags);
 
         // set options by options()
-        $optRules = $this->options();
+        $optRules = $this->getOptions();
         $this->flags->addOptsByRules($optRules);
 
         // for render help
@@ -298,11 +288,10 @@ abstract class AbstractHandler implements CommandHandlerInterface
      * @param array $args
      *
      * @return mixed
-     * @throws Throwable
      */
     public function run(array $args): mixed
     {
-        $name = self::getName();
+        $name = $this->getRealName();
 
         try {
             $this->initForRun();
@@ -314,7 +303,7 @@ abstract class AbstractHandler implements CommandHandlerInterface
             // parse options
             $this->flags->lock();
             if (!$this->flags->parse($args)) {
-                return 0; // on error, help
+                return 0; // on error OR help
             }
 
             $args = $this->flags->getRawArgs();
@@ -324,7 +313,7 @@ abstract class AbstractHandler implements CommandHandlerInterface
             if ($this->isDetached()) {
                 ErrorHandler::new()->handle($e);
             } else {
-                throw $e;
+                throw new RuntimeException('Run error - ' . $e->getMessage(), $e->getCode(), $e);
             }
         }
 
@@ -340,22 +329,10 @@ abstract class AbstractHandler implements CommandHandlerInterface
      */
     protected function doRun(array $args): mixed
     {
-        if (isset($args[0])) {
-            $first = $args[0];
-            $rName = $this->resolveAlias($first);
-// vdump($first, $rName);
-            // TODO
-            // if ($this->isSub($rName)) {
-            // }
-        }
-
         // some prepare check
-        // - validate input arguments
         if (true !== $this->prepare()) {
             return -1;
         }
-
-        // $this->dispatchCommand($name);
 
         // return False to deny goon run.
         if (false === $this->beforeExecute()) {
@@ -376,6 +353,11 @@ abstract class AbstractHandler implements CommandHandlerInterface
 
         $this->afterExecute();
         return $result;
+    }
+
+    protected function doExecute(): mixed
+    {
+        return '';
     }
 
     /**
@@ -435,9 +417,6 @@ abstract class AbstractHandler implements CommandHandlerInterface
 
     /**
      * prepare run
-     *
-     * @throws InvalidArgumentException
-     * @throws RuntimeException
      */
     protected function prepare(): bool
     {
@@ -491,13 +470,10 @@ abstract class AbstractHandler implements CommandHandlerInterface
 
     /**
      * @param array $params
-     *
-     * @return DataObject
      */
-    public function initParams(array $params): DataObject
+    public function initParams(array $params): void
     {
         $this->params = DataObject::new($params);
-        return $this->params;
     }
 
     /**
@@ -588,6 +564,14 @@ abstract class AbstractHandler implements CommandHandlerInterface
     }
 
     /**
+     * @return string
+     */
+    public function getRealDesc(): string
+    {
+        return self::getDesc();
+    }
+
+    /**
      * @param bool $useReal
      *
      * @return string
@@ -632,7 +616,7 @@ abstract class AbstractHandler implements CommandHandlerInterface
      */
     public static function getDesc(): string
     {
-        return static::$desc ?: static::$description;
+        return static::$desc;
     }
 
     /**
@@ -643,22 +627,6 @@ abstract class AbstractHandler implements CommandHandlerInterface
         if ($desc) {
             static::$desc = $desc;
         }
-    }
-
-    /**
-     * @return string
-     */
-    public static function getDescription(): string
-    {
-        return self::getDesc();
-    }
-
-    /**
-     * @param string $desc
-     */
-    public static function setDescription(string $desc): void
-    {
-        self::setDesc($desc);
     }
 
     /**

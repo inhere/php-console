@@ -60,6 +60,11 @@ interface CommandHandlerInterface
     public function getRealName(): string;
 
     /**
+     * @return string
+     */
+    public function getRealDesc(): string;
+
+    /**
      * The real group name.
      *
      * @return string

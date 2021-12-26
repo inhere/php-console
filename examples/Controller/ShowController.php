@@ -43,7 +43,7 @@ class ShowController extends Controller
     /**
      * @return array
      */
-    protected function options(): array
+    protected function getOptions(): array
     {
         return [
             '-c, --common' => 'This is a common option for all sub-commands',

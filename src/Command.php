@@ -13,6 +13,7 @@ use Inhere\Console\Contract\CommandInterface;
 use Inhere\Console\Handler\AbstractHandler;
 use ReflectionException;
 use Toolkit\PFlag\FlagsParser;
+use function array_shift;
 
 /**
  * Class Command
@@ -38,14 +39,9 @@ abstract class Command extends AbstractHandler implements CommandInterface
      */
     protected ?Controller $group = null;
 
-    /**
-     * @var Command|null
-     */
-    protected ?Command $parent = null;
-
     protected function init(): void
     {
-        $this->commandName = self::getName();
+        $this->commandName = $this->getRealName();
 
         parent::init();
     }
@@ -53,7 +49,7 @@ abstract class Command extends AbstractHandler implements CommandInterface
     /**
      * @return array
      */
-    public function getArguments(): array
+    protected function getArguments(): array
     {
         return [];
     }
@@ -63,12 +59,13 @@ abstract class Command extends AbstractHandler implements CommandInterface
      */
     protected function beforeInitFlagsParser(FlagsParser $fs): void
     {
+        $fs->addArgsByRules($this->getArguments());
         $fs->setStopOnFistArg(false);
 
         // old mode: options and arguments at method annotations
-        if ($this->compatible) {
-            $fs->setSkipOnUndefined(true);
-        }
+        // if ($this->compatible) {
+        //     $fs->setSkipOnUndefined(true);
+        // }
     }
 
     /**
@@ -93,31 +90,24 @@ abstract class Command extends AbstractHandler implements CommandInterface
     }
 
     /**
-     * @param Command $parent
+     * @param array $args
+     *
+     * @return mixed
      */
-    public function setParent(Command $parent): void
+    protected function doRun(array $args): mixed
     {
-        $this->parent = $parent;
-    }
+        // if input sub-command name
+        if (isset($args[0])) {
+            $first = $args[0];
+            $rName = $this->resolveAlias($first);
 
-    /**
-     * @return $this
-     */
-    public function getRoot(): Command
-    {
-        if ($this->parent) {
-            return $this->parent->getRoot();
+            if ($this->isSub($rName)) {
+                array_shift($args);
+                return $this->dispatchSub($rName, $args);
+            }
         }
 
-        return $this;
-    }
-
-    /**
-     * @return Command|null
-     */
-    public function getParent(): ?Command
-    {
-        return $this->parent;
+        return parent::doRun($args);
     }
 
     /**

@@ -300,21 +300,26 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
         // convert 'boo-foo' to 'booFoo'
         $this->action = $action = Str::camelCase($command);
         $this->debugf("will run the '%s' group action: %s, subcommand: %s", $name, $action, $command);
-        $this->actionMethod = $method = $this->getMethodName($action);
+        $method = $this->getMethodName($action);
 
         // fire event
         $this->fire(ConsoleEvent::COMMAND_RUN_BEFORE, $this);
         $this->beforeRun();
 
         // check method not exist
-        // - if command method not exists.
         if (!method_exists($this, $method)) {
+            if ($this->isSub($command)) {
+                return $this->dispatchSub($command, $args);
+            }
+
+            // if command not exists.
             return $this->handleNotFound($name, $action, $args);
         }
 
         // init flags for subcommand
         $fs = $this->newActionFlags();
 
+        $this->actionMethod = $method;
         $this->input->setFs($fs);
         $this->debugf('load flags by configure method, subcommand: %s', $command);
         $this->configure();
@@ -485,9 +490,9 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
             });
 
             // old mode: options and arguments at method annotations
-            if ($this->compatible) {
-                $fs->setSkipOnUndefined(true);
-            }
+            // if ($this->compatible) {
+            //     $fs->setSkipOnUndefined(true);
+            // }
 
             // save
             $this->subFss[$action] = $fs;

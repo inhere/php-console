@@ -16,7 +16,6 @@ use DateTimeZone;
 use Exception;
 use FilesystemIterator;
 use Generator;
-use Inhere\Console\Util\Helper;
 use InvalidArgumentException;
 use Iterator;
 use Phar;

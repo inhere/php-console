@@ -23,7 +23,7 @@ class TestCommand extends Command
 
     protected static string $desc = 'this is a test independent command';
 
-    protected function commands(): array
+    protected function subCommands(): array
     {
         return [
             'sub' => static function ($fs, $out): void {

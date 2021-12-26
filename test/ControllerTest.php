@@ -23,6 +23,6 @@ class ControllerTest extends BaseTestCase
         $c = new TestController(new Input(), new Output());
 
         $this->assertSame('test', $c::getName());
-        $this->assertStringContainsString('desc', $c::getDescription());
+        $this->assertStringContainsString('desc', $c::getDesc());
     }
 }

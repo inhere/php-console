@@ -13,8 +13,12 @@ use Closure;
 use Inhere\Console\Command;
 use Inhere\Console\Console;
 use Inhere\Console\Contract\CommandInterface;
+use Inhere\Console\Handler\AbstractHandler;
+use Inhere\Console\Handler\CommandWrapper;
+use Inhere\Console\Util\ConsoleUtil;
 use Inhere\Console\Util\Helper;
 use InvalidArgumentException;
+use Toolkit\Stdlib\Helper\Assert;
 use Toolkit\Stdlib\Obj\Traits\NameAliasTrait;
 use function array_keys;
 use function array_merge;
@@ -24,7 +28,6 @@ use function is_int;
 use function is_object;
 use function is_string;
 use function is_subclass_of;
-use function method_exists;
 use function preg_match;
 
 /**
@@ -37,6 +40,11 @@ trait SubCommandsWareTrait
     use NameAliasTrait;
 
     /**
+     * @var AbstractHandler|null
+     */
+    protected ?AbstractHandler $parent = null;
+
+    /**
      * @var array
      */
     private array $blocked = ['help', 'version'];
@@ -44,28 +52,38 @@ trait SubCommandsWareTrait
     /**
      * The sub-commands of the command
      *
-     * @var array
+     * ```php
      * [
      *  'name' => [
-     *      'handler' => MyCommand::class, // allow: string|Closure|CommandInterface
-     *      'config' => []
+     *      'handler' => MyCommand::class,
+     *      'config' => [
+     *          'name'    => 'string',
+     *          'desc'    => 'string',
+     *          'options' => [],
+     *          'arguments' => [],
+     *      ]
      *  ]
      * ]
+     * ```
+     *
+     * @var array<string, array{handler:mixed, config:array}>
      */
     private array $commands = [];
 
     /**
-     * Can attach sub-commands
+     * Can attach sub-commands to current command
      *
      * @return array
      */
-    protected function commands(): array
+    protected function subCommands(): array
     {
         // [
         //  'cmd1' => function(){},
+        //  // class name
         //  MySubCommand::class,
         //  'cmd2' => MySubCommand2::class,
-        //  new FooCommand,
+        //  // no key
+        //  new FooCommand(),
         //  'cmd3' => new FooCommand2(),
         // ]
         return [];
@@ -73,22 +91,49 @@ trait SubCommandsWareTrait
 
     /**
      * @param string $name
+     * @param array $args
+     *
+     * @return mixed
      */
-    protected function dispatchCommand(string $name): void
+    protected function dispatchSub(string $name, array $args): mixed
     {
+        $subInfo = $this->commands[$name];
+        $this->debugf('dispatch the attached subcommand: %s', $name);
+
+        // create and init sub-command
+        $subCmd = $this->createSubCommand($subInfo);
+        $subCmd->setParent($this);
+        $subCmd->setInputOutput($this->input, $this->output);
+
+        return $subCmd->run($args);
+    }
+
+    /**
+     * @param array{name: string, desc: string, options: array, arguments: array} $subInfo
+     *
+     * @return Command
+     */
+    protected function createSubCommand(array $subInfo): Command
+    {
+        $handler = $subInfo['handler'];
+        if (is_object($handler)) {
+            if ($handler instanceof Command) {
+                return $handler;
+            }
+
+            return CommandWrapper::wrap($handler, $subInfo['config']);
+        }
+
+        // class-string of Command
+        return new $handler;
     }
 
     /**
      * Register a app independent console command
      *
-     * @param string|CommandInterface              $name
+     * @param string|class-string  $name
      * @param string|Closure|CommandInterface|null $handler
-     * @param array                                $config
-     *  array:
-     *  - aliases     The command aliases
-     *  - description The description message
-     *
-     * @throws InvalidArgumentException
+     * @param array $config
      */
     public function addSub(string $name, string|Closure|CommandInterface $handler = null, array $config = []): void
     {
@@ -96,24 +141,21 @@ trait SubCommandsWareTrait
             /** @var Command $name name is an command class */
             $handler = $name;
             $name    = $name::getName();
+        } elseif (!$name && $handler instanceof Command) {
+            $name = $handler->getRealName();
+        } elseif (!$name && class_exists($handler)) {
+            $name = $handler::getName();
         }
 
-        if (!$name || !$handler) {
-            Helper::throwInvalidArgument("Command 'name' and 'handler' cannot be empty! name: $name");
-        }
+        Assert::isFalse(!$name || !$handler, "Command 'name' and 'handler' cannot be empty! name: $name");
+        Assert::isFalse(isset($this->commands[$name]), "Command '$name' have been registered!");
 
         $this->validateName($name);
-
-        if (isset($this->commands[$name])) {
-            Helper::throwInvalidArgument("Command '$name' have been registered!");
-        }
 
         $config['aliases'] = isset($config['aliases']) ? (array)$config['aliases'] : [];
 
         if (is_string($handler)) {
-            if (!class_exists($handler)) {
-                Helper::throwInvalidArgument("The command handler class [$handler] not exists!");
-            }
+            Assert::isTrue(class_exists($handler), "The console command class '$handler' not exists!");
 
             if (!is_subclass_of($handler, Command::class)) {
                 Helper::throwInvalidArgument('The command handler class must is subclass of the: ' . Command::class);
@@ -129,40 +171,87 @@ trait SubCommandsWareTrait
             if ($aliases = $handler::aliases()) {
                 $config['aliases'] = array_merge($config['aliases'], $aliases);
             }
-        } elseif (!is_object($handler) || !method_exists($handler, '__invoke')) {
+        } elseif (!is_object($handler) || !ConsoleUtil::isValidCmdObject($handler)) {
             Helper::throwInvalidArgument(
-                'The console command handler must is an subclass of %s OR a Closure OR a object have method __invoke()',
-                Command::class
+                'The command handler must is an subclass of %s OR a Closure OR a sub-object of %s',
+                Command::class,
+                Command::class,
             );
         }
+
+        // has alias option
+        if ($config['aliases']) {
+            $this->setAlias($name, $config['aliases'], true);
+        }
+
+        $config['name'] = $name;
+        // save
+        $this->commands[$name] = [
+            'type'    => Console::CMD_SINGLE,
+            'handler' => $handler,
+            'config'  => $config,
+        ];
+    }
+
+    /**
+     * @param CommandInterface $handler
+     *
+     * @return $this
+     */
+    public function addSubHandler(CommandInterface $handler): static
+    {
+        $name = $handler->getRealName();
 
         // is an class name string
         $this->commands[$name] = [
             'type'    => Console::CMD_SINGLE,
             'handler' => $handler,
-            'config' => $config,
+            'config'  => [],
         ];
 
-        // has alias option
-        if (isset($config['aliases'])) {
-            $this->setAlias($name, $config['aliases'], true);
-        }
+        return $this;
     }
 
     /**
      * @param array $commands
-     *
-     * @throws InvalidArgumentException
      */
     public function addCommands(array $commands): void
     {
         foreach ($commands as $name => $handler) {
             if (is_int($name)) {
-                $this->addSub($handler);
+                $this->addSub('', $handler);
             } else {
                 $this->addSub($name, $handler);
             }
         }
+    }
+
+    /**
+     * @param AbstractHandler $parent
+     */
+    public function setParent(AbstractHandler $parent): void
+    {
+        $this->parent = $parent;
+    }
+
+    /**
+     * @return $this
+     */
+    public function getRoot(): static
+    {
+        if ($this->parent) {
+            return $this->parent->getRoot();
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return static|null
+     */
+    public function getParent(): ?static
+    {
+        return $this->parent;
     }
 
     /**********************************************************

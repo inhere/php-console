@@ -11,6 +11,8 @@ namespace Inhere\Console\Examples\Controller;
 
 use Inhere\Console\Component\Symbol\ArtFont;
 use Inhere\Console\Controller;
+use Inhere\Console\Examples\Controller\Attach\DemoSubCommand;
+use Inhere\Console\Handler\CommandWrapper;
 use Inhere\Console\Util\Interact;
 use Inhere\Console\Util\ProgressBar;
 use Inhere\Console\Util\Show;
@@ -23,6 +25,7 @@ use Toolkit\PFlag\FlagsParser;
 use Toolkit\Stdlib\Php;
 use function sleep;
 use function trigger_error;
+use function vdump;
 
 /**
  * default command controller. there are some command usage examples(1)
@@ -74,10 +77,27 @@ class HomeController extends Controller
     /**
      * @return array
      */
-    protected function options(): array
+    protected function getOptions(): array
     {
         return [
             '-c, --common' => 'This is a common option for all sub-commands',
+        ];
+    }
+
+    protected function subCommands(): array
+    {
+        return [
+            DemoSubCommand::class,
+            CommandWrapper::wrap(static function ($fs) {
+                vdump(__METHOD__, $fs->getOpts());
+            }, [
+                'name' => 'sub2',
+                'desc' => 'an sub command in group controller',
+                'options' => [
+                    'int1'     => 'int;an int option1',
+                    'i2, int2' => 'int;an int option2',
+                ]
+            ]),
         ];
     }
 
@@ -207,6 +227,9 @@ class HomeController extends Controller
      *  --font      Set the art font name(allow: {internalFonts}).
      *  --italic    bool;Set the art font type is italic.
      *  --style     Set the art font style.
+     *
+     * @param FlagsParser $fs
+     *
      * @return int
      */
     public function artFontCommand(FlagsParser $fs): int

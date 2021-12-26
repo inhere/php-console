@@ -16,6 +16,7 @@ use Inhere\Console\Contract\ControllerInterface;
 use Inhere\Console\Contract\RouterInterface;
 use Inhere\Console\Controller;
 use Inhere\Console\IO\Output;
+use Inhere\Console\Util\ConsoleUtil;
 use Inhere\Console\Util\Helper;
 use InvalidArgumentException;
 use Toolkit\PFlag\FlagsParser;
@@ -206,7 +207,7 @@ class Router implements RouterInterface
             if ($aliases = $handler::aliases()) {
                 $config['aliases'] = array_merge($config['aliases'], $aliases);
             }
-        } elseif (!is_object($handler) || !$this->isValidCmdObject($handler)) {
+        } elseif (!is_object($handler) || !ConsoleUtil::isValidCmdObject($handler)) {
             Helper::throwInvalidArgument(
                 'The command handler must is an subclass of %s OR a Closure OR a sub-object of %s',
                 Command::class,
@@ -228,20 +229,6 @@ class Router implements RouterInterface
         ];
 
         return $this;
-    }
-
-    /**
-     * @param object $handler
-     *
-     * @return bool
-     */
-    private function isValidCmdObject(object $handler): bool
-    {
-        if ($handler instanceof Command) {
-            return true;
-        }
-
-        return method_exists($handler, '__invoke');
     }
 
     /**

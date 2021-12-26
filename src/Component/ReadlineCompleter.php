@@ -44,10 +44,13 @@ class ReadlineCompleter extends AbstractObj
 
     /**
      * @param callable $completer
+     *
+     * @return ReadlineCompleter
      */
-    public function setCompleter(callable $completer): void
+    public function setCompleter(callable $completer): static
     {
         $this->completer = $completer;
+        return $this;
     }
 
     /**
@@ -112,5 +115,13 @@ class ReadlineCompleter extends AbstractObj
     public function setHistorySize(int $historySize): void
     {
         $this->historySize = $historySize;
+    }
+
+    /**
+     * @return callable
+     */
+    public function getCompleter(): callable
+    {
+        return $this->completer;
     }
 }
