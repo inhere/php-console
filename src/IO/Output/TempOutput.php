@@ -17,7 +17,7 @@ use function fopen;
  *
  * @package Inhere\Console\IO\Output
  */
-class MemoryOutput extends StreamOutput
+class TempOutput extends StreamOutput
 {
     /**
      * Class constructor.
@@ -27,7 +27,10 @@ class MemoryOutput extends StreamOutput
     public function __construct(array $config = [])
     {
         if (!isset($config['stream'])) {
-            $config['stream'] = fopen('php://memory', 'rwb');
+            // Set the limit to 5 MB.
+            $fiveMbs = 5 * 1024 * 1024;
+            // open
+            $config['stream'] = fopen("php://temp/maxmemory:$fiveMbs", 'rwb');
         }
 
         parent::__construct($config);

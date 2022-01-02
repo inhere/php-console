@@ -4,6 +4,9 @@
 
 > require php 8.0+
 
+- feat: allow attach multi level sub-commands to command,group
+- feat: support add flags config for add alone Closure command
+
 ## v4.0.x
 
 > require php 7.3+

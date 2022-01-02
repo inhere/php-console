@@ -10,6 +10,7 @@
 namespace Inhere\Console\Concern;
 
 use Inhere\Console\Contract\OutputInterface;
+use Toolkit\Stdlib\Obj\Traits\AutoConfigTrait;
 
 /**
  * Class AbstractOutput
@@ -18,6 +19,8 @@ use Inhere\Console\Contract\OutputInterface;
  */
 abstract class AbstractOutput implements OutputInterface
 {
+    use AutoConfigTrait;
+
     /**
      * @return bool
      */

@@ -12,6 +12,7 @@ namespace Inhere\ConsoleTest;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
 use PHPUnit\Framework\TestCase;
+use function vdump;
 
 /**
  * Class CommandTest
@@ -37,11 +38,20 @@ class CommandTest extends TestCase
         $this->assertEquals('Inhere\ConsoleTest\TestCommand::execute', $str);
     }
 
-    public function testCommand_alone_run_sub(): void
+    public function testCommand_sub_run(): void
     {
-        $c = new TestCommand(new Input(), new Output());
+        $c = new TestCommand(new Input(), Output::new());
 
         $str = $c->run(['sub1']);
         $this->assertEquals('Inhere\ConsoleTest\{closure}', $str);
+    }
+
+    public function testCommand_sub_help(): void
+    {
+        $c = new TestCommand(new Input(), $buf = Output\BufferedOutput::new());
+        $this->assertNotEmpty($c);
+
+        $c->run(['sub1', '-h']);
+        vdump($buf->toString());
     }
 }

@@ -9,7 +9,10 @@
 
 namespace Inhere\Console\IO\Output;
 
-use Inhere\Console\Concern\AbstractOutput;
+use Inhere\Console\IO\Output;
+use function implode;
+use function is_array;
+use function sprintf;
 use function strlen;
 use const PHP_EOL;
 
@@ -17,7 +20,7 @@ use const PHP_EOL;
  * Class BufferedOutput
  * @package Inhere\Console\IO\Output
  */
-class BufferedOutput extends AbstractOutput
+class BufferedOutput extends Output
 {
     /**
      * @var string
@@ -40,37 +43,114 @@ class BufferedOutput extends AbstractOutput
         return $str;
     }
 
+    /**
+     * @return string
+     */
+    public function toString(): string
+    {
+        return $this->fetch();
+    }
+
+    public function reset(): void
+    {
+        $this->buffer = '';
+    }
+
+    /**
+     * @return string
+     */
     public function __toString(): string
     {
         return $this->fetch();
     }
 
     /**
-     * @param string $content
-     *
-     * @return int
-     */
-    public function write(string $content): int
-    {
-        $this->buffer .= $content;
-        return strlen($content);
-    }
-
-    /**
-     * @param string $content
+     * @param mixed $messages
+     * @param bool $nl
      * @param bool $quit
      * @param array $opts
      *
      * @return int
      */
-    public function writeln($content, bool $quit = false, array $opts = []): int
+    public function write($messages, $nl = true, $quit = false, array $opts = []): int
     {
-        $this->buffer .= $content . PHP_EOL;
-        return strlen($content) + 1;
+        if (is_array($messages)) {
+            $str = implode($nl ? PHP_EOL : '', $messages);
+        } else {
+            $str = (string)$messages;
+        }
+
+        if ($nl) {
+            $str .= PHP_EOL;
+        }
+
+        $this->buffer .= $str;
+        return strlen($str);
     }
 
-    public function reset(): void
+    /**
+     * @param mixed $messages
+     * @param bool $quit
+     * @param array $opts
+     *
+     * @return int
+     */
+    public function writeln($messages, bool $quit = false, array $opts = []): int
     {
-        $this->buffer = '';
+        return $this->write($messages, true, $quit, $opts);
+    }
+
+    /**
+     * Write a message to output with format.
+     *
+     * @param string $format
+     * @param mixed ...$args
+     *
+     * @return int
+     */
+    public function writef(string $format, ...$args): int
+    {
+        return $this->write(sprintf($format, ...$args));
+    }
+
+    /**
+     * start buffering
+     */
+    public function startBuffer(): void
+    {
+    }
+
+    /**
+     * clear buffering
+     */
+    public function clearBuffer(): void
+    {
+        $this->reset();
+    }
+
+    /**
+     * stop buffering and flush buffer text
+     *
+     * @param bool $flush
+     * @param bool $nl
+     * @param bool $quit
+     * @param array{quitCode:int} $opts
+     *
+     * @see Console::stopBuffer()
+     */
+    public function stopBuffer(bool $flush = true, bool $nl = false, bool $quit = false, array $opts = []): void
+    {
+
+    }
+
+    /**
+     * stop buffering and flush buffer text
+     *
+     * @param bool $nl
+     * @param bool $quit
+     * @param array $opts
+     */
+    public function flush(bool $nl = false, bool $quit = false, array $opts = []): void
+    {
     }
 }

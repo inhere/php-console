@@ -30,17 +30,7 @@ class StreamOutput extends AbstractOutput
      *
      * @var resource
      */
-    protected $stream;
-
-    /**
-     * StreamInput constructor.
-     *
-     * @param resource $stream
-     */
-    public function __construct($stream = STDOUT)
-    {
-        $this->setStream($stream);
-    }
+    protected $stream = STDOUT;
 
     /**
      * @param string $content
@@ -90,13 +80,13 @@ class StreamOutput extends AbstractOutput
     /**
      * @param resource $stream
      */
-    protected function setStream($stream): void
+    public function setStream($stream): void
     {
         File::assertStream($stream);
 
         $meta = stream_get_meta_data($stream);
         if (!str_contains($meta['mode'], 'w') && !str_contains($meta['mode'], '+')) {
-            throw new InvalidArgumentException('Expected a readable stream');
+            throw new InvalidArgumentException('Expected a writeable stream');
         }
 
         $this->stream = $stream;

@@ -34,9 +34,13 @@ class Output extends StreamOutput
     /**
      * Output constructor.
      */
-    public function __construct()
+    public function __construct(array $config = [])
     {
-        parent::__construct(Cli::getOutputStream());
+        if (!isset($config['stream'])) {
+            $config['stream'] = Cli::getOutputStream();
+        }
+
+        parent::__construct($config);
     }
 
     /***************************************************************************
@@ -64,8 +68,8 @@ class Output extends StreamOutput
      *
      * @param bool $flush
      * @param bool $nl
-     * @param bool|int $quit
-     * @param array $opts
+     * @param bool $quit
+     * @param array{quitCode:int} $opts
      *
      * @see Console::stopBuffer()
      */

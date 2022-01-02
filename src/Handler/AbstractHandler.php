@@ -134,7 +134,6 @@ abstract class AbstractHandler implements CommandHandlerInterface
      * @param Input|null $input
      * @param Output|null $output
      */
-    // public function __construct(Input $input, Output $output)
     public function __construct(Input $input = null, Output $output = null)
     {
         $this->input  = $input;
@@ -148,7 +147,6 @@ abstract class AbstractHandler implements CommandHandlerInterface
 
     protected function init(): void
     {
-        // $this->commentsVars = $this->annotationVars();
         $this->afterInit();
         $this->debugf('attach inner subcommands to "%s"', $this->getRealName());
         $this->addCommands($this->subCommands());
@@ -402,7 +400,7 @@ abstract class AbstractHandler implements CommandHandlerInterface
      * @param Input $input
      * @param Output $output
      *
-     * @return void|mixed
+     * @return mixed|void
      */
     abstract protected function execute(Input $input, Output $output);
 
