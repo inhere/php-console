@@ -9,13 +9,11 @@
 
 namespace Inhere\Console\Decorate;
 
-use Closure;
 use Inhere\Console\Command;
 use Inhere\Console\Console;
 use Inhere\Console\Contract\CommandInterface;
 use Inhere\Console\Handler\AbstractHandler;
 use Inhere\Console\Handler\CommandWrapper;
-use Inhere\Console\Util\ConsoleUtil;
 use Inhere\Console\Util\Helper;
 use InvalidArgumentException;
 use Toolkit\Stdlib\Helper\Assert;
@@ -48,6 +46,13 @@ trait SubCommandsWareTrait
      * @var array
      */
     private array $blocked = ['help', 'version'];
+
+    /**
+     * Command full path. eg: 'git remote set-url'
+     *
+     * @var string
+     */
+    protected string $path = '';
 
     /**
      * The sub-commands of the command
@@ -269,6 +274,26 @@ trait SubCommandsWareTrait
     }
 
     /**
+     * @param string $path
+     */
+    public function setPath(string $path): void
+    {
+        $this->path = $path;
+    }
+
+    /**
+     * @param string $name
+     */
+    public function addPath(string $name): void
+    {
+        if ($this->path) {
+            $this->path .= ' ' . $name;
+        } else {
+            $this->path = $name;
+        }
+    }
+
+    /**
      * @param string $name
      *
      * @throws InvalidArgumentException
@@ -341,6 +366,7 @@ trait SubCommandsWareTrait
             if ($sub instanceof Command) {
                 $subs[$name] = $sub->getRealDesc();
             } elseif (is_string($sub)) {
+                /** @var Command $sub */
                 $subs[$name] = $sub::getDesc();
             } else {
                 $subConf = $subInfo['config'];

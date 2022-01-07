@@ -79,13 +79,6 @@ abstract class AbstractHandler implements CommandHandlerInterface
     private bool $initialized = false;
 
     /**
-     * Compatible mode run command.
-     *
-     * @var bool
-     */
-    protected bool $compatible = true;
-
-    /**
      * @var string
      */
     protected string $processTitle = '';
@@ -96,7 +89,7 @@ abstract class AbstractHandler implements CommandHandlerInterface
     protected ?DataObject $params = null;
 
     /**
-     * The input command name. maybe is an alias name.
+     * The user input command name. maybe is an alias name.
      *
      * @var string
      */
@@ -185,6 +178,15 @@ abstract class AbstractHandler implements CommandHandlerInterface
     }
 
     /**
+     * Config flags for the command/controller.
+     *
+     * @param FlagsParser $fs
+     */
+    protected function configFlags(FlagsParser $fs): void
+    {
+    }
+
+    /**
      * Provides parsable substitution variables for command annotations. Can be used in comments in commands
      * 为命令注解提供可解析的替换变量. 可以在命令的注释中使用
      *
@@ -232,6 +234,11 @@ abstract class AbstractHandler implements CommandHandlerInterface
     {
         $this->commentsVars = $this->annotationVars();
 
+        if (!$this->commandName) {
+            $this->commandName = $this->getRealName();
+        }
+
+        $this->addPath($this->commandName);
     }
 
     /**
@@ -296,7 +303,7 @@ abstract class AbstractHandler implements CommandHandlerInterface
 
             $this->initFlagsParser($this->input);
 
-            $this->log(Console::VERB_DEBUG, "begin run '$name' - parse options", ['args' => $args]);
+            $this->log(Console::VERB_DEBUG, "cmd: $name - parse flag options", ['args' => $args]);
 
             // parse options
             $this->flags->lock();

@@ -21,7 +21,6 @@ use ReflectionClass;
 use ReflectionException;
 use ReflectionMethod;
 use ReflectionObject;
-use RuntimeException;
 use Throwable;
 use Toolkit\PFlag\FlagsParser;
 use Toolkit\PFlag\FlagUtil;
@@ -278,7 +277,6 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
 
             $command = $first;
             array_shift($args);
-            // $this->input->popFirstArg();
         }
 
         // update subcommand
@@ -531,7 +529,7 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
      * @param ReflectionClass|null $ref
      * @param bool                 $onlyName
      *
-     * @return Generator
+     * @return ?Generator
      */
     protected function getAllCommandMethods(ReflectionClass $ref = null, bool $onlyName = false): ?Generator
     {
@@ -554,17 +552,6 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
                 }
             }
         }
-    }
-
-    /**
-     * @param string $name
-     *
-     * @return string
-     * @deprecated please use resolveAlias()
-     */
-    public function getRealCommandName(string $name): string
-    {
-        return $this->resolveAlias($name);
     }
 
     /**
@@ -631,7 +618,7 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
     }
 
     /**
-     * @param string|null $name
+     * @param string $name
      *
      * @return array
      */
@@ -750,23 +737,6 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
     public function setActionSuffix(string $actionSuffix): void
     {
         $this->actionSuffix = $actionSuffix;
-    }
-
-    /**
-     * @return bool
-     * @deprecated
-     */
-    public function isExecutionAlone(): bool
-    {
-        throw new RuntimeException('please call isAttached() instead');
-    }
-
-    /**
-     * @deprecated
-     */
-    public function setExecutionAlone(): void
-    {
-        throw new RuntimeException('please call setAttached() instead');
     }
 
     /**

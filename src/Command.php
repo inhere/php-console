@@ -39,13 +39,6 @@ abstract class Command extends AbstractHandler implements CommandInterface
      */
     protected ?Controller $group = null;
 
-    protected function init(): void
-    {
-        $this->commandName = $this->getRealName();
-
-        parent::init();
-    }
-
     /**
      * @return array
      */
@@ -60,12 +53,7 @@ abstract class Command extends AbstractHandler implements CommandInterface
     protected function beforeInitFlagsParser(FlagsParser $fs): void
     {
         $fs->addArgsByRules($this->getArguments());
-        $fs->setStopOnFistArg(false);
-
-        // old mode: options and arguments at method annotations
-        // if ($this->compatible) {
-        //     $fs->setSkipOnUndefined(true);
-        // }
+        // $fs->setStopOnFistArg(false);
     }
 
     /**
@@ -77,6 +65,7 @@ abstract class Command extends AbstractHandler implements CommandInterface
     {
         $this->debugf('load flags configure for command: %s', $this->getRealCName());
         $this->configure();
+        $this->configFlags($fs);
 
         $isEmpty = $this->flags->isEmpty();
 
