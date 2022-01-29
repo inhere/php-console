@@ -230,7 +230,7 @@ class PharCompiler
      * The modifies files list. if not empty, will skip find dirs.
      * @var array|Traversable
      */
-    private array|Traversable $modifies;
+    private array|Traversable $modifies = [];
 
     /**
      * @var SplQueue
