@@ -232,7 +232,7 @@ class Application extends AbstractApplication
         }
 
         $cmdId = $name;
-        $this->debugf('begin dispatch the input command: %s, args: %s', $name, DataHelper::toString($args));
+        $this->debugf('app - begin dispatch the input command: %s, args: %s', $name, DataHelper::toString($args));
 
         // format is: `group action`
         if (strpos($name, ' ') > 0) {

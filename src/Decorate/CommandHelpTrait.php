@@ -9,8 +9,8 @@
 
 namespace Inhere\Console\Decorate;
 
-use Inhere\Console\Handler\AbstractHandler;
 use Inhere\Console\Console;
+use Inhere\Console\Handler\AbstractHandler;
 use Toolkit\PFlag\FlagsParser;
 use Toolkit\PFlag\FlagUtil;
 use function implode;
@@ -125,8 +125,8 @@ trait CommandHelpTrait
         $name = $this->getCommandName();
 
         // $isCommand = $this->isCommand();
-        $commandId = $this->input->getCommandId();
-        $this->logf(Console::VERB_DEBUG, 'render help for the command: %s', $commandId);
+        // $commandId = $this->input->getCommandId();
+        $this->logf(Console::VERB_DEBUG, 'cmd: %s - begin render help for the command', $name);
 
         if ($aliases) {
             $realName = $action ?: $this->getRealName();
@@ -135,17 +135,20 @@ trait CommandHelpTrait
         }
 
         $binName = $this->input->getBinName();
+        $cmdPath = $binName . ' ' . $this->getPath();
+        // if ($action) {
+        //     $group = $this->getGroupName();
+        //     $cmdPath  = "$binName $group $action";
+        // }
 
-        $path = $binName . ' ' . $name;
-        if ($action) {
-            $group = $this->getGroupName();
-            $path  = "$binName $group $action";
+        if ($this->hasSubs()) {
+            $cmdPath .= ' <cyan>SUBCOMMAND</cyan>';
         }
 
         $desc = $fs->getDesc();
         $this->writeln(ucfirst($this->parseCommentsVars($desc)));
 
-        $help['Usage:'] = "$path [--options ...] [arguments ...]";
+        $help['Usage:'] = "$cmdPath [--options ...] [arguments ...]";
 
         $help['Options:']  = FlagUtil::alignOptions($fs->getOptsHelpLines());
         $help['Argument:'] = $fs->getArgsHelpLines();

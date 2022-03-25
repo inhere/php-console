@@ -265,13 +265,13 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
 
             // and not default command
             if (!$command) {
-                $this->debugf('run args is empty, display help for the group: %s', $name);
+                $this->debugf('cmd: %s - run args is empty, display help for the group', $name);
                 return $this->showHelp();
             }
         } else {
             $first = $args[0];
             if (!FlagUtil::isValidName($first)) {
-                $this->debugf('not input subcommand, display help for the group: %s', $name);
+                $this->debugf('cmd: %s - not input subcommand, display help for the group', $name);
                 return $this->showHelp();
             }
 
@@ -281,13 +281,12 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
 
         // update subcommand
         $this->commandName = $command;
-        $this->input->setSubCommand($command);
 
         // update some comment vars
-        $fullCmd = $this->input->getFullCommand();
+        $fullCmd = $this->input->buildFullCmd($name, $command);
         $this->setCommentsVar('fullCmd', $fullCmd);
         $this->setCommentsVar('fullCommand', $fullCmd);
-        $this->setCommentsVar('binWithCmd', $this->input->getBinWithCommand());
+        $this->setCommentsVar('binWithCmd', $this->input->buildCmdPath($name, $command));
 
         // get real sub-command name
         $command = $this->resolveAlias($command);
@@ -297,7 +296,7 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
 
         // convert 'boo-foo' to 'booFoo'
         $this->action = $action = Str::camelCase($command);
-        $this->debugf("will run the '%s' group action: %s, subcommand: %s", $name, $action, $command);
+        $this->debugf("cmd: %s - will run the subcommand: %s(action: %s)", $name, $command, $action);
         $method = $this->getMethodName($action);
 
         // fire event

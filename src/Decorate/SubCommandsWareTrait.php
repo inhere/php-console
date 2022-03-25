@@ -16,11 +16,15 @@ use Inhere\Console\Handler\AbstractHandler;
 use Inhere\Console\Handler\CommandWrapper;
 use Inhere\Console\Util\Helper;
 use InvalidArgumentException;
+use Toolkit\Cli\Color\ColorTag;
 use Toolkit\Stdlib\Helper\Assert;
 use Toolkit\Stdlib\Obj\Traits\NameAliasTrait;
 use function array_keys;
 use function array_merge;
 use function class_exists;
+use function count;
+use function explode;
+use function implode;
 use function in_array;
 use function is_int;
 use function is_object;
@@ -55,6 +59,13 @@ trait SubCommandsWareTrait
     protected string $path = '';
 
     /**
+     * Command full path nodes. eg: ['git', 'remote', 'set-url']
+     *
+     * @var string[]
+     */
+    protected array $pathNodes = [];
+
+    /**
      * The sub-commands of the command
      *
      * ```php
@@ -64,6 +75,7 @@ trait SubCommandsWareTrait
      *      'config' => [
      *          'name'    => 'string',
      *          'desc'    => 'string',
+     *          'aliases' => [],
      *          'options' => [],
      *          'arguments' => [],
      *      ]
@@ -103,11 +115,12 @@ trait SubCommandsWareTrait
     protected function dispatchSub(string $name, array $args): mixed
     {
         $subInfo = $this->commands[$name];
-        $this->debugf('dispatch the attached subcommand: %s', $name);
+        $this->debugf('cmd: %s - dispatch the attached subcommand: %s', $this->getRealName(), $name);
 
         // create and init sub-command
         $subCmd = $this->createSubCommand($subInfo);
         $subCmd->setParent($this);
+        $subCmd->setPath($this->path);
         $subCmd->setInputOutput($this->input, $this->output);
 
         return $subCmd->run($args);
@@ -274,22 +287,38 @@ trait SubCommandsWareTrait
     }
 
     /**
+     * @param string $sep
+     *
+     * @return string
+     */
+    public function getPath(string $sep = ''): string
+    {
+        return $sep ? implode($sep, $this->pathNodes) : $this->path;
+    }
+
+    /**
      * @param string $path
      */
     public function setPath(string $path): void
     {
         $this->path = $path;
+        // set path nodes
+        $this->pathNodes = explode(' ', $path);
     }
 
     /**
      * @param string $name
      */
-    public function addPath(string $name): void
+    public function addPathNode(string $name): void
     {
         if ($this->path) {
             $this->path .= ' ' . $name;
+            // add path nodes
+            $this->pathNodes[] = $name;
         } else {
             $this->path = $name;
+            // set path nodes
+            $this->pathNodes = [$name];
         }
     }
 
@@ -340,6 +369,14 @@ trait SubCommandsWareTrait
     }
 
     /**
+     * @return bool
+     */
+    public function hasSubs(): bool
+    {
+        return count($this->commands) > 0;
+    }
+
+    /**
      * @return array
      */
     public function getSubNames(): array
@@ -364,15 +401,24 @@ trait SubCommandsWareTrait
         foreach ($this->commands as $name => $subInfo) {
             $sub = $subInfo['handler'];
             if ($sub instanceof Command) {
-                $subs[$name] = $sub->getRealDesc();
+                $desc = $sub->getRealDesc();
+                // alias names
+                $aliases = $sub::aliases();
             } elseif (is_string($sub)) {
                 /** @var Command $sub */
-                $subs[$name] = $sub::getDesc();
+                $desc = $sub::getDesc();
+                // alias names
+                $aliases = $sub::aliases();
             } else {
-                $subConf = $subInfo['config'];
-
-                $subs[$name] = $subConf['desc'] ?? 'no description';
+                $conf = $subInfo['config'];
+                $desc = $conf['desc'] ?? 'no description';
+                // alias names
+                $aliases = $conf['aliases'] ?? [];
             }
+
+            $extra = $aliases ? ColorTag::wrap(' (alias: ' . implode(',', $aliases) . ')', 'info') : '';
+            // add help desc
+            $subs[$name] = $desc . $extra;
         }
 
         return $subs;

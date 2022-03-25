@@ -71,14 +71,6 @@ abstract class AbstractInput implements InputInterface
     protected string $command = '';
 
     /**
-     * the command name(Is first argument)
-     * e.g `subcommand` in the `./app group subcommand`
-     *
-     * @var string
-     */
-    protected string $subCommand = '';
-
-    /**
      * eg `./examples/app home:useArg status=2 name=john arg0 -s=test --page=23`
      *
      * @var string
@@ -163,19 +155,6 @@ abstract class AbstractInput implements InputInterface
 
         // full script
         $this->fullScript = implode(' ', $rawFlags);
-    }
-
-    /**
-     * @return string
-     */
-    public function getCommandPath(): string
-    {
-        $path = $this->command;
-        if ($this->subCommand) {
-            $path .= ' ' . $this->subCommand;
-        }
-
-        return $path;
     }
 
     /**
@@ -333,22 +312,6 @@ abstract class AbstractInput implements InputInterface
     {
         $this->tokens = $tokens;
         $this->collectInfo($tokens);
-    }
-
-    /**
-     * @return string
-     */
-    public function getSubCommand(): string
-    {
-        return $this->subCommand;
-    }
-
-    /**
-     * @param string $subCommand
-     */
-    public function setSubCommand(string $subCommand): void
-    {
-        $this->subCommand = $subCommand;
     }
 
     /**

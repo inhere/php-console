@@ -11,15 +11,15 @@ namespace Inhere\Console\Handler;
 
 use Inhere\Console\Annotate\DocblockRules;
 use Inhere\Console\Component\ErrorHandler;
-use Inhere\Console\Decorate\AttachApplicationTrait;
-use Inhere\Console\Decorate\InputOutputAwareTrait;
-use Inhere\Console\Decorate\UserInteractAwareTrait;
 use Inhere\Console\Console;
 use Inhere\Console\ConsoleEvent;
 use Inhere\Console\Contract\CommandHandlerInterface;
 use Inhere\Console\Contract\CommandInterface;
+use Inhere\Console\Decorate\AttachApplicationTrait;
 use Inhere\Console\Decorate\CommandHelpTrait;
+use Inhere\Console\Decorate\InputOutputAwareTrait;
 use Inhere\Console\Decorate\SubCommandsWareTrait;
+use Inhere\Console\Decorate\UserInteractAwareTrait;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
 use Inhere\Console\Util\Helper;
@@ -33,6 +33,7 @@ use Toolkit\Stdlib\Obj\DataObject;
 use function cli_set_process_title;
 use function error_get_last;
 use function function_exists;
+use function implode;
 use const PHP_OS;
 
 /**
@@ -141,8 +142,11 @@ abstract class AbstractHandler implements CommandHandlerInterface
     protected function init(): void
     {
         $this->afterInit();
-        $this->debugf('attach inner subcommands to "%s"', $this->getRealName());
-        $this->addCommands($this->subCommands());
+
+        if ($subCmds = $this->subCommands()) {
+            $this->addCommands($subCmds);
+            $this->debugf('cmd: %s - load and attach subcommands: %s', $this->getRealName(), implode(',', $this->getSubNames()));
+        }
     }
 
     protected function afterInit(): void
@@ -205,10 +209,10 @@ abstract class AbstractHandler implements CommandHandlerInterface
      */
     protected function annotationVars(): array
     {
-        $fullCmd = $this->input->getFullCommand();
         $binFile = $this->input->getScriptFile(); // bin/app
         $binName = $this->input->getScriptName();
         $command = $this->input->getCommand();
+        $fullCmd = $this->input->buildFullCmd($command);
 
         // e.g: `more info see {name}:index`
         return [
@@ -238,7 +242,7 @@ abstract class AbstractHandler implements CommandHandlerInterface
             $this->commandName = $this->getRealName();
         }
 
-        $this->addPath($this->commandName);
+        $this->addPathNode($this->commandName);
     }
 
     /**
@@ -262,11 +266,10 @@ abstract class AbstractHandler implements CommandHandlerInterface
         $this->flags->addOptsByRules($optRules);
 
         // for render help
-        $this->flags->setBeforePrintHelp(function (string $text) {
-            return $this->parseCommentsVars($text);
-        });
+        $this->flags->setBeforePrintHelp(fn(string $text): string => $this->parseCommentsVars($text));
         $this->flags->setHelpRenderer(function (): void {
-            $this->logf(Console::VERB_DEBUG, 'show help message by input flags: -h, --help');
+            $name = $this->getRealName();
+            $this->logf(Console::VERB_DEBUG, "cmd: $name - show help by input flags: -h, --help");
             $this->showHelp();
         });
 
@@ -489,7 +492,7 @@ abstract class AbstractHandler implements CommandHandlerInterface
      */
     public function loadRulesByDocblock(string $method, FlagsParser $fs): void
     {
-        $this->debugf('not config flags, load flag rules by docblock, method: %s', $method);
+        $this->debugf('cmd: %s - not config flags, load flag rules by method %s() docblock', $this->getRealCName(), $method);
         $rftMth = PhpHelper::reflectMethod($this, $method);
 
         // parse doc for get flag rules

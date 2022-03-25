@@ -92,7 +92,7 @@ trait ControllerHelpTrait
     public function showCommandList(): void
     {
         $name = self::getName();
-        $this->logf(Console::VERB_DEBUG, 'display all sub-commands list of the group: %s', $name);
+        $this->logf(Console::VERB_DEBUG, 'cmd: %s - display all sub-commands list of the group', $name);
         $this->beforeShowCommandList();
 
         $refCls = new ReflectionClass($this);

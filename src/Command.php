@@ -63,7 +63,7 @@ abstract class Command extends AbstractHandler implements CommandInterface
      */
     protected function afterInitFlagsParser(FlagsParser $fs): void
     {
-        $this->debugf('load flags configure for command: %s', $this->getRealCName());
+        $this->debugf('cmd: %s - load command flags configure', $this->getRealCName());
         $this->configure();
         $this->configFlags($fs);
 

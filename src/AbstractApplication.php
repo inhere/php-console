@@ -11,13 +11,13 @@ namespace Inhere\Console;
 
 use ErrorException;
 use Inhere\Console\Component\ErrorHandler;
-use Inhere\Console\Component\Router;
 use Inhere\Console\Component\Formatter\Title;
-use Inhere\Console\Decorate\SimpleEventAwareTrait;
+use Inhere\Console\Component\Router;
 use Inhere\Console\Contract\ApplicationInterface;
 use Inhere\Console\Contract\ErrorHandlerInterface;
-use Inhere\Console\Decorate\InputOutputAwareTrait;
 use Inhere\Console\Decorate\ApplicationHelpTrait;
+use Inhere\Console\Decorate\InputOutputAwareTrait;
+use Inhere\Console\Decorate\SimpleEventAwareTrait;
 use Inhere\Console\Decorate\StyledOutputAwareTrait;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
@@ -276,7 +276,7 @@ abstract class AbstractApplication implements ApplicationInterface
         $this->commandName = $command;
         $this->flags->popFirstRawArg();
         $this->input->setCommand($command);
-        $this->logf(Console::VERB_DEBUG, 'found the application command: %s', $command);
+        $this->logf(Console::VERB_DEBUG, 'app - match and found the command: %s', $command);
 
         // like: help, version, list
         if (!$this->handleGlobalCommand($command)) {

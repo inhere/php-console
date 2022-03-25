@@ -11,6 +11,7 @@ namespace Inhere\Console\IO;
 
 use Inhere\Console\IO\Input\StreamInput;
 use Toolkit\Cli\Cli;
+use function implode;
 
 /**
  * Class Input - The std input.
@@ -64,7 +65,7 @@ class Input extends StreamInput
      */
     public function getBinWithCommand(): string
     {
-        return $this->scriptName . ' ' . $this->getCommandPath();
+        return $this->scriptName . ' ' . $this->command;
     }
 
     /**
@@ -72,7 +73,27 @@ class Input extends StreamInput
      */
     public function getFullCommand(): string
     {
-        return $this->scriptFile . ' ' . $this->getCommandPath();
+        return $this->scriptFile . ' ' . $this->command;
+    }
+
+    /**
+     * @param string ...$names
+     *
+     * @return string
+     */
+    public function buildCmdPath(string... $names): string
+    {
+        return $this->scriptName . ' ' . implode(' ', $names);
+    }
+
+    /**
+     * @param string ...$names
+     *
+     * @return string
+     */
+    public function buildFullCmd(string... $names): string
+    {
+        return $this->scriptFile . ' ' . implode(' ', $names);
     }
 
     /**
