@@ -86,6 +86,7 @@ Exception class is <magenta>$class</magenta>
 ERR;
             $line = $e->getLine();
             $file = $e->getFile();
+            $prev = $e->getPrevious();
 
             $snippet = Highlighter::create()->snippet(file_get_contents($file), $line, 3, 3);
             $message = sprintf(
@@ -94,7 +95,7 @@ ERR;
                 $file,
                 $line, // __METHOD__,
                 $snippet,
-                $e->getTraceAsString()// \str_replace('):', '): -', $e->getTraceAsString())
+                $e->getTraceAsString() . ($prev ? "\n<comment>Previous:</comment> {$prev->getMessage()}\n" . $prev->getTraceAsString() : '')
             );
 
             if ($this->hideRootPath && ($rootPath = $this->rootPath)) {

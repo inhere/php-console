@@ -105,12 +105,36 @@ abstract class AbstractInput implements InputInterface
      */
     public function toString(): string
     {
+        return $this->getTokenString();
+    }
+
+    /**
+     * @param bool $escape
+     *
+     * @return string
+     */
+    public function getTokenString(bool $escape = true): string
+    {
         if (!$this->tokens) {
             return '';
         }
 
-        $tokens = array_map([$this, 'tokenEscape'], $this->tokens);
-        return implode(' ', $tokens);
+        if ($escape) {
+            $tokens = array_map([$this, 'tokenEscape'], $this->tokens);
+            return implode(' ', $tokens);
+        }
+
+        return implode(' ', $this->tokens);
+    }
+
+    /**
+     * @param bool $escape
+     *
+     * @return string
+     */
+    public function getInputUri(bool $escape = true): string
+    {
+        return $this->getTokenString($escape);
     }
 
     /**
@@ -258,10 +282,16 @@ abstract class AbstractInput implements InputInterface
     }
 
     /**
+     * @param bool $withBinName
+     *
      * @return string
      */
-    public function getFullScript(): string
+    public function getFullScript(bool $withBinName = false): string
     {
+        if ($withBinName) {
+            return $this->getBinName() . ' ' . $this->fullScript;
+        }
+
         return $this->fullScript;
     }
 
