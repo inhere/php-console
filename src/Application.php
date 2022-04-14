@@ -24,6 +24,8 @@ use Toolkit\PFlag\FlagsParser;
 use Toolkit\PFlag\SFlags;
 use Toolkit\Stdlib\Helper\Assert;
 use Toolkit\Stdlib\Helper\DataHelper;
+use Toolkit\Stdlib\Str;
+use function array_shift;
 use function array_unshift;
 use function class_exists;
 use function implode;
@@ -57,170 +59,6 @@ class Application extends AbstractApplication
     }
 
     /****************************************************************************
-     * register console controller/command
-     ****************************************************************************/
-
-    /**
-     * @param string $name
-     * @param ControllerInterface|string|null $class
-     * @param array $config
-     *
-     * @return $this
-     */
-    public function controller(string $name, ControllerInterface|string $class = null, array $config = []): static
-    {
-        $this->logf(Console::VERB_CRAZY, 'register group controller: %s', $name);
-        $this->router->addGroup($name, $class, $config);
-
-        return $this;
-    }
-
-    /**
-     * Add group/controller
-     *
-     * @param string|class-string $name
-     * @param string|ControllerInterface|null $class The controller class
-     * @param array $config
-     *
-     * @return static
-     * @see controller()
-     */
-    public function addGroup(string $name, ControllerInterface|string $class = null, array $config = []): static
-    {
-        return $this->controller($name, $class, $config);
-    }
-
-    /**
-     * @param string $name
-     * @param string|ControllerInterface|null $class The controller class
-     * @param array $config
-     *
-     * @return $this
-     * @see controller()
-     */
-    public function addController(string $name, ControllerInterface|string $class = null, array $config = []): static
-    {
-        return $this->controller($name, $class, $config);
-    }
-
-    /**
-     * @param array $controllers
-     */
-    public function controllers(array $controllers): void
-    {
-        $this->addControllers($controllers);
-    }
-
-    /**
-     * @param array $controllers
-     */
-    public function addControllers(array $controllers): void
-    {
-        $this->router->addControllers($controllers);
-    }
-
-    /**
-     * @param string $name
-     * @param class-string|CommandInterface|null|Closure(FlagsParser, Output):void $handler
-     * @param array{desc: string, aliases: array, options: array, arguments: array} $config config the command.
-     *
-     * @return Application
-     */
-    public function command(string $name, string|Closure|CommandInterface $handler = null, array $config = []): static
-    {
-        $this->logf(Console::VERB_CRAZY, 'register alone command: %s', $name);
-        $this->router->addCommand($name, $handler, $config);
-
-        return $this;
-    }
-
-    /**
-     * add command
-     *
-     * @param string $name
-     * @param class-string|CommandInterface|null|Closure(FlagsParser, Output):void $handler
-     * @param array{desc: string, aliases: array, options: array, arguments: array} $config config the command.
-     *
-     * @return Application
-     * @see command()
-     */
-    public function addCommand(string $name, string|Closure|CommandInterface $handler = null, array $config = []): static
-    {
-        return $this->command($name, $handler, $config);
-    }
-
-    /**
-     * @param array{string, mixed} $commands
-     */
-    public function addCommands(array $commands): void
-    {
-        $this->router->addCommands($commands);
-    }
-
-    /**
-     * @param array{string, mixed} $commands
-     */
-    public function commands(array $commands): void
-    {
-        $this->addCommands($commands);
-    }
-
-    /**
-     * auto register commands from a dir.
-     *
-     * ```php
-     * $app->registerCommands('SwagPhp\Command', dirname(__DIR__) . '/src/Command');
-     * ```
-     *
-     * @param string $namespace
-     * @param string $basePath
-     *
-     * @return $this
-     */
-    public function registerCommands(string $namespace, string $basePath): static
-    {
-        $this->debugf('register commands from the namespace: %s', $namespace);
-
-        $length = strlen($basePath) + 1;
-        // $iterator = Helper::directoryIterator($basePath, $this->getFileFilter());
-        $iter = Dir::getIterator($basePath, Dir::getPhpFileFilter());
-
-        foreach ($iter as $file) {
-            $subPath  = substr($file->getPathName(), $length, -4);
-            $fullClass = $namespace . '\\' . str_replace('/', '\\', $subPath);
-            $this->addCommand($fullClass);
-        }
-
-        return $this;
-    }
-
-    /**
-     * auto register controllers from a dir.
-     *
-     * @param string $namespace
-     * @param string $basePath
-     *
-     * @return $this
-     * @throws InvalidArgumentException
-     */
-    public function registerGroups(string $namespace, string $basePath): self
-    {
-        $this->debugf('register groups from the namespace: %s', $namespace);
-
-        $length = strlen($basePath) + 1;
-        // $iterator = Helper::directoryIterator($basePath, $this->getFileFilter());
-        $iter = Dir::getIterator($basePath, Dir::getPhpFileFilter());
-
-        foreach ($iter as $file) {
-            $subPath  = substr($file->getPathName(), $length, -4);
-            $fullClass = $namespace . '\\' . str_replace('/', '\\', $subPath);
-            $this->addController($fullClass);
-        }
-
-        return $this;
-    }
-
-    /****************************************************************************
      * Dispatch and run console controller/command
      ****************************************************************************/
 
@@ -238,11 +76,15 @@ class Application extends AbstractApplication
         }
 
         $cmdId = $name;
-        $this->debugf('app - begin dispatch the input command: %s, args: %s', $name, DataHelper::toString($args));
+        $this->debugf('app - begin dispatch the input command: "%s", args: %s', $name, DataHelper::toString($args));
 
-        // format is: `group action`
+        // format is: `group action` or `top sub sub2`
         if (strpos($name, ' ') > 0) {
-            $cmdId = str_replace(' ', $this->delimiter, $name);
+            $names = Str::splitTrimmed($name, ' ');
+            $cmdId = array_shift($names);
+
+            // prepend elements to the beginning of $args
+            array_unshift($args, ...$names);
         }
 
         // match handler by input name
@@ -438,5 +280,168 @@ class Application extends AbstractApplication
         // cache object
         $this->groupObjects[$group] = $handler;
         return $handler;
+    }
+
+    /****************************************************************************
+     * register console controller/command
+     ****************************************************************************/
+
+    /**
+     * @param string $name
+     * @param ControllerInterface|string|null $class
+     * @param array $config
+     *
+     * @return $this
+     */
+    public function controller(string $name, ControllerInterface|string $class = null, array $config = []): static
+    {
+        $this->logf(Console::VERB_CRAZY, 'register group controller: %s', $name);
+        $this->router->addGroup($name, $class, $config);
+
+        return $this;
+    }
+
+    /**
+     * Add group/controller
+     *
+     * @param string|class-string $name
+     * @param string|ControllerInterface|null $class The controller class
+     * @param array $config
+     *
+     * @return static
+     * @see controller()
+     */
+    public function addGroup(string $name, ControllerInterface|string $class = null, array $config = []): static
+    {
+        return $this->controller($name, $class, $config);
+    }
+
+    /**
+     * @param string $name
+     * @param string|ControllerInterface|null $class The controller class
+     * @param array $config
+     *
+     * @return $this
+     * @see controller()
+     */
+    public function addController(string $name, ControllerInterface|string $class = null, array $config = []): static
+    {
+        return $this->controller($name, $class, $config);
+    }
+
+    /**
+     * @param array $controllers
+     */
+    public function controllers(array $controllers): void
+    {
+        $this->addControllers($controllers);
+    }
+
+    /**
+     * @param array $controllers
+     */
+    public function addControllers(array $controllers): void
+    {
+        $this->router->addControllers($controllers);
+    }
+
+    /**
+     * @param string $name
+     * @param class-string|CommandInterface|null|Closure(FlagsParser, Output):void $handler
+     * @param array{desc: string, aliases: array, options: array, arguments: array} $config config the command.
+     *
+     * @return Application
+     */
+    public function command(string $name, string|Closure|CommandInterface $handler = null, array $config = []): static
+    {
+        $this->logf(Console::VERB_CRAZY, 'register alone command: %s', $name);
+        $this->router->addCommand($name, $handler, $config);
+
+        return $this;
+    }
+
+    /**
+     * add command
+     *
+     * @param string $name
+     * @param class-string|CommandInterface|null|Closure(FlagsParser, Output):void $handler
+     * @param array{desc: string, aliases: array, options: array, arguments: array} $config config the command.
+     *
+     * @return Application
+     * @see command()
+     */
+    public function addCommand(string $name, string|Closure|CommandInterface $handler = null, array $config = []): static
+    {
+        return $this->command($name, $handler, $config);
+    }
+
+    /**
+     * @param array{string, mixed} $commands
+     */
+    public function addCommands(array $commands): void
+    {
+        $this->router->addCommands($commands);
+    }
+
+    /**
+     * @param array{string, mixed} $commands
+     */
+    public function commands(array $commands): void
+    {
+        $this->addCommands($commands);
+    }
+
+    /**
+     * auto register commands from a dir.
+     *
+     * ```php
+     * $app->registerCommands('SwagPhp\Command', dirname(__DIR__) . '/src/Command');
+     * ```
+     *
+     * @param string $namespace
+     * @param string $basePath
+     *
+     * @return $this
+     */
+    public function registerCommands(string $namespace, string $basePath): static
+    {
+        $this->debugf('register commands from the namespace: %s', $namespace);
+
+        $length = strlen($basePath) + 1;
+        // $iterator = Helper::directoryIterator($basePath, $this->getFileFilter());
+        $iter = Dir::getIterator($basePath, Dir::getPhpFileFilter());
+
+        foreach ($iter as $file) {
+            $subPath  = substr($file->getPathName(), $length, -4);
+            $fullClass = $namespace . '\\' . str_replace('/', '\\', $subPath);
+            $this->addCommand($fullClass);
+        }
+
+        return $this;
+    }
+
+    /**
+     * auto register controllers from a dir.
+     *
+     * @param string $namespace
+     * @param string $basePath
+     *
+     * @return $this
+     */
+    public function registerGroups(string $namespace, string $basePath): self
+    {
+        $this->debugf('register groups from the namespace: %s', $namespace);
+
+        $length = strlen($basePath) + 1;
+        // $iterator = Helper::directoryIterator($basePath, $this->getFileFilter());
+        $iter = Dir::getIterator($basePath, Dir::getPhpFileFilter());
+
+        foreach ($iter as $file) {
+            $subPath  = substr($file->getPathName(), $length, -4);
+            $fullClass = $namespace . '\\' . str_replace('/', '\\', $subPath);
+            $this->addController($fullClass);
+        }
+
+        return $this;
     }
 }

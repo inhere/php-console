@@ -135,7 +135,6 @@ abstract class AbstractHandler implements CommandHandlerInterface
 
         // init an flags object
         $this->flags = new SFlags();
-
         $this->init();
     }
 
@@ -296,6 +295,7 @@ abstract class AbstractHandler implements CommandHandlerInterface
      * @param array $args
      *
      * @return mixed
+     * @throws Throwable
      */
     public function run(array $args): mixed
     {
@@ -321,7 +321,7 @@ abstract class AbstractHandler implements CommandHandlerInterface
             if ($this->isDetached()) {
                 ErrorHandler::new()->handle($e);
             } else {
-                throw new RuntimeException('Run error - ' . $e->getMessage(), $e->getCode(), $e);
+                throw $e;
             }
         }
 
