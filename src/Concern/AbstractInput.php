@@ -15,6 +15,7 @@ use Toolkit\PFlag\FlagsParser;
 use function array_map;
 use function array_shift;
 use function basename;
+use function chdir;
 use function getcwd;
 use function implode;
 use function is_string;
@@ -194,11 +195,13 @@ abstract class AbstractInput implements InputInterface
      ***********************************************************************************/
 
     /**
+     * @param bool $refresh
+     *
      * @return string
      */
-    public function getPwd(): string
+    public function getPwd(bool $refresh = false): string
     {
-        if (!$this->pwd) {
+        if (!$this->pwd || $refresh) {
             $this->pwd = (string)getcwd();
         }
 
@@ -206,11 +209,26 @@ abstract class AbstractInput implements InputInterface
     }
 
     /**
+     * @param bool $refresh
+     *
      * @return string
      */
-    public function getWorkDir(): string
+    public function getWorkDir(bool $refresh = false): string
     {
-        return $this->getPwd();
+        return $this->getPwd($refresh);
+    }
+
+    /**
+     * @param string $workdir
+     *
+     * @return void
+     */
+    public function chWorkDir(string $workdir): void
+    {
+        if ($workdir) {
+            chdir($workdir);
+            $this->getPwd(true);
+        }
     }
 
     /**

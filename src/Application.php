@@ -179,13 +179,16 @@ class Application extends AbstractApplication
      */
     public function registerCommands(string $namespace, string $basePath): static
     {
+        $this->debugf('register commands from the namespace: %s', $namespace);
+
         $length = strlen($basePath) + 1;
         // $iterator = Helper::directoryIterator($basePath, $this->getFileFilter());
         $iter = Dir::getIterator($basePath, Dir::getPhpFileFilter());
 
         foreach ($iter as $file) {
-            $class = $namespace . '\\' . substr($file->getPathName(), $length, -4);
-            $this->addCommand($class);
+            $subPath  = substr($file->getPathName(), $length, -4);
+            $fullClass = $namespace . '\\' . str_replace('/', '\\', $subPath);
+            $this->addCommand($fullClass);
         }
 
         return $this;
@@ -202,13 +205,16 @@ class Application extends AbstractApplication
      */
     public function registerGroups(string $namespace, string $basePath): self
     {
+        $this->debugf('register groups from the namespace: %s', $namespace);
+
         $length = strlen($basePath) + 1;
         // $iterator = Helper::directoryIterator($basePath, $this->getFileFilter());
         $iter = Dir::getIterator($basePath, Dir::getPhpFileFilter());
 
         foreach ($iter as $file) {
-            $class = $namespace . '\\' . substr($file->getPathName(), $length, -4);
-            $this->addController($class);
+            $subPath  = substr($file->getPathName(), $length, -4);
+            $fullClass = $namespace . '\\' . str_replace('/', '\\', $subPath);
+            $this->addController($fullClass);
         }
 
         return $this;

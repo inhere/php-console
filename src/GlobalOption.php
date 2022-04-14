@@ -46,10 +46,12 @@ class GlobalOption
     ];
 
     /**
+     * Global options config
+     *
      * @var array
      * @psalm-var array<string, string>
      */
-    private static array $options = [
+    private static array $globalOptions = [
         'debug'          => [
             'type'    => FlagType::INT,
             'desc'    => 'Setting the runtime log debug level, quiet 0 - crazy 5',
@@ -125,26 +127,35 @@ class GlobalOption
      */
     public static function isExists(string $name): bool
     {
-        return isset(self::KEY_MAP[$name]);
+        return isset(self::$globalOptions[$name]);
     }
 
     /**
-     * @param array $options
+     * @param string $name
+     * @param array $rule
      */
-    public function setOptions(array $options): void
+    public static function setOption(string $name, array $rule): void
     {
-        if ($options) {
-            self::$options = $options;
+        self::$globalOptions[$name] = $rule;
+    }
+
+    /**
+     * @param array $globalOptions
+     */
+    public static function setOptions(array $globalOptions): void
+    {
+        if ($globalOptions) {
+            self::$globalOptions = $globalOptions;
         }
     }
 
     /**
-     * @param array $options
+     * @param array $globalOptions
      */
-    public function addOptions(array $options): void
+    public static function addOptions(array $globalOptions): void
     {
-        if ($options) {
-            self::$options = array_merge(self::$options, $options);
+        if ($globalOptions) {
+            self::$globalOptions = array_merge(self::$globalOptions, $globalOptions);
         }
     }
 
@@ -153,7 +164,7 @@ class GlobalOption
      */
     public static function getOptions(): array
     {
-        return self::$options;
+        return self::$globalOptions;
     }
 
     /**
