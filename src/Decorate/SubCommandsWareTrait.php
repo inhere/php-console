@@ -265,9 +265,9 @@ trait SubCommandsWareTrait
     }
 
     /**
-     * @return static|null
+     * @return AbstractHandler|null
      */
-    public function getParent(): ?static
+    public function getParent(): ?AbstractHandler
     {
         return $this->parent;
     }

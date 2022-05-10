@@ -136,12 +136,11 @@ trait CommandHelpTrait
 
         $binName = $this->input->getBinName();
         $cmdPath = $binName . ' ' . $this->getPath();
-        // if ($action) {
-        //     $group = $this->getGroupName();
-        //     $cmdPath  = "$binName $group $action";
-        // }
 
-        if ($this->hasSubs()) {
+        if ($action) {
+            // $group = $this->getGroupName();
+            $cmdPath .= " $action";
+        } elseif ($this->hasSubs()) {
             $cmdPath .= ' <cyan>SUBCOMMAND</cyan>';
         }
 
@@ -153,7 +152,8 @@ trait CommandHelpTrait
         $help['Options:']  = FlagUtil::alignOptions($fs->getOptsHelpLines());
         $help['Argument:'] = $fs->getArgsHelpLines();
 
-        if ($subCmds = $this->getSubsForHelp()) {
+        // fix: action should not have sub-commands
+        if (!$action && ($subCmds = $this->getSubsForHelp())) {
             // sort commands
             ksort($subCmds);
             $help['Commands:'] = $subCmds;
