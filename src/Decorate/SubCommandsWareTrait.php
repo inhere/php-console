@@ -16,7 +16,9 @@ use Inhere\Console\Handler\AbstractHandler;
 use Inhere\Console\Handler\CommandWrapper;
 use Inhere\Console\Util\Helper;
 use InvalidArgumentException;
+use RuntimeException;
 use Toolkit\Cli\Color\ColorTag;
+use Toolkit\PFlag\FlagsParser;
 use Toolkit\Stdlib\Helper\Assert;
 use Toolkit\Stdlib\Obj\Traits\NameAliasTrait;
 use function array_keys;
@@ -270,6 +272,18 @@ trait SubCommandsWareTrait
     public function getParent(): ?AbstractHandler
     {
         return $this->parent;
+    }
+
+    /**
+     * @return FlagsParser
+     */
+    public function getParentFlags(): FlagsParser
+    {
+        if (!$this->parent) {
+            throw new RuntimeException('no parent command of the: ' . $this->getCommandName());
+        }
+
+        return $this->parent->getFlags();
     }
 
     /**********************************************************

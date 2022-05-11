@@ -17,6 +17,7 @@ use Toolkit\Stdlib\Str;
 use Toolkit\Sys\Sys;
 use function array_merge;
 use function array_shift;
+use function count;
 use function explode;
 use function implode;
 use function is_array;
@@ -24,7 +25,6 @@ use function is_bool;
 use function is_int;
 use function is_numeric;
 use function is_scalar;
-use function rtrim;
 use function str_repeat;
 use function strpos;
 use function trim;
@@ -204,20 +204,9 @@ final class FormatUtil
 
             $lines = [];
 
-            // if value is array, translate array to string
+            // if value is array, convert array to string
             if (is_array($value)) {
-                $temp = '[';
-                foreach ($value as $k => $val) {
-                    if (is_bool($val)) {
-                        $val = $val ? '(True)' : '(False)';
-                    } else {
-                        $val = is_scalar($val) ? (string)$val : JsonHelper::unescaped($val);
-                    }
-
-                    $temp .= (!is_numeric($k) ? "$k: " : '') . "$val, ";
-                }
-
-                $value = rtrim($temp, ' ,') . ']';
+                $value = self::arr2str($value);
             // } elseif (is_object($value)) {
             //     $value = get_class($value);
             } elseif (is_bool($value)) {
@@ -242,7 +231,7 @@ final class FormatUtil
 
             // value has multi line
             if ($lines) {
-                $linePrefix = $opts['leftChar'] . Str::repeat(' ', $keyWidth + 1) . $opts['sepChar'];
+                $linePrefix = $opts['leftChar'] . Str::repeat(' ', $keyWidth) . $opts['sepChar'];
                 foreach ($lines as $line) {
                     $fmtLines[]  = $linePrefix . $line;
                 }
@@ -254,5 +243,26 @@ final class FormatUtil
         }
 
         return implode("\n", $fmtLines);
+    }
+
+    public static function arr2str(array $arr): string
+    {
+        if (count($arr) === 0) {
+            return '[]';
+        }
+
+        $temp = "[\n";
+        foreach ($arr as $k => $val) {
+            if (is_bool($val)) {
+                $val = $val ? '(True)' : '(False)';
+            } else {
+                $val = is_scalar($val) ? (string)$val : JsonHelper::unescaped($val);
+            }
+
+            $temp .= (!is_numeric($k) ? "    $k: " : '') . "$val,\n";
+        }
+
+        $temp .= "  ]";
+        return $temp;
     }
 }
