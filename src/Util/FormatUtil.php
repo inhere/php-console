@@ -259,7 +259,7 @@ final class FormatUtil
                 $val = is_scalar($val) ? (string)$val : JsonHelper::unescaped($val);
             }
 
-            $temp .= (!is_numeric($k) ? "    $k: " : '') . "$val,\n";
+            $temp .= (!is_numeric($k) ? "    $k: " : '    ') . "$val,\n";
         }
 
         $temp .= "  ]";
