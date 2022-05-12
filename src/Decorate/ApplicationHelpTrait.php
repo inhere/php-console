@@ -9,10 +9,10 @@
 
 namespace Inhere\Console\Decorate;
 
-use Inhere\Console\Handler\AbstractHandler;
 use Inhere\Console\Console;
 use Inhere\Console\ConsoleEvent;
 use Inhere\Console\Contract\CommandInterface;
+use Inhere\Console\Handler\AbstractHandler;
 use Inhere\Console\IO\Input;
 use Inhere\Console\IO\Output;
 use Inhere\Console\Util\Show;
@@ -208,10 +208,10 @@ trait ApplicationHelpTrait
         }
 
         // add split title on both exists.
-        if (!$autoComp && $hasCommand && $hasGroup) {
-            $groupArr[]   = PHP_EOL . '- <bold>Group Commands</bold>';
-            $commandArr[] = PHP_EOL . '- <bold>Alone Commands</bold>';
-        }
+        // if (!$autoComp && $hasCommand && $hasGroup) {
+            // $groupArr[]   = PHP_EOL . '- <bold>Group Commands</bold>';
+            // $commandArr[] = PHP_EOL . '- <bold>Alone Commands</bold>';
+        // }
 
         $placeholder = 'No description of the command';
         foreach ($groups as $name => $info) {
