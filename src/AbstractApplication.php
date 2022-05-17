@@ -81,6 +81,11 @@ abstract class AbstractApplication implements ApplicationInterface
     ];
 
     /**
+     * @var int
+     */
+    private int $exitCode = 0;
+
+    /**
      * @var string
      */
     public string $delimiter = ':'; // '/' ':'
@@ -341,6 +346,10 @@ abstract class AbstractApplication implements ApplicationInterface
     #[NoReturn]
     public function stop(int $code = 0): void
     {
+        if ($code === 0) {
+            $code = $this->exitCode;
+        }
+
         // call 'onAppStop' event, if it is registered.
         $this->fire(self::ON_STOP_RUN, $this);
 
@@ -879,5 +888,21 @@ abstract class AbstractApplication implements ApplicationInterface
     public function getCommandName(): string
     {
         return $this->commandName;
+    }
+
+    /**
+     * @return int
+     */
+    public function getExitCode(): int
+    {
+        return $this->exitCode;
+    }
+
+    /**
+     * @param int $exitCode
+     */
+    public function setExitCode(int $exitCode): void
+    {
+        $this->exitCode = $exitCode;
     }
 }

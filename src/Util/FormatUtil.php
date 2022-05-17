@@ -173,6 +173,7 @@ final class FormatUtil
             'keyMaxWidth' => 0, // if not set, will automatic calculation
             'ucFirst'     => true,  // upper first char for value
             'endNewline'  => true,  // with newline on end.
+            'filterEmpty' => false,
         ], $opts);
 
         if ($opts['keyMaxWidth'] < 1) {
@@ -188,8 +189,13 @@ final class FormatUtil
         $keyStyle  = trim($opts['keyStyle']);
         $keyPadPos = (int)$opts['keyPadPos'];
 
+        $filter = (bool)$opts['filterEmpty'];
         $fmtLines = [];
         foreach ($data as $key => $value) {
+            if ($filter && empty($value)) {
+                continue;
+            }
+
             $hasKey  = !is_int($key);
             $fmtLine = $opts['leftChar'];
 

@@ -202,14 +202,14 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
     }
 
     /**
-     * Will call it on action(sub-command) not found on the group.
+     * Will call it on subcommand not found on the group.
      *
-     * @param string $action
+     * @param string $command
      * @param array  $args
      *
      * @return bool if return True, will stop goon render group help.
      */
-    protected function onNotFound(string $action, array $args): bool
+    protected function onNotFound(string $command, array $args): bool
     {
         // TIP: you can add custom logic on sub-command not found.
         return false;
@@ -310,7 +310,7 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
             }
 
             // if command not exists.
-            return $this->handleNotFound($name, $action, $args);
+            return $this->handleNotFound($name, $command, $args);
         }
 
         // init flags for subcommand
@@ -434,29 +434,29 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
 
     /**
      * @param string $group
-     * @param string $action
+     * @param string $command
      * @param array  $args
      *
      * @return int
      */
-    protected function handleNotFound(string $group, string $action, array $args): int
+    protected function handleNotFound(string $group, string $command, array $args): int
     {
         // if user custom handle not found logic.
-        if ($this->onNotFound($action, $args)) {
-            $this->debugf('user custom handle the "%s" action "%s" not found', $group, $action);
+        if ($this->onNotFound($command, $args)) {
+            $this->debugf('group: %s - user custom handle the subcommand "%s" not found', $group, $command);
             return 0;
         }
 
-        $this->debugf('action "%s" not found on the group controller "%s"', $action, $group);
+        $this->debugf('group: %s - command "%s" is not found on the group', $group, $command);
 
         // if you defined the method '$this->notFoundCallback' , will call it
         // if (($notFoundCallback = $this->notFoundCallback) && method_exists($this, $notFoundCallback)) {
         //     $result = $this->{$notFoundCallback}($action);
         // } else {
-        $this->output->liteError("Sorry, The command '$action' not exist of the group '$group'!");
+        $this->output->liteError("Sorry, The command '$command' not exist of the group '$group'!");
 
         // find similar command names
-        $similar = Helper::findSimilar($action, $this->getAllCommandMethods(null, true));
+        $similar = Helper::findSimilar($command, $this->getAllCommandMethods(null, true));
 
         if ($similar) {
             $this->output->writef("\nMaybe what you mean is:\n    <info>%s</info>", implode(', ', $similar));
