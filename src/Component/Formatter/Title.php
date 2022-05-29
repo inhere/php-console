@@ -43,7 +43,7 @@ class Title extends MessageFormatter
         // list($sW, $sH) = Helper::getScreenSize();
         $width  = (int)$opts['width'];
         $char   = trim($opts['char']);
-        $indent = (int)$opts['indent'] >= 0 ? $opts['indent'] : 0;
+        $indent = (int)$opts['indent'] >= 0 ? (int)$opts['indent'] : 0;
 
         $indentStr = '';
         if ($indent > 0) {
