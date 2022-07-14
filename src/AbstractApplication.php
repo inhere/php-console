@@ -431,7 +431,7 @@ abstract class AbstractApplication implements ApplicationInterface
     protected function runtimeCheck(): void
     {
         // check env
-        if (!in_array(PHP_SAPI, ['cli', 'phpdbg', 'cli-server'], true)) {
+        if (!in_array(PHP_SAPI, ['cli', 'phpdbg', 'cli-server', 'micro'], true)) {
             header('HTTP/1.1 403 Forbidden');
             exit("  403 Forbidden \n\n" . " current environment is CLI. \n" . " :( Sorry! Run this script is only allowed in the terminal environment!\n,You are not allowed to access this file.\n");
         }
