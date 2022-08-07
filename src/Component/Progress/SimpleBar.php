@@ -76,7 +76,7 @@ class SimpleBar extends NotifyMessage
             }
 
             $current += $step;
-            $percent = ceil(($current / $total) * 100);
+            $percent = (int)ceil(($current / $total) * 100);
 
             if ($percent >= 100) {
                 $msg      = $doneMsg ?: $msg;
