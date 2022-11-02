@@ -29,6 +29,7 @@ use function array_shift;
 use function array_unshift;
 use function class_exists;
 use function implode;
+use function is_dir;
 use function is_object;
 use function is_string;
 use function str_replace;
@@ -405,6 +406,10 @@ class Application extends AbstractApplication
      */
     public function registerCommands(string $namespace, string $basePath): static
     {
+        if (!is_dir($basePath)) {
+            return $this;
+        }
+
         $this->debugf('register commands from the namespace: %s', $namespace);
 
         $length = strlen($basePath) + 1;
@@ -430,6 +435,9 @@ class Application extends AbstractApplication
      */
     public function registerGroups(string $namespace, string $basePath): self
     {
+        if (!is_dir($basePath)) {
+            return $this;
+        }
         $this->debugf('register groups from the namespace: %s', $namespace);
 
         $length = strlen($basePath) + 1;

@@ -40,6 +40,14 @@ abstract class Command extends AbstractHandler implements CommandInterface
     protected ?Controller $group = null;
 
     /**
+     * command argument rules
+     *
+     * eg:
+     *
+     *  [
+     *      'arg1' => 'type;desc',
+     *  ]
+     *
      * @return array
      */
     protected function getArguments(): array
@@ -63,7 +71,7 @@ abstract class Command extends AbstractHandler implements CommandInterface
      */
     protected function afterInitFlagsParser(FlagsParser $fs): void
     {
-        $this->debugf('cmd: %s - load command flags configure', $this->getRealCName());
+        $this->debugf('cmd: %s - load command flags configure, class: %s', $this->getRealCName(), static::class);
         $this->configure();
         $this->configFlags($fs);
 

@@ -45,14 +45,16 @@ trait AttachApplicationTrait
     }
 
     /**
-     * @param Application $app
+     * @param Application|null $app
      */
-    public function setApp(Application $app): void
+    public function setApp(Application|null $app): void
     {
-        $this->app = $app;
+        if ($app !== null) {
+            $this->app = $app;
 
-        // auto setting $attached
-        $this->attached = true;
+            // auto setting $attached
+            $this->attached = true;
+        }
     }
 
     /**
@@ -167,30 +169,5 @@ trait AttachApplicationTrait
         }
 
         Console::log($level, $message, $extra);
-    }
-
-    /**************************************************************************
-     * wrap trigger events
-     **************************************************************************/
-
-    /**
-     * @param string $event
-     * @param mixed  ...$args
-     *
-     * @return bool
-     */
-    public function fire(string $event, ...$args): bool
-    {
-        $this->debugf("fire event: $event");
-
-        // if has application instance
-        if ($this->attached) {
-            $stop = $this->app->fire($event, ...$args);
-            if ($stop === false) {
-                return false;
-            }
-        }
-
-        return $this->parentFire($event, ...$args);
     }
 }

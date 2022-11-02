@@ -117,11 +117,12 @@ trait SubCommandsWareTrait
     protected function dispatchSub(string $name, array $args): mixed
     {
         $subInfo = $this->commands[$name];
-        $this->debugf('cmd: %s - dispatch the attached subcommand: %s', $this->getRealName(), $name);
+        $this->debugf('cmd: %s - dispatch the subcommand: %s', $this->getRealName(), $name);
 
         // create and init sub-command
         $subCmd = $this->createSubCommand($subInfo);
         $subCmd->setParent($this);
+        $subCmd->setApp($this->getApp());
         $subCmd->setPath($this->path);
         $subCmd->setInputOutput($this->input, $this->output);
 
@@ -167,7 +168,7 @@ trait SubCommandsWareTrait
             $name = $handler::getName();
         }
 
-        Assert::isFalse(!$name || !$handler, "Command 'name' and 'handler' cannot be empty! name: $name");
+        Assert::isFalse(!$name || !$handler, "Command 'name' and 'handler' cannot be empty! name: $name, handler: $handler");
         Assert::isFalse(isset($this->commands[$name]), "Command '$name' have been registered!");
 
         $this->validateName($name);

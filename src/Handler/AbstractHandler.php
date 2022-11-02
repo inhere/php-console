@@ -130,11 +130,12 @@ abstract class AbstractHandler implements CommandHandlerInterface
      */
     public function __construct(Input $input = null, Output $output = null)
     {
-        $this->input  = $input;
-        $this->output = $output;
+        // init io stream
+        $input && $this->setInput($input);
+        $output && $this->setOutput($output);
 
         // init an flags object
-        $this->flags = new SFlags();
+        $this->setFlags(new SFlags());
         $this->init();
     }
 
@@ -318,6 +319,8 @@ abstract class AbstractHandler implements CommandHandlerInterface
 
             return $this->doRun($args);
         } catch (Throwable $e) {
+            $this->log(Console::VERB_DEBUG, "cmd: $name - run error: " . $e->getMessage(), ['args' => $args]);
+
             if ($this->isDetached()) {
                 ErrorHandler::new()->handle($e);
             } else {
@@ -348,7 +351,7 @@ abstract class AbstractHandler implements CommandHandlerInterface
         }
 
         // only fire for alone command run.
-        if ($this->isAlone()) {
+        if ($this->isAloneCmd()) {
             $this->fire(ConsoleEvent::COMMAND_RUN_BEFORE, $this);
         }
 
@@ -375,6 +378,8 @@ abstract class AbstractHandler implements CommandHandlerInterface
      */
     public function coExecute(): int
     {
+        /** @noinspection PhpFullyQualifiedNameUsageInspection */
+        /** @noinspection PhpUndefinedNamespaceInspection */
         $cid = \Swoole\Coroutine\run(function (): void {
             $this->execute($this->input, $this->output);
         });
@@ -432,6 +437,7 @@ abstract class AbstractHandler implements CommandHandlerInterface
             if (function_exists('cli_set_process_title')) {
                 cli_set_process_title($this->processTitle);
             } elseif (function_exists('setproctitle')) {
+                /** @noinspection PhpUndefinedFunctionInspection */
                 setproctitle($this->processTitle);
             }
 
@@ -442,6 +448,32 @@ abstract class AbstractHandler implements CommandHandlerInterface
 
         // return $this->validateInput();
         return true;
+    }
+
+    /**************************************************************************
+     * wrap trigger events
+     **************************************************************************/
+
+    /**
+     * @param string $event
+     * @param mixed  ...$args
+     *
+     * @return bool
+     */
+    public function fire(string $event, ...$args): bool
+    {
+        $this->debugf("fire event: $event");
+
+        // if has application instance
+        if ($this->attached) {
+            $stop = $this->app->fire($event, ...$args);
+            if ($stop === false) {
+                return false;
+            }
+        }
+        // TODO pop fire event to parent and app
+
+        return $this->parentFire($event, ...$args);
     }
 
     /**************************************************************************
@@ -496,7 +528,7 @@ abstract class AbstractHandler implements CommandHandlerInterface
         $rftMth = PhpHelper::reflectMethod($this, $method);
 
         // parse doc for get flag rules
-        $dr = DocblockRules::newByDocblock($rftMth->getDocComment());
+        $dr = DocblockRules::newByDocblock((string)$rftMth->getDocComment());
         $dr->parse();
 
         $fs->addArgsByRules($dr->getArgRules());
@@ -582,11 +614,11 @@ abstract class AbstractHandler implements CommandHandlerInterface
     /**
      * @param bool $useReal
      *
-     * @return string
+     * @return string top:sub
      */
     public function getCommandId(bool $useReal = true): string
     {
-        return $useReal ? self::getName() : $this->commandName;
+        return $this->getPath(':');
     }
 
     /**
