@@ -43,13 +43,9 @@ use const PHP_OS;
  */
 abstract class AbstractHandler implements CommandHandlerInterface
 {
-    use AttachApplicationTrait;
+    use AttachApplicationTrait, CommandHelpTrait;
 
-    use CommandHelpTrait;
-
-    use InputOutputAwareTrait;
-
-    use UserInteractAwareTrait;
+    use InputOutputAwareTrait, UserInteractAwareTrait;
 
     use SubCommandsWareTrait;
 

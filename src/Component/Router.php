@@ -26,12 +26,12 @@ use function array_keys;
 use function array_merge;
 use function class_exists;
 use function explode;
+use function get_class;
 use function in_array;
 use function is_int;
 use function is_object;
 use function is_string;
 use function is_subclass_of;
-use function method_exists;
 use function preg_match;
 use function strpos;
 use function trim;
@@ -187,9 +187,12 @@ class Router implements RouterInterface
             $name = $name::getName();
         }
 
-        Assert::isFalse(!$name || !$handler, "Command 'name' and 'handler' cannot be empty! name: $name");
-        Assert::isFalse(isset($this->commands[$name]), "Command '$name' have been registered!");
+        if (!$name || !$handler) {
+            $handlerClass = is_object($handler) ? get_class($handler) : $handler;
+            throw new InvalidArgumentException("Command 'name' and 'handler' cannot be empty! name: $name, handler: $handlerClass");
+        }
 
+        Assert::isFalse(isset($this->commands[$name]), "Command '$name' have been registered!");
         $this->validateName($name);
 
         $config['aliases'] = isset($config['aliases']) ? (array)$config['aliases'] : [];

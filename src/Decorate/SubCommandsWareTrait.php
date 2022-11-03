@@ -26,6 +26,7 @@ use function array_merge;
 use function class_exists;
 use function count;
 use function explode;
+use function get_class;
 use function implode;
 use function in_array;
 use function is_int;
@@ -122,7 +123,7 @@ trait SubCommandsWareTrait
         // create and init sub-command
         $subCmd = $this->createSubCommand($subInfo);
         $subCmd->setParent($this);
-        $subCmd->setApp($this->getApp());
+        $subCmd->setApp($this->app);
         $subCmd->setPath($this->path);
         $subCmd->setInputOutput($this->input, $this->output);
 
@@ -168,9 +169,12 @@ trait SubCommandsWareTrait
             $name = $handler::getName();
         }
 
-        Assert::isFalse(!$name || !$handler, "Command 'name' and 'handler' cannot be empty! name: $name, handler: $handler");
-        Assert::isFalse(isset($this->commands[$name]), "Command '$name' have been registered!");
+        if (!$name || !$handler) {
+            $handlerClass = is_object($handler) ? get_class($handler) : $handler;
+            throw new InvalidArgumentException("Command 'name' and 'handler' cannot be empty! name: $name, handler: $handlerClass");
+        }
 
+        Assert::isFalse(isset($this->commands[$name]), "Command '$name' have been registered!");
         $this->validateName($name);
 
         $config['aliases'] = isset($config['aliases']) ? (array)$config['aliases'] : [];
