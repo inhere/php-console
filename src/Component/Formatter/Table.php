@@ -12,6 +12,7 @@ namespace Inhere\Console\Component\Formatter;
 use Inhere\Console\Component\MessageFormatter;
 use Inhere\Console\Console;
 use Toolkit\Cli\Color\ColorTag;
+use Toolkit\Stdlib\Helper\DataHelper;
 use Toolkit\Stdlib\Str;
 use Toolkit\Stdlib\Str\StrBuffer;
 use function array_keys;
@@ -112,18 +113,18 @@ class Table extends MessageFormatter
         $colBorderChar = $opts['colBorderChar'];
 
         $info = [
-            'rowCount'       => count($data),
+            // 'rowCount'       => count($data),
             'columnCount'    => 0,     // how many column in the table.
             'columnMaxWidth' => [], // table column max width
-            'tableWidth'     => 0,      // table width. equals to all max column width's sum.
+            // 'tableWidth'     => 0,      // table width. equals to all max column width's sum.
         ];
 
         // parse table data
-        foreach ($data as $row) {
+        foreach ($data as &$row) {
             // collection all field name
             if ($rowIndex === 0) {
                 $head = $tableHead ?: array_keys($row);
-                //
+                // column count
                 $info['columnCount'] = count($row);
 
                 foreach ($head as $index => $name) {
@@ -131,44 +132,47 @@ class Table extends MessageFormatter
                         $hasHead = true;
                     }
 
-                    $info['columnMaxWidth'][$index] = Str::utf8Len($name, 'UTF-8');
+                    $info['columnMaxWidth'][$index] = Str::utf8Len($name);
                 }
             }
 
             $colIndex = 0;
+            $rowData = (array)$row;
 
-            foreach ((array)$row as $value) {
+            foreach ($rowData as &$value) {
+                // always convert to string
+                $value = DataHelper::toString($value);
+
                 // collection column max width
                 if (isset($info['columnMaxWidth'][$colIndex])) {
-                    if (is_bool($value)) {
-                        $colWidth = $value ? 4 : 5;
-                    } else {
-                        $colWidth = Str::utf8Len($value, 'UTF-8');
-                    }
+                    $colWidth = Str::utf8Len($value);
 
                     // If current column width gt old column width. override old width.
                     if ($colWidth > $info['columnMaxWidth'][$colIndex]) {
                         $info['columnMaxWidth'][$colIndex] = $colWidth;
                     }
                 } else {
-                    $info['columnMaxWidth'][$colIndex] = Str::utf8Len($value, 'UTF-8');
+                    $info['columnMaxWidth'][$colIndex] = Str::utf8Len($value);
                 }
 
                 $colIndex++;
             }
+            unset($value);
 
             $rowIndex++;
+            $row = $rowData;
         }
+        unset($row);
 
-        $tableWidth  = $info['tableWidth'] = array_sum($info['columnMaxWidth']);
         $columnCount = $info['columnCount'];
+        $tableWidth  = (int)array_sum($info['columnMaxWidth']);
 
         // output title
         if ($title) {
             $tStyle      = $opts['titleStyle'] ?: 'bold';
             $title       = Str::ucwords(trim($title));
-            $titleLength = Str::utf8Len($title, 'UTF-8');
-            $indentSpace = Str::pad(' ', ceil($tableWidth / 2) - ceil($titleLength / 2) + ($columnCount * 2), ' ');
+            $titleLength = Str::utf8Len($title);
+            $indentSpace = Str::pad(' ', ceil($tableWidth / 2) - ceil($titleLength / 2) + ($columnCount * 2));
             $buf->write("  $indentSpace<$tStyle>$title</$tStyle>\n");
         }
 
@@ -190,7 +194,7 @@ class Table extends MessageFormatter
                 // format head title
                 // $name = Str::pad($name, $colMaxWidth, ' ');
                 // use Str::padByWidth support zh-CN words
-                $name = Str::padByWidth($name, $colMaxWidth, ' ');
+                $name = Str::padByWidth($name, $colMaxWidth);
                 $name = ColorTag::wrap($name, $opts['headStyle']);
                 // join string
                 $headStr .= " $name $colBorderChar";
@@ -225,7 +229,7 @@ class Table extends MessageFormatter
 
                 // $value = Str::pad($value, $colMaxWidth, ' ');
                 // use Str::padByWidth support zh-CN words
-                $value  = Str::padByWidth($value, $colMaxWidth, ' ');
+                $value  = Str::padByWidth($value, $colMaxWidth);
                 $value  = ColorTag::wrap($value, $opts['bodyStyle']);
                 $rowStr .= " $value $colBorderChar";
                 $colIndex++;

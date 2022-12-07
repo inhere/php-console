@@ -9,7 +9,6 @@
 
 namespace Inhere\Console\Component\Formatter;
 
-use JsonException;
 use Toolkit\Cli\Color\ColorTag;
 use Toolkit\Stdlib\Helper\JsonHelper;
 use Toolkit\Stdlib\Obj\AbstractObj;
@@ -17,11 +16,11 @@ use Toolkit\Stdlib\Str\StrBuffer;
 use function array_merge;
 use function explode;
 use function is_numeric;
-use function json_decode;
 use function preg_replace_callback;
 use function rtrim;
 use function str_contains;
 use function str_ends_with;
+use function str_replace;
 use function trim;
 
 /**
@@ -34,6 +33,7 @@ class JSONPretty extends AbstractObj
         'strVal'  => 'info',
         'intVal'  => 'cyan',
         'boolVal' => 'red',
+        'matched' => 'red1',
     ];
 
     public const THEME_ONE = [
@@ -41,6 +41,7 @@ class JSONPretty extends AbstractObj
         'strVal'  => 'cyan',
         'intVal'  => 'red',
         'boolVal' => 'green',
+        'matched' => 'yellow',
     ];
 
     // json.cn
@@ -49,10 +50,11 @@ class JSONPretty extends AbstractObj
         'strVal'  => 'info',
         'intVal'  => 'hiBlue',
         'boolVal' => 'red',
+        'matched' => 'yellow',
     ];
 
     /**
-     * @var array{keyName: string, strVal: string, intVal: string, boolVal: string}
+     * @var array = DEFAULT_THEME
      */
     protected array $theme = self::DEFAULT_THEME;
 
@@ -60,6 +62,14 @@ class JSONPretty extends AbstractObj
      * @var int
      */
     public int $maxDepth = 10;
+
+    public bool $noColor = false;
+
+    public array $includes = [];
+
+    public array $excludes = [];
+
+    public array $matches = [];
 
     /**
      * @param string $json
@@ -110,13 +120,43 @@ class JSONPretty extends AbstractObj
      */
     public function renderData(mixed $data): string
     {
-        $buf  = StrBuffer::new();
         $json = JsonHelper::prettyJSON($data);
+
+        if ($this->noColor && !$this->includes && !$this->excludes) {
+            return $json;
+        }
+
+        $buf = StrBuffer::new();
 
         foreach (explode("\n", $json) as $line) {
             $trimmed = trim($line);
             // start or end chars. eg: {} []
             if (!str_contains($trimmed, ': ')) {
+                if ($this->noColor) {
+                    $buf->writeln($line);
+                } else {
+                    $buf->writeln(ColorTag::wrap($line, $this->theme['strVal']));
+                }
+                continue;
+            }
+
+            if ($this->includes && !$this->includeFilter($trimmed)) {
+                continue;
+            }
+
+            if ($this->excludes && !$this->excludeFilter($trimmed)) {
+                continue;
+            }
+
+            if ($this->noColor) {
+                $buf->writeln($line);
+                continue;
+            }
+
+            if ($ms = $this->matchKeywords($line)) {
+                foreach ($ms as $m) {
+                    $line = str_replace($m, ColorTag::wrap($m, $this->theme['matched']), $line);
+                }
                 $buf->writeln($line);
                 continue;
             }
@@ -151,11 +191,109 @@ class JSONPretty extends AbstractObj
     }
 
     /**
+     * @param string $line
+     *
+     * @return bool return false to exclude
+     */
+    protected function includeFilter(string $line): bool
+    {
+        if (!$this->includes) {
+            return true;
+        }
+
+        foreach ($this->includes as $kw) {
+            if (str_contains($line, $kw)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * @param string $line
+     *
+     * @return bool return false to exclude
+     */
+    protected function excludeFilter(string $line): bool
+    {
+        if (!$this->excludes) {
+            return true;
+        }
+
+        foreach ($this->excludes as $kw) {
+            if (str_contains($line, $kw)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * @param string $line
+     *
+     * @return array
+     */
+    protected function matchKeywords(string $line): array
+    {
+        $matched = [];
+        foreach ($this->matches as $kw) {
+            if (str_contains($line, $kw)) {
+                $matched[] = $kw;
+            }
+        }
+        return $matched;
+    }
+
+    /**
      * @param array $theme
      */
     public function setTheme(array $theme): void
     {
         $this->theme = array_merge($this->theme, $theme);
+    }
+
+    /**
+     * @param array|string $includes
+     *
+     * @return JSONPretty
+     */
+    public function setIncludes(array|string $includes): self
+    {
+        $this->includes = (array)$includes;
+        return $this;
+    }
+
+    /**
+     * @param array|string $excludes
+     *
+     * @return JSONPretty
+     */
+    public function setExcludes(array|string $excludes): self
+    {
+        $this->excludes = (array)$excludes;
+        return $this;
+    }
+
+    /**
+     * @param bool $noColor
+     *
+     * @return JSONPretty
+     */
+    public function setNoColor(bool $noColor): self
+    {
+        $this->noColor = $noColor;
+        return $this;
+    }
+
+    /**
+     * @param array $matches
+     *
+     * @return JSONPretty
+     */
+    public function setMatches(array $matches): self
+    {
+        $this->matches = $matches;
+        return $this;
     }
 }
 
