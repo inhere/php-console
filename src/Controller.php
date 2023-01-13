@@ -28,7 +28,6 @@ use Toolkit\PFlag\SFlags;
 use Toolkit\Stdlib\Obj\ObjectHelper;
 use Toolkit\Stdlib\Str;
 use function array_flip;
-use function array_keys;
 use function array_shift;
 use function implode;
 use function is_array;
@@ -47,19 +46,6 @@ use function ucfirst;
 abstract class Controller extends AbstractHandler implements ControllerInterface
 {
     use ControllerHelpTrait;
-
-    /**
-     * The sub-command aliases mapping
-     *
-     * eg: [
-     *  alias => command,
-     *  alias1 => command1,
-     *  alias2 => command1,
-     * ]
-     *
-     * @var array
-     */
-    private static array $commandAliases = [];
 
     /**
      * @var array global options for the group command
@@ -153,7 +139,9 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
     /**
      * Define command alias mapping. please rewrite it on sub-class.
      *
-     * @return array
+     * - key is command name, value is aliases.
+     *
+     * @return array{string: list<string>}
      */
     protected static function commandAliases(): array
     {
@@ -177,7 +165,8 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
     {
         parent::init();
 
-        self::loadCommandAliases();
+        // up: load sub-commands alias
+        $this->loadCommandAliases();
 
         $list = $this->disabledCommands();
 
@@ -475,6 +464,7 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
     protected function newActionFlags(string $action = ''): FlagsParser
     {
         $action = $action ?: $this->action;
+
         if (!$fs = $this->getActionFlags($action)) {
             $fs = new SFlags(['name' => $action]);
             $fs->setStopOnFistArg(false);
@@ -554,21 +544,6 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
     }
 
     /**
-     * @param string $alias
-     *
-     * @return string
-     */
-    public function resolveAlias(string $alias): string
-    {
-        if (!$alias) {
-            return '';
-        }
-
-        $map = $this->getCommandAliases();
-        return $map[$alias] ?? $alias;
-    }
-
-    /**
      * @param string $name
      *
      * @return bool
@@ -581,27 +556,22 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
     /**
      * load sub-commands aliases from sub-class::commandAliases()
      */
-    public static function loadCommandAliases(): void
+    public function loadCommandAliases(): void
     {
         $cmdAliases = static::commandAliases();
         if (!$cmdAliases) {
             return;
         }
 
-        $fmtAliases = [];
         foreach ($cmdAliases as $name => $item) {
             // $name is command, $item is alias list
             // eg: ['command1' => ['alias1', 'alias2']]
             if (is_array($item)) {
-                foreach ($item as $alias) {
-                    $fmtAliases[$alias] = $name;
-                }
+                $this->setAlias($name, $item, true);
             } elseif (is_string($item)) { // $item is command, $name is alias name
-                $fmtAliases[$name] = $item;
+                $this->setAlias($item, $name, true);
             }
         }
-
-        self::$commandAliases = $fmtAliases;
     }
 
     /**************************************************************************
@@ -614,20 +584,6 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
     public function getDisabledCommands(): array
     {
         return $this->disabledCommands;
-    }
-
-    /**
-     * @param string $name
-     *
-     * @return array
-     */
-    public function getCommandAliases(string $name = ''): array
-    {
-        if ($name) {
-            return self::$commandAliases ? array_keys(self::$commandAliases, $name, true) : [];
-        }
-
-        return self::$commandAliases;
     }
 
     /**

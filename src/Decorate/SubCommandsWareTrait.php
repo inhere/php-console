@@ -414,6 +414,14 @@ trait SubCommandsWareTrait
     /**
      * @return array
      */
+    public function getSubAliasMap(): array
+    {
+        return $this->aliases;
+    }
+
+    /**
+     * @return array
+     */
     public function getSubsForHelp(): array
     {
         $subs = [];

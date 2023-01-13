@@ -59,7 +59,7 @@ trait ControllerHelpTrait
 
         $action  = Str::camelCase($action);
         $method  = $this->actionSuffix ? $action . ucfirst($this->actionSuffix) : $action;
-        $aliases = $this->getCommandAliases($action);
+        $aliases = $this->getNameAliases($action);
 
         // up: find global aliases from app
         if ($this->app) {
@@ -133,7 +133,7 @@ trait ControllerHelpTrait
                 $desc .= '(<red>DISABLED</red>)';
             }
 
-            $aliases = $this->getCommandAliases($cmd);
+            $aliases = $this->getNameAliases($cmd);
             $desc    .= $aliases ? ColorTag::wrap(' (alias: ' . implode(',', $aliases) . ')', 'info') : '';
 
             $commands[$cmd] = $desc;

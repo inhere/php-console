@@ -239,6 +239,7 @@ abstract class AbstractHandler implements CommandHandlerInterface
         }
 
         $this->addPathNode($this->commandName);
+        $this->commentsVars['binWithCmd'] = $this->getPath();
     }
 
     /**
@@ -337,12 +338,12 @@ abstract class AbstractHandler implements CommandHandlerInterface
     protected function doRun(array $args): mixed
     {
         // some prepare check
-        if (true !== $this->prepare()) {
+        if (!$this->prepare()) {
             return -1;
         }
 
         // return False to deny goon run.
-        if (false === $this->beforeExecute()) {
+        if (!$this->beforeExecute()) {
             return -1;
         }
 
@@ -425,7 +426,7 @@ abstract class AbstractHandler implements CommandHandlerInterface
     }
 
     /**
-     * prepare run
+     * prepare run, return false to stop run.
      */
     protected function prepare(): bool
     {
