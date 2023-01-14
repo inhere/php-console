@@ -209,6 +209,7 @@ abstract class AbstractHandler implements CommandHandlerInterface
         $binName = $this->input->getScriptName();
         $command = $this->input->getCommand();
         $fullCmd = $this->input->buildFullCmd($command);
+        $cmdPath = $binName . ' ' . $command;
 
         // e.g: `more info see {name}:index`
         return [
@@ -222,7 +223,8 @@ abstract class AbstractHandler implements CommandHandlerInterface
             'command'     => $command, // demo OR home:test
             'fullCmd'     => $fullCmd, // bin/app demo OR bin/app home:test
             'fullCommand' => $fullCmd,
-            'binWithCmd'  => $binName . ' ' . $command,
+            'cmdPath'     => $cmdPath,
+            'binWithCmd'  => $cmdPath,
         ];
     }
 
@@ -239,7 +241,11 @@ abstract class AbstractHandler implements CommandHandlerInterface
         }
 
         $this->addPathNode($this->commandName);
-        $this->commentsVars['binWithCmd'] = $this->getPath();
+
+        $binName = $this->input->getScriptName();
+        $cmdPath = $binName . ' ' . $this->getPath();
+
+        $this->commentsVars['cmdPath'] = $this->commentsVars['binWithCmd'] = $cmdPath;
     }
 
     /**
