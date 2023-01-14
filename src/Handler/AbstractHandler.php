@@ -369,10 +369,10 @@ abstract class AbstractHandler implements CommandHandlerInterface
         return $result;
     }
 
-    protected function doExecute(): mixed
-    {
-        return '';
-    }
+    // protected function doExecute(): mixed
+    // {
+    //     return '';
+    // }
 
     /**
      * coroutine run by swoole go()

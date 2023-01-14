@@ -18,7 +18,7 @@ class ConsoleConst
 
     public const CMD_NAME_MAX_LEN = 48;
 
-    public const REGEX_CMD_PATH = '/^[a-zA-Z][\w:-]+$/';
+    public const REGEX_CMD_PATH = '/^[a-zA-Z][\w:-]*$/';
 
     public const REGEX_CMD_NAME = '/^[a-zA-z][\w-]+$/';
 }
