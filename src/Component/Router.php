@@ -359,22 +359,26 @@ class Router implements RouterInterface
      **********************************************************/
 
     /**
+     * command name pattern.
+     * old: '/^[a-z][\w-]*:?([a-z][\w-]+)?$/'
+     */
+    public const NAME_PATTERN = '/^[a-z][\w:-]*$/';
+
+    /**
      * @param string $name
      *
      * @throws InvalidArgumentException
      */
     protected function validateName(string $name): void
     {
-        // '/^[a-z][\w-]*:?([a-z][\w-]+)?$/'
-        $pattern = '/^[a-z][\w:-]+$/';
-
+        $pattern = self::NAME_PATTERN;
         if (1 !== preg_match($pattern, $name)) {
             throw new InvalidArgumentException("The command name '$name' is must match: $pattern");
         }
 
-        // cannot be override. like: help, version
+        // cannot be overridden. like: help, version
         if ($this->isBlocked($name)) {
-            throw new InvalidArgumentException("The command name '$name' is not allowed. It is a built in command.");
+            throw new InvalidArgumentException("Command name '$name' is not allowed. It is a built in command.");
         }
     }
 
