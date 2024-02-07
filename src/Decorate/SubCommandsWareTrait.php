@@ -74,7 +74,7 @@ trait SubCommandsWareTrait
      * ```php
      * [
      *  'name' => [
-     *      'handler' => MyCommand::class,
+     *      'handler' => MyCommand::class, // class or object
      *      'config' => [
      *          'name'    => 'string',
      *          'desc'    => 'string',

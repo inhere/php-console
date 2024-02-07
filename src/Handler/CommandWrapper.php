@@ -28,7 +28,13 @@ class CommandWrapper extends Command
     private $callable;
 
     /**
-     * @var array{name: string, desc: string, options: array, arguments: array}
+     * @var array{name: string, desc: string, options: array, arguments: array} = [
+     *     'name' => '',
+     *     'desc' => '',
+     *     'aliases' => [],
+     *     'options' => [],
+     *     'arguments' => []
+     * ]
      */
     protected array $config = [];
 
