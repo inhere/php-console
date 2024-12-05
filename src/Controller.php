@@ -520,7 +520,7 @@ abstract class Controller extends AbstractHandler implements ControllerInterface
      *
      * @return ?Generator
      */
-    protected function getAllCommandMethods(ReflectionClass $ref = null, bool $onlyName = false): ?Generator
+    protected function getAllCommandMethods(?ReflectionClass $ref = null, bool $onlyName = false): ?Generator
     {
         $ref = $ref ?: new ReflectionObject($this);
 

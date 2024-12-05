@@ -124,7 +124,7 @@ abstract class AbstractHandler implements CommandHandlerInterface
      * @param Input|null $input
      * @param Output|null $output
      */
-    public function __construct(Input $input = null, Output $output = null)
+    public function __construct(?Input $input = null, ?Output $output = null)
     {
         // init io stream
         $input && $this->setInput($input);

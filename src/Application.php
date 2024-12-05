@@ -52,7 +52,7 @@ class Application extends AbstractApplication
      * @param Input|null $input
      * @param Output|null $output
      */
-    public function __construct(array $config = [], Input $input = null, Output $output = null)
+    public function __construct(array $config = [], ?Input $input = null, ?Output $output = null)
     {
         Console::setApp($this);
 
@@ -294,7 +294,7 @@ class Application extends AbstractApplication
      *
      * @return $this
      */
-    public function controller(string $name, ControllerInterface|string $class = null, array $config = []): static
+    public function controller(string $name, ControllerInterface|string|null $class = null, array $config = []): static
     {
         $this->logf(Console::VERB_CRAZY, 'register group controller: %s', $name);
         $this->router->addGroup($name, $class, $config);
@@ -312,7 +312,7 @@ class Application extends AbstractApplication
      * @return static
      * @see controller()
      */
-    public function addGroup(string $name, ControllerInterface|string $class = null, array $config = []): static
+    public function addGroup(string $name, ControllerInterface|string|null $class = null, array $config = []): static
     {
         return $this->controller($name, $class, $config);
     }
@@ -325,7 +325,7 @@ class Application extends AbstractApplication
      * @return $this
      * @see controller()
      */
-    public function addController(string $name, ControllerInterface|string $class = null, array $config = []): static
+    public function addController(string $name, ControllerInterface|string|null $class = null, array $config = []): static
     {
         return $this->controller($name, $class, $config);
     }
@@ -353,7 +353,7 @@ class Application extends AbstractApplication
      *
      * @return Application
      */
-    public function command(string $name, string|Closure|CommandInterface $handler = null, array $config = []): static
+    public function command(string $name, string|Closure|CommandInterface|null $handler = null, array $config = []): static
     {
         $this->logf(Console::VERB_CRAZY, 'register alone command: %s', $name);
         $this->router->addCommand($name, $handler, $config);
@@ -371,7 +371,7 @@ class Application extends AbstractApplication
      * @return Application
      * @see command()
      */
-    public function addCommand(string $name, string|Closure|CommandInterface $handler = null, array $config = []): static
+    public function addCommand(string $name, string|Closure|CommandInterface|null $handler = null, array $config = []): static
     {
         return $this->command($name, $handler, $config);
     }

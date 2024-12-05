@@ -117,8 +117,8 @@ class Console extends Cli
      */
     public static function newApp(
         array $config = [],
-        Input $input = null,
-        Output $output = null
+        ?Input $input = null,
+        ?Output $output = null
     ): Application {
         return new Application($config, $input, $output);
     }

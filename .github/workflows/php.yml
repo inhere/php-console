@@ -15,7 +15,7 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        php: [8.0, 8.1, 8.2] # 7.3, 7.4,
+        php: [8.1, 8.2, 8.3, 8.4] # 7.3, 7.4,
 #        os: [ubuntu-latest] # windows-latest,
 #        include:
 #          - os: 'ubuntu-latest'

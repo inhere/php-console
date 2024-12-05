@@ -115,7 +115,7 @@ class Router implements RouterInterface
      * @return static
      * @throws InvalidArgumentException
      */
-    public function addGroup(string $name, ControllerInterface|string $class = null, array $config = []): static
+    public function addGroup(string $name, ControllerInterface|string|null $class = null, array $config = []): static
     {
         /**
          * @var Controller $class name is an controller class
@@ -179,7 +179,7 @@ class Router implements RouterInterface
      *
      * @return static
      */
-    public function addCommand(string $name, string|Closure|CommandInterface $handler = null, array $config = []): static
+    public function addCommand(string $name, string|Closure|CommandInterface|null $handler = null, array $config = []): static
     {
         if (!$handler && class_exists($name)) {
             $handler = $name;

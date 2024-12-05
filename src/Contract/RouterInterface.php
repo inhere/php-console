@@ -35,7 +35,7 @@ interface RouterInterface
      *
      * @return static
      */
-    public function addGroup(string $name, ControllerInterface|string $class = null, array $config = []): static;
+    public function addGroup(string $name, ControllerInterface|string|null $class = null, array $config = []): static;
 
     /**
      * Register a app independent console command
@@ -46,7 +46,7 @@ interface RouterInterface
      *
      * @return static
      */
-    public function addCommand(string $name, string|Closure|CommandInterface $handler = null, array $config = []): static;
+    public function addCommand(string $name, string|Closure|CommandInterface|null $handler = null, array $config = []): static;
 
     /**
      * ```php

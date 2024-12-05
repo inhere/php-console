@@ -148,7 +148,7 @@ abstract class AbstractApplication implements ApplicationInterface
      * @param Input|null  $input
      * @param Output|null $output
      */
-    public function __construct(array $config = [], Input $input = null, Output $output = null)
+    public function __construct(array $config = [], ?Input $input = null, ?Output $output = null)
     {
         $this->runtimeCheck();
         $this->setConfig($config);
@@ -672,7 +672,7 @@ abstract class AbstractApplication implements ApplicationInterface
      * @param string      $logoTxt
      * @param string|null $style
      */
-    public function setLogo(string $logoTxt, string $style = null): void
+    public function setLogo(string $logoTxt, ?string $style = null): void
     {
         $this->config['logoText'] = $logoTxt;
 
@@ -847,6 +847,10 @@ abstract class AbstractApplication implements ApplicationInterface
     {
         $optKey  = GlobalOption::PROFILE;
         $default = (bool)$this->getParam($optKey, false);
+
+        if (!$this->flags->hasOpt($optKey)) {
+            return $default;
+        }
 
         // return $this->input->getBoolOpt($key, $def);
         return $this->flags->getOpt($optKey, $default);

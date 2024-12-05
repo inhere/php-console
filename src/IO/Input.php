@@ -33,7 +33,7 @@ class Input extends StreamInput
      *
      * @param null|array $args
      */
-    public function __construct(array $args = null)
+    public function __construct(?array $args = null)
     {
         if (null === $args) {
             $args = $_SERVER['argv'];

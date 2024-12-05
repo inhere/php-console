@@ -157,7 +157,7 @@ trait SubCommandsWareTrait
      * @param class-string|CommandInterface|null $handler
      * @param array $config
      */
-    public function addSub(string $name, string|CommandInterface $handler = null, array $config = []): void
+    public function addSub(string $name, string|CommandInterface|null $handler = null, array $config = []): void
     {
         if (!$handler && class_exists($name)) {
             /** @var Command $name name is an command class */

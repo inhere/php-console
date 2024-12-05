@@ -65,7 +65,7 @@ interface ApplicationInterface
      * @return static
      * @throws InvalidArgumentException
      */
-    public function controller(string $name, ControllerInterface|string $class = null, array $config = []): static;
+    public function controller(string $name, ControllerInterface|string|null $class = null, array $config = []): ApplicationInterface;
 
     /**
      * Register a app independent console command
@@ -77,8 +77,11 @@ interface ApplicationInterface
      * @return mixed
      * @throws InvalidArgumentException
      */
-    public function command(string $name, string|Closure|CommandInterface $handler = null, array $config = []): static;
+    public function command(string $name, string|Closure|CommandInterface|null $handler = null, array $config = []): ApplicationInterface;
 
+    /**
+     * @return void
+     */
     public function showCommandList();
 
     /**
