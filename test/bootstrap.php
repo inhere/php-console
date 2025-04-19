@@ -10,6 +10,8 @@
 error_reporting(E_ALL);
 date_default_timezone_set('Asia/Shanghai');
 
+define('UNIT_TESTING', true);
+
 spl_autoload_register(static function ($class): void {
     $file = null;
 

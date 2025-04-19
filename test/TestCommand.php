@@ -29,7 +29,7 @@ class TestCommand extends Command
     {
         return [
             CommandWrapper::new(static function () {
-                return __METHOD__;
+                return 'at TestCommand::sub1';
             })->withConfig([
                'name' => 'sub1',
                'desc' => 'desc for sub1 in test1',

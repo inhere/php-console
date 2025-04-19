@@ -444,6 +444,12 @@ abstract class AbstractApplication implements ApplicationInterface
      */
     protected function registerErrorHandle(): void
     {
+        // not register error handle in unit test
+        if (defined('UNIT_TESTING') && UNIT_TESTING) {
+            $this->debugf('skip register error handle in unit test');
+            return;
+        }
+
         set_error_handler([$this, 'handleError']);
         set_exception_handler([$this, 'handleException']);
         register_shutdown_function(function (): void {

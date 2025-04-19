@@ -54,7 +54,7 @@ jobs:
 
       - name: Run unit tests
         run: |
-          phpunit --debug
+          phpunit
           php examples/alone -h
           php examples/app --help
 

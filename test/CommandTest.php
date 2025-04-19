@@ -43,7 +43,7 @@ class CommandTest extends TestCase
         $c = new TestCommand(new Input(), Output::new());
 
         $str = $c->run(['sub1']);
-        $this->assertEquals('Inhere\ConsoleTest\{closure}', $str);
+        $this->assertEquals('at TestCommand::sub1', $str);
     }
 
     public function testCommand_sub_help(): void

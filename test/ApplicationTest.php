@@ -32,7 +32,7 @@ class ApplicationTest extends TestCase
         self::assertNotFalse(strpos($string, $contains), "string \"$string\" not contains: $contains");
     }
 
-    private function newApp(array $args = null): Application
+    private function newApp(?array $args = null): Application
     {
         $input = new Input($args);
 

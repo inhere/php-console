@@ -17,4 +17,9 @@ use PHPUnit\Framework\TestCase;
  */
 abstract class BaseTestCase extends TestCase
 {
+    protected function assertStringContains(string $string, string $contains): void
+    {
+        self::assertNotFalse(strpos($string, $contains), "string \"$string\" not contains: $contains");
+    }
+
 }
