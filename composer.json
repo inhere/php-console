@@ -29,9 +29,7 @@
     "toolkit/stdlib": "^2.0",
     "toolkit/sys-utils": "~2.0"
   },
-  "require-dev": {
-    "phpunit/phpunit": "^12.0"
-  },
+  "require-dev": {},
   "autoload": {
     "psr-4": {
       "Inhere\\Console\\": "src/"
