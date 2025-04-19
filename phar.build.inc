@@ -25,6 +25,7 @@ $compiler
     'composer.json',
     'README.md',
     'test/bootstrap.php',
+    'examples/commands.php'
   ])
   ->setCliIndex('examples/app')
   // ->setWebIndex('web/index.php')

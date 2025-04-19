@@ -60,5 +60,5 @@ jobs:
 
       - name: Test build PHAR
         run: |
-          php -d phar.readonly=0 examples/app phar pack -o=myapp.phar
+          php -d phar.readonly=0 examples/app phar pack --no-progress -o=myapp.phar
           php myapp.phar -h

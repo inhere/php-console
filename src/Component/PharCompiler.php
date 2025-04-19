@@ -263,7 +263,7 @@ class PharCompiler
      * @throws BadMethodCallException
      * @throws RuntimeException
      */
-    public static function unpack(string $pharFile, string $extractTo, array|string $files = null, bool $overwrite = false): bool
+    public static function unpack(string $pharFile, string $extractTo, array|string|null $files = null, bool $overwrite = false): bool
     {
         self::checkEnv();
 
