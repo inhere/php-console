@@ -62,7 +62,7 @@ class Question extends InteractiveHandle
      *  echo "Your input: $answer";
      * ```
      */
-    public static function ask(string $question, string $default = '', Closure $validator = null): string
+    public static function ask(string $question, string $default = '', ?Closure $validator = null): string
     {
         if (!$question = trim($question)) {
             Show::error('Please provide a question text!', 1);

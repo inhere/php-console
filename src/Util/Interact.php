@@ -180,7 +180,7 @@ class Interact extends Show
      *
      * @return bool
      */
-    public static function answerIsYes(bool $default = null): bool
+    public static function answerIsYes(?bool $default = null): bool
     {
         $mark = ' [yes|no]: ';
 
@@ -216,7 +216,7 @@ class Interact extends Show
      *
      * @return string|null
      */
-    public static function ask(string $question, string $default = '', Closure $validator = null): ?string
+    public static function ask(string $question, string $default = '', ?Closure $validator = null): ?string
     {
         return self::question($question, $default, $validator);
     }
@@ -231,7 +231,7 @@ class Interact extends Show
      * @return string
      * @see Question::ask()
      */
-    public static function question(string $question, string $default = '', Closure $validator = null): string
+    public static function question(string $question, string $default = '', ?Closure $validator = null): string
     {
         return Question::ask($question, $default, $validator);
     }
@@ -250,7 +250,7 @@ class Interact extends Show
     public static function limitedAsk(
         string $question,
         string $default = '',
-        Closure $validator = null,
+        ?Closure $validator = null,
         int $times = 3
     ): string {
         return LimitedAsk::ask($question, $default, $validator, $times);

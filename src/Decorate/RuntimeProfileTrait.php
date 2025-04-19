@@ -81,7 +81,7 @@ trait RuntimeProfileTrait
      *
      * @return bool|array
      */
-    public static function profileEnd(string $msg = null, array $context = []): bool|array
+    public static function profileEnd(?string $msg = null, array $context = []): bool|array
     {
         if (!$latestKey = array_pop(self::$keyQueue)) {
             return false;
@@ -114,7 +114,7 @@ trait RuntimeProfileTrait
      *
      * @return array
      */
-    public static function getProfileData(string $name = null, string $category = 'application'): array
+    public static function getProfileData(?string $name = null, string $category = 'application'): array
     {
         if ($name) {
             return self::$profiles[$category][$name] ?? [];

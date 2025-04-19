@@ -147,7 +147,7 @@ class ProgressBar
      *
      * @return ProgressBar
      */
-    public static function create(Output $output = null, int $maxSteps = 0): ProgressBar
+    public static function create(?Output $output = null, int $maxSteps = 0): ProgressBar
     {
         return new self($output, $maxSteps);
     }
@@ -156,7 +156,7 @@ class ProgressBar
      * @param Output|null $output
      * @param int $maxSteps
      */
-    public function __construct(Output $output = null, int $maxSteps = 0)
+    public function __construct(?Output $output = null, int $maxSteps = 0)
     {
         $this->output = $output ?: new Output;
 
@@ -171,7 +171,7 @@ class ProgressBar
      *
      * @throws LogicException
      */
-    public function start(int $maxSteps = null): void
+    public function start(?int $maxSteps = null): void
     {
         if ($this->started) {
             throw new LogicException('Progress bar already started.');

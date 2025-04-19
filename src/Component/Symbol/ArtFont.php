@@ -109,7 +109,7 @@ class ArtFont
      *
      * @return int
      */
-    public function showItalic(string $name, string $group = null, array $opts = []): int
+    public function showItalic(string $name, ?string $group = null, array $opts = []): int
     {
         $opts['type'] = 'italic';
 
@@ -129,7 +129,7 @@ class ArtFont
      *
      * @return int
      */
-    public function show(string $name, string $group = null, array $opts = []): int
+    public function show(string $name, ?string $group = null, array $opts = []): int
     {
         $opts = array_merge([
             'type'   => '',
@@ -175,7 +175,7 @@ class ArtFont
      *
      * @return string
      */
-    public function font(string $name, string $group = null): string
+    public function font(string $name, ?string $group = null): string
     {
         return '';
     }
@@ -227,7 +227,7 @@ class ArtFont
      *
      * @return $this
      */
-    public function addFont(string $name, string $file, string $group = null): self
+    public function addFont(string $name, string $file, ?string $group = null): self
     {
         $group = $group ?: self::DEFAULT_GROUP;
 

@@ -1,7 +1,7 @@
 # PHP Console
 
 [![License](https://img.shields.io/packagist/l/inhere/console.svg?style=flat-square)](LICENSE)
-[![Php Version](https://img.shields.io/badge/php-%3E=8.0-brightgreen.svg?maxAge=2592000)](https://packagist.org/packages/inhere/console)
+[![Php Version](https://img.shields.io/packagist/php-v/inhere/console?maxAge=2592000)](https://packagist.org/packages/inhere/console)
 [![Latest Stable Version](http://img.shields.io/packagist/v/inhere/console.svg)](https://packagist.org/packages/inhere/console)
 [![Github Actions Status](https://github.com/inhere/php-console/workflows/Unit-tests/badge.svg)](https://github.com/inhere/php-console/actions)
 [![English](https://img.shields.io/badge/Readme-English-brightgreen.svg?maxAge=2592000)](README.en.md)

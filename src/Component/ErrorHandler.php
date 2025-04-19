@@ -88,6 +88,7 @@ ERR;
             $file = $e->getFile();
             $prev = $e->getPrevious();
 
+            // var_dump($e);
             $snippet = Highlighter::create()->snippet(file_get_contents($file), $line, 3, 3);
             $message = sprintf(
                 $tpl, // $e->getCode(),
