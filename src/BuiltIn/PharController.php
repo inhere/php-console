@@ -76,8 +76,9 @@ class PharController extends Controller
      *  -o, --output        Setting the output file name(<cyan>{defaultPkgName}</cyan>)
      *      --fast          bool;Fast build. only add modified files by <cyan>git status -s</cyan>
      *      --refresh       bool;Whether build vendor folder files on phar file exists(<cyan>False</cyan>)
-     *      --files         Only pack the list files to the exist phar, multi use ',' split
-     *      --no-progress   bool;Disable output progress on the runtime
+     *      --files         Only pack the list files to exist phar, multi use ',' split
+     *      --no-progress   bool;Disable output progress on the runtime.
+     *      --debug         bool;Show debug information for collect files
      *
      * @param Input $input
      * @param Output $output
@@ -137,9 +138,8 @@ class PharController extends Controller
 
         $output->colored('Collect Pack files', 'comment');
 
-        if (!$fs->getOpt('no-progress')) {
-            $this->outputProgress($cpr);
-        }
+        $showProgress = !$fs->getOpt('no-progress');
+        $this->outputProgress($cpr, $fs->getOpt('debug'), $showProgress);
 
         // packing ...
         $cpr->pack($pharFile, $refresh);
@@ -186,22 +186,24 @@ class PharController extends Controller
 
     /**
      * @param PharCompiler $cpr
+     * @param bool         $debug
+     * @param bool         $showProgress
      *
      * @return void
      */
-    private function outputProgress(PharCompiler $cpr): void
+    private function outputProgress(PharCompiler $cpr, bool $debug, bool $showProgress): void
     {
-        if ($this->isDebug()) {
+        if ($debug || $this->isDebug()) {
             // $output->info('Pack file to Phar ... ...');
             $cpr->onAdd(function (string $path): void {
                 $this->writeln(" <info>+</info> $path");
             });
 
-            $cpr->on('skip', function (string $path, bool $isFile): void {
+            $cpr->on(PharCompiler::ON_SKIP, function (string $path, bool $isFile): void {
                 $mark = $isFile ? '[F]' : '[D]';
                 $this->writeln(" <red>-</red> $path <info>$mark</info>");
             });
-        } else {
+        } else if ($showProgress) {
             $counter = Show::counterTxt('Collecting ...', 'Done.');
             $cpr->onAdd(static function () use ($counter): void {
                 $counter->send(1);

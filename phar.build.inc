@@ -13,19 +13,20 @@ $compiler
   // ->stripComments(false)
   ->setShebang(true)
   ->addExclude([
-    'demo',
-    'example',
-    'runtime',
-    'node_modules',
-    'test',
-    'tmp',
+    'demo/',
+    'docs/',
+    'example/',
+    'runtime/',
+    'node_modules/',
+    'test/',
+    'tmp/',
+    '/console/resource/',
   ])
   ->addFile([
     'LICENSE',
     'composer.json',
     'README.md',
     'test/bootstrap.php',
-    'examples/commands.php'
   ])
   ->setCliIndex('examples/app')
   // ->setWebIndex('web/index.php')

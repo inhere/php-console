@@ -106,8 +106,7 @@ trait AttachApplicationTrait
         }
 
         // return (int)$this->input->getLongOpt('debug', Console::VERB_ERROR);
-        $envVal = OS::getEnvStrVal(Console::DEBUG_ENV_KEY);
-        return $envVal !== '' ? (int)$envVal : Console::VERB_ERROR;
+        return Console::getLevelFromENV();
     }
 
     /**
@@ -121,12 +120,7 @@ trait AttachApplicationTrait
             return $this->app->isDebug();
         }
 
-        $setVal = Console::VERB_ERROR;
-        $envVal = OS::getEnvStrVal(Console::DEBUG_ENV_KEY);
-        if ($envVal !== '') {
-            $setVal = (int)$envVal;
-        }
-
+        $setVal = Console::getLevelFromENV();
         return $level <= $setVal;
     }
 

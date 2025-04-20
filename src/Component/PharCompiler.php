@@ -63,6 +63,10 @@ class PharCompiler
 {
     public const ON_ADD = 'add';
 
+    /**
+     * skip dir or file.
+     * - fn: `function(string $path, bool $isFile) {}`
+     */
     public const ON_SKIP = 'skip';
 
     public const ON_ERROR = 'error';
@@ -283,7 +287,7 @@ class PharCompiler
     {
         self::checkEnv();
 
-        $this->basePath  = File::realpath($basePath);
+        $this->basePath  = File::pathFormat(File::realpath($basePath), false);
         $this->fileQueue = new SplQueue();
 
         if (!is_dir($this->basePath)) {
@@ -768,7 +772,13 @@ EOF;
         if (!$this->fileFilter) {
             $this->fileFilter = function (SplFileInfo $file) {
                 $name = $file->getFilename();
-                $path = $file->getPathname();
+                $path = File::pathFormat($file->getPathname(), false);
+                // remove basePath prefix
+                if (str_starts_with($path, $this->basePath)) {
+                    $noFullPath = substr($path, strlen($this->basePath)+1);
+                } else {
+                    $noFullPath = $path;
+                }
 
                 // Skip hidden files and directories.
                 if (str_starts_with($name, '.')) {
@@ -779,11 +789,21 @@ EOF;
                 if ($file->isDir()) {
                     foreach ($this->excludes as $exclude) {
                         if (strpos($path . '/', $exclude) > 0) {
-                            $this->fire(self::ON_SKIP, $path, false);
+                            $this->fire(self::ON_SKIP, $noFullPath . '/', false);
                             return false;
                         }
                     }
                     return true;
+                }
+
+                // Exclude file check
+                if ($this->excludes) {
+                    foreach ($this->excludes as $exclude) {
+                        if (strpos($path, $exclude) > 0) {
+                            $this->fire(self::ON_SKIP, $noFullPath, true);
+                            return false;
+                        }
+                    }
                 }
 
                 // File ext check
@@ -794,7 +814,7 @@ EOF;
                         }
                     }
 
-                    $this->fire(self::ON_SKIP, $path, true);
+                    $this->fire(self::ON_SKIP, $noFullPath, true);
                     return false;
                 }
 
@@ -856,8 +876,8 @@ EOF;
      */
     private function getRelativeFilePath(SplFileInfo $file): string
     {
-        $realPath   = $file->getRealPath();
-        $pathPrefix = $this->basePath . DIRECTORY_SEPARATOR;
+        $realPath   = File::pathFormat($file->getRealPath(), false);
+        $pathPrefix = $this->basePath . '/';
 
         $pos  = strpos($realPath, $pathPrefix);
         $path = $pos !== false ? substr_replace($realPath, '', $pos, strlen($pathPrefix)) : $realPath;

@@ -829,10 +829,8 @@ abstract class AbstractApplication implements ApplicationInterface
         $optKey = GlobalOption::DEBUG;
 
         // feat: support set debug level by ENV var: CONSOLE_DEBUG
-        $envVal = OS::getEnvStrVal(Console::DEBUG_ENV_KEY);
-        if ($envVal !== '') {
-            $setVal = (int)$envVal;
-        } else {
+        $setVal = Console::getLevelFromENV(-1);
+        if ($setVal < 0) {
             $setVal = (int)$this->config[$optKey];
         }
 

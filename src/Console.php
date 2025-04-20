@@ -14,6 +14,8 @@ use Inhere\Console\IO\Output;
 use Toolkit\Cli\Cli;
 use Toolkit\Cli\Color\ColorTag;
 use Toolkit\Stdlib\Json;
+use Toolkit\Stdlib\OS;
+use Toolkit\Stdlib\Str;
 use function date;
 use function debug_backtrace;
 use function implode;
@@ -55,6 +57,19 @@ class Console extends Cli
         self::VERB_CRAZY => 'CRAZY',
     ];
 
+    // name => level
+    public const NAME2LEVEL = [
+        'QUIET'   => self::VERB_QUIET,
+        'ERR'     => self::VERB_ERROR, // alias
+        'ERROR'   => self::VERB_ERROR,
+        'WARN'    => self::VERB_WARN,
+        'WARNING' => self::VERB_WARN, // alias
+        'INFO'    => self::VERB_INFO,
+        'DEBUG'   => self::VERB_DEBUG,
+        'CRAZY'   => self::VERB_CRAZY,
+    ];
+
+    // level => color name
     public const LEVEL2TAG = [
         self::VERB_QUIET => 'normal',
         self::VERB_ERROR => 'error',
@@ -64,7 +79,7 @@ class Console extends Cli
         self::VERB_CRAZY => 'magenta',
     ];
 
-    public const CMD_GROUP  = 1;
+    public const CMD_GROUP = 1;
 
     public const CMD_SINGLE = 2;
 
@@ -75,6 +90,49 @@ class Console extends Cli
      * @var Application|null
      */
     private static ?Application $app;
+
+    /**
+     * get debug level from ENV var: `CONSOLE_DEBUG`. if not set, return `$defaultLevel`
+     *
+     * @param int $defaultLevel
+     *
+     * @return integer
+     */
+    public static function getLevelFromENV(int $defaultLevel = self::VERB_ERROR): int
+    {
+        // feat: support set debug level by ENV var: CONSOLE_DEBUG
+        $level  = $defaultLevel;
+        $envVal = OS::getEnvStrVal(Console::DEBUG_ENV_KEY);
+
+        if ($envVal !== '') {
+            if (is_numeric($envVal)) {
+                $level = (int)$envVal;
+            } else {
+                $level = self::nameToLevel($envVal, $defaultLevel);
+            }
+        }
+
+        return $level;
+    }
+
+    /**
+     * level name to level number
+     *
+     * @param string $levelName
+     * @param int    $defaultLevel
+     *
+     * @return int
+     */
+    public static function nameToLevel(string $levelName, int $defaultLevel = self::VERB_INFO): int
+    {
+        $levelName = Str::upper($levelName);
+
+        if (isset(self::NAME2LEVEL[$levelName])) {
+            return self::NAME2LEVEL[$levelName];
+        }
+
+        return $defaultLevel;
+    }
 
     /**
      * @return Application
@@ -184,7 +242,8 @@ class Console extends Cli
         $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, self::$traceIndex + 2);
         $position  = self::formatBacktrace($backtrace, self::$traceIndex);
 
-        self::writef('%s [%s] [%s]%s %s %s' . PHP_EOL, $datetime, $taggedName, $position, $optString, trim($msg), $dataString);
+        self::writef('%s [%s] [%s]%s %s %s' . PHP_EOL, $datetime, $taggedName, $position, $optString, trim($msg),
+            $dataString);
     }
 
     /**

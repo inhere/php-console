@@ -189,7 +189,7 @@ class Router implements RouterInterface
 
         if (!$name || !$handler) {
             $handlerClass = is_object($handler) ? get_class($handler) : $handler;
-            throw new InvalidArgumentException("Command 'name' and 'handler' cannot be empty! name: $name, handler: $handlerClass");
+            throw new InvalidArgumentException("Command 'name' and 'handler' cannot be empty! (name: $name, handler: $handlerClass)");
         }
 
         Assert::isFalse(isset($this->commands[$name]), "Command '$name' have been registered!");
