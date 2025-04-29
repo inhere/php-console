@@ -115,7 +115,7 @@ class LimitedAsk extends InteractiveHandle
             return $default;
         }
 
-        Console::write("\n  You've entered incorrectly <danger>$back</danger> times in a row. exit!", true, 1);
+        Console::write("\n  You've entered incorrectly <danger>$back</danger> times in a row. exit!", true, true);
         return '';
     }
 }

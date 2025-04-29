@@ -82,7 +82,7 @@ interface ApplicationInterface
     /**
      * @return void
      */
-    public function showCommandList();
+    public function showCommandList(): void;
 
     /**
      * @return string

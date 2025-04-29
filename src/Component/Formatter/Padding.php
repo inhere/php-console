@@ -53,7 +53,7 @@ class Padding extends MessageFormatter
         ], $opts);
 
         $keyMaxLen  = ArrayHelper::getKeyMaxWidth($data);
-        $paddingLen = $keyMaxLen > $opts['padding'] ? $keyMaxLen : $opts['padding'];
+        $paddingLen = max($keyMaxLen, $opts['padding']);
 
         foreach ($data as $label => $value) {
             $value  = ColorTag::wrap((string)$value, $opts['valueStyle']);
